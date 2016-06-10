@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="IntelligentKioskSample.Controls.SentimentControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             Margin="0,12,0,0"
+             mc:Ignorable="d" 
+             SizeChanged="OnSizeChanged"
+             d:DesignHeight="40" d:DesignWidth="300">
+    <Grid >
+        <TextBlock FontSize="28" FontFamily="Wingdings" HorizontalAlignment="Left" VerticalAlignment="Center" >L</TextBlock>
+        <TextBlock FontSize="28" FontFamily="Wingdings" HorizontalAlignment="Right" VerticalAlignment="Center">J</TextBlock>
+        
+        <Grid Margin="40,5,40,0" Height="10" x:Name="GuideLine">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Rectangle Grid.Column="0" Fill="Crimson"></Rectangle>
+            <Rectangle Grid.Column="1" Fill="Gold" ></Rectangle>
+            <Rectangle Grid.Column="2" Fill="Green" ></Rectangle>
+        </Grid>
+        
+        <Canvas VerticalAlignment="Center" Margin="40,20,0,20">
+            <Grid x:Name="Pointer" Canvas.Left="0">
+                <TextBlock x:Name="PointerText" Margin="-8,-30,0,0" >0.00</TextBlock>
+                <Polyline 
+                Fill="#AAAAAA"  Stroke="#AAAAAA" Points="-10,-10,0,0,10,-10, -10,-10 "></Polyline>
+            </Grid>
+        </Canvas>
+    </Grid>
+</UserControl>

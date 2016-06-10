@@ -1,0 +1,60 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.RecognitionPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    SizeChanged="OnPageSizeChanged"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          EntranceNavigationTransitionInfo.IsTargetElement="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+            <AppBarButton Icon="Video" Label="WebCam" Click="OnWebCamButtonClicked"/>
+            <AppBarButton Icon="Globe" Label="Pictures" x:Name="PicturesAppBarButton">
+                <AppBarButton.Flyout>
+                    <Flyout x:Name="imageSearchFlyout">
+                        <ctl:ImageSearchUserControl ClearStateWhenClosed="False" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" OnImageSearchLocalFilesProvided="OnImageSearchLocalFilesProvided"/>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+
+            <CommandBar.Content>
+                <ctl:PageHeader>
+                    <ctl:PageHeader.HeaderContent>
+                        <TextBlock Text="RECOGNITION" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
+                    </ctl:PageHeader.HeaderContent>
+                </ctl:PageHeader>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.2*"/>
+                <RowDefinition/>
+                <RowDefinition Height="0.2*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0.1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Row="1" Grid.Column="1" x:Name="webCamHostGrid" Visibility="Collapsed" >
+                <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" FlowDirection="RightToLeft" x:Name="imageFromCameraWithFaces" DetectFacesOnLoad="True" DetectFaceAttributes="True" ShowMultipleFaces="True" PerformRecognition="True" ShowRecognitionResults="True"/>
+                <ctl:CameraControl x:Name="cameraControl"/>
+            </Grid>
+
+            <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" Grid.Row="1" Grid.Column="1" x:Name="imageWithFacesControl" DetectFacesOnLoad="True" DetectFaceAttributes="True" ShowMultipleFaces="True" PerformRecognition="True" ShowRecognitionResults="True" />
+            
+        </Grid>
+
+    </Grid>
+</Page>

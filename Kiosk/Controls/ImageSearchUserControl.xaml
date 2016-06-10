@@ -1,0 +1,69 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Controls.ImageSearchUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Height="300"
+    Width="400"
+    x:Name="SearchControl"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <AutoSuggestBox x:Name="autoSuggestBox" HorizontalAlignment="Stretch" Margin="0" QueryIcon="Find" PlaceholderText="Search Bing Images" QuerySubmitted="onQuerySubmitted" TextChanged="onTextChanged"/>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Rectangle Width="2" Fill="White" Opacity="0.2" Margin="20,3,10,3"></Rectangle>
+                <Button Background="Transparent" Click="LoadImagesFromFileClicked" ToolTipService.ToolTip="Browse local files">
+                    <SymbolIcon Symbol="Pictures"/>
+                </Button>
+
+                <!--<Button Background="Transparent" ToolTipService.ToolTip="Take photo from webcam">
+                    <Button.Flyout>
+                        <Flyout >
+                            <controls:CameraControl Width="400" Height="225"/>
+                        </Flyout>
+                    </Button.Flyout>
+                    <SymbolIcon Symbol="Video"/>
+                </Button>-->
+            </StackPanel>
+
+        </Grid>
+               
+        <GridView x:Name="imageResultsGrid" Margin="0,10" Grid.Row="1" SelectionMode="Multiple" IsMultiSelectCheckBoxEnabled="False" SelectionChanged="OnImageResultSelectionChanged">
+            <GridView.ItemTemplate>
+                <DataTemplate>
+                    <controls:ImageWithFaceBorderUserControl DataContext="{Binding}" DetectFacesOnLoad="{Binding ElementName=SearchControl, Path=DetectFacesOnLoad}" Width="120" Height="90" />
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+
+        <ProgressRing x:Name="progressRing" Grid.Row="1"/>
+
+        <CommandBar VerticalAlignment="Bottom" Grid.Row="2">
+            <AppBarButton x:Name="addSelectedPhotosButton" Icon="Accept" Label="Add selected photos" Click="OnAcceptButtonClicked" IsEnabled="False" >
+                
+            </AppBarButton>
+
+            <AppBarButton Icon="Cancel" Label="Cancel" Click="OnCancelButtonClicked">
+
+            </AppBarButton>
+        </CommandBar>
+
+    </Grid>
+</UserControl>

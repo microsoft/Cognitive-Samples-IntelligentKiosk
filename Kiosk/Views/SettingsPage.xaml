@@ -1,0 +1,93 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          EntranceNavigationTransitionInfo.IsTargetElement="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+            <AppBarButton Icon="Undo" Label="Reset Settings" Click="OnResetSettingsClick"/>
+
+            <CommandBar.Content>
+                <ctl:PageHeader>
+                    <ctl:PageHeader.HeaderContent>
+                        <TextBlock Style="{ThemeResource PageTitleTextBlockStyle}" Text="SETTINGS"/>
+                    </ctl:PageHeader.HeaderContent>
+                </ctl:PageHeader>
+            </CommandBar.Content>
+        </CommandBar>
+        
+        <ScrollViewer Grid.Row="1">
+
+            <StackPanel Orientation="Vertical" Margin="12,12" >
+                <StackPanel >
+                    <TextBlock Text="Keys" Style="{StaticResource SubheaderTextBlockStyle}"/>
+                    <TextBlock Text="Workspace Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0,5,0,0"  />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding WorkspaceKey, Mode=TwoWay}"  />
+                        <Button Content="Generate New Key" Grid.Column="1" Margin="10,0,6,0" Click="OnGenerateNewKeyClicked" HorizontalAlignment="Right"/>
+                    </Grid>
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Face API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0,5,0,0"  />
+                    <PasswordBox Password="{Binding FaceApiKey, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                    <TextBlock Text="Emotion API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
+                    <PasswordBox Password="{Binding EmotionApiKey, Mode=TwoWay}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="0,10,0,0"  >
+                    <TextBlock Text="Bing API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
+                    <PasswordBox Password="{Binding BingApiKey, Mode=TwoWay}" />
+                </StackPanel>
+                
+            </StackPanel>
+
+            <StackPanel Margin="0,50,0,0">
+                <TextBlock Text="Miscellaneous" Style="{StaticResource SubheaderTextBlockStyle}"/>
+                <ComboBox x:Name="cameraSourceComboBox" Header="Camera Source"  SelectionChanged="OnCameraSourceSelectionChanged"/>               
+                <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info:" Margin="0,6,0,0"/>
+                <ToggleSwitch IsOn="{Binding ShowConfidenceLevelOnIdentification, Mode=TwoWay}" Header="Show face identification confidence level:" Margin="0,6,0,0"/><ToggleSwitch IsOn="{Binding ShowFaceIdentificationResults, Mode=TwoWay}" Header="Show face identification results:" Margin="0,6,0,0"/>
+
+                <StackPanel Orientation="Horizontal">
+                    <Slider x:Name="MinimumConfidenceForIdentificationSlider" Minimum="50" Maximum="100" Value="{Binding MinimumConfidenceForIdentification, Mode=TwoWay}" Header="Minimum confidence for face identification:" SmallChange="1" LargeChange="5" HorizontalAlignment="Left" Margin="0,6,0,0"/>
+                    <TextBlock Text="{Binding ElementName=MinimumConfidenceForIdentificationSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>                    
+                </StackPanel>
+                
+                <StackPanel Orientation="Horizontal">
+                    <Slider x:Name="MinDetectableFaceSizeSlider" Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" SmallChange="1" LargeChange="5" Header="Minimum detectable face size (as % of image height):" HorizontalAlignment="Left" Margin="0,0,0,0" StepFrequency="1"/>
+                    <TextBlock Text="{Binding ElementName=MinDetectableFaceSizeSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                </StackPanel>
+             </StackPanel>
+
+            <StackPanel Margin="0,50,0,0">
+                <TextBlock Text="Realtime Kiosk" Style="{StaticResource SubheaderTextBlockStyle}"/>
+
+                <ToggleSwitch IsOn="{Binding SaveUniqueFaceImages, Mode=TwoWay}" Header="Save local copy of unique face images:" />
+                
+                <HyperlinkButton Click="OnOpenUniqueFacesFolder" Margin="0,0,0,6">Open unique faces storage folder</HyperlinkButton>
+                
+                <Button Margin="0,6,0,0" Click="OnEraseRealtimeDataClicked">Erase data</Button>
+             </StackPanel>
+
+          </StackPanel>
+            
+        </ScrollViewer>
+
+    </Grid>
+</Page>
