@@ -13,3 +13,5 @@ It uses the built-in face tracking functionality in Windows 10 to detect when pe
 * [CameraControl] (../Kiosk/Controls/CameraControl.xaml.cs): The code that contains the camera feed and runs a background loop to perform several tasks (track faces, draw face rectangles, execute the state machine that drives the autonomous photo capture workflow, etc)
 
 * [ImageWithFaceBorderUserControl] (../Kiosk/Controls/ImageWithFaceBorderUserControl.xaml.cs): A control used to display the result of each photo capture. It detects when the photo is loaded, automatically calls the Face APIs to perform the age, gender and face identification and displays the result over the faces in the photo.
+
+* [ImageAnalyzer] (../Kiosk/ServiceHelpers/ImageAnalyzer.cs): Responsible for wrapping an image and exposing several methods and properties that act as a bridge to the Cognitive Services.
