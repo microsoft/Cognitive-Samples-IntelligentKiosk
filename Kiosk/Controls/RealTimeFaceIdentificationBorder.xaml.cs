@@ -61,24 +61,15 @@ namespace IntelligentKioskSample.Controls
             this.emotionEmojiControl.UpdateEmotion(scores);
         }
 
-        public void ShowIdentificationData(double age, string gender, uint confidence, string name = null, bool showAge = true, string uniqueId = null)
+        public void ShowIdentificationData(double age, string gender, uint confidence, string name = null, string uniqueId = null)
         {
             int roundedAge = (int)Math.Round(age);
 
-            if (!string.IsNullOrEmpty(name) &&
-                SettingsHelper.Instance.ShowFaceIdentificationResults &&
-                confidence >= SettingsHelper.Instance.MinimumConfidenceForIdentification)
+            if (!string.IsNullOrEmpty(name))
             {
-                if (SettingsHelper.Instance.ShowConfidenceLevelOnIdentification)
-                {
-                    this.captionTextHeader.Text = string.Format("{0}{1} ({2}%)", name, showAge ? ", " + roundedAge : "", confidence);
-                }
-                else
-                {
-                    this.captionTextHeader.Text = string.Format("{0}{1}", name, showAge ? ", " + roundedAge : "");
-                }
+                this.captionTextHeader.Text = string.Format("{0}, {1} ({2}%)", name, roundedAge, confidence);
             }
-            else if (showAge)
+            else if (!string.IsNullOrEmpty(gender))
             {
                 this.captionTextHeader.Text = string.Format("{0}, {1}", roundedAge.ToString(), gender);
             }

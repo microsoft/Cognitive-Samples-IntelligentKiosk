@@ -123,7 +123,6 @@
       <DependentUpon>EmotionEmojiControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="KioskExperiences.cs" />
-    <Compile Include="BingSearchHelper.cs" />
     <Compile Include="Controls\CameraControl.xaml.cs">
       <DependentUpon>CameraControl.xaml</DependentUpon>
     </Compile>
@@ -142,9 +141,6 @@
     <Compile Include="Controls\NavMenuListView.cs" />
     <Compile Include="Controls\PageHeader.xaml.cs">
       <DependentUpon>PageHeader.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\SentimentControl.xaml.cs">
-      <DependentUpon>SentimentControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="NavMenuItem.cs" />
     <Compile Include="SettingsHelper.cs" />
@@ -261,10 +257,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\EmotionEmojiControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\SentimentControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

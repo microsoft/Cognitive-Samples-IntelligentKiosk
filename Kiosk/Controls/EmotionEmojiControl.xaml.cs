@@ -44,7 +44,7 @@ using Windows.UI.Xaml.Controls;
 namespace IntelligentKioskSample.Controls
 {
     /// <summary>
-    /// Interaction logic for SentimentControl.xaml
+    /// Interaction logic for EmotionEmojiControl.xaml
     /// </summary>
     public partial class EmotionEmojiControl : UserControl
     {

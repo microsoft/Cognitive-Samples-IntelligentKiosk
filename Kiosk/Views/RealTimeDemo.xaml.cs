@@ -74,8 +74,6 @@ namespace IntelligentKioskSample.Views
         private Dictionary<Guid, Visitor> visitors = new Dictionary<Guid, Visitor>();
         private StorageFolder uniqueFaceImageFolder;
 
-        public static string Title { get; } = "Real-time Kiosk";
-
         public RealTimeDemo()
         {
             this.InitializeComponent();
@@ -83,7 +81,7 @@ namespace IntelligentKioskSample.Views
             this.DataContext = this;
 
             Window.Current.Activated += CurrentWindowActivationStateChanged;
-            this.cameraControl.SetRealTimeEmotionProvider(this);
+            this.cameraControl.SetRealTimeDataProvider(this);
             this.cameraControl.FilterOutSmallFaces = true;
             this.cameraControl.HideCameraControls();
             this.cameraControl.CameraAspectRatioChanged += CameraControl_CameraAspectRatioChanged;

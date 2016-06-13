@@ -60,7 +60,9 @@ namespace ServiceHelpers
                 var changed = apiKey != value;
                 apiKey = value;
                 if (changed)
+                {
                     InitializeFaceServiceClient();
+                }
             }
         }
 

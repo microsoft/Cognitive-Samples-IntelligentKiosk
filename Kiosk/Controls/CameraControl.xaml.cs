@@ -321,23 +321,23 @@ namespace IntelligentKioskSample.Controls
                             if (identifiedPerson != null && identifiedPerson.Person != null)
                             {
                                 // age, gender and id available
-                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age, detectedFace.FaceAttributes.Gender, (uint)Math.Round(identifiedPerson.Confidence * 100), identifiedPerson.Person.Name, showAge: true, uniqueId: uniqueId);
+                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age, detectedFace.FaceAttributes.Gender, (uint)Math.Round(identifiedPerson.Confidence * 100), identifiedPerson.Person.Name, uniqueId: uniqueId);
                             }
                             else
                             {
                                 // only age and gender available
-                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age, detectedFace.FaceAttributes.Gender, 0, null, showAge: true, uniqueId: uniqueId);
+                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age, detectedFace.FaceAttributes.Gender, 0, null, uniqueId: uniqueId);
                             }
                         }
                         else if (identifiedPerson != null && identifiedPerson.Person != null)
                         {
                             // only id available
-                            faceBorder.ShowIdentificationData(0, null, (uint)Math.Round(identifiedPerson.Confidence * 100), identifiedPerson.Person.Name, showAge: false, uniqueId: uniqueId);
+                            faceBorder.ShowIdentificationData(0, null, (uint)Math.Round(identifiedPerson.Confidence * 100), identifiedPerson.Person.Name, uniqueId: uniqueId);
                         }
                         else if (uniqueId != null)
                         {
                             // only unique id available
-                            faceBorder.ShowIdentificationData(0, null, 0, null, showAge: false, uniqueId: uniqueId);
+                            faceBorder.ShowIdentificationData(0, null, 0, null, uniqueId: uniqueId);
                         }
                     }
 
@@ -553,7 +553,7 @@ namespace IntelligentKioskSample.Controls
             this.commandBar.Visibility = Visibility.Collapsed;
         }
 
-        public void SetRealTimeEmotionProvider(IRealTimeDataProvider provider)
+        public void SetRealTimeDataProvider(IRealTimeDataProvider provider)
         {
             this.realTimeDataProvider = provider;
         }

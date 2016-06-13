@@ -62,12 +62,6 @@
                 <TextBlock Text="Miscellaneous" Style="{StaticResource SubheaderTextBlockStyle}"/>
                 <ComboBox x:Name="cameraSourceComboBox" Header="Camera Source"  SelectionChanged="OnCameraSourceSelectionChanged"/>               
                 <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info:" Margin="0,6,0,0"/>
-                <ToggleSwitch IsOn="{Binding ShowConfidenceLevelOnIdentification, Mode=TwoWay}" Header="Show face identification confidence level:" Margin="0,6,0,0"/><ToggleSwitch IsOn="{Binding ShowFaceIdentificationResults, Mode=TwoWay}" Header="Show face identification results:" Margin="0,6,0,0"/>
-
-                <StackPanel Orientation="Horizontal">
-                    <Slider x:Name="MinimumConfidenceForIdentificationSlider" Minimum="50" Maximum="100" Value="{Binding MinimumConfidenceForIdentification, Mode=TwoWay}" Header="Minimum confidence for face identification:" SmallChange="1" LargeChange="5" HorizontalAlignment="Left" Margin="0,6,0,0"/>
-                    <TextBlock Text="{Binding ElementName=MinimumConfidenceForIdentificationSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>                    
-                </StackPanel>
                 
                 <StackPanel Orientation="Horizontal">
                     <Slider x:Name="MinDetectableFaceSizeSlider" Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" SmallChange="1" LargeChange="5" Header="Minimum detectable face size (as % of image height):" HorizontalAlignment="Left" Margin="0,0,0,0" StepFrequency="1"/>

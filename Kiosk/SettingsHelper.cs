@@ -31,15 +31,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using IntelligentKioskSample.Views;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.Storage;
 
 namespace IntelligentKioskSample
@@ -142,36 +135,6 @@ namespace IntelligentKioskSample
                 }
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["MinimumConfidenceForIdentification"];
-            if (value != null)
-            {
-                uint minValue;
-                if (uint.TryParse(value.ToString(), out minValue))
-                {
-                    this.MinimumConfidenceForIdentification = minValue;
-                }
-            }
-
-            value = ApplicationData.Current.RoamingSettings.Values["ShowFaceIdentificationResults"];
-            if (value != null)
-            {
-                bool booleanValue;
-                if (bool.TryParse(value.ToString(), out booleanValue))
-                {
-                    this.ShowFaceIdentificationResults = booleanValue;
-                }
-            }
-
-            value = ApplicationData.Current.RoamingSettings.Values["ShowConfidenceLevelOnIdentification"];
-            if (value != null)
-            {
-                bool booleanValue;
-                if (bool.TryParse(value.ToString(), out booleanValue))
-                {
-                    this.ShowConfidenceLevelOnIdentification = booleanValue;
-                }
-            }
-
             value = ApplicationData.Current.RoamingSettings.Values["ShowDebugInfo"];
             if (value != null)
             {
@@ -262,39 +225,6 @@ namespace IntelligentKioskSample
             {
                 this.minDetectableFaceCoveragePercentage = value;
                 this.OnSettingChanged("MinDetectableFaceCoveragePercentage", value);
-            }
-        }
-
-        private uint minimumConfidenceForIdentification = 50;
-        public uint MinimumConfidenceForIdentification
-        {
-            get { return this.minimumConfidenceForIdentification; }
-            set
-            {
-                this.minimumConfidenceForIdentification = value;
-                this.OnSettingChanged("MinimumConfidenceForIdentification", value);
-            }
-        }
-
-        private bool showFaceIdentificationResults = true;
-        public bool ShowFaceIdentificationResults
-        {
-            get { return showFaceIdentificationResults; }
-            set
-            {
-                this.showFaceIdentificationResults = value;
-                this.OnSettingChanged("ShowFaceIdentificationResults", value);
-            }
-        }
-
-        private bool showConfidenceLevelOnIdentification = true;
-        public bool ShowConfidenceLevelOnIdentification
-        {
-            get { return showConfidenceLevelOnIdentification; }
-            set
-            {
-                this.showConfidenceLevelOnIdentification = value;
-                this.OnSettingChanged("ShowConfidenceLevelOnIdentification", value);
             }
         }
 

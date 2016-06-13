@@ -38,6 +38,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BingSearchHelper.cs" />
     <Compile Include="CoreUtil.cs" />
     <Compile Include="EmotionServiceHelper.cs" />
     <Compile Include="FaceServiceHelper.cs" />

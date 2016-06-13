@@ -108,22 +108,12 @@ namespace IntelligentKioskSample.Controls
         {
             int roundedAge = (int)Math.Round(age);
 
-            if (!string.IsNullOrEmpty(name) &&
-                SettingsHelper.Instance.ShowFaceIdentificationResults &&
-                confidence >= SettingsHelper.Instance.MinimumConfidenceForIdentification)
+            if (!string.IsNullOrEmpty(name))
             {
-                if (SettingsHelper.Instance.ShowConfidenceLevelOnIdentification)
-                {
-                    this.CaptionText = string.Format("{0}, {1} ({2}%)", name, roundedAge, confidence);
-                }
-                else
-                {
-                    this.CaptionText = string.Format("{0}, {1}", name, roundedAge);
-                }
-
+                this.CaptionText = string.Format("{0}, {1} ({2}%)", name, roundedAge, confidence);
                 this.genderIcon.Visibility = Visibility.Collapsed;
             }
-            else
+            else if (!string.IsNullOrEmpty(gender))
             {
                 this.CaptionText = roundedAge.ToString();
                 if (string.Compare(gender, "male", true) == 0)

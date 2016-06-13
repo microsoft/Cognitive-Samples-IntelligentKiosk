@@ -37,7 +37,7 @@
 
                 <Grid x:Name="cameraHostGrid" Grid.Column="1"  HorizontalAlignment="Center" VerticalAlignment="Center">
                     <ctl:CameraControl x:Name="cameraControl" />
-                    <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" FlowDirection="RightToLeft" x:Name="imageFromCameraWithFaces" DetectFacesOnLoad="True" DetectFaceAttributes="True" ShowMultipleFaces="True" PerformRecognition="True" ShowRecognitionResults="True" />
+                    <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" FlowDirection="RightToLeft" x:Name="imageFromCameraWithFaces" DetectFacesOnLoad="True" DetectFaceAttributes="True" ShowMultipleFaces="True" PerformRecognition="True" ShowRecognitionResults="True" ShowDialogOnApiErrors="True" />
                 </Grid>
 
                 <Grid Grid.Column="1" x:Name="cameraGuideHost">
