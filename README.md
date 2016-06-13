@@ -23,3 +23,14 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 | [Face API Playground](Documentation/FaceAPIPlayground.md)          | A playground for the Face APIs used for age and gender prediction, as well as face identification. | Windows 10 Face Tracking; Age and gender prediction; Face identification; Bing Image Search API; Bing AutoSuggestion API |
 | [Emotion API Playground](Documentation/EmotionAPIPlayground.md)       | A playground for the Emotion APIs | Windows 10 Face Tracking; Emotion prediction; Bing Image Search API; Bing AutoSuggestion API |
 | [Face Identification Setup](Documentation/FaceIdentificationSetup.md)    | Shows how to train the machine learning model behind the Face APIs to recognize specific people. | Face identification; Bing Image Search API; Bing AutoSuggestion API |
+
+# Source Code Structure
+
+* Kiosk/ServiceHelpers: A portable library that serves as a wrapper around the several services. 
+ * One of the key things that the wrappers provide is the ability to detect when the API calls return a call-rate-exceeded error and automatically retry the call (after some delay). 
+ * The ImageAnalyzer class is another key class here, responsible for wrapping an image and exposing several methods and properties that act as a bridge to the Cognitive Services. 
+ * Another example of functionality is the FaceListManager class, which is a wrapper on top of the FaceList APIs to make it easier to track unique faces. 
+
+* Kiosk/Views: The root pages that represent the various views in the kiosk.
+
+* Kiosk/Controls: The controls used by the various pages in the kiosk.
