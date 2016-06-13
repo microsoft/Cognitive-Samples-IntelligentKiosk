@@ -26,3 +26,12 @@ You can add people in batches to a Person Group by going to the “…” in the
 
   * Auto train from photo albums: It will ask you to provide a root folder, and from there it will traverse all the sub-folders (not recursively) and create a person with the name of each sub-folder and use the photos in that sub-folder as training photos for that person. Just make sure the photos are all less than 5MB and have only one subject per photo. 
 
+# Key Source Code
+
+* [PersonGroupsPage.xaml.cs] (../Kiosk/Views/PersonGroupsPage.xaml.cs): Page that shows the set of PersonGroups.
+
+* [PersonGroupDetailsPage.xaml.cs] (../Kiosk/Views/PersonGroupDetailsPage.xaml.cs): Page that shows the set of people in a PersonGroup.
+
+* [PersonDetailsPage.xaml.cs] (../Kiosk/Views/PersonDetailsPage.xaml.cs): Page that shows the set of faces associated with a given person.
+
+* [ImageSearchUserControl] (../Kiosk/Controls/ImageSearchUserControl.xaml.cs): A control used for searching Bing Images and local images and using them as input sample in the PersonDetailsPage.
