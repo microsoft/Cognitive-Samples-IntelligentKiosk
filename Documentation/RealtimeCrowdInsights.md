@@ -21,3 +21,8 @@ This sample also shows how to use FaceLists to track unique faces.
 * [AgeGenderDistributionControl] (../Kiosk/Controls/AgeGenderDistributionControl.xaml.cs): The control that displays the Demographis data.
  
 * [OverallStatsControl] (../Kiosk/Controls/OverallStatsControl.xaml.cs): The control that displays the Overall Stats data.
+
+* [RealTimeFaceIdentificationBorder] (../Kiosk/Controls/RealTimeFaceIdentificationBorder.xaml.cs): The control that displays the realtime feedback over the faces in the camera feed. It consists entirely of text elements - even the emotion feedback is just using an emoji font (see [EmotionEmojiControl] (../Kiosk/Controls/EmotionEmojiControl.xaml.cs)).
+
+
+
