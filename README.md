@@ -12,13 +12,14 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 # Running the sample
 1. Open the solution in Visual Studio 2015 and hit F5
 2. Enter your API Keys in the Settings page (they will be saved in the user profile). See [Settings](Documentation/AppSettings.md) for  more details on the available settings.
+3. Explore one of the scenarios
 
 # Scenarios
 
 | Scenario                     | Overview | Features Covered  |
 | ---------------------------- | -------- | ----------------  |
 | [Automatic Photo Capture](Documentation/AutomaticPhotoCapture.md)      | Autonomous workflow for capturing photos when people approach a web camera and pose for a photo | Windows 10 Face Tracking; Age and gender prediction; Face identification |
-| [Realtime Crowd Insights](Documentation/RealtimeCrowdInsights.md)      | A realtime workflow for processing frames from a web camera to derive realtime crowd insights such as demographics, emotion and unique face counting | Windows 10 Face Tracking; Age, gender and emotion prediction; Face identification; Unique face tracking |
-| [Face API Playground](Documentation/FaceAPIPlayground.md)          | A example on how to call the APIs for age and gender prediction, as well as face identification. | Windows 10 Face Tracking; Age and gender prediction; Face identification; Bing Image Search API; Bing AutoSugguestion API |
-| [Emotion API Playground](Documentation/EmotionAPIPlayground.md)       | A plaground for emotion recognition | Windows 10 Face Tracking; Emotion prediction; Bing Image Search API; Bing AutoSugguestion API |
-| [Face Identification Setup](Documentation/FaceIdentificationSetup.md)    | Shows how to train the machine learning model behind the Face APIs to recognize specific people. | Face identification; Bing Image Search API; Bing AutoSugguestion API |
+| [Realtime Crowd Insights](Documentation/RealtimeCrowdInsights.md)      | Realtime workflow for processing frames from a web camera to derive realtime crowd insights such as demographics, emotion and unique face counting | Windows 10 Face Tracking; Age, gender and emotion prediction; Face identification; Unique face counting |
+| [Face API Playground](Documentation/FaceAPIPlayground.md)          | A playground for the Face APIs used for age and gender prediction, as well as face identification. | Windows 10 Face Tracking; Age and gender prediction; Face identification; Bing Image Search API; Bing AutoSuggestion API |
+| [Emotion API Playground](Documentation/EmotionAPIPlayground.md)       | A plaground for the Emotion APIs | Windows 10 Face Tracking; Emotion prediction; Bing Image Search API; Bing AutoSuggestion API |
+| [Face Identification Setup](Documentation/FaceIdentificationSetup.md)    | Shows how to train the machine learning model behind the Face APIs to recognize specific people. | Face identification; Bing Image Search API; Bing AutoSuggestion API |
