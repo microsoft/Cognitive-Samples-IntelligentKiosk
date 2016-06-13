@@ -13,21 +13,12 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 1. Open the solution in Visual Studio 2015 and hit F5
 2. Enter your API Keys in the Settings page (they will be saved in the user profile). See [Settings](Documentation/AppSettings.md) for  more details on the available settings.
 
-# Demos
-**Automatic Photo Capture**: An example of an autonomous workflow for capturing photos when people approach a web camera and pose for a photo.
+# Scenarios
 
-It uses the built-in face tracking functionality in Windows 10 to detect when people are nearby and applies a simple movement detection heuristic to determine when they are posing for a photo. In the example it also shows the age, gender and identification of all the people in each capture.
-
-**Realtime Crowd Insights**: An example of a realtime workflow for processing frames from a web camera to derive realtime crowd insights such as demographics, emotion and unique face counting. 
-
-The sample uses a hybrid approach in order to obtain a fluid user interface. It calls the APIs at a rate of 1fps to compute age, gender, identification and emotion of all the faces in the frame, but it uses the built-in face tracking in Windows 10, running at 15fps, to associate and display the metadata about each face as the faces move around (using a simple heuristic based on the geometry of the faces).
-
-This sample also shows how to use FaceLists to track unique faces.
-
-**Face API Playground**: Here you can explore age and gender prediction as well as face identification by using web cam photos, local files on your hard drive or images from Bing Images. For people that have been added to the Face Identification Setup model it will show their names and age, and for unknown people it will show their gender and age. When using the web cam, hit the pause button to have it take a photo and show the results. Then hit the play button to resume the live feed. 
-
-**Emotion API Playground**: This page is a simple example of emotion recognition. It allows you to load images from Bing or Local Files, or from the web camera, and displays the top-3 emotions on each face. When using the web cam, hit the pause button to have it take a photo and show the results. Then hit the play button to resume the live feed. 
-
-**Face Identification Setup**
-
-The Face Identification Setup portion of the application allows you to train the machine learning model behind the Face APIs to recognize specific people. See the [Face Identification Setup documentation](Documentation/FaceIdentificationSetup.md) for the details.
+| Scenario                     | Overview | Features Covered  |
+| ---------------------------- | -------- | ----------------  |
+| [Automatic Photo Capture](Documentation/AutomaticPhotoCapture.md)      | Autonomous workflow for capturing photos when people approach a web camera and pose for a photo | Windows 10 Face Tracking; Age and gender prediction; Face identification |
+| [Realtime Crowd Insights](Documentation/RealtimeCrowdInsights.md)      | A realtime workflow for processing frames from a web camera to derive realtime crowd insights such as demographics, emotion and unique face counting | Windows 10 Face Tracking; Age, gender and emotion prediction; Face identification; Unique face tracking |
+| [Face API Playground](Documentation/FaceAPIPlayground.md)          | A example on how to call the APIs for age and gender prediction, as well as face identification. | Windows 10 Face Tracking; Age and gender prediction; Face identification; Bing Image Search API; Bing AutoSugguestion API |
+| [Emotion API Playground](Documentation/EmotionAPIPlayground.md)       | A plaground for emotion recognition | Windows 10 Face Tracking; Emotion prediction; Bing Image Search API; Bing AutoSugguestion API |
+| [Face Identification Setup](Documentation/FaceIdentificationSetup.md)    | Shows how to train the machine learning model behind the Face APIs to recognize specific people. | Face identification; Bing Image Search API; Bing AutoSugguestion API |
