@@ -45,56 +45,69 @@ namespace ServiceHelpers
 {
     public class BingSearchHelper
     {
-        private static string ImageSearchEndPoint;
-        private static string AutoSuggestionEndPoint;
+        private static string ImageSearchEndPoint = "https://bingapis.azure-api.net/api/v5/images/search";
+        private static string AutoSuggestionEndPoint = "https://bingapis.azure-api.net/api/v5/Suggestions";
+
+        private static HttpClient autoSuggestionClient { get; set; }
+        private static HttpClient imageSearchClient { get; set; }
 
         static BingSearchHelper()
         {
-            InitializeBingSearchService();
+            InitializeBingClients();
         }
 
-        private static string apiKey;
-        public static string ApiKey
+        private static string autoSuggestionApiKey;
+        public static string AutoSuggestionApiKey
         {
-            get { return apiKey; }
+            get { return autoSuggestionApiKey; }
             set
             {
-                var changed = apiKey != value;
-                apiKey = value;
+                var changed = autoSuggestionApiKey != value;
+                autoSuggestionApiKey = value;
                 if (changed)
                 {
-                    InitializeBingSearchService();
+                    InitializeBingClients();
                 }
             }
         }
 
-        private static void InitializeBingSearchService()
+        private static string searchApiKey;
+        public static string SearchApiKey
         {
-            ImageSearchEndPoint = "https://www.bing.com/api/v4/images/search?appid=" + ApiKey;
-            AutoSuggestionEndPoint = "https://www.bing.com/as/api/v4/Suggestions/images?appid=" + ApiKey;
+            get { return searchApiKey; }
+            set
+            {
+                var changed = searchApiKey != value;
+                searchApiKey = value;
+                if (changed)
+                {
+                    InitializeBingClients();
+                }
+            }
+        }
+
+        private static void InitializeBingClients()
+        {
+            autoSuggestionClient = new HttpClient();
+            autoSuggestionClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", AutoSuggestionApiKey);
+
+            imageSearchClient = new HttpClient();
+            imageSearchClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", SearchApiKey);
         }
 
         public static async Task<IEnumerable<string>> GetImageSearchResults(string query, string imageContent = "Face", int count = 20, int offset = 0)
         {
             List<string> urls = new List<string>();
 
-            using (var client = new HttpClient())
+            var result = await imageSearchClient.GetAsync(string.Format("{0}?q={1}&safeSearch=Strict&imageType=Photo&color=ColorOnly&count={2}&offset={3}{4}", ImageSearchEndPoint, WebUtility.UrlEncode(query), count, offset, string.IsNullOrEmpty(imageContent) ? "" : "&imageContent=" + imageContent));
+            result.EnsureSuccessStatusCode();
+            var json = await result.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(json);
+            if (data.value != null && data.value.Count > 0)
             {
-                client.Timeout = TimeSpan.FromSeconds(5);
-                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("IntelligentKioskSample", "1"));
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                // new bing api
-                var result = await client.GetAsync(string.Format("{0}&q={1}&safeSearch=Strict&imageType=Photo&color=ColorOnly&count={2}&offset={3}{4}", ImageSearchEndPoint, WebUtility.UrlEncode(query), count, offset, string.IsNullOrEmpty(imageContent) ? "" : "&imageContent=" + imageContent));
-                result.EnsureSuccessStatusCode();
-                var json = await result.Content.ReadAsStringAsync();
-                dynamic data = JObject.Parse(json);
-                if (data.answers != null && data.answers.Count > 0 &&
-                    data.answers[0].images.Count > 0)
+                for (int i = 0; i < data.value.Count; i++)
                 {
-                    for (int i = 0; i < data.answers[0].images.Count; i++)
-                    {
-                        urls.Add(data.answers[0].images[i].contentUrl.Value);
-                    }
+                    urls.Add(data.value[i].contentUrl.Value);
                 }
             }
 
@@ -105,23 +118,16 @@ namespace ServiceHelpers
         {
             List<string> suggestions = new List<string>();
 
-            using (var client = new HttpClient())
+            var result = await autoSuggestionClient.GetAsync(string.Format("{0}/?q={1}", AutoSuggestionEndPoint, WebUtility.UrlEncode(query)));
+            result.EnsureSuccessStatusCode();
+            var json = await result.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(json);
+            if (data.suggestionGroups != null && data.suggestionGroups.Count > 0 &&
+                data.suggestionGroups[0].searchSuggestions != null)
             {
-                client.Timeout = TimeSpan.FromSeconds(5);
-                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("IntelligentKioskSample", "1"));
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                var result = await client.GetAsync(string.Format("{0}&q={1}", AutoSuggestionEndPoint, WebUtility.UrlEncode(query)));
-                result.EnsureSuccessStatusCode();
-                var json = await result.Content.ReadAsStringAsync();
-                dynamic data = JObject.Parse(json);
-                if (data.suggestionGroups != null && data.suggestionGroups.Count > 0 &&
-                    data.suggestionGroups[0].suggestionContainers != null)
+                for (int i = 0; i < data.suggestionGroups[0].searchSuggestions.Count; i++)
                 {
-                    for (int i = 0; i < data.suggestionGroups[0].suggestionContainers.Count; i++)
-                    {
-                        suggestions.Add(data.suggestionGroups[0].suggestionContainers[i].suggestion.name.Value);
-                    }
+                    suggestions.Add(data.suggestionGroups[0].searchSuggestions[i].displayText.Value);
                 }
             }
 

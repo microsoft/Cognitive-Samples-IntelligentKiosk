@@ -107,10 +107,16 @@ namespace IntelligentKioskSample
                 this.EmotionApiKey = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["BingApiKey"];
+            value = ApplicationData.Current.RoamingSettings.Values["BingSearchApiKey"];
             if (value != null)
             {
-                this.BingApiKey = value.ToString();
+                this.BingSearchApiKey = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["BingAutoSuggestionApiKey"];
+            if (value != null)
+            {
+                this.BingAutoSuggestionApiKey = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["WorkspaceKey"];
@@ -184,14 +190,25 @@ namespace IntelligentKioskSample
             }
         }
 
-        private string bingApiKey = string.Empty;
-        public string BingApiKey
+        private string bingSearchApiKey = string.Empty;
+        public string BingSearchApiKey
         {
-            get { return this.bingApiKey; }
+            get { return this.bingSearchApiKey; }
             set
             {
-                this.bingApiKey = value;
-                this.OnSettingChanged("BingApiKey", value);
+                this.bingSearchApiKey = value;
+                this.OnSettingChanged("BingSearchApiKey", value);
+            }
+        }
+
+        private string bingAutoSuggestionSearchApiKey = string.Empty;
+        public string BingAutoSuggestionApiKey
+        {
+            get { return this.bingAutoSuggestionSearchApiKey; }
+            set
+            {
+                this.bingAutoSuggestionSearchApiKey = value;
+                this.OnSettingChanged("BingAutoSuggestionApiKey", value);
             }
         }
 

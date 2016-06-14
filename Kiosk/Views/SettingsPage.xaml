@@ -52,10 +52,15 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Vertical" Margin="0,10,0,0"  >
-                    <TextBlock Text="Bing API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
-                    <PasswordBox Password="{Binding BingApiKey, Mode=TwoWay}" />
+                    <TextBlock Text="Bing Search API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
+                    <PasswordBox Password="{Binding BingSearchApiKey, Mode=TwoWay}" />
                 </StackPanel>
-                
+
+                <StackPanel Orientation="Vertical" Margin="0,10,0,0"  >
+                    <TextBlock Text="Bing Auto Suggestion API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
+                    <PasswordBox Password="{Binding BingAutoSuggestionApiKey, Mode=TwoWay}" />
+                </StackPanel>
+
             </StackPanel>
 
             <StackPanel Margin="0,50,0,0">
