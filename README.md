@@ -34,3 +34,8 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 * Kiosk/Views: The root pages that represent the various views in the kiosk.
 
 * Kiosk/Controls: The controls used by the various pages in the kiosk.
+
+# Contributing
+We welcome contributions and are always looking for input and suggestions. Feel free to file issues on the repo and we'll address them as we can or take matters into your hand and submit a pull request with your changes.
+
+And if you have questions, feedback, or suggestions about Microsoft Cognitive Services, reach out to us directly on our [Cognitive Services UserVoice Forum](<https://cognitive.uservoice.com>).
