@@ -6,8 +6,7 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 2. A webcam, ideally top-mounted so you have a similar experience as looking at a mirror when interacting with the demos 
 3. Visual Studio 2015
 4. API Keys
-  * Face and Emotion Keys from [Microsoft.com/cognitive](https://www.microsoft.com/cognitive-services)
-  * Bing Search API Key from [Azure Market Place](https://azure.microsoft.com/en-us/marketplace/partners/bing/search/) (only needed if you will be using the search functionality)
+  * You will need Face, Emotion, Bing Search and Bing AutoSuggestion API Keys. Visit  [Microsoft.com/cognitive](https://www.microsoft.com/cognitive-services) if you need keys.
 
 # Running the sample
 1. Open the solution in Visual Studio 2015 and hit F5
@@ -36,6 +35,6 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 * Kiosk/Controls: The controls used by the various pages in the kiosk.
 
 # Contributing
-We welcome contributions and are always looking for input and suggestions. Feel free to file issues on the repo and we'll address them as we can or take matters into your hand and submit a pull request with your changes.
+We welcome contributions. Feel free to file issues & pull requests on the repo and we'll address them as we can.
 
-And if you have questions, feedback, or suggestions about Microsoft Cognitive Services, reach out to us directly on our [Cognitive Services UserVoice Forum](<https://cognitive.uservoice.com>).
+For questions, feedback, or suggestions about Microsoft Cognitive Services, reach out to us directly on our [Cognitive Services UserVoice Forum](<https://cognitive.uservoice.com>).
