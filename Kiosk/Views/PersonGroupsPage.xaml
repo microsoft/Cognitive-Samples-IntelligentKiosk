@@ -13,6 +13,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
@@ -49,7 +50,15 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <ProgressRing Grid.Row="1" x:Name="progressControl"></ProgressRing>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="12">
+            <SymbolIcon Symbol="Library" VerticalAlignment="Top"/>
+            <StackPanel Margin="6,0,0,0" >
+                <TextBlock Text="- This is where you can train the machine learning model behind the Face APIs to recognize specific people." Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Text="- Start by creating a person group on this page ('+' near the top), or select an existing group to navigate to it." Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Text="- In this app groups are just for organizing related people together (e.g. Celebrities). It won't affect scoring." Style="{StaticResource CaptionTextBlockStyle}" />
+            </StackPanel>
+        </StackPanel>
+        <ProgressRing Grid.Row="1" x:Name="progressControl" Width="100" Height="100"></ProgressRing>
         
     </Grid>
 

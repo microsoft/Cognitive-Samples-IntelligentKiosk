@@ -31,7 +31,10 @@
 
             <StackPanel Orientation="Vertical" Margin="12,12" >
                 <StackPanel >
-                    <TextBlock Text="Keys" Style="{StaticResource SubheaderTextBlockStyle}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Keys" Style="{StaticResource SubheaderTextBlockStyle}"/>
+                        <HyperlinkButton Margin="6,0,0,0" VerticalAlignment="Bottom" NavigateUri="https://www.microsoft.com/cognitive-services/en-us/sign-up">Click here if you need keys</HyperlinkButton>
+                    </StackPanel>
                     <TextBlock Text="Workspace Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0,5,0,0"  />
                     <Grid>
                         <Grid.ColumnDefinitions>

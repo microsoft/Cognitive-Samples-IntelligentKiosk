@@ -12,6 +12,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
@@ -82,6 +83,16 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <ProgressRing Grid.Row="1" x:Name="progressControl"></ProgressRing>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="12">
+            <SymbolIcon Symbol="Library" VerticalAlignment="Top"/>
+            <StackPanel Margin="6,0,0,0" >
+                <TextBlock Text="- This is where you can populate this group with the people to be recognized, or delete the group if you need to." Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Text="- Start by creating a new person on this page ('+' near the top), or select an existing person to navigate to it." Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Text="- When you are done making modifications to this group, click on the Train button to re-train the Machine Learning model in the Cloud." Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Text="- You can also add people in batches ('...' near the top), either from local photo albums or from Bing Image searches." Style="{StaticResource CaptionTextBlockStyle}" />
+            </StackPanel>
+        </StackPanel>
+
+        <ProgressRing Grid.Row="1" x:Name="progressControl" Width="100" Height="100"></ProgressRing>
     </Grid>
 </Page>

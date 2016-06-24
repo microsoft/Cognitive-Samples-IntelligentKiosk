@@ -13,6 +13,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition />
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <c:PageHeader x:Name="pageHeader">
@@ -38,5 +39,14 @@
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="12">
+            <SymbolIcon Symbol="Library" VerticalAlignment="Top"/>
+            <StackPanel Margin="6,0,0,0" >
+                <TextBlock Text="- Start by entering API Keys in the Settings Page (they will persist between sessions)." Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Text="- Use the Face Identification Setup page if you want to train the kiosk to identify specific people." Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Text="- If you have multiple cameras, a camera selector is available in the Settings Page." Style="{StaticResource CaptionTextBlockStyle}" />
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Page>
