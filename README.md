@@ -38,3 +38,7 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 We welcome contributions. Feel free to file issues & pull requests on the repo and we'll address them as we can.
 
 For questions, feedback, or suggestions about Microsoft Cognitive Services, reach out to us directly on our [Cognitive Services UserVoice Forum](<https://cognitive.uservoice.com>).
+
+# License
+All Microsoft Cognitive Services SDKs and samples are licensed with the MIT License. For more details, see
+[LICENSE](</LICENSE.md>).
