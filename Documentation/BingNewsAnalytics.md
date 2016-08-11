@@ -2,7 +2,7 @@
 
 ![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/BingNewsAnalytics.jpg "Bing News Analytics")
 
-This example connects the Bing News APIs with the Text Analtyics APIs to create a visualization of the news based on their sentiment and most common topics.
+This example connects the Bing News APIs with the Text Analytics APIs to create a visualization of the news based on their sentiment and most common topics.
 
 *	The results contain the top-50 results from Bing News for the given query, sorted by sentiment of the headlines from most positive to most negative. A background color reflects the sentiment (using a linear gradient from green to red) to make it easy to digest, but the sentiment value is also displayed for reference and for the color blind.
 *	The Sentiment Distribution on the top-left provides the big picture of the news sentiment. The colors in the chart also match the colors used in the result tiles. 
@@ -14,7 +14,7 @@ This example connects the Bing News APIs with the Text Analtyics APIs to create 
 
 # Key Source Code
 
-* [BingNewsAnalytics] (../Kiosk/Views/BingNewsAnalytics.xaml.cs): Main page that drives the demo.
+* [BingNewsAnalytics] (../Kiosk/Views/BingNewsAnalytics.xaml.cs): Main page that drives the demo
 
 * [BingSearchHelper] (../Kiosk/ServiceHelpers/BingSearchHelper.cs): The code that calls the Bing News API
 
