@@ -45,9 +45,7 @@ namespace IntelligentKioskSample.Views
         {
             this.InitializeComponent();
 
-            this.DataContext =
-                KioskExperiences.Experiences.Where(e => e.Attributes.ExperienceType == ExperienceType.Kiosk).Concat(
-                    KioskExperiences.Experiences.Where(e => e.Attributes.ExperienceType == ExperienceType.Other));
+            this.DataContext = KioskExperiences.Experiences;
         }
 
         private void OnDemoClick(object sender, ItemClickEventArgs e)

@@ -37,7 +37,7 @@
             <TextBlock Text="Deriving realtime crowd insights from age, gender, emotion, face identification and unique face tracking" HorizontalAlignment="Center" FontFamily="Segoe UI Light"  Style="{StaticResource SubtitleTextBlockStyle}" FontStyle="Italic"/>
         </StackPanel>
 
-        <Grid Grid.Row="5" Height="150">
+        <Grid Grid.Row="5" Height="165">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.1*"/>
                 <ColumnDefinition Width="300"/>
@@ -45,14 +45,14 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="0.1*"/>
             </Grid.ColumnDefinitions>
-            <ctl:AgeGenderDistributionControl x:Name="ageGenderDistributionControl" Grid.Column="1" />
-            <ctl:OverallStatsControl x:Name="overallStatsControl" Margin="24,0,24,0" Grid.Column="2" />
+            <ctl:AgeGenderDistributionControl x:Name="ageGenderDistributionControl" HeaderText="Demographics" SubHeaderText="At this hour (erased hourly)" SubHeaderVisibility="Visible" Grid.Column="1" />
+            <ctl:OverallStatsControl x:Name="overallStatsControl" HeaderText="Total Faces" SubHeaderText="At this hour (erased hourly)" SubHeaderVisibility="Visible" Margin="24,0,24,0" Grid.Column="2" />
             <ctl:EmotionResponseTimelineControl Grid.Column="3" x:Name="emotionDataTimelineControl"  />
         </Grid>
 
         <Grid Grid.Row="3" x:Name="initializingUI" Visibility="Collapsed">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Foreground="White" Text="Initializing the data store so we start the day with fresh stats..." Style="{StaticResource HeaderTextBlockStyle}"/>
+                <TextBlock Foreground="White" Text="Resetting data..." Style="{StaticResource HeaderTextBlockStyle}"/>
                 <ProgressRing x:Name="initializingProgressRing" Height="100" Width="100" Foreground="White"/>
             </StackPanel>
         </Grid>

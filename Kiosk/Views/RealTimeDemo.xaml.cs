@@ -70,9 +70,7 @@ namespace IntelligentKioskSample.Views
         private IEnumerable<SimilarFaceMatch> lastSimilarPersistedFaceSample;
 
         private DemographicsData demographics;
-        private StorageFolder dataRootFolder;
         private Dictionary<Guid, Visitor> visitors = new Dictionary<Guid, Visitor>();
-        private StorageFolder uniqueFaceImageFolder;
 
         public RealTimeDemo()
         {
@@ -111,6 +109,13 @@ namespace IntelligentKioskSample.Views
                 {
                     if (!this.isProcessingPhoto)
                     {
+                        if (DateTime.Now.Hour != this.demographics.StartTime.Hour)
+                        {
+                            // We have been running through the hour. Reset the data...
+                            await this.ResetDemographicsData();
+                            this.UpdateDemographicsUI();
+                        }
+
                         this.isProcessingPhoto = true;
                         if (this.cameraControl.NumFacesOnLastFrame == 0)
                         {
@@ -212,18 +217,11 @@ namespace IntelligentKioskSample.Views
                 this.lastSimilarPersistedFaceSample = e.SimilarFaceMatches;
             }
 
-            await this.UpdateDemographics(e);
+            this.UpdateDemographics(e);
 
             this.debugText.Text = string.Format("Latency: {0}ms", (int)(DateTime.Now - start).TotalMilliseconds);
 
-            SendKioskCaptureTelemetry(e);
-
             this.isProcessingPhoto = false;
-        }
-
-        private static void SendKioskCaptureTelemetry(ImageAnalyzer img)
-        {
-            //Do something with the data here, like sending to App Insights or Event Hub, for example.
         }
 
         private void ShowTimelineFeedbackForNoFaces()
@@ -241,12 +239,9 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                this.dataRootFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("RealTimeDemo", CreationCollisionOption.OpenIfExists);
-                this.uniqueFaceImageFolder = await this.dataRootFolder.CreateFolderAsync("UniqueFaces", CreationCollisionOption.OpenIfExists);
-
                 await FaceListManager.Initialize();
 
-                await LoadDemographicsDataFromFileAsync();
+                await ResetDemographicsData();
                 this.UpdateDemographicsUI();
 
                 await this.cameraControl.StartStreamAsync(isForRealTimeProcessing: true);
@@ -256,7 +251,7 @@ namespace IntelligentKioskSample.Views
             base.OnNavigatedTo(e);
         }
 
-        private async Task UpdateDemographics(ImageAnalyzer img)
+        private void UpdateDemographics(ImageAnalyzer img)
         {
             if (this.lastSimilarPersistedFaceSample != null)
             {
@@ -314,24 +309,6 @@ namespace IntelligentKioskSample.Views
                         {
                             genderBasedAgeDistribution.Age50sAndOlder++;
                         }
-
-                        // Let's see if we need to save a copy of this new unique face
-                        if (SettingsHelper.Instance.SaveUniqueFaceImages)
-                        {
-                            // Enlarge the face rectangle so we frame it better
-                            double heightScaleFactor = 1.8;
-                            double widthScaleFactor = 1.8;
-                            Rectangle biggerRectangle = new Rectangle
-                            {
-                                Height = Math.Min((int)(item.Face.FaceRectangle.Height * heightScaleFactor), img.DecodedImageHeight),
-                                Width = Math.Min((int)(item.Face.FaceRectangle.Width * widthScaleFactor), img.DecodedImageWidth)
-                            };
-                            biggerRectangle.Left = Math.Max(0, item.Face.FaceRectangle.Left - (int)(item.Face.FaceRectangle.Width * ((widthScaleFactor - 1) / 2)));
-                            biggerRectangle.Top = Math.Max(0, item.Face.FaceRectangle.Top - (int)(item.Face.FaceRectangle.Height * ((heightScaleFactor - 1) / 1.4)));
-
-                            var croppedImageFile = await this.uniqueFaceImageFolder.CreateFileAsync(item.SimilarPersistedFace.PersistedFaceId.ToString() + ".jpg", CreationCollisionOption.GenerateUniqueName);
-                            await Util.CropBitmapAsync(img.GetImageStreamCallback, biggerRectangle, croppedImageFile);
-                        }
                     }
                 }
 
@@ -350,39 +327,6 @@ namespace IntelligentKioskSample.Views
             this.overallStatsControl.UpdateData(this.demographics);
         }
 
-        private async Task LoadDemographicsDataFromFileAsync()
-        {
-            IStorageItem demographicsDataFile = await this.dataRootFolder.TryGetItemAsync("Demographics.xml");
-            if (demographicsDataFile != null)
-            {
-                try
-                {
-                    this.demographics = await DemographicsData.FromFileAsync(demographicsDataFile.Path);
-
-                    if (this.demographics.StartTime.Date != DateTime.Now.Date)
-                    {
-                        // discard saved data, it is too old
-                        this.demographics = null;
-                    }
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            if (demographics == null)
-            {
-                // fallback to empty demographics
-                await ResetDemographicsData();
-            }
-
-            this.visitors.Clear();
-            foreach (var item in this.demographics.Visitors)
-            {
-                this.visitors.Add(item.UniqueId, item);
-            }
-        }
-
         private async Task ResetDemographicsData()
         {
             this.initializingUI.Visibility = Visibility.Visible;
@@ -398,29 +342,13 @@ namespace IntelligentKioskSample.Views
             this.visitors.Clear();
             await FaceListManager.ResetFaceLists();
 
-            // Remove all the unique face images
-            try
-            {
-                await this.uniqueFaceImageFolder.DeleteAsync();
-            }
-            catch
-            { }
-
             this.initializingUI.Visibility = Visibility.Collapsed;
             this.initializingProgressRing.IsActive = false;
         }
 
-        public async Task SaveDemographicsToFileAsync()
+        public async Task HandleApplicationShutdownAsync()
         {
-            this.demographics.Visitors = new List<Visitor>(this.visitors.Values);
-
-            XmlSerializer serializer = new XmlSerializer(typeof(DemographicsData));
-            StorageFile file = await this.dataRootFolder.CreateFileAsync("Demographics.xml", CreationCollisionOption.ReplaceExisting);
-
-            using (Stream stream = await file.OpenStreamForWriteAsync())
-            {
-                serializer.Serialize(stream, this.demographics);
-            }
+            await ResetDemographicsData();
         }
 
         private void EnterKioskMode()
@@ -438,7 +366,7 @@ namespace IntelligentKioskSample.Views
             Window.Current.Activated -= CurrentWindowActivationStateChanged;
             this.cameraControl.CameraAspectRatioChanged -= CameraControl_CameraAspectRatioChanged;
 
-            await this.SaveDemographicsToFileAsync();
+            await this.ResetDemographicsData();
 
             await this.cameraControl.StopStreamAsync();
             base.OnNavigatingFrom(e);
@@ -549,17 +477,5 @@ namespace IntelligentKioskSample.Views
 
         [XmlArrayItem]
         public List<Visitor> Visitors { get; set; }
-
-        public static Task<DemographicsData> FromFileAsync(string filePath)
-        {
-            return Task.Run(() =>
-            {
-                using (FileStream fileStream = File.OpenRead(filePath))
-                {
-                    var xs = new XmlSerializer(typeof(DemographicsData));
-                    return (DemographicsData)xs.Deserialize(fileStream);
-                }
-            });
-        }
     }
 }

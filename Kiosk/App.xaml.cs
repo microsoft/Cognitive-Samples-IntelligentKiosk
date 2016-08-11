@@ -89,6 +89,7 @@ namespace IntelligentKioskSample
                     FaceServiceHelper.ApiKey = SettingsHelper.Instance.FaceApiKey;
                     BingSearchHelper.SearchApiKey = SettingsHelper.Instance.BingSearchApiKey;
                     BingSearchHelper.AutoSuggestionApiKey = SettingsHelper.Instance.BingAutoSuggestionApiKey;
+                    TextAnalyticsHelper.ApiKey = SettingsHelper.Instance.TextAnalyticsKey;
                     ImageAnalyzer.PeopleGroupsUserDataFilter = SettingsHelper.Instance.WorkspaceKey;
                     FaceListManager.FaceListsUserDataFilter = SettingsHelper.Instance.WorkspaceKey;
                     CoreUtil.MinDetectableFaceCoveragePercentage = SettingsHelper.Instance.MinDetectableFaceCoveragePercentage;
@@ -181,7 +182,7 @@ namespace IntelligentKioskSample
 
             if (currentView != null && currentView.GetType() == typeof(RealTimeDemo))
             {
-                await (currentView as RealTimeDemo).SaveDemographicsToFileAsync();
+                await (currentView as RealTimeDemo).HandleApplicationShutdownAsync();
             }
 
             deferral.Complete();

@@ -29,7 +29,7 @@
             <CommandBar.Content>
                 <ctl:PageHeader>
                     <ctl:PageHeader.HeaderContent>
-                        <TextBlock Text="RECOGNITION" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
+                        <TextBlock Text="FACE API EXPLORER" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
                     </ctl:PageHeader.HeaderContent>
                 </ctl:PageHeader>
             </CommandBar.Content>

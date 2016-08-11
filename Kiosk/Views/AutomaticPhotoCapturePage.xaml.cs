@@ -125,8 +125,6 @@ namespace IntelligentKioskSample.Views
 
             e.FaceRecognitionCompleted += async (s, args) =>
             {
-                SendKioskCaptureTelemetry(e);
-
                 this.photoCaptureBalloonHost.Opacity = 1;
 
                 int photoDisplayDuration = 10;
@@ -142,11 +140,6 @@ namespace IntelligentKioskSample.Views
 
                 this.cameraControl.RestartAutoCaptureCycle();
             };
-        }
-
-        private static void SendKioskCaptureTelemetry(ImageAnalyzer img)
-        {
-            //Do something with the data here, like sending to App Insights or Event Hub, for example.
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)

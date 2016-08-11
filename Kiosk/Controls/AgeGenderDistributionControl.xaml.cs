@@ -32,26 +32,8 @@
 // 
 
 using IntelligentKioskSample.Views;
-using Microsoft.ProjectOxford.Emotion.Contract;
-using Microsoft.ProjectOxford.Face.Contract;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
-using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using Windows.UI.Xaml.Shapes;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -59,6 +41,48 @@ namespace IntelligentKioskSample.Controls
 {
     public sealed partial class AgeGenderDistributionControl : UserControl
     {
+        public static readonly DependencyProperty HeaderTextProperty =
+            DependencyProperty.Register(
+            "HeaderText",
+            typeof(string),
+            typeof(AgeGenderDistributionControl),
+            new PropertyMetadata("Demographics")
+            );
+
+        public string HeaderText
+        {
+            get { return (string)GetValue(HeaderTextProperty); }
+            set { SetValue(HeaderTextProperty, (string)value); }
+        }
+
+        public static readonly DependencyProperty SubHeaderTextProperty =
+            DependencyProperty.Register(
+            "SubHeaderText",
+            typeof(string),
+            typeof(AgeGenderDistributionControl),
+            new PropertyMetadata("")
+            );
+
+        public string SubHeaderText
+        {
+            get { return (string)GetValue(SubHeaderTextProperty); }
+            set { SetValue(SubHeaderTextProperty, (string)value); }
+        }
+
+        public static readonly DependencyProperty SubHeaderVisibilityProperty =
+            DependencyProperty.Register(
+            "SubHeaderVisibility",
+            typeof(Visibility),
+            typeof(AgeGenderDistributionControl),
+            new PropertyMetadata(Visibility.Collapsed)
+            );
+
+        public Visibility SubHeaderVisibility
+        {
+            get { return (Visibility)GetValue(SubHeaderVisibilityProperty); }
+            set { SetValue(SubHeaderVisibilityProperty, (Visibility)value); }
+        }
+
         public AgeGenderDistributionControl()
         {
             this.InitializeComponent();

@@ -47,7 +47,7 @@ namespace IntelligentKioskSample.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    [KioskExperience(Title = "Face API Playground", ImagePath = "ms-appx:/Assets/FaceAPI.png", ExperienceType = ExperienceType.Other)]
+    [KioskExperience(Title = "Face API Explorer", ImagePath = "ms-appx:/Assets/FaceAPI.png", ExperienceType = ExperienceType.Other)]
     public sealed partial class RecognitionPage : Page
     {
         public RecognitionPage()

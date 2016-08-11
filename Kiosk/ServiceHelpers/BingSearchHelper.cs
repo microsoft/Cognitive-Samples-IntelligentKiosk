@@ -47,14 +47,10 @@ namespace ServiceHelpers
     {
         private static string ImageSearchEndPoint = "https://bingapis.azure-api.net/api/v5/images/search";
         private static string AutoSuggestionEndPoint = "https://bingapis.azure-api.net/api/v5/Suggestions";
+        private static string NewsSearchEndPoint = "https://bingapis.azure-api.net/api/v5/news/search";
 
         private static HttpClient autoSuggestionClient { get; set; }
-        private static HttpClient imageSearchClient { get; set; }
-
-        static BingSearchHelper()
-        {
-            InitializeBingClients();
-        }
+        private static HttpClient searchClient { get; set; }
 
         private static string autoSuggestionApiKey;
         public static string AutoSuggestionApiKey
@@ -91,15 +87,15 @@ namespace ServiceHelpers
             autoSuggestionClient = new HttpClient();
             autoSuggestionClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", AutoSuggestionApiKey);
 
-            imageSearchClient = new HttpClient();
-            imageSearchClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", SearchApiKey);
+            searchClient = new HttpClient();
+            searchClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", SearchApiKey);
         }
 
         public static async Task<IEnumerable<string>> GetImageSearchResults(string query, string imageContent = "Face", int count = 20, int offset = 0)
         {
             List<string> urls = new List<string>();
 
-            var result = await imageSearchClient.GetAsync(string.Format("{0}?q={1}&safeSearch=Strict&imageType=Photo&color=ColorOnly&count={2}&offset={3}{4}", ImageSearchEndPoint, WebUtility.UrlEncode(query), count, offset, string.IsNullOrEmpty(imageContent) ? "" : "&imageContent=" + imageContent));
+            var result = await searchClient.GetAsync(string.Format("{0}?q={1}&safeSearch=Strict&imageType=Photo&color=ColorOnly&count={2}&offset={3}{4}", ImageSearchEndPoint, WebUtility.UrlEncode(query), count, offset, string.IsNullOrEmpty(imageContent) ? "" : "&imageContent=" + imageContent));
             result.EnsureSuccessStatusCode();
             var json = await result.Content.ReadAsStringAsync();
             dynamic data = JObject.Parse(json);
@@ -114,11 +110,11 @@ namespace ServiceHelpers
             return urls;
         }
 
-        public static async Task<IEnumerable<string>> GetAutoSuggestResults(string query)
+        public static async Task<IEnumerable<string>> GetAutoSuggestResults(string query, string market = "en-US")
         {
             List<string> suggestions = new List<string>();
 
-            var result = await autoSuggestionClient.GetAsync(string.Format("{0}/?q={1}", AutoSuggestionEndPoint, WebUtility.UrlEncode(query)));
+            var result = await autoSuggestionClient.GetAsync(string.Format("{0}/?q={1}&mkt={2}", AutoSuggestionEndPoint, WebUtility.UrlEncode(query), market));
             result.EnsureSuccessStatusCode();
             var json = await result.Content.ReadAsStringAsync();
             dynamic data = JObject.Parse(json);
@@ -133,5 +129,42 @@ namespace ServiceHelpers
 
             return suggestions;
         }
+
+
+        public static async Task<IEnumerable<NewsArticle>> GetNewsSearchResults(string query, int count = 20, int offset = 0, string market = "en-US")
+        {
+            List<NewsArticle> articles = new List<NewsArticle>();
+
+            var result = await searchClient.GetAsync(string.Format("{0}/?q={1}&count={2}&offset={3}&mkt={4}", NewsSearchEndPoint, WebUtility.UrlEncode(query), count, offset, market));
+            result.EnsureSuccessStatusCode();
+            var json = await result.Content.ReadAsStringAsync();
+            dynamic data = JObject.Parse(json);
+
+            if (data.value != null && data.value.Count > 0)
+            {
+                for (int i = 0; i < data.value.Count; i++)
+                {
+                    articles.Add(new NewsArticle
+                    {
+                        Title = data.value[i].name,
+                        Url = data.value[i].url,
+                        Description = data.value[i].description,
+                        ThumbnailUrl = data.value[i].image?.thumbnail?.contentUrl,
+                        Provider = data.value[i].provider?[0].name
+                    });
+                }
+            }
+            return articles;
+        }
+
+    }
+
+    public class NewsArticle
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Url { get; set; }
+        public string ThumbnailUrl { get; set; }
+        public string Provider { get; set; }
     }
 }

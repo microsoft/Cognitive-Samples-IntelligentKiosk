@@ -14,17 +14,19 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Margin="6" Text="Total Faces (today)" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}"/>
-        <Rectangle Height="1" Fill="Gray" Grid.Row="1"/>
+        <TextBlock Margin="6,6,6,0" Text="{Binding HeaderText, ElementName=userControl}" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}"/>
+        <TextBlock Text="{Binding SubHeaderText, ElementName=userControl}" Visibility="{Binding SubHeaderVisibility, ElementName=userControl}" Grid.Row="1" Margin="6,0,6,0" Foreground="Gray" Opacity="0.5" Style="{StaticResource CaptionTextBlockStyle}"/>
+        <Rectangle Height="1" Fill="Gray" Grid.Row="2" Margin="0,6,0,0"/>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            
+
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" >
                 <TextBlock Text="Analyzed" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" ></TextBlock>
                 <TextBlock Grid.Row="2" x:Name="facesProcessedTextBlock" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
@@ -36,7 +38,5 @@
             </StackPanel>
 
         </Grid>
-
-        
-    </Grid>        
+    </Grid>
 </UserControl>

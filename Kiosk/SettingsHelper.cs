@@ -125,6 +125,12 @@ namespace IntelligentKioskSample
                 this.WorkspaceKey = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsKey"];
+            if (value != null)
+            {
+                this.TextAnalyticsKey = value.ToString();
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["CameraName"];
             if (value != null)
             {
@@ -148,16 +154,6 @@ namespace IntelligentKioskSample
                 if (bool.TryParse(value.ToString(), out booleanValue))
                 {
                     this.ShowDebugInfo = booleanValue;
-                }
-            }
-
-            value = ApplicationData.Current.RoamingSettings.Values["SaveUniqueFaceImages"];
-            if (value != null)
-            {
-                bool booleanValue;
-                if (bool.TryParse(value.ToString(), out booleanValue))
-                {
-                    this.SaveUniqueFaceImages = booleanValue;
                 }
             }
         }
@@ -223,6 +219,17 @@ namespace IntelligentKioskSample
             }
         }
 
+        private string textAnalyticsKey = string.Empty;
+        public string TextAnalyticsKey
+        {
+            get { return textAnalyticsKey; }
+            set
+            {
+                this.textAnalyticsKey = value;
+                this.OnSettingChanged("TextAnalyticsKey", value);
+            }
+        }
+
         private string cameraName = string.Empty;
         public string CameraName
         {
@@ -253,17 +260,6 @@ namespace IntelligentKioskSample
             {
                 this.showDebugInfo = value;
                 this.OnSettingChanged("ShowDebugInfo", value);
-            }
-        }
-
-        private bool saveUniqueFaceImages = false;
-        public bool SaveUniqueFaceImages
-        {
-            get { return saveUniqueFaceImages; }
-            set
-            {
-                this.saveUniqueFaceImages = value;
-                this.OnSettingChanged("SaveUniqueFaceImages", value);
             }
         }
     }

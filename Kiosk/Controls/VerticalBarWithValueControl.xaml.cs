@@ -71,6 +71,14 @@ namespace IntelligentKioskSample.Controls
             new PropertyMetadata(null)
             );
 
+        public static readonly DependencyProperty ShowBarValueProperty =
+            DependencyProperty.Register(
+            "ShowBarValue",
+            typeof(bool),
+            typeof(VerticalBarWithValueControl),
+            new PropertyMetadata(true)
+        );
+
         public static readonly DependencyProperty BarPercentageProperty =
             DependencyProperty.Register(
             "BarPercentange",
@@ -113,6 +121,12 @@ namespace IntelligentKioskSample.Controls
             set { SetValue(BarValueProperty, (int?)value); }
         }
 
+        public bool ShowBarValue
+        {
+            get { return (bool)GetValue(ShowBarValueProperty); }
+            set { SetValue(ShowBarValueProperty, (bool)value); }
+        }
+
         public double BarPercentage
         {
             get { return (double)GetValue(BarPercentageProperty); }
@@ -126,7 +140,7 @@ namespace IntelligentKioskSample.Controls
                 barPercentage = 0;
             }
 
-            this.BarValue = barValue1 == 0 && barValue2 == 0 ? null : (int?)barValue1 + barValue2;
+            this.BarValue = !this.ShowBarValue || (barValue1 == 0 && barValue2 == 0) ? null : (int?)barValue1 + barValue2;
             this.BarPercentage = Math.Min(Math.Max(0.005, barPercentage), 0.80);
 
             this.barRowDefinition.Height = new GridLength(this.BarPercentage, GridUnitType.Star);

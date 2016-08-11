@@ -14,12 +14,14 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Demographics (today)" Margin="6" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}"/>
-        <Rectangle Height="1" Fill="Gray" Grid.Row="1"/>
+        <TextBlock Text="{Binding HeaderText, ElementName=userControl}" Margin="6,6,6,0" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}"/>
+        <TextBlock Text="{Binding SubHeaderText, ElementName=userControl}" Visibility="{Binding SubHeaderVisibility, ElementName=userControl}" Grid.Row="1" Margin="6,0,6,0" Foreground="Gray" Opacity="0.5" Style="{StaticResource CaptionTextBlockStyle}"/>
+        <Rectangle Height="1" Fill="Gray" Margin="0,6,0,0" Grid.Row="2"/>
 
-        <Grid Grid.Row="2" Margin="6,0,6,0">
+        <Grid Grid.Row="3" Margin="6,0,6,0">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -31,13 +33,11 @@
 
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <Image Source="ms-appx:///Assets/female.png" Height="30" />
-                <!--<TextBlock VerticalAlignment="Center" FontFamily="Segoe UI Emoji" Style="{StaticResource SubheaderTextBlockStyle}">&#x1f469;</TextBlock>-->
                 <TextBlock x:Name="overallFemaleTextBlock" Foreground="Gray" VerticalAlignment="Center" Margin="6,0,6,0" Style="{StaticResource TitleTextBlockStyle}"/>
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" VerticalAlignment="Center">
                 <Image Source="ms-appx:///Assets/male_blue.png" Height="30" />
-                <!--<TextBlock VerticalAlignment="Center" FontFamily="Segoe UI Emoji" Style="{StaticResource SubheaderTextBlockStyle}">&#x1f468;</TextBlock>-->
                 <TextBlock x:Name="overallMaleTextBlock" Foreground="Gray"  VerticalAlignment="Center"  Margin="6,0,6,0" Style="{StaticResource TitleTextBlockStyle}"/>
             </StackPanel>
 

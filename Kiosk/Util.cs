@@ -51,7 +51,7 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace IntelligentKioskSample
 {
-    internal class Util
+    internal static class Util
     {
         public static string CapitalizeString(string s)
         {
@@ -60,23 +60,28 @@ namespace IntelligentKioskSample
 
         internal static async Task GenericApiCallExceptionHandler(Exception ex, string errorTitle)
         {
+            string errorDetails = GetMessageFromException(ex);
+
+            await new MessageDialog(errorDetails, errorTitle).ShowAsync();
+        }
+
+        internal static string GetMessageFromException(Exception ex)
+        {
             string errorDetails = ex.Message;
 
             FaceAPIException faceApiException = ex as FaceAPIException;
-            if (faceApiException != null)
+            if (faceApiException?.ErrorMessage != null)
             {
                 errorDetails = faceApiException.ErrorMessage;
             }
-            else
+
+            Microsoft.ProjectOxford.Common.ClientException commonException = ex as Microsoft.ProjectOxford.Common.ClientException;
+            if (commonException?.Error?.Message != null)
             {
-                ClientException clientException = ex as ClientException;
-                if (clientException != null)
-                {
-                    errorDetails = clientException.Error.Message;
-                }
+                errorDetails = commonException.Error.Message;
             }
 
-            await new MessageDialog(errorDetails, errorTitle).ShowAsync();
+            return errorDetails;
         }
 
         internal static Face FindFaceClosestToRegion(IEnumerable<Face> faces, BitmapBounds region)
@@ -158,6 +163,14 @@ namespace IntelligentKioskSample
                 ColorManagementMode.ColorManageToSRgb);
 
             return pix.DetachPixelData();
+        }
+
+        public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
+        {
+            foreach (var item in items)
+            {
+                list.Add(item);
+            }
         }
     }
 }

@@ -98,6 +98,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="IntelligentKiosk_TemporaryKey.pfx" />
+    <None Include="packages.config" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +107,9 @@
     </Compile>
     <Compile Include="Controls\OverallStatsControl.xaml.cs">
       <DependentUpon>OverallStatsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SentimentDistributionControl.xaml.cs">
+      <DependentUpon>SentimentDistributionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\VerticalBarWithValueControl.xaml.cs">
       <DependentUpon>VerticalBarWithValueControl.xaml</DependentUpon>
@@ -145,6 +149,9 @@
     <Compile Include="NavMenuItem.cs" />
     <Compile Include="SettingsHelper.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="Views\BingNewsAnalytics.xaml.cs">
+      <DependentUpon>BingNewsAnalytics.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
     </Compile>
@@ -189,6 +196,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\BingNewsAnalytics.png" />
     <Content Include="Assets\camera.png" />
     <Content Include="Assets\female.png" />
     <Content Include="Assets\male_blue.png" />
@@ -219,6 +227,10 @@
     <Page Include="Controls\CameraControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SentimentDistributionControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\VerticalBarWithValueControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -264,6 +276,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Views\BingNewsAnalytics.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DemoLauncherPage.xaml">
       <Generator>MSBuild:Compile</Generator>
