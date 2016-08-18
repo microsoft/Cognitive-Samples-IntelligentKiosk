@@ -2,7 +2,7 @@
 
 ![alt text] (https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/Mall.png "Mall Kiosk")
 
-This page is a simple example of a Mall kiosk that makes product recommendations based on the people in front of the camera and analyzes their reaction to it. 
+An  example of a Mall kiosk that makes product recommendations based on the people in front of the camera and analyzes their reaction to it. 
 
 * The workflow starts with a snapshot from the webcam. To do that just wait until the target audience is in the frame and click on the Camera button in the camera preview. 
 * Depending on the people’s ages and gender (or identity) a recommended product is displayed in the screen.
