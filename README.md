@@ -6,7 +6,7 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 2. A webcam, ideally top-mounted so you have a similar experience as looking at a mirror when interacting with the demos 
 3. Visual Studio 2015
 4. API Keys
-  * You will need Face, Emotion, Bing Search and Bing AutoSuggestion API Keys. Visit  [Microsoft.com/cognitive](https://www.microsoft.com/cognitive-services) if you need keys.
+  * You will need Face, Emotion, Text Analytics, Bing Search and Bing AutoSuggestion API Keys. Visit  [Microsoft.com/cognitive](https://www.microsoft.com/cognitive-services) if you need keys.
 
 # Running the sample
 1. Open the solution in Visual Studio 2015 and hit F5
@@ -19,8 +19,9 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 | ---------------------------- | -------- | ----------------  |
 | [Automatic Photo Capture](Documentation/AutomaticPhotoCapture.md)      | An autonomous workflow for capturing photos when people approach a web camera and pose for a photo | Windows 10 Face Tracking; Age and gender prediction; Face identification |
 | [Realtime Crowd Insights](Documentation/RealtimeCrowdInsights.md)      | A realtime workflow for processing frames from a web camera to derive realtime crowd insights such as demographics, emotion and unique face counting | Windows 10 Face Tracking; Realtime sampling; Age, gender and emotion prediction; Face identification; Unique face counting |
-| [Face API Playground](Documentation/FaceAPIPlayground.md)          | A playground for the Face APIs used for age and gender prediction, as well as face identification. | Windows 10 Face Tracking; Age and gender prediction; Face identification; Bing Image Search API; Bing AutoSuggestion API |
-| [Emotion API Playground](Documentation/EmotionAPIPlayground.md)       | A playground for the Emotion APIs | Windows 10 Face Tracking; Emotion prediction; Bing Image Search API; Bing AutoSuggestion API |
+| [Bing News Analytics](Documentation/BingNewsAnalytics.md)      | Connecting the Bing News APIs with the Text Analytics APIs to create a visualization of the news based on their sentiment and most common topics. | Bing News API, Bing AutoSuggestion API, Text Sentiment and Text KeyPhrase Extraction |
+| [Face API Explorer](Documentation/FaceAPIPlayground.md)          | A playground for the Face APIs used for age and gender prediction, as well as face identification. | Windows 10 Face Tracking; Age and gender prediction; Face identification; Bing Image Search API; Bing AutoSuggestion API |
+| [Emotion API Explorer](Documentation/EmotionAPIPlayground.md)       | A playground for the Emotion APIs | Windows 10 Face Tracking; Emotion prediction; Bing Image Search API; Bing AutoSuggestion API |
 | [Face Identification Setup](Documentation/FaceIdentificationSetup.md)    | Shows how to train the machine learning model behind the Face APIs to recognize specific people. | Face identification; Bing Image Search API; Bing AutoSuggestion API |
 
 # Source Code Structure
@@ -42,3 +43,8 @@ For questions, feedback, or suggestions about Microsoft Cognitive Services, reac
 # License
 All Microsoft Cognitive Services SDKs and samples are licensed with the MIT License. For more details, see
 [LICENSE](</LICENSE.md>).
+
+# Developer Code of Conduct
+The image, voice, video or text understanding capabilities of the Intelligent Kiosk Sample uses Microsoft Cognitive Services. Microsoft will receive the images, audio, video, and other data that you upload (via this app) for service improvement purposes. To report abuse of the Microsoft Cognitive Services to Microsoft, please visit the Microsoft Cognitive Services website at https://www.microsoft.com/cognitive-services, and use the “Report Abuse” link at the bottom of the page to contact Microsoft. For more information about Microsoft privacy policies please see their privacy statement here: https://go.microsoft.com/fwlink/?LinkId=521839.
+
+Developers using Cognitive Services, including this sample, are expected to follow the “Developer Code of Conduct for Microsoft Cognitive Services”, found at [http://go.microsoft.com/fwlink/?LinkId=698895](http://go.microsoft.com/fwlink/?LinkId=698895).
