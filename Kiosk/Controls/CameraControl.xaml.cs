@@ -77,8 +77,6 @@ namespace IntelligentKioskSample.Controls
 
     public sealed partial class CameraControl : UserControl
     {
-        private bool isCameraRunningInHiddenMode = false;
-
         public event EventHandler<ImageAnalyzer> ImageCaptured;
         public event EventHandler<AutoCaptureState> AutoCaptureStateChanged;
         public event EventHandler CameraRestarted;
@@ -186,6 +184,7 @@ namespace IntelligentKioskSample.Controls
                     TimeSpan timerInterval = TimeSpan.FromMilliseconds(66); //15fps
                     this.frameProcessingTimer = ThreadPoolTimer.CreatePeriodicTimer(new TimerElapsedHandler(ProcessCurrentVideoFrame), timerInterval);
 
+                    this.cameraControlSymbol.Symbol = Symbol.Camera;
                     this.webCamCaptureElement.Visibility = Visibility.Visible;
                 }
             }
@@ -475,15 +474,6 @@ namespace IntelligentKioskSample.Controls
         {
             try
             {
-                if (keepCameraRunningButHidden)
-                {
-                    this.webCamCaptureElement.Opacity = 0.001;
-                    this.FaceTrackingVisualizationCanvas.Opacity = 0.001;
-                    this.cameraControlSymbol.Symbol = Symbol.Play;
-                    this.isCameraRunningInHiddenMode = true;
-                    return;
-                }
-
                 if (this.frameProcessingTimer != null)
                 {
                     this.frameProcessingTimer.Cancel();
@@ -508,7 +498,7 @@ namespace IntelligentKioskSample.Controls
         {
             try
             {
-                var stream = new MemoryStream(4096);
+                var stream = new MemoryStream();
                 await captureManager.CapturePhotoToStreamAsync(ImageEncodingProperties.CreateJpeg(), stream.AsRandomAccessStream());
                 stream.Position = 0;
 
@@ -560,26 +550,17 @@ namespace IntelligentKioskSample.Controls
 
         private async void CameraControlButtonClick(object sender, RoutedEventArgs e)
         {
-            if (this.cameraControlSymbol.Symbol == Symbol.Pause)
+            if (this.cameraControlSymbol.Symbol == Symbol.Camera)
             {
-                this.cameraControlSymbol.Symbol = Symbol.Play;
+                this.cameraControlSymbol.Symbol = Symbol.Refresh;
                 var img = await CapturePhotoAsync();
                 this.OnImageCaptured(img);
             }
             else
             {
-                this.cameraControlSymbol.Symbol = Symbol.Pause;
+                this.cameraControlSymbol.Symbol = Symbol.Camera;
 
-                if (this.isCameraRunningInHiddenMode)
-                {
-                    this.webCamCaptureElement.Opacity = 1;
-                    this.FaceTrackingVisualizationCanvas.Opacity = 1;
-                    this.isCameraRunningInHiddenMode = false;
-                }
-                else
-                {
-                    await StartStreamAsync();
-                }
+                await StartStreamAsync();
 
                 this.CameraRestarted?.Invoke(this, EventArgs.Empty);
             }

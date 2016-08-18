@@ -81,6 +81,12 @@ namespace IntelligentKioskSample.Views
             base.OnNavigatingFrom(e);
         }
 
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            await this.StartWebCameraAsync();
+            base.OnNavigatedTo(e);
+        }
+
         private void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)
         {
             this.imageSearchFlyout.Hide();
@@ -99,6 +105,11 @@ namespace IntelligentKioskSample.Views
         }
 
         private async void OnWebCamButtonClicked(object sender, RoutedEventArgs e)
+        {
+            await StartWebCameraAsync();
+        }
+
+        private async Task StartWebCameraAsync()
         {
             webCamHostGrid.Visibility = Visibility.Visible;
             imageWithFacesControl.Visibility = Visibility.Collapsed;

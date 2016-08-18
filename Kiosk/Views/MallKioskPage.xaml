@@ -1,0 +1,78 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.MallKioskPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKiosk.Views"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    SizeChanged="PageSizeChanged"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          EntranceNavigationTransitionInfo.IsTargetElement="True">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1">
+            <TextBlock Text="Mall Kiosk" HorizontalAlignment="Center"  Style="{StaticResource HeaderTextBlockStyle}"></TextBlock>
+            <TextBlock Text="Take a photo to get a product recommendation!" HorizontalAlignment="Center" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0,30,0,0" FontStyle="Italic"/>
+        </StackPanel>
+        
+        <WebView x:Name="webView" Visibility="Collapsed" Grid.Row="1" />
+
+        <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0.5" Grid.Row="1" >
+            <Border BorderThickness="1" BorderBrush="White" Padding="5" Background="#FF363535">
+                <Grid x:Name="webCamHostGrid">
+                    <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" FlowDirection="RightToLeft" x:Name="imageFromCameraWithFaces" DetectFacesOnLoad="True" DetectFaceAttributes="True" ShowMultipleFaces="True" PerformRecognition="True" ShowRecognitionResults="True" />
+                    <ctl:CameraControl x:Name="cameraControl" />
+                    
+                    <Button Opacity="0.8" HorizontalAlignment="Right" Margin="1" VerticalAlignment="Top" Background="#FF222222" BorderBrush="Transparent" >
+                        <SymbolIcon Margin="6" Symbol="TwoBars"/>
+                        <Button.Flyout>
+                            <Flyout x:Name="emotionResponseFlyout" Opened="OnEmotionTrackingFlyoutOpened" Closed="OnEmotionTrackingFlyoutClosed" Placement="Top" >
+                                <StackPanel >
+                                    <GridView x:Name="emotionFacesGrid" 
+                                                Height="300" 
+                                                Width="290"                                              
+                                                Visibility="Collapsed"
+                                                SelectionMode="None"
+                                                ItemsSource="{Binding EmotionFaces}"
+                                                >
+                                        <GridView.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Width="90" Height="90">
+                                                    <Image Source="{Binding CroppedFace}"/>
+                                                    <Border Background="#66000000" VerticalAlignment="Bottom">
+                                                        <TextBlock Text="{Binding TopEmotion}" Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Center" />
+                                                    </Border>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </GridView.ItemTemplate>
+                                    </GridView>
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel>
+                                            <TextBlock Text="Emotion Response:" Style="{StaticResource BaseTextBlockStyle}"/>
+                                            <ctl:SentimentControl x:Name="sentimentControl" Width="250"/>
+                                        </StackPanel>
+                                        <ToggleButton VerticalAlignment="Top" HorizontalAlignment="Right" x:Name="emotionFacesToggle" Unchecked="OnEmotionFacesToggleUnchecked" Checked="OnEmotionFacesToggleChecked">
+                                            <SymbolIcon Symbol="WebCam"/>
+                                        </ToggleButton>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+
+                    <ctl:SpeechToTextControl Opacity="0.8" Margin="1" x:Name="speechToTextControl" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+                </Grid>
+            </Border>
+        </Grid>
+
+    </Grid>
+</Page>
+
+    

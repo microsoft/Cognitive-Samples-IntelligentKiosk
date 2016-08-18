@@ -108,8 +108,14 @@
     <Compile Include="Controls\OverallStatsControl.xaml.cs">
       <DependentUpon>OverallStatsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\SentimentControl.xaml.cs">
+      <DependentUpon>SentimentControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\SentimentDistributionControl.xaml.cs">
       <DependentUpon>SentimentDistributionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SpeechToTextControl.xaml.cs">
+      <DependentUpon>SpeechToTextControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\VerticalBarWithValueControl.xaml.cs">
       <DependentUpon>VerticalBarWithValueControl.xaml</DependentUpon>
@@ -155,6 +161,10 @@
     <Compile Include="Views\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MallKioskPage.xaml.cs">
+      <DependentUpon>MallKioskPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MallKioskDemoConfig\MallKioskDemoSettings.cs" />
     <Compile Include="Views\RealTimeDemo.xaml.cs">
       <DependentUpon>RealTimeDemo.xaml</DependentUpon>
     </Compile>
@@ -203,6 +213,7 @@
     <Content Include="Assets\EmotionRecognition.PNG" />
     <Content Include="Assets\FaceAPI.PNG" />
     <Content Include="Assets\male.png" />
+    <Content Include="Assets\Mall.png" />
     <Content Include="Assets\oxford-face.png" />
     <Content Include="Assets\RealTime.PNG" />
     <Content Include="Assets\smalltile-sdk.png" />
@@ -214,6 +225,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Assets\StoreLogo.scale-10.png" />
+    <Content Include="Views\MallKioskDemoConfig\MallKioskDemoSettings.xml" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -228,7 +240,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\SentimentControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\SentimentDistributionControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\SpeechToTextControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -282,6 +302,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DemoLauncherPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MallKioskPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

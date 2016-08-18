@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<MallKioskDemoSettings>
+  <GenericRecommendations>
+    <!--  URLS when a single male person is in front of the camera. -->
+    <Recommendation Id="MaleYoungerThan12" Url="http://srpidemo.azurewebsites.net/toystorem.aspx"/>
+    <Recommendation Id="MaleYoungerThan18" Url="http://srpidemo.azurewebsites.net/toystorem.aspx"/>
+    <Recommendation Id="MaleYoungerThan25" Url="http://srpidemo.azurewebsites.net/tools.aspx"/>
+    <Recommendation Id="MaleYoungerThan32" Url="http://srpidemo.azurewebsites.net/tools.aspx"/>
+    <Recommendation Id="MaleYoungerThan40" Url="http://srpidemo.azurewebsites.net/tools.aspx"/>
+    <Recommendation Id="MaleYoungerThan50" Url="http://srpidemo.azurewebsites.net/bbq.aspx"/>
+    <Recommendation Id="MaleYoungerThan55" Url="http://srpidemo.azurewebsites.net/bbq.aspx"/>
+    <Recommendation Id="MaleYoungerThan60" Url="http://srpidemo.azurewebsites.net/bbq.aspx"/>
+    <Recommendation Id="MaleOlder" Url="http://srpidemo.azurewebsites.net/bbq.aspx"/>
+
+    <!--  URLS when a single female person is in front of the camera. -->
+    <Recommendation Id="FemaleYoungerThan12" Url="http://srpidemo.azurewebsites.net/toystoref.aspx"/>
+    <Recommendation Id="FemaleYoungerThan18" Url="http://srpidemo.azurewebsites.net/spa.aspx"/>
+    <Recommendation Id="FemaleYoungerThan25" Url="http://srpidemo.azurewebsites.net/spa.aspx"/>
+    <Recommendation Id="FemaleYoungerThan32" Url="http://srpidemo.azurewebsites.net/spa.aspx"/>
+    <Recommendation Id="FemaleYoungerThan40" Url="http://srpidemo.azurewebsites.net/spa.aspx"/>
+    <Recommendation Id="FemaleYoungerThan50" Url="http://srpidemo.azurewebsites.net/spa.aspx"/>
+    <Recommendation Id="FemaleYoungerThan60" Url="http://srpidemo.azurewebsites.net/cruise.aspx"/>
+    <Recommendation Id="FemaleOlder" Url="http://srpidemo.azurewebsites.net/cruise.aspx"/>
+
+    <!--  URLS when at least 2 adults are in front of the camera -->
+    <Recommendation Id="TwoOrMoreAdults" Url="http://srpidemo.azurewebsites.net/restaurant.aspx">
+      <SpeechKeywordBehavior>
+        <BehaviorAction Key="Expensive" Url="http://srpidemo.azurewebsites.net/restaurant.aspx"/>
+      </SpeechKeywordBehavior>
+      <SpeechSentimentBehavior>
+        <BehaviorAction Key="Positive" Url="http://srpidemo.azurewebsites.net/restaurant.aspx"/>
+        <BehaviorAction Key="Negative" Url="http://srpidemo.azurewebsites.net/restaurant.aspx"/>
+      </SpeechSentimentBehavior>
+    </Recommendation>
+
+    <!--  URLS when there is a child and at least another person-->
+    <Recommendation Id="ChildWithOneOrMoreAdults" Url="http://srpidemo.azurewebsites.net/treehouse.aspx">
+      <SpeechKeywordBehavior>
+        <BehaviorAction Key="Expensive" Url="http://srpidemo.azurewebsites.net/treehousealt.aspx"/>
+      </SpeechKeywordBehavior>
+      <SpeechSentimentBehavior>
+        <BehaviorAction Key="Negative" Url="http://srpidemo.azurewebsites.net/treehousealt.aspx"/>
+      </SpeechSentimentBehavior>
+    </Recommendation>
+  </GenericRecommendations>
+
+  <!--  Personalized recommendations when a recognized person is in front of the camera. -->
+  <PersonalizedRecommendations>
+    <Recommendation Id="Satya Nadella" Url="http://srpidemo.azurewebsites.net/tools.aspx"/>
+    <Recommendation Id="Bill Gates" Url="http://srpidemo.azurewebsites.net/tools.aspx"/>
+  </PersonalizedRecommendations>
+
+</MallKioskDemoSettings>

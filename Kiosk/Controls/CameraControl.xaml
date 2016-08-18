@@ -14,8 +14,8 @@
         <Canvas x:Name="FaceTrackingVisualizationCanvas" FlowDirection="RightToLeft" />
 
         <Grid x:Name="commandBar" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="2" >
-            <Button Opacity="0.8" HorizontalAlignment="Center" VerticalAlignment="Bottom" Background="#FF222222" BorderBrush="Transparent" Click="CameraControlButtonClick" >
-                <SymbolIcon x:Name="cameraControlSymbol" Margin="6" Symbol="Pause"></SymbolIcon>
+            <Button Opacity="0.8" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="#FF222222" BorderBrush="Transparent" Click="CameraControlButtonClick" >
+                <SymbolIcon x:Name="cameraControlSymbol" Margin="6" Symbol="Camera"></SymbolIcon>
             </Button>
         </Grid>
     </Grid>

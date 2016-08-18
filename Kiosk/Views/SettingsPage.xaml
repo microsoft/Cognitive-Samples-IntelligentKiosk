@@ -82,7 +82,13 @@
                     </StackPanel>
                  </StackPanel>
 
-              </StackPanel>
+                <StackPanel Margin="0,25,0,0">
+                    <TextBlock Text="Mall Kiosk" Style="{StaticResource SubheaderTextBlockStyle}"/>
+                    <TextBox TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding MallKioskDemoCustomSettings, Mode=TwoWay}" PlaceholderText="Paste custom settings for Mall Kiosk Demo here"/>
+                    <Button Margin="0,6,0,0" Click="ResetMallKioskSettingsButtonClick">Reset to Default Mall Kiosk Settings</Button>
+                </StackPanel>
+
+            </StackPanel>
             
         </ScrollViewer>
 

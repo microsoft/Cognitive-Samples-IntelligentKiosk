@@ -83,5 +83,10 @@ namespace IntelligentKioskSample.Views
                 SettingsHelper.Instance.CameraName = this.cameraSourceComboBox.SelectedItem.ToString();
             }
         }
+
+        private void ResetMallKioskSettingsButtonClick(object sender, RoutedEventArgs e)
+        {
+            SettingsHelper.Instance.RestoreMallKioskSettingsToDefaultFile();
+        }
     }
 }
