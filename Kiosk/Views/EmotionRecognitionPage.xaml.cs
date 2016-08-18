@@ -87,7 +87,7 @@ namespace IntelligentKioskSample.Views
             base.OnNavigatedTo(e);
         }
 
-        private void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)
+        private async void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)
         {
             this.imageSearchFlyout.Hide();
             ImageAnalyzer image = args.First();
@@ -95,6 +95,7 @@ namespace IntelligentKioskSample.Views
 
             this.imageWithFacesControl.Visibility = Visibility.Visible;
             this.webCamHostGrid.Visibility = Visibility.Collapsed;
+            await this.cameraControl.StopStreamAsync();
 
             this.imageWithFacesControl.DataContext = image;
         }
