@@ -118,6 +118,7 @@ namespace IntelligentKioskSample.Views
         {
             if (e == null)
             {
+				this.cameraControl.RestartAutoCaptureCycle();
                 return;
             }
 

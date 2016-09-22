@@ -496,29 +496,43 @@ namespace IntelligentKioskSample.Controls
 
         private async Task<ImageAnalyzer> CapturePhotoAsync()
         {
-            try
-            {
-                var stream = new MemoryStream();
-                await captureManager.CapturePhotoToStreamAsync(ImageEncodingProperties.CreateJpeg(), stream.AsRandomAccessStream());
-                stream.Position = 0;
+			try
+			{
+				if (!(await this.frameProcessingSemaphore.WaitAsync(250)))
+				{
+					return null;
+				}
 
-                ImageAnalyzer imageWithFace = new ImageAnalyzer(stream.ToArray());
-                imageWithFace.ShowDialogOnFaceApiErrors = this.ShowDialogOnApiErrors;
-                imageWithFace.FilterOutSmallFaces = this.FilterOutSmallFaces;
-                imageWithFace.UpdateDecodedImageSize(this.CameraResolutionHeight, this.CameraResolutionWidth);
+				// Capture a frame from the preview stream
+				var videoFrame = new VideoFrame(BitmapPixelFormat.Bgra8, CameraResolutionWidth, CameraResolutionHeight);
+				using (var currentFrame = await captureManager.GetPreviewFrameAsync(videoFrame))
+				{
+					using (SoftwareBitmap previewFrame = currentFrame.SoftwareBitmap)
+					{
+						ImageAnalyzer imageWithFace = new ImageAnalyzer(await Util.GetPixelBytesFromSoftwareBitmapAsync(previewFrame));
 
-                return imageWithFace;
-            }
-            catch (Exception ex)
-            {
-                if (this.ShowDialogOnApiErrors)
-                {
-                    await Util.GenericApiCallExceptionHandler(ex, "Error capturing photo.");
-                }
-            }
+						imageWithFace.ShowDialogOnFaceApiErrors = this.ShowDialogOnApiErrors;
+						imageWithFace.FilterOutSmallFaces = this.FilterOutSmallFaces;
+						imageWithFace.UpdateDecodedImageSize(this.CameraResolutionHeight, this.CameraResolutionWidth);
 
-            return null;
-        }
+						return imageWithFace;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				if (this.ShowDialogOnApiErrors)
+				{
+					await Util.GenericApiCallExceptionHandler(ex, "Error capturing photo.");
+				}
+			}
+			finally
+			{
+				this.frameProcessingSemaphore.Release();
+			}
+
+			return null;
+		}
 
         private void OnImageCaptured(ImageAnalyzer imageWithFace)
         {
@@ -552,10 +566,13 @@ namespace IntelligentKioskSample.Controls
         {
             if (this.cameraControlSymbol.Symbol == Symbol.Camera)
             {
-                this.cameraControlSymbol.Symbol = Symbol.Refresh;
-                var img = await CapturePhotoAsync();
-                this.OnImageCaptured(img);
-            }
+				var img = await CapturePhotoAsync();
+				if (img != null)
+				{
+					this.cameraControlSymbol.Symbol = Symbol.Refresh;
+					this.OnImageCaptured(img);
+				}
+			}
             else
             {
                 this.cameraControlSymbol.Symbol = Symbol.Camera;
