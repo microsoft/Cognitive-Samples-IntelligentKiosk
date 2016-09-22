@@ -45,9 +45,9 @@ namespace ServiceHelpers
 {
     public class BingSearchHelper
     {
-        private static string ImageSearchEndPoint = "https://bingapis.azure-api.net/api/v5/images/search";
-        private static string AutoSuggestionEndPoint = "https://bingapis.azure-api.net/api/v5/Suggestions";
-        private static string NewsSearchEndPoint = "https://bingapis.azure-api.net/api/v5/news/search";
+        private static string ImageSearchEndPoint = "https://api.cognitive.microsoft.com/bing/v5.0/images/search";
+        private static string AutoSuggestionEndPoint = "https://api.cognitive.microsoft.com/bing/v5.0/suggestions";
+        private static string NewsSearchEndPoint = "https://api.cognitive.microsoft.com/bing/v5.0/news/search";
 
         private static HttpClient autoSuggestionClient { get; set; }
         private static HttpClient searchClient { get; set; }
