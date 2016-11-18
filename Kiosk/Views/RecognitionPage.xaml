@@ -48,12 +48,14 @@
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Row="1" Grid.Column="1" x:Name="webCamHostGrid" Visibility="Collapsed" >
-                <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" FlowDirection="RightToLeft" x:Name="imageFromCameraWithFaces" DetectFacesOnLoad="True" DetectFaceAttributes="True" ShowMultipleFaces="True" PerformRecognition="True" ShowRecognitionResults="True"/>
+                <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" FlowDirection="RightToLeft" x:Name="imageFromCameraWithFaces" DetectFacesOnLoad="True" DetectFaceAttributes="True" ShowMultipleFaces="True" PerformRecognition="True" ShowRecognitionResults="True" DetectFaceLandmarks="{Binding ElementName=showFaceLandmarks, Path=IsChecked}"/>
                 <ctl:CameraControl x:Name="cameraControl"/>
             </Grid>
 
-            <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" Grid.Row="1" Grid.Column="1" x:Name="imageWithFacesControl" DetectFacesOnLoad="True" DetectFaceAttributes="True" ShowMultipleFaces="True" PerformRecognition="True" ShowRecognitionResults="True" />
-            
+            <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" Grid.Row="1" Grid.Column="1" x:Name="imageWithFacesControl" DetectFacesOnLoad="True" DetectFaceAttributes="True" ShowMultipleFaces="True" PerformRecognition="True" ShowRecognitionResults="True" DetectFaceLandmarks="{Binding ElementName=showFaceLandmarks, Path=IsChecked}"/>
+
+            <CheckBox IsChecked="true" x:Name="showFaceLandmarks" VerticalAlignment="Top" HorizontalAlignment="Center" Content="Detect face landmarks" Grid.Row="2" Grid.Column="1"/>
+
         </Grid>
 
     </Grid>

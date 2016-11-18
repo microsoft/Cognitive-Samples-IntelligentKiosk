@@ -9,7 +9,7 @@
     x:Name="userControl"
     >
 
-    <Grid >
+    <Grid x:Name="hostGrid" >
         <Rectangle x:Name="faceRectangle" Stroke="White" Visibility="Visible" HorizontalAlignment="Left" VerticalAlignment="Top" />
 
         <Grid FlowDirection="LeftToRight" VerticalAlignment="Top" x:Name="captionCanvas" Visibility="Collapsed" HorizontalAlignment="Left" SizeChanged="OnCaptionSizeChanged" >

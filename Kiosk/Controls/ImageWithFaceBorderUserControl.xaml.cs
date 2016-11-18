@@ -139,6 +139,14 @@ namespace IntelligentKioskSample.Controls
             new PropertyMetadata(null)
             );
 
+        public static readonly DependencyProperty DetectFaceLandmarksProperty =
+            DependencyProperty.Register(
+            "DetectFaceLandmarks",
+            typeof(bool),
+            typeof(ImageWithFaceBorderUserControl),
+            new PropertyMetadata(false)
+            );
+
         public SolidColorBrush BalloonBackground
         {
             get { return (SolidColorBrush)GetValue(BalloonBackgroundProperty); }
@@ -193,6 +201,12 @@ namespace IntelligentKioskSample.Controls
             set { SetValue(ShowDialogOnApiErrorsProperty, (bool)value); }
         }
 
+        public bool DetectFaceLandmarks
+        {
+            get { return (bool)GetValue(DetectFaceLandmarksProperty); }
+            set { SetValue(DetectFaceLandmarksProperty, (bool)value); }
+        }
+
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
             ImageAnalyzer dataContext = this.DataContext as ImageAnalyzer;
@@ -244,7 +258,7 @@ namespace IntelligentKioskSample.Controls
             {
                 if (imageWithFace.DetectedFaces == null)
                 {
-                    await imageWithFace.DetectFacesAsync(detectFaceAttributes: this.DetectFaceAttributes);
+                    await imageWithFace.DetectFacesAsync(detectFaceAttributes: this.DetectFaceAttributes, detectFaceLandmarks: this.DetectFaceLandmarks);
                 }
 
                 double renderedImageXTransform = this.imageControl.RenderSize.Width / this.bitmapImage.PixelWidth;
@@ -263,6 +277,11 @@ namespace IntelligentKioskSample.Controls
                     faceUI.BalloonBackground = this.BalloonBackground;
                     faceUI.BalloonForeground = this.BalloonForeground;
                     faceUI.ShowFaceRectangle(face.FaceRectangle.Width * renderedImageXTransform, face.FaceRectangle.Height * renderedImageYTransform);
+
+                    if (this.DetectFaceLandmarks)
+                    {
+                        faceUI.ShowFaceLandmarks(renderedImageXTransform, renderedImageYTransform, face);
+                    }
 
                     this.hostGrid.Children.Add(faceUI);
 

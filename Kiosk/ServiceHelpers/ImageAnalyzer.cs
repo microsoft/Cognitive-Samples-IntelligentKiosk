@@ -97,7 +97,7 @@ namespace ServiceHelpers
             this.DecodedImageWidth = width;
         }
 
-        public async Task DetectFacesAsync(bool detectFaceAttributes = false)
+        public async Task DetectFacesAsync(bool detectFaceAttributes = false, bool detectFaceLandmarks = false)
         {
             try
             {
@@ -106,7 +106,7 @@ namespace ServiceHelpers
                     this.DetectedFaces = await FaceServiceHelper.DetectAsync(
                         this.ImageUrl,
                         returnFaceId: true,
-                        returnFaceLandmarks: false,
+                        returnFaceLandmarks: detectFaceLandmarks,
                         returnFaceAttributes: detectFaceAttributes ? DefaultFaceAttributeTypes : null);
                 }
                 else if (this.GetImageStreamCallback != null)
@@ -114,7 +114,7 @@ namespace ServiceHelpers
                     this.DetectedFaces = await FaceServiceHelper.DetectAsync(
                         await this.GetImageStreamCallback(),
                         returnFaceId: true,
-                        returnFaceLandmarks: false,
+                        returnFaceLandmarks: detectFaceLandmarks,
                         returnFaceAttributes: detectFaceAttributes ? DefaultFaceAttributeTypes : null);
                 }
 

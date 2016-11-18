@@ -52,6 +52,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
+using Microsoft.ProjectOxford.Face.Contract;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -102,6 +103,52 @@ namespace IntelligentKioskSample.Controls
             this.faceRectangle.Height = height;
 
             this.faceRectangle.Visibility = Visibility.Visible;
+        }
+
+        public void ShowFaceLandmarks(double renderedImageXTransform, double renderedImageYTransform, Face face)
+        {
+            // Mouth (6)
+            AddFacialLandmark(face, face.FaceLandmarks.MouthLeft, renderedImageXTransform, renderedImageYTransform, Colors.White);
+            AddFacialLandmark(face, face.FaceLandmarks.MouthRight, renderedImageXTransform, renderedImageYTransform, Colors.White);
+            AddFacialLandmark(face, face.FaceLandmarks.UpperLipBottom, renderedImageXTransform, renderedImageYTransform, Colors.White);
+            AddFacialLandmark(face, face.FaceLandmarks.UpperLipTop, renderedImageXTransform, renderedImageYTransform, Colors.White);
+            AddFacialLandmark(face, face.FaceLandmarks.UnderLipBottom, renderedImageXTransform, renderedImageYTransform, Colors.White);
+            AddFacialLandmark(face, face.FaceLandmarks.UnderLipTop, renderedImageXTransform, renderedImageYTransform, Colors.White);
+
+            // Eyes (10)
+            AddFacialLandmark(face, face.FaceLandmarks.EyeLeftBottom, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+            AddFacialLandmark(face, face.FaceLandmarks.EyeLeftTop, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+            AddFacialLandmark(face, face.FaceLandmarks.EyeLeftInner, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+            AddFacialLandmark(face, face.FaceLandmarks.EyeLeftOuter, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+            AddFacialLandmark(face, face.FaceLandmarks.EyeRightBottom, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+            AddFacialLandmark(face, face.FaceLandmarks.EyeRightTop, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+            AddFacialLandmark(face, face.FaceLandmarks.EyeRightInner, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+            AddFacialLandmark(face, face.FaceLandmarks.EyeRightOuter, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+            AddFacialLandmark(face, face.FaceLandmarks.PupilLeft, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+            AddFacialLandmark(face, face.FaceLandmarks.PupilRight, renderedImageXTransform, renderedImageYTransform, Colors.Red);
+
+            // nose (7)
+            AddFacialLandmark(face, face.FaceLandmarks.NoseLeftAlarOutTip, renderedImageXTransform, renderedImageYTransform, Colors.LimeGreen);
+            AddFacialLandmark(face, face.FaceLandmarks.NoseLeftAlarTop, renderedImageXTransform, renderedImageYTransform, Colors.LimeGreen);
+            AddFacialLandmark(face, face.FaceLandmarks.NoseRightAlarOutTip, renderedImageXTransform, renderedImageYTransform, Colors.LimeGreen);
+            AddFacialLandmark(face, face.FaceLandmarks.NoseRightAlarTop, renderedImageXTransform, renderedImageYTransform, Colors.LimeGreen);
+            AddFacialLandmark(face, face.FaceLandmarks.NoseRootLeft, renderedImageXTransform, renderedImageYTransform, Colors.LimeGreen);
+            AddFacialLandmark(face, face.FaceLandmarks.NoseRootRight, renderedImageXTransform, renderedImageYTransform, Colors.LimeGreen);
+            AddFacialLandmark(face, face.FaceLandmarks.NoseTip, renderedImageXTransform, renderedImageYTransform, Colors.LimeGreen);
+
+            // eyebrows (4)
+            AddFacialLandmark(face, face.FaceLandmarks.EyebrowLeftInner, renderedImageXTransform, renderedImageYTransform, Colors.Yellow);
+            AddFacialLandmark(face, face.FaceLandmarks.EyebrowLeftOuter, renderedImageXTransform, renderedImageYTransform, Colors.Yellow);
+            AddFacialLandmark(face, face.FaceLandmarks.EyebrowRightInner, renderedImageXTransform, renderedImageYTransform, Colors.Yellow);
+            AddFacialLandmark(face, face.FaceLandmarks.EyebrowRightOuter, renderedImageXTransform, renderedImageYTransform, Colors.Yellow);
+        }
+
+        private void AddFacialLandmark(Face face, FeatureCoordinate feature, double renderedImageXTransform, double renderedImageYTransform, Color color)
+        {
+            double dotSize = 3;
+            Rectangle b = new Rectangle { Fill = new SolidColorBrush(color), Width = dotSize, Height = dotSize, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            b.Margin = new Thickness(((feature.X - face.FaceRectangle.Left) * renderedImageXTransform) - dotSize / 2, ((feature.Y - face.FaceRectangle.Top) * renderedImageYTransform) - dotSize / 2, 0, 0);
+            this.hostGrid.Children.Add(b);
         }
 
         public void ShowIdentificationData(double age, string gender, uint confidence, string name = null)
