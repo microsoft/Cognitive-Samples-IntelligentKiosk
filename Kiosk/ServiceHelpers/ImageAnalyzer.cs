@@ -44,7 +44,7 @@ namespace ServiceHelpers
 {
     public class ImageAnalyzer
     {
-        private static FaceAttributeType[] DefaultFaceAttributeTypes = new FaceAttributeType[] { FaceAttributeType.Age, FaceAttributeType.Gender };
+        private static FaceAttributeType[] DefaultFaceAttributeTypes = new FaceAttributeType[] { FaceAttributeType.Age, FaceAttributeType.Gender, FaceAttributeType.HeadPose };
 
         public event EventHandler FaceDetectionCompleted;
         public event EventHandler FaceRecognitionCompleted;
@@ -63,6 +63,8 @@ namespace ServiceHelpers
         public IEnumerable<IdentifiedPerson> IdentifiedPersons { get; set; }
 
         public IEnumerable<SimilarFaceMatch> SimilarFaceMatches { get; set; }
+
+        public Microsoft.ProjectOxford.Vision.Contract.AnalysisResult AnalysisResult { get; set; }
 
         // Default to no errors, since this could trigger a stream of popup errors since we might call this
         // for several images at once while auto-detecting the Bing Image Search results.
@@ -172,6 +174,30 @@ namespace ServiceHelpers
             finally
             {
                 this.OnEmotionRecognitionCompleted();
+            }
+        }
+
+        public async Task DescribeAsync()
+        {
+            try
+            {
+                if (this.ImageUrl != null)
+                {
+                    this.AnalysisResult = await VisionServiceHelper.DescribeAsync(this.ImageUrl);
+                }
+                else if (this.GetImageStreamCallback != null)
+                {
+                    this.AnalysisResult = await VisionServiceHelper.DescribeAsync(this.GetImageStreamCallback);
+                }
+            }
+            catch (Exception e)
+            {
+                this.AnalysisResult = new Microsoft.ProjectOxford.Vision.Contract.AnalysisResult();
+
+                if (this.ShowDialogOnFaceApiErrors)
+                {
+                    await ErrorTrackingHelper.GenericApiCallExceptionHandler(e, "Vision API failed.");
+                }
             }
         }
 

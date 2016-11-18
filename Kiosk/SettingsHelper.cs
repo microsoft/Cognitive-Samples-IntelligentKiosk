@@ -31,6 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using IntelligentKioskSample.Views;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -126,6 +127,12 @@ namespace IntelligentKioskSample
                 this.EmotionApiKey = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["VisionApiKey"];
+            if (value != null)
+            {
+                this.VisionApiKey = value.ToString();
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["BingSearchApiKey"];
             if (value != null)
             {
@@ -176,6 +183,26 @@ namespace IntelligentKioskSample
                 }
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["DriverMonitoringSleepingThreshold"];
+            if (value != null)
+            {
+                double threshold;
+                if (double.TryParse(value.ToString(), out threshold))
+                {
+                    this.DriverMonitoringSleepingThreshold = threshold;
+                }
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["DriverMonitoringYawningThreshold"];
+            if (value != null)
+            {
+                double threshold;
+                if (double.TryParse(value.ToString(), out threshold))
+                {
+                    this.DriverMonitoringYawningThreshold = threshold;
+                }
+            }
+
             // load mall kiosk demo custom settings from file as the content is too big to be saved as a string-like setting
             try
             {
@@ -223,6 +250,17 @@ namespace IntelligentKioskSample
             {
                 this.emotionApiKey = value;
                 this.OnSettingChanged("EmotionApiKey", value);
+            }
+        }
+
+        private string visionApiKey = string.Empty;
+        public string VisionApiKey
+        {
+            get { return this.visionApiKey; }
+            set
+            {
+                this.visionApiKey = value;
+                this.OnSettingChanged("VisionApiKey", value);
             }
         }
 
@@ -311,6 +349,28 @@ namespace IntelligentKioskSample
             {
                 this.showDebugInfo = value;
                 this.OnSettingChanged("ShowDebugInfo", value);
+            }
+        }
+
+        private double driverMonitoringSleepingThreshold = RealtimeDriverMonitoring.DefaultSleepingApertureThreshold;
+        public double DriverMonitoringSleepingThreshold
+        {
+            get { return this.driverMonitoringSleepingThreshold; }
+            set
+            {
+                this.driverMonitoringSleepingThreshold = value;
+                this.OnSettingChanged("DriverMonitoringSleepingThreshold", value);
+            }
+        }
+
+        private double driverMonitoringYawningThreshold = RealtimeDriverMonitoring.DefaultYawningApertureThreshold;
+        public double DriverMonitoringYawningThreshold
+        {
+            get { return this.driverMonitoringYawningThreshold; }
+            set
+            {
+                this.driverMonitoringYawningThreshold = value;
+                this.OnSettingChanged("DriverMonitoringYawningThreshold", value);
             }
         }
     }

@@ -54,6 +54,11 @@
                         <PasswordBox Password="{Binding EmotionApiKey, Mode=TwoWay}" />
                     </StackPanel>
 
+                    <StackPanel Orientation="Vertical" Margin="0,10,0,0">
+                        <TextBlock Text="Vision API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
+                        <PasswordBox Password="{Binding VisionApiKey, Mode=TwoWay}" />
+                    </StackPanel>
+
                     <StackPanel Orientation="Vertical" Margin="0,10,0,0"  >
                         <TextBlock Text="Bing Search API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
                         <PasswordBox Password="{Binding BingSearchApiKey, Mode=TwoWay}" />

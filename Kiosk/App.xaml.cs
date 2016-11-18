@@ -87,6 +87,7 @@ namespace IntelligentKioskSample
                 {
                     EmotionServiceHelper.ApiKey = SettingsHelper.Instance.EmotionApiKey;
                     FaceServiceHelper.ApiKey = SettingsHelper.Instance.FaceApiKey;
+                    VisionServiceHelper.ApiKey = SettingsHelper.Instance.VisionApiKey;
                     BingSearchHelper.SearchApiKey = SettingsHelper.Instance.BingSearchApiKey;
                     BingSearchHelper.AutoSuggestionApiKey = SettingsHelper.Instance.BingAutoSuggestionApiKey;
                     TextAnalyticsHelper.ApiKey = SettingsHelper.Instance.TextAnalyticsKey;

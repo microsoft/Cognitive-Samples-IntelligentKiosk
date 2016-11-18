@@ -239,6 +239,7 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
+                FaceListManager.FaceListsUserDataFilter = SettingsHelper.Instance.WorkspaceKey + "_RealTime";
                 await FaceListManager.Initialize();
 
                 await ResetDemographicsData();

@@ -105,6 +105,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Converters.cs" />
     <Compile Include="Controls\OverallStatsControl.xaml.cs">
       <DependentUpon>OverallStatsControl.xaml</DependentUpon>
     </Compile>
@@ -177,6 +178,9 @@
     <Compile Include="Views\EmotionRecognitionPage.xaml.cs">
       <DependentUpon>EmotionRecognitionPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\RealtimeDriverMonitoring.xaml.cs">
+      <DependentUpon>RealtimeDriverMonitoring.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RecognitionPage.xaml.cs">
       <DependentUpon>RecognitionPage.xaml</DependentUpon>
     </Compile>
@@ -216,6 +220,7 @@
     <Content Include="Assets\Mall.png" />
     <Content Include="Assets\oxford-face.png" />
     <Content Include="Assets\RealTime.PNG" />
+    <Content Include="Assets\RealtimeDriverMonitoring.jpg" />
     <Content Include="Assets\smalltile-sdk.png" />
     <Content Include="Assets\splash-sdk.png" />
     <Content Include="Assets\StoreLogo.png" />
@@ -322,6 +327,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\EmotionRecognitionPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\RealtimeDriverMonitoring.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
