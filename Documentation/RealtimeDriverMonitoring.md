@@ -2,7 +2,7 @@
 
 An example that puts together the Face API and Vision API to envision a futuristic scenario where a dashboard camera in a car could be used to monitor the driver and determine when the driver is looking away from the road ahead, sleeping, yawning or doing certain activities, such as using the phone or eating a banana. 
 
-The sample calls the APIs at a rate of 2fps to compute face identification and facial landmarks, as well as to determine activitities via the Captioning functionality in the Vision APIs.
+The sample calls the APIs at a rate of 2fps to compute face identification and facial landmarks, as well as to determine activities via the Captioning functionality in the Vision APIs.
 
 This sample also shows how to use FaceLists to track unique faces.
 
