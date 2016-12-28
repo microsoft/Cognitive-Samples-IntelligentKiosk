@@ -92,7 +92,7 @@ namespace ServiceHelpers
             }
         }
 
-        public static async Task<SimilarPersistedFace> FindSimilarPersistedFaceAsync(Stream imageStream, Guid faceId, FaceRectangle faceRectangle)
+        public static async Task<SimilarPersistedFace> FindSimilarPersistedFaceAsync(Stream imageStream, Guid faceId, Face face)
         {
             if (faceLists == null)
             {
@@ -141,6 +141,16 @@ namespace ServiceHelpers
                 // might create a new list if none exist, and if all lists are full we will delete the oldest face list (based on when we  
                 // last matched anything on it) so that we can add the new one.
 
+                double maxAngle = 30;
+                if (face.FaceAttributes.HeadPose != null &&
+                    (Math.Abs(face.FaceAttributes.HeadPose.Yaw) > maxAngle ||
+                     Math.Abs(face.FaceAttributes.HeadPose.Pitch) > maxAngle ||
+                     Math.Abs(face.FaceAttributes.HeadPose.Roll) > maxAngle))
+                {
+                    // This isn't a good frontal shot, so let's not use it as the primary example face for this person
+                    return null;
+                }
+
                 if (!faceLists.Any())
                 {
                     // We don't have any FaceLists yet. Create one
@@ -161,7 +171,7 @@ namespace ServiceHelpers
 
                     try
                     {
-                        addResult = await FaceServiceHelper.AddFaceToFaceListAsync(faceList.Key, imageStream, faceRectangle);
+                        addResult = await FaceServiceHelper.AddFaceToFaceListAsync(faceList.Key, imageStream, face.FaceRectangle);
                         break;
                     }
                     catch (Exception ex)
@@ -201,7 +211,7 @@ namespace ServiceHelpers
                     faceLists.Add(newFaceListId, new FaceListInfo { FaceListId = newFaceListId, LastMatchTimestamp = DateTime.Now });
 
                     // Add face to new list
-                    addResult = await FaceServiceHelper.AddFaceToFaceListAsync(newFaceListId, imageStream, faceRectangle);
+                    addResult = await FaceServiceHelper.AddFaceToFaceListAsync(newFaceListId, imageStream, face.FaceRectangle);
                 }
 
                 if (addResult != null)

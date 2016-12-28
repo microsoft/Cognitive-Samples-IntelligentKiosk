@@ -1,0 +1,155 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.VideoInsightsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <local:DurationToStringConverter x:Key="DurationToStringConverter"/>
+        <ctl:EmotionToColoredBar x:Key="EmotionToColoredBarControl"/>
+    </Page.Resources>
+
+    <Grid x:Name="MainGrid" 
+            EntranceNavigationTransitionInfo.IsTargetElement="True" Background="#FF262626">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+            <AppBarButton Icon="OpenFile" Label="Open local video" Click="FromFileClick"/>
+
+            <CommandBar.Content>
+                <ctl:PageHeader>
+                    <ctl:PageHeader.HeaderContent>
+                        <TextBlock Text="REALTIME VIDEO INSIGHTS" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
+                    </ctl:PageHeader.HeaderContent>
+                </ctl:PageHeader>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1" Margin="0,36,0,0" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.4*"/>
+                <RowDefinition Height="0.6*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="0.1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="1" MaxWidth="640" MaxHeight="360" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                <MediaElement x:Name="videoPlayer" AreTransportControlsEnabled="True" >
+                    <MediaElement.TransportControls>
+                        <MediaTransportControls IsPlaybackRateButtonVisible="True" IsFullWindowEnabled="False" IsFullWindowButtonVisible="False" IsZoomButtonVisible="False" IsPlaybackRateEnabled="True" />
+                    </MediaElement.TransportControls>
+                </MediaElement>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="1" Margin="0,6,0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Margin="0,0,6,0">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <ctl:OverallStatsControl x:Name="overallStatsControl" Margin="0,0,0,6" Width="300" HeaderText="Total Faces"/>
+
+                    <ctl:AgeGenderDistributionControl x:Name="ageGenderDistributionControl" Width="300" Margin="0,6,0,0" Grid.Row="1" HeaderText="Demographics"/>
+                </Grid>
+
+                <Grid Grid.Column="1" Margin="6,0,0,0" Background="#FF222222">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Margin="6" Text="Emotion Timeline" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}"/>
+                    <Rectangle Height="1" Fill="Gray" Grid.Row="1" Margin="0,0,0,12"/>
+
+                    <Grid Grid.Row="2" Margin="140,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition  />
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="8" Height="8" Fill="#ff542c" />
+                                <TextBlock Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" Margin="2,0,24,2" Text="Anger"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="8" Height="8" Fill="#ce2d90" />
+                                <TextBlock Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" Margin="2,0,24,2" Text="Contempt"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="8" Height="8" Fill="#8c43bd" />
+                                <TextBlock Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" Margin="2,0,24,2" Text="Disgust"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="8" Height="8" Fill="#feb552" />
+                                <TextBlock Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" Margin="2,0,24,2" Text="Fear"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="8" Height="8" Fill="#4fc745" />
+                                <TextBlock Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" Margin="2,0,24,2" Text="Happiness"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="8" Height="8" Fill="#afafaf" />
+                                <TextBlock Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" Margin="2,0,24,2" Text="Neutral"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="8" Height="8" Fill="#478bcb" />
+                                <TextBlock Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" Margin="2,0,24,2" Text="Sadness"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Width="8" Height="8" Fill="#fff6d6" />
+                                <TextBlock Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" Margin="2,0,10,2" Text="Surprise"/>
+                            </StackPanel>
+
+                        </StackPanel>
+
+                        <TextBlock Grid.Row="1" Text="0:00:00" HorizontalAlignment="Left" Foreground="Gray" Margin="10,0,0,0" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <TextBlock Grid.Row="1" Text="{Binding ElementName=videoPlayer, Path=NaturalDuration, Converter={StaticResource DurationToStringConverter}}" HorizontalAlignment="Right" Margin="0,0,9,0" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <Grid Grid.Row="2" x:Name="timelineTipHost" >
+                            <Rectangle x:Name="timelineRectangle" Height="1" Fill="Gray" Opacity="0.2" Margin="10,0,10,0" Tapped="TimelineTapped" />
+                            <Polyline x:Name="timelineTip" StrokeThickness="0"  Points="0,0,10,10,20,0" Fill="Gray"  />
+                        </Grid>
+                    </Grid>
+
+                    <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Margin="0,0,10,0" >
+                        <StackPanel x:Name="peopleListView" Grid.Row="1" />
+                    </ScrollViewer>
+                </Grid>
+
+            </Grid >
+
+            <TextBlock Margin="0,0,6,6" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="debugText" Opacity="0.6" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+
+        </Grid>
+
+    </Grid>
+</Page>
+
+    

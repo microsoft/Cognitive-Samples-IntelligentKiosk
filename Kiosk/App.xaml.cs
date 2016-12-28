@@ -99,6 +99,7 @@ namespace IntelligentKioskSample
                 // callbacks for core library
                 FaceServiceHelper.Throttled = () => ShowThrottlingToast("Face");
                 EmotionServiceHelper.Throttled = () => ShowThrottlingToast("Emotion");
+                VisionServiceHelper.Throttled = () => ShowThrottlingToast("Vision");
                 ErrorTrackingHelper.TrackException = (ex, msg) => LogException(ex, msg);
                 ErrorTrackingHelper.GenericApiCallExceptionHandler = Util.GenericApiCallExceptionHandler;
 

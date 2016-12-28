@@ -34,6 +34,7 @@
 using Microsoft.ProjectOxford.Emotion.Contract;
 using Microsoft.ProjectOxford.Face;
 using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.ProjectOxford.Vision;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -201,6 +202,32 @@ namespace ServiceHelpers
             }
         }
 
+        public async Task IdentifyCelebrityAsync()
+        {
+            try
+            {
+                if (this.ImageUrl != null)
+                {
+                    this.AnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(this.ImageUrl);
+                }
+                else if (this.GetImageStreamCallback != null)
+                {
+                    this.AnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(this.GetImageStreamCallback, new VisualFeature[] { VisualFeature.Categories }, new string[] { "Celebrities" });
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorTrackingHelper.TrackException(e, "Vision API AnalyzeImageAsync error");
+
+                this.AnalysisResult = new Microsoft.ProjectOxford.Vision.Contract.AnalysisResult();
+
+                if (this.ShowDialogOnFaceApiErrors)
+                {
+                    await ErrorTrackingHelper.GenericApiCallExceptionHandler(e, "Vision API failed.");
+                }
+            }
+        }
+
         public async Task IdentifyFacesAsync()
         {
             this.IdentifiedPersons = Enumerable.Empty<IdentifiedPerson>();
@@ -290,7 +317,7 @@ namespace ServiceHelpers
             {
                 try
                 {
-                    SimilarPersistedFace similarPersistedFace = await FaceListManager.FindSimilarPersistedFaceAsync(await this.GetImageStreamCallback(), detectedFace.FaceId, detectedFace.FaceRectangle);
+                    SimilarPersistedFace similarPersistedFace = await FaceListManager.FindSimilarPersistedFaceAsync(await this.GetImageStreamCallback(), detectedFace.FaceId, detectedFace);
                     if (similarPersistedFace != null)
                     {
                         result.Add(new SimilarFaceMatch { Face = detectedFace, SimilarPersistedFace = similarPersistedFace });
