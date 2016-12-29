@@ -124,9 +124,9 @@ namespace ServiceHelpers
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError<Person[]>(() => faceClient.GetPersonsAsync(personGroupId));
         }
 
-        public static async Task<Face[]> DetectAsync(Stream imageStream, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null)
+        public static async Task<Face[]> DetectAsync(Func<Task<Stream>> imageStreamCallback, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<Face[]>(() => faceClient.DetectAsync(imageStream, returnFaceId, returnFaceLandmarks, returnFaceAttributes));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<Face[]>(async () => await faceClient.DetectAsync(await imageStreamCallback(), returnFaceId, returnFaceLandmarks, returnFaceAttributes));
         }
 
         public static async Task<Face[]> DetectAsync(string url, bool returnFaceId = true, bool returnFaceLandmarks = false, IEnumerable<FaceAttributeType> returnFaceAttributes = null)
@@ -154,9 +154,9 @@ namespace ServiceHelpers
             return (await RunTaskWithAutoRetryOnQuotaLimitExceededError<SimilarPersistedFace[]>(() => faceClient.FindSimilarAsync(faceId, faceListId, maxNumOfCandidatesReturned)));
         }
 
-        public static async Task<AddPersistedFaceResult> AddFaceToFaceListAsync(string faceListId, Stream imageStream, FaceRectangle targetFace)
+        public static async Task<AddPersistedFaceResult> AddFaceToFaceListAsync(string faceListId, Func<Task<Stream>> imageStreamCallback, FaceRectangle targetFace)
         {
-            return (await RunTaskWithAutoRetryOnQuotaLimitExceededError<AddPersistedFaceResult>(() => faceClient.AddFaceToFaceListAsync(faceListId, imageStream, null, targetFace)));
+            return (await RunTaskWithAutoRetryOnQuotaLimitExceededError<AddPersistedFaceResult>(async () => await faceClient.AddFaceToFaceListAsync(faceListId, await imageStreamCallback(), null, targetFace)));
         }
 
         public static async Task CreateFaceListAsync(string faceListId, string name, string userData)
@@ -179,9 +179,9 @@ namespace ServiceHelpers
             await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.AddPersonFaceAsync(personGroupId, personId, imageUrl, userData, targetFace));
         }
 
-        public static async Task AddPersonFaceAsync(string personGroupId, Guid personId, Stream imageStream, string userData, FaceRectangle targetFace)
+        public static async Task AddPersonFaceAsync(string personGroupId, Guid personId, Func<Task<Stream>> imageStreamCallback, string userData, FaceRectangle targetFace)
         {
-            await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.AddPersonFaceAsync(personGroupId, personId, imageStream, userData, targetFace));
+            await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await faceClient.AddPersonFaceAsync(personGroupId, personId, await imageStreamCallback(), userData, targetFace));
         }
 
         public static async Task<IdentifyResult[]> IdentifyAsync(string personGroupId, Guid[] detectedFaceIds)

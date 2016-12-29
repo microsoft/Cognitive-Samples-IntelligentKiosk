@@ -119,9 +119,9 @@ namespace ServiceHelpers
             await RunTaskWithAutoRetryOnQuotaLimitExceededError<object>(async () => { await action(); return null; });
         }
 
-        public static async Task<Emotion[]> RecognizeAsync(Stream imageStream)
+        public static async Task<Emotion[]> RecognizeAsync(Func<Task<Stream>> imageStreamCallback)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<Emotion[]>(() => emotionClient.RecognizeAsync(imageStream));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<Emotion[]>(async () => await emotionClient.RecognizeAsync(await imageStreamCallback()));
         }
 
         public static async Task<Emotion[]> RecognizeAsync(string url)

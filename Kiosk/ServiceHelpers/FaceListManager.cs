@@ -92,7 +92,7 @@ namespace ServiceHelpers
             }
         }
 
-        public static async Task<SimilarPersistedFace> FindSimilarPersistedFaceAsync(Stream imageStream, Guid faceId, Face face)
+        public static async Task<SimilarPersistedFace> FindSimilarPersistedFaceAsync(Func<Task<Stream>> imageStreamCallback, Guid faceId, Face face)
         {
             if (faceLists == null)
             {
@@ -171,7 +171,7 @@ namespace ServiceHelpers
 
                     try
                     {
-                        addResult = await FaceServiceHelper.AddFaceToFaceListAsync(faceList.Key, imageStream, face.FaceRectangle);
+                        addResult = await FaceServiceHelper.AddFaceToFaceListAsync(faceList.Key, imageStreamCallback, face.FaceRectangle);
                         break;
                     }
                     catch (Exception ex)
@@ -211,7 +211,7 @@ namespace ServiceHelpers
                     faceLists.Add(newFaceListId, new FaceListInfo { FaceListId = newFaceListId, LastMatchTimestamp = DateTime.Now });
 
                     // Add face to new list
-                    addResult = await FaceServiceHelper.AddFaceToFaceListAsync(newFaceListId, imageStream, face.FaceRectangle);
+                    addResult = await FaceServiceHelper.AddFaceToFaceListAsync(newFaceListId, imageStreamCallback, face.FaceRectangle);
                 }
 
                 if (addResult != null)

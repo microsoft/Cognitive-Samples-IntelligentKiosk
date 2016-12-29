@@ -340,7 +340,7 @@ namespace IntelligentKioskSample.Views
                             await FaceServiceHelper.AddPersonFaceAsync(
                                 this.CurrentPersonGroup.PersonGroupId,
                                 newPerson.PersonId,
-                                imageStream: await photoFile.OpenStreamForReadAsync(),
+                                imageStreamCallback: photoFile.OpenStreamForReadAsync,
                                 userData: photoFile.Path,
                                 targetFace: null);
 

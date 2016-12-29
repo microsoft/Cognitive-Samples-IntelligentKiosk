@@ -136,7 +136,7 @@ namespace IntelligentKioskSample.Views
                         await FaceServiceHelper.AddPersonFaceAsync(
                             this.CurrentPersonGroup.PersonGroupId,
                             this.CurrentPerson.PersonId,
-                            imageStream: await item.GetImageStreamCallback(),
+                            imageStreamCallback: item.GetImageStreamCallback,
                             userData: item.LocalImagePath,
                             targetFace: null);
                     }

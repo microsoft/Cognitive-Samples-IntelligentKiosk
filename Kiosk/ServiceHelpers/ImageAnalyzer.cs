@@ -115,7 +115,7 @@ namespace ServiceHelpers
                 else if (this.GetImageStreamCallback != null)
                 {
                     this.DetectedFaces = await FaceServiceHelper.DetectAsync(
-                        await this.GetImageStreamCallback(),
+                        this.GetImageStreamCallback,
                         returnFaceId: true,
                         returnFaceLandmarks: detectFaceLandmarks,
                         returnFaceAttributes: detectFaceAttributes ? DefaultFaceAttributeTypes : null);
@@ -153,7 +153,7 @@ namespace ServiceHelpers
                 }
                 else if (this.GetImageStreamCallback != null)
                 {
-                    this.DetectedEmotion = await EmotionServiceHelper.RecognizeAsync(await this.GetImageStreamCallback());
+                    this.DetectedEmotion = await EmotionServiceHelper.RecognizeAsync(this.GetImageStreamCallback);
                 }
 
                 if (this.FilterOutSmallFaces)
@@ -317,7 +317,7 @@ namespace ServiceHelpers
             {
                 try
                 {
-                    SimilarPersistedFace similarPersistedFace = await FaceListManager.FindSimilarPersistedFaceAsync(await this.GetImageStreamCallback(), detectedFace.FaceId, detectedFace);
+                    SimilarPersistedFace similarPersistedFace = await FaceListManager.FindSimilarPersistedFaceAsync(this.GetImageStreamCallback, detectedFace.FaceId, detectedFace);
                     if (similarPersistedFace != null)
                     {
                         result.Add(new SimilarFaceMatch { Face = detectedFace, SimilarPersistedFace = similarPersistedFace });
