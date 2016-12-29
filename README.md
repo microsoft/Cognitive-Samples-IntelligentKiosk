@@ -25,7 +25,7 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 | [Mall Kiosk](Documentation/MallKiosk.md)      | An example of a Mall kiosk that makes product recommendations based on the people in front of the camera and analyzes their reaction to it  | Windows 10 Face Tracking; Age and gender prediction; Realtime sampling of Emotion; Face identification; Windows 10 Speech-To-Text; Text Sentiment Analysis |
 | [Realtime Crowd Insights](Documentation/RealtimeCrowdInsights.md)      | A realtime workflow for processing frames from a web camera to derive realtime crowd insights such as demographics, emotion and unique face counting | Windows 10 Face Tracking; Realtime sampling; Age, gender and emotion prediction; Face identification; Unique face counting |
 | [Realtime Driver Monitoring](Documentation/RealtimeDriverMonitoring.md)      | A futuristic scenario where a dashboard camera in a car could be used to monitor the driver and determine when the driver is looking away from the road ahead, sleeping, yawning or doing certain activities, such as using the phone or eating a banana. | Windows 10 Face Tracking; Realtime sampling; Facial Landmarks; Head Pose; Face identification; Unique face tracking; Image Captioning |
-
+| [Realtime Video Insights](Documentation/RealtimeVideoInsights.md)      | A realtime workflow for processing frames from a video file  to derive realtime insights such as demographics, emotion, unique face counting and face identification | Realtime sampling; Age, gender and emotion prediction; Face identification; Unique face counting; Celebrity detection |
 
 # Source Code Structure
 
