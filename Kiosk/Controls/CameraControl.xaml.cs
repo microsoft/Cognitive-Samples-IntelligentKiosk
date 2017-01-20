@@ -197,14 +197,25 @@ namespace IntelligentKioskSample.Controls
         private async Task SetVideoEncodingToHighestResolution(bool isForRealTimeProcessing = false)
         {
             VideoEncodingProperties highestVideoEncodingSetting;
+
+            // Sort the available resolutions from highest to lowest
+            var availableResolutions = this.captureManager.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview).Cast<VideoEncodingProperties>().OrderByDescending(v => v.Width * v.Height * (v.FrameRate.Numerator / v.FrameRate.Denominator));
+
             if (isForRealTimeProcessing)
             {
                 uint maxHeightForRealTime = 720;
-                highestVideoEncodingSetting = this.captureManager.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview).Cast<VideoEncodingProperties>().Where(v => v.Height <= maxHeightForRealTime).OrderByDescending(v => v.Width * v.Height * (v.FrameRate.Numerator / v.FrameRate.Denominator)).First();
+                // Find the highest resolution that is 720p or lower
+                highestVideoEncodingSetting = availableResolutions.FirstOrDefault(v => v.Height <= maxHeightForRealTime);
+                if (highestVideoEncodingSetting == null)
+                {
+                    // Since we didn't find 720p or lower, look for the first up from there
+                    highestVideoEncodingSetting = availableResolutions.LastOrDefault();
+                }
             }
             else
             {
-                highestVideoEncodingSetting = this.captureManager.VideoDeviceController.GetAvailableMediaStreamProperties(MediaStreamType.VideoPreview).Cast<VideoEncodingProperties>().OrderByDescending(v => v.Width * v.Height * (v.FrameRate.Numerator / v.FrameRate.Denominator)).First();
+                // Use the highest resolution
+                highestVideoEncodingSetting = availableResolutions.FirstOrDefault();
             }
 
             if (highestVideoEncodingSetting != null)
@@ -496,43 +507,43 @@ namespace IntelligentKioskSample.Controls
 
         private async Task<ImageAnalyzer> CapturePhotoAsync()
         {
-			try
-			{
-				if (!(await this.frameProcessingSemaphore.WaitAsync(250)))
-				{
-					return null;
-				}
+            try
+            {
+                if (!(await this.frameProcessingSemaphore.WaitAsync(250)))
+                {
+                    return null;
+                }
 
-				// Capture a frame from the preview stream
-				var videoFrame = new VideoFrame(BitmapPixelFormat.Bgra8, CameraResolutionWidth, CameraResolutionHeight);
-				using (var currentFrame = await captureManager.GetPreviewFrameAsync(videoFrame))
-				{
-					using (SoftwareBitmap previewFrame = currentFrame.SoftwareBitmap)
-					{
-						ImageAnalyzer imageWithFace = new ImageAnalyzer(await Util.GetPixelBytesFromSoftwareBitmapAsync(previewFrame));
+                // Capture a frame from the preview stream
+                var videoFrame = new VideoFrame(BitmapPixelFormat.Bgra8, CameraResolutionWidth, CameraResolutionHeight);
+                using (var currentFrame = await captureManager.GetPreviewFrameAsync(videoFrame))
+                {
+                    using (SoftwareBitmap previewFrame = currentFrame.SoftwareBitmap)
+                    {
+                        ImageAnalyzer imageWithFace = new ImageAnalyzer(await Util.GetPixelBytesFromSoftwareBitmapAsync(previewFrame));
 
-						imageWithFace.ShowDialogOnFaceApiErrors = this.ShowDialogOnApiErrors;
-						imageWithFace.FilterOutSmallFaces = this.FilterOutSmallFaces;
-						imageWithFace.UpdateDecodedImageSize(this.CameraResolutionHeight, this.CameraResolutionWidth);
+                        imageWithFace.ShowDialogOnFaceApiErrors = this.ShowDialogOnApiErrors;
+                        imageWithFace.FilterOutSmallFaces = this.FilterOutSmallFaces;
+                        imageWithFace.UpdateDecodedImageSize(this.CameraResolutionHeight, this.CameraResolutionWidth);
 
-						return imageWithFace;
-					}
-				}
-			}
-			catch (Exception ex)
-			{
-				if (this.ShowDialogOnApiErrors)
-				{
-					await Util.GenericApiCallExceptionHandler(ex, "Error capturing photo.");
-				}
-			}
-			finally
-			{
-				this.frameProcessingSemaphore.Release();
-			}
+                        return imageWithFace;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (this.ShowDialogOnApiErrors)
+                {
+                    await Util.GenericApiCallExceptionHandler(ex, "Error capturing photo.");
+                }
+            }
+            finally
+            {
+                this.frameProcessingSemaphore.Release();
+            }
 
-			return null;
-		}
+            return null;
+        }
 
         private void OnImageCaptured(ImageAnalyzer imageWithFace)
         {
@@ -566,13 +577,13 @@ namespace IntelligentKioskSample.Controls
         {
             if (this.cameraControlSymbol.Symbol == Symbol.Camera)
             {
-				var img = await CapturePhotoAsync();
-				if (img != null)
-				{
-					this.cameraControlSymbol.Symbol = Symbol.Refresh;
-					this.OnImageCaptured(img);
-				}
-			}
+                var img = await CapturePhotoAsync();
+                if (img != null)
+                {
+                    this.cameraControlSymbol.Symbol = Symbol.Refresh;
+                    this.OnImageCaptured(img);
+                }
+            }
             else
             {
                 this.cameraControlSymbol.Symbol = Symbol.Camera;
