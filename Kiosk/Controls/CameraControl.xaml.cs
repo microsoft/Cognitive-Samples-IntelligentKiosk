@@ -435,7 +435,7 @@ namespace IntelligentKioskSample.Controls
 
         public async Task<ImageAnalyzer> TakeAutoCapturePhoto()
         {
-            var image = await CapturePhotoAsync();
+            var image = await CaptureFrameAsync();
             this.autoCaptureState = AutoCaptureState.ShowingCapturedPhoto;
             this.OnAutoCaptureStateChanged(this.autoCaptureState);
             return image;
@@ -505,7 +505,7 @@ namespace IntelligentKioskSample.Controls
             }
         }
 
-        private async Task<ImageAnalyzer> CapturePhotoAsync()
+        public async Task<ImageAnalyzer> CaptureFrameAsync()
         {
             try
             {
@@ -577,7 +577,7 @@ namespace IntelligentKioskSample.Controls
         {
             if (this.cameraControlSymbol.Symbol == Symbol.Camera)
             {
-                var img = await CapturePhotoAsync();
+                var img = await CaptureFrameAsync();
                 if (img != null)
                 {
                     this.cameraControlSymbol.Symbol = Symbol.Refresh;

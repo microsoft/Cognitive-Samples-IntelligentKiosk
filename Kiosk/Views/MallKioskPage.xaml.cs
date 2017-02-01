@@ -273,7 +273,7 @@ namespace IntelligentKioskSample.Views
                         }
                         else
                         {
-                            await this.ProcessCameraCapture(await this.cameraControl.TakeAutoCapturePhoto());
+                            await this.ProcessCameraCapture(await this.cameraControl.CaptureFrameAsync());
                         }
                     }
                 });

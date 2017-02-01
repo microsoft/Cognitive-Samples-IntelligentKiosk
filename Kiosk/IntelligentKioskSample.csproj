@@ -168,6 +168,9 @@
     <Compile Include="Views\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\GreetingKiosk.xaml.cs" >
+      <DependentUpon>GreetingKiosk.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MallKioskPage.xaml.cs">
       <DependentUpon>MallKioskPage.xaml</DependentUpon>
     </Compile>
@@ -211,7 +214,7 @@
     </Compile>
     <Compile Include="Views\VideoInsightsPage.xaml.cs">
       <DependentUpon>VideoInsightsPage.xaml</DependentUpon>
-    </Compile>    
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -222,6 +225,7 @@
     <Content Include="Assets\BingNewsAnalytics.png" />
     <Content Include="Assets\camera.png" />
     <Content Include="Assets\female.png" />
+    <Content Include="Assets\GreetingKiosk.JPG" />
     <Content Include="Assets\male_blue.png" />
     <Content Include="Assets\EmotionRecognition.PNG" />
     <Content Include="Assets\FaceAPI.PNG" />
@@ -325,6 +329,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\DemoLauncherPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\GreetingKiosk.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
