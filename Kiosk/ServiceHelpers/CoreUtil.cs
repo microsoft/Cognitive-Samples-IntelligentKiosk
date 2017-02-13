@@ -32,14 +32,11 @@
 // 
 
 using Microsoft.ProjectOxford.Common;
-using Microsoft.ProjectOxford.Face;
+using Microsoft.ProjectOxford.Common.Contract;
+using Microsoft.ProjectOxford.Face.Contract;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.ProjectOxford.Face.Contract;
-using Microsoft.ProjectOxford.Emotion.Contract;
 
 namespace ServiceHelpers
 {

@@ -31,19 +31,16 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using ServiceHelpers;
 using IntelligentKioskSample.Controls;
-using Microsoft.ProjectOxford.Common;
-using Microsoft.ProjectOxford.Emotion.Contract;
+using Microsoft.ProjectOxford.Common.Contract;
 using Microsoft.ProjectOxford.Face.Contract;
+using ServiceHelpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Windows.Graphics.Imaging;
-using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -172,7 +169,7 @@ namespace IntelligentKioskSample.Views
             {
                 this.lastEmotionSample = e.DetectedEmotion;
 
-                Scores averageScores = new Scores
+                EmotionScores averageScores = new EmotionScores
                 {
                     Happiness = e.DetectedEmotion.Average(em => em.Scores.Happiness),
                     Anger = e.DetectedEmotion.Average(em => em.Scores.Anger),
@@ -226,7 +223,7 @@ namespace IntelligentKioskSample.Views
 
         private void ShowTimelineFeedbackForNoFaces()
         {
-            this.emotionDataTimelineControl.DrawEmotionData(new Scores { Neutral = 1 });
+            this.emotionDataTimelineControl.DrawEmotionData(new EmotionScores { Neutral = 1 });
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -383,7 +380,7 @@ namespace IntelligentKioskSample.Views
             this.cameraHostGrid.Width = this.cameraHostGrid.ActualHeight * (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
         }
 
-        public Scores GetLastEmotionForFace(BitmapBounds faceBox)
+        public EmotionScores GetLastEmotionForFace(BitmapBounds faceBox)
         {
             if (this.lastEmotionSample == null || !this.lastEmotionSample.Any())
             {

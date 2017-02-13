@@ -31,14 +31,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using ServiceHelpers;
-using Microsoft.ProjectOxford.Emotion.Contract;
+using Microsoft.ProjectOxford.Common.Contract;
 using Microsoft.ProjectOxford.Face.Contract;
+using ServiceHelpers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
@@ -48,10 +46,7 @@ using Windows.Media.Capture;
 using Windows.Media.Devices;
 using Windows.Media.FaceAnalysis;
 using Windows.Media.MediaProperties;
-using Windows.Media.SpeechRecognition;
-using Windows.Storage;
 using Windows.System.Threading;
-using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -69,7 +64,7 @@ namespace IntelligentKioskSample.Controls
 
     public interface IRealTimeDataProvider
     {
-        Scores GetLastEmotionForFace(BitmapBounds faceBox);
+        EmotionScores GetLastEmotionForFace(BitmapBounds faceBox);
         Face GetLastFaceAttributesForFace(BitmapBounds faceBox);
         IdentifiedPerson GetLastIdentifiedPersonForFace(BitmapBounds faceBox);
         SimilarPersistedFace GetLastSimilarPersistedFaceForFace(BitmapBounds faceBox);
@@ -310,7 +305,7 @@ namespace IntelligentKioskSample.Controls
 
                     if (this.realTimeDataProvider != null)
                     {
-                        Scores lastEmotion = this.realTimeDataProvider.GetLastEmotionForFace(face.FaceBox);
+                        EmotionScores lastEmotion = this.realTimeDataProvider.GetLastEmotionForFace(face.FaceBox);
                         if (lastEmotion != null)
                         {
                             faceBorder.ShowRealTimeEmotionData(lastEmotion);

@@ -34,7 +34,7 @@
 using IntelligentKioskSample.Controls;
 using KioskRuntimeComponent;
 using Microsoft.ProjectOxford.Common;
-using Microsoft.ProjectOxford.Emotion.Contract;
+using Microsoft.ProjectOxford.Common.Contract;
 using Newtonsoft.Json.Linq;
 using ServiceHelpers;
 using System;
@@ -251,7 +251,7 @@ namespace IntelligentKioskSample.Views
                     Emotion matchingEmotion = CoreUtil.FindFaceClosestToRegion(analyzer.DetectedEmotion, item.Face.FaceRectangle);
                     if (matchingEmotion == null)
                     {
-                        matchingEmotion = new Emotion { Scores = new Scores { Neutral = 1 } };
+                        matchingEmotion = new Emotion { Scores = new EmotionScores { Neutral = 1 } };
                     }
 
                     track.SetVideoFrameState(frameNumber, matchingEmotion.Scores);
