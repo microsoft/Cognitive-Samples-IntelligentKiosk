@@ -1,0 +1,34 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Controls.VerticalBarWithValueControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="50"
+    x:Name="userControl">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.3*"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="0.3*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="valueRowDefinition" />
+            <RowDefinition x:Name="barRowDefinition" Height="0" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="barValueTextBlock" Grid.Row="0" Grid.Column="1" Foreground="Gray" FontFamily="Segoe UI Semilight" Text="{Binding ElementName=userControl, Path=BarValue}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
+
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="bar1RowDefinition"/>
+                <RowDefinition x:Name="bar2RowDefinition"/>
+            </Grid.RowDefinitions>
+            <Border Grid.Row="0" Background="{Binding ElementName=userControl, Path=BarColor1}" />
+            <Border Grid.Row="1" Background="{Binding ElementName=userControl, Path=BarColor2}" />
+        </Grid>
+    </Grid>
+</UserControl>

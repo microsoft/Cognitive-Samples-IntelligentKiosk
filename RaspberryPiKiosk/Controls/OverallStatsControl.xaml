@@ -1,0 +1,42 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Controls.OverallStatsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    x:Name="userControl">
+
+    <Grid Background="#FF222222">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Margin="6,6,6,0" Text="{Binding HeaderText, ElementName=userControl}" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}"/>
+        <TextBlock Text="{Binding SubHeaderText, ElementName=userControl}" Visibility="{Binding SubHeaderVisibility, ElementName=userControl}" Grid.Row="1" Margin="6,0,6,0" Foreground="Gray" Opacity="0.5" Style="{StaticResource CaptionTextBlockStyle}"/>
+        <Rectangle Height="1" Fill="Gray" Grid.Row="2" Margin="0,6,0,0"/>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                <TextBlock Text="Analyzed" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center" ></TextBlock>
+                <TextBlock Grid.Row="2" x:Name="facesProcessedTextBlock" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
+                <TextBlock Text="Unique" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}"  VerticalAlignment="Center" HorizontalAlignment="Center" ></TextBlock>
+                <TextBlock Grid.Row="2" x:Name="uniqueFacesCountTextBlock" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Center"  Style="{StaticResource SubtitleTextBlockStyle}"/>
+            </StackPanel>
+
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="IntelligentKioskSample.Controls.EmotionEmojiControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+               >
+    <Grid Background="#FF1F1F1F" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="60" >
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="emotionEmoji" FontSize="17" FontFamily="Segoe UI Emoji" HorizontalAlignment="Center" VerticalAlignment="Center">&#x1f604;</TextBlock>
+        <TextBlock x:Name="emotionText" Margin="2,0,2,3" Grid.Row="1" Style="{StaticResource CaptionTextBlockStyle}" Foreground="LightGray" Opacity="0.5" FontFamily="Segoe UI Semilight" HorizontalAlignment="Center" VerticalAlignment="Top">Happy</TextBlock>
+
+    </Grid>
+
+</UserControl>
