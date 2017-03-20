@@ -37,7 +37,7 @@ This version also has a nice integration with the Sense HAT add-on for the Pi, m
 
 Navigating the kiosk via the Sense HAT joystick (assuming the joystick is on the lower/left corner as you look at the LEDs):
 
-* Left: Go to the demo launcher (screen you keep scrolling the word "Launcher" once it is in the Launcher screen)
+* Left: Go to the demo launcher (the screen will keep scrolling the word "Launcher" while in the Launcher screen)
 * Up/Down while in the Launcher screen: Move different demos into focus (the name of the current demo in focus will keep scrolling)
 * Enter while the Launcher is scrolling the name of any particular demo: Launches that demo
 
@@ -47,7 +47,7 @@ Demos in the Pi version:
 | ---------------------------- | -------- |
 | Greetings Kiosk          | Samples the camera at 1fps and uses the Sense HAT to scroll the name and age of the main face in front of the camera (or gender and age if the person is not recognized). |
 | Realtime Crowd Insights | Similar to the same demo in the main Kiosk, except that it also uses the Sense HAT to communicate the number of man and women (each unique face is a mapped to a LED, with the color indicating the gender). |
-| Realtime Driver Monitoring | Similar to the same demo in the main Kiosk, except that it also uses the Sense HAT to indicate the dangerous situation by turning all the LEDs red. |
+| Realtime Driver Monitoring | Similar to the same demo in the main Kiosk, except that it also uses the Sense HAT to indicate the detection of any of the dangerous situations by turning all the LEDs red. |
 | Emotion Meter  | A simple emotion meter, with each column of the Sense HAT 8x8 LED matrix indicating the level of each of the 8 emotions in the primary face in front of the camera. |
 
 # Source Code Structure
