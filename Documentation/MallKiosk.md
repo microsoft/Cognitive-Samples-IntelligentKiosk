@@ -1,6 +1,6 @@
 # Mall Kiosk
 
-![alt text] (https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/Mall.png "Mall Kiosk")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/Mall.png "Mall Kiosk")
 
 An  example of a Mall kiosk that makes product recommendations based on the people in front of the camera and analyzes their reaction to it. 
 
@@ -16,10 +16,10 @@ An  example of a Mall kiosk that makes product recommendations based on the peop
 
 # Key Source Code
 
-* [MallKioskPage] (../Kiosk/Views/MallKioskPage.xaml.cs): Main page that drives the demo. It hosts the CameraControl (see below) to display the live camera feed and allow photo captures, and a WebView control to displays the product recommendation web pages. It also contains the processing loop for analyzing the audience emotion in realtime when the facial expression feedback UI is activated (top/right corner of the camera feed).
+* [MallKioskPage](../Kiosk/Views/MallKioskPage.xaml.cs): Main page that drives the demo. It hosts the CameraControl (see below) to display the live camera feed and allow photo captures, and a WebView control to displays the product recommendation web pages. It also contains the processing loop for analyzing the audience emotion in realtime when the facial expression feedback UI is activated (top/right corner of the camera feed).
 
-* [CameraControl] (../Kiosk/Controls/CameraControl.xaml.cs): The code that contains the camera feed and runs a background loop to perform several tasks (track faces and draw face rectangles) and that provides the control button to capture a photo.
+* [CameraControl](../Kiosk/Controls/CameraControl.xaml.cs): The code that contains the camera feed and runs a background loop to perform several tasks (track faces and draw face rectangles) and that provides the control button to capture a photo.
 
-* [SpeechToTextControl] (../Kiosk/Controls/SpeechToTextControl.xaml.cs): The control used for text-to-speech input and sentiment analysis, raising an event to the main demo page with the results so it can use it to possibly provide an alternative product recommendation.
+* [SpeechToTextControl](../Kiosk/Controls/SpeechToTextControl.xaml.cs): The control used for text-to-speech input and sentiment analysis, raising an event to the main demo page with the results so it can use it to possibly provide an alternative product recommendation.
 
-* [ImageAnalyzer] (../Kiosk/ServiceHelpers/ImageAnalyzer.cs): Responsible for wrapping an image and exposing several methods and properties that act as a bridge to the Cognitive Services.
+* [ImageAnalyzer](../Kiosk/ServiceHelpers/ImageAnalyzer.cs): Responsible for wrapping an image and exposing several methods and properties that act as a bridge to the Cognitive Services.
