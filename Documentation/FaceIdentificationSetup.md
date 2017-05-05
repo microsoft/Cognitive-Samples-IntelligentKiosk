@@ -28,10 +28,10 @@ You can add people in batches to a Person Group by going to the “…” in the
 
 # Key Source Code
 
-* [PersonGroupsPage.xaml.cs] (../Kiosk/Views/PersonGroupsPage.xaml.cs): Page that shows the set of PersonGroups.
+* [PersonGroupsPage.xaml.cs](../Kiosk/Views/PersonGroupsPage.xaml.cs): Page that shows the set of PersonGroups.
 
-* [PersonGroupDetailsPage.xaml.cs] (../Kiosk/Views/PersonGroupDetailsPage.xaml.cs): Page that shows the set of people in a PersonGroup.
+* [PersonGroupDetailsPage.xaml.cs](../Kiosk/Views/PersonGroupDetailsPage.xaml.cs): Page that shows the set of people in a PersonGroup.
 
-* [PersonDetailsPage.xaml.cs] (../Kiosk/Views/PersonDetailsPage.xaml.cs): Page that shows the set of faces associated with a given person.
+* [PersonDetailsPage.xaml.cs](../Kiosk/Views/PersonDetailsPage.xaml.cs): Page that shows the set of faces associated with a given person.
 
-* [ImageSearchUserControl] (../Kiosk/Controls/ImageSearchUserControl.xaml.cs): A control used for searching Bing Images and local images and using them as input sample in the PersonDetailsPage.
+* [ImageSearchUserControl](../Kiosk/Controls/ImageSearchUserControl.xaml.cs): A control used for searching Bing Images and local images and using them as input sample in the PersonDetailsPage.
