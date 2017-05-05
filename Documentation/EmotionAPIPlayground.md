@@ -1,4 +1,4 @@
-# Emotion API Playground
+# Emotion API Explorer
 
 ![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/EmotionAPIRecognitionPlayground.png "Emotion API Playground")
 
