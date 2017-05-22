@@ -10,10 +10,10 @@ The thresholds in the simple heuristic used to determine when the driver is yawn
 
 # Key Source Code
 
-* [RealtimeDriverMonitoring] (../Kiosk/Views/RealtimeDriverMonitoring.xaml.cs): Main page that drives the demo. It hosts the CameraControl (see below) to display the live camera feed, creates a background loop to capture and process frames from the camera at 2fps, and maintains a simple state that is used to derive insights about the driver.
+* [RealtimeDriverMonitoring](../Kiosk/Views/RealtimeDriverMonitoring.xaml.cs): Main page that drives the demo. It hosts the CameraControl (see below) to display the live camera feed, creates a background loop to capture and process frames from the camera at 2fps, and maintains a simple state that is used to derive insights about the driver.
 
-* [CameraControl] (../Kiosk/Controls/CameraControl.xaml.cs): The code that contains the camera feed and runs a background loop to perform several tasks (track faces, draw face rectangles and display the realtime data about each face).
+* [CameraControl](../Kiosk/Controls/CameraControl.xaml.cs): The code that contains the camera feed and runs a background loop to perform several tasks (track faces, draw face rectangles and display the realtime data about each face).
 
-* [FaceListManager] (../Kiosk/ServiceHelpers/FaceListManager.cs): A management layer on top of the FaceList functionality.
+* [FaceListManager](../Kiosk/ServiceHelpers/FaceListManager.cs): A management layer on top of the FaceList functionality.
 
 

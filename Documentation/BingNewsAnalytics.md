@@ -1,4 +1,4 @@
-# Bing News Analytics
+ Bing News Analytics
 
 ![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/BingNewsAnalytics.jpg "Bing News Analytics")
 
@@ -14,8 +14,8 @@ This example connects the Bing News APIs with the Text Analytics APIs to create 
 
 # Key Source Code
 
-* [BingNewsAnalytics] (../Kiosk/Views/BingNewsAnalytics.xaml.cs): Main page that drives the demo
+* [BingNewsAnalytics](../Kiosk/Views/BingNewsAnalytics.xaml.cs): Main page that drives the demo
 
-* [BingSearchHelper] (../Kiosk/ServiceHelpers/BingSearchHelper.cs): The code that calls the Bing News API
+* [BingSearchHelper](../Kiosk/ServiceHelpers/BingSearchHelper.cs): The code that calls the Bing News API
 
-* [TextAnalyticsHelper] (../Kiosk/ServiceHelpers/TextAnalyticsHelper.cs): The code that calls the Text Analytics APIs
+* [TextAnalyticsHelper](../Kiosk/ServiceHelpers/TextAnalyticsHelper.cs): The code that calls the Text Analytics APIs

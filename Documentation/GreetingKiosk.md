@@ -11,7 +11,7 @@ are present it keeps checking for changes at 10fps.
 
 # Key Source Code
 
-* [GreetingKiosk] (../Kiosk/Views/GreetingKiosk.xaml.cs): Main page that drives the demo. It hosts the CameraControl (see below) to display the live camera feed, creates a background loop to capture and process frames from the camera. It then uses the result to greet the person with a message.
+* [GreetingKiosk](../Kiosk/Views/GreetingKiosk.xaml.cs): Main page that drives the demo. It hosts the CameraControl (see below) to display the live camera feed, creates a background loop to capture and process frames from the camera. It then uses the result to greet the person with a message.
 
-* [CameraControl] (../Kiosk/Controls/CameraControl.xaml.cs): The code that contains the camera feed and runs a background loop to perform several tasks (track faces and draw face rectangles).
+* [CameraControl](../Kiosk/Controls/CameraControl.xaml.cs): The code that contains the camera feed and runs a background loop to perform several tasks (track faces and draw face rectangles).
 
