@@ -60,7 +60,7 @@ namespace IntelligentKioskSample.Views
             }
             catch (Exception ex)
             {
-                await Util.GenericApiCallExceptionHandler(ex, "Failure dowloading groups");
+                await Util.GenericApiCallExceptionHandler(ex, "Failure downloading groups");
             }
 
             this.progressControl.IsActive = false;

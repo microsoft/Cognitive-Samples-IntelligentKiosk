@@ -35,44 +35,40 @@
                         <TextBlock Text="Keys" Style="{StaticResource SubheaderTextBlockStyle}"/>
                         <HyperlinkButton Margin="6,0,0,0" VerticalAlignment="Bottom" NavigateUri="https://www.microsoft.com/cognitive-services/en-us/sign-up">Click here if you need keys</HyperlinkButton>
                     </StackPanel>
-                    <TextBlock Text="Workspace Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0,5,0,0"  />
-                    <Grid>
+                    <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox Text="{Binding WorkspaceKey, Mode=TwoWay}"  />
-                        <Button Content="Generate New Key" Grid.Column="1" Margin="10,0,6,0" Click="OnGenerateNewKeyClicked" HorizontalAlignment="Right"/>
+                        <TextBox Header="Workspace Key" Text="{Binding WorkspaceKey, Mode=TwoWay}"  />
+                        <Button Content="Generate New Key" Grid.Column="1" Margin="10,0,6,0" Click="OnGenerateNewKeyClicked" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                     </Grid>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="Face API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0,5,0,0"  />
-                        <PasswordBox Password="{Binding FaceApiKey, Mode=TwoWay}" />
-                    </StackPanel>
+                    
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <PasswordBox Header="Face API Key" Password="{Binding FaceApiKey, Mode=TwoWay}" VerticalAlignment="Top" />
+                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Region" ItemsSource="{Binding AvailableApiRegions}" SelectedItem="{Binding FaceApiKeyRegion, Mode=TwoWay}"/>
+                    </Grid>
 
-                    <StackPanel Orientation="Vertical" Margin="0,10,0,0">
-                        <TextBlock Text="Emotion API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
-                        <PasswordBox Password="{Binding EmotionApiKey, Mode=TwoWay}" />
-                    </StackPanel>
+                    <PasswordBox Margin="0,10,0,0" Header="Emotion API Key" Password="{Binding EmotionApiKey, Mode=TwoWay}" />
 
-                    <StackPanel Orientation="Vertical" Margin="0,10,0,0">
-                        <TextBlock Text="Vision API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
-                        <PasswordBox Password="{Binding VisionApiKey, Mode=TwoWay}" />
-                    </StackPanel>
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <PasswordBox Header="Computer Vision API Key" Password="{Binding VisionApiKey, Mode=TwoWay}" />
+                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Region" ItemsSource="{Binding AvailableApiRegions}" SelectedItem="{Binding VisionApiKeyRegion, Mode=TwoWay}"/>
+                    </Grid>
 
-                    <StackPanel Orientation="Vertical" Margin="0,10,0,0"  >
-                        <TextBlock Text="Bing Search API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
-                        <PasswordBox Password="{Binding BingSearchApiKey, Mode=TwoWay}" />
-                    </StackPanel>
+                    <PasswordBox Header="Bing Search API Key" Margin="0,10,0,0" Password="{Binding BingSearchApiKey, Mode=TwoWay}" />
 
-                    <StackPanel Orientation="Vertical" Margin="0,10,0,0"  >
-                        <TextBlock Text="Bing Auto Suggestion API Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
-                        <PasswordBox Password="{Binding BingAutoSuggestionApiKey, Mode=TwoWay}" />
-                    </StackPanel>
+                    <PasswordBox Header="Bing Auto Suggestion API Key" Password="{Binding BingAutoSuggestionApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
 
-                    <StackPanel Orientation="Vertical" Margin="0,10,0,0">
-                        <TextBlock Text="Text Analytics Key" Style="{StaticResource BodyTextBlockStyle}" Margin="0"  />
-                        <PasswordBox Password="{Binding TextAnalyticsKey, Mode=TwoWay}" />
-                    </StackPanel>
+                    <PasswordBox Header="Text Analytics Key" Password="{Binding TextAnalyticsKey, Mode=TwoWay}" Margin="0,10,0,0"/>
 
                 </StackPanel>
 

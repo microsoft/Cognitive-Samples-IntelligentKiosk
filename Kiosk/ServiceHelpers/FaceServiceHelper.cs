@@ -66,6 +66,21 @@ namespace ServiceHelpers
             }
         }
 
+        private static string apiKeyRegion;
+        public static string ApiKeyRegion
+        {
+            get { return apiKeyRegion; }
+            set
+            {
+                var changed = apiKeyRegion != value;
+                apiKeyRegion = value;
+                if (changed)
+                {
+                    InitializeFaceServiceClient();
+                }
+            }
+        }
+
         static FaceServiceHelper()
         {
             InitializeFaceServiceClient();
@@ -73,9 +88,10 @@ namespace ServiceHelpers
 
         private static void InitializeFaceServiceClient()
         {
-            faceClient = new FaceServiceClient(apiKey);
+            faceClient = ApiKeyRegion != null ?
+                new FaceServiceClient(ApiKey, string.Format("https://{0}.api.cognitive.microsoft.com/face/v1.0", ApiKeyRegion)) :
+                new FaceServiceClient(ApiKey);
         }
-
 
         private static async Task<TResponse> RunTaskWithAutoRetryOnQuotaLimitExceededError<TResponse>(Func<Task<TResponse>> action)
         {

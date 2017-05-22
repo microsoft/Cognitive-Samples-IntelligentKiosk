@@ -121,6 +121,12 @@ namespace IntelligentKioskSample
                 this.FaceApiKey = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["FaceApiKeyRegion"];
+            if (value != null)
+            {
+                this.FaceApiKeyRegion = value.ToString();
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["EmotionApiKey"];
             if (value != null)
             {
@@ -131,6 +137,12 @@ namespace IntelligentKioskSample
             if (value != null)
             {
                 this.VisionApiKey = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["VisionApiKeyRegion"];
+            if (value != null)
+            {
+                this.VisionApiKeyRegion = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["BingSearchApiKey"];
@@ -241,6 +253,16 @@ namespace IntelligentKioskSample
             }
         }
 
+        private string faceApiKeyRegion = "westus";
+        public string FaceApiKeyRegion
+        {
+            get { return this.faceApiKeyRegion; }
+            set
+            {
+                this.faceApiKeyRegion = value;
+                this.OnSettingChanged("FaceApiKeyRegion", value);
+            }
+        }
 
         private string emotionApiKey = string.Empty;
         public string EmotionApiKey
@@ -261,6 +283,17 @@ namespace IntelligentKioskSample
             {
                 this.visionApiKey = value;
                 this.OnSettingChanged("VisionApiKey", value);
+            }
+        }
+
+        private string visionApiKeyRegion = "westus";
+        public string VisionApiKeyRegion
+        {
+            get { return this.visionApiKeyRegion; }
+            set
+            {
+                this.visionApiKeyRegion = value;
+                this.OnSettingChanged("VisionApiKeyRegion", value);
             }
         }
 
@@ -373,5 +406,7 @@ namespace IntelligentKioskSample
                 this.OnSettingChanged("DriverMonitoringYawningThreshold", value);
             }
         }
+
+        public string[] AvailableApiRegions { get { return new string[] { "eastus2", "southeastasia", "westcentralus", "westeurope", "westus" }; } }
     }
 }
