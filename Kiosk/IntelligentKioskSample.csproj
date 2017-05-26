@@ -165,10 +165,13 @@
     <Compile Include="Views\BingNewsAnalytics.xaml.cs">
       <DependentUpon>BingNewsAnalytics.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\BingVisualSearch.xaml.cs">
+      <DependentUpon>BingVisualSearch.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\GreetingKiosk.xaml.cs" >
+    <Compile Include="Views\GreetingKiosk.xaml.cs">
       <DependentUpon>GreetingKiosk.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MallKioskPage.xaml.cs">
@@ -223,6 +226,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\BingNewsAnalytics.png" />
+    <Content Include="Assets\BingVisualSearch.jpg" />
     <Content Include="Assets\camera.png" />
     <Content Include="Assets\female.png" />
     <Content Include="Assets\GreetingKiosk.JPG" />
@@ -325,6 +329,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="Views\BingNewsAnalytics.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\BingVisualSearch.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

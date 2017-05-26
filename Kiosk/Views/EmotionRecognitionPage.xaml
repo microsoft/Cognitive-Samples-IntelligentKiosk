@@ -21,7 +21,7 @@
             <AppBarButton Icon="Globe" Label="Pictures" x:Name="PicturesAppBarButton">
                 <AppBarButton.Flyout>
                     <Flyout x:Name="imageSearchFlyout">
-                        <ctl:ImageSearchUserControl ClearStateWhenClosed="False" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" OnImageSearchLocalFilesProvided="OnImageSearchLocalFilesProvided"/>
+                        <ctl:ImageSearchUserControl ClearStateWhenClosed="False" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled"/>
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>

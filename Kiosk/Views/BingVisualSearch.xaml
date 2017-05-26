@@ -1,0 +1,159 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.BingVisualSearch"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    SizeChanged="OnPageSizeChanged"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ctl:BooleanToVisibilityConverter x:Key="bolleanToVisibilityConverter"/>
+
+        <DataTemplate x:Key="PhotoResultTemplate">
+            <Border Width="120" Height="120" Background="#FF111111">
+                <Image Source="{Binding ImageUrl}" />
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ProductResultTemplate">
+            <Grid Background="#FF111111" Margin="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="240"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="{Binding ImageUrl}" Width="100" Height="100" />
+                <Grid Grid.Column="1" Margin="6, 0, 0, 0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{Binding Name}"  TextWrapping="WrapWholeWords" VerticalAlignment="Top" Style="{StaticResource CaptionTextBlockStyle}" />
+                    <TextBlock Grid.Row="1" Text="{Binding Price}" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" />
+                    <HyperlinkButton Grid.Row="2" Background="Transparent" NavigateUri="{Binding ReferenceUrl}">
+                        <TextBlock Text="{Binding ReferenceUrl}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"  Style="{StaticResource CaptionTextBlockStyle}" Foreground="Gray" />
+                    </HyperlinkButton>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CelebrityResultTemplate">
+            <Grid Background="#FF111111" Margin="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="180"/>
+                </Grid.ColumnDefinitions>
+                <Image Source="{Binding ImageUrl}" Width="90" Height="90"  />
+                <Grid Grid.Column="1" Margin="6,0,0,0" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="{Binding Name}"  TextWrapping="WrapWholeWords" VerticalAlignment="Top" />
+                    <TextBlock Grid.Row="1" Text="{Binding Occupation}" Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2" VerticalAlignment="Center">
+                        <TextBlock Text="Similarity Score:" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Gray" Margin="0,0,6,0"/>
+                        <TextBlock Text="{Binding SimilarityScore}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Gray"/>
+                    </StackPanel>
+                    <HyperlinkButton Grid.Row="3" Background="Transparent" NavigateUri="{Binding ReferenceUrl}">
+                        <TextBlock Text="{Binding ReferenceUrl}" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Style="{StaticResource CaptionTextBlockStyle}" Foreground="Gray" />
+                    </HyperlinkButton>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+
+        <local:ResultItemTemplateSelector x:Key="SearchResultTemplateSelector" PhotoTemplate="{StaticResource PhotoResultTemplate}" ProductTemplate="{StaticResource ProductResultTemplate}" CelebrityTemplate="{StaticResource CelebrityResultTemplate}"/>
+    </Page.Resources>
+    
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          EntranceNavigationTransitionInfo.IsTargetElement="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+           
+            <AppBarButton Icon="Favorite" Label="Suggestions">
+                <AppBarButton.Flyout>
+                    <Flyout x:Name="favoriteImagePickerFlyout">
+                        <GridView x:Name="favoritePhotosGridView" SelectionMode="Single" SelectionChanged="OnFavoriteSelectionChanged" Width="380">
+                            <GridView.ItemTemplate>
+                                <DataTemplate>
+                                    <Image Width="120" Height="120" Source="{Binding}"/>
+                                </DataTemplate>
+                            </GridView.ItemTemplate>
+                        </GridView>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+
+            <AppBarButton Icon="Video" Label="WebCam"  Click="OnWebCamButtonClicked"/>
+            
+            <AppBarButton Icon="Globe" Label="Search" x:Name="PicturesAppBarButton" >
+                <AppBarButton.Flyout>
+                    <Flyout x:Name="imageSearchFlyout">
+                        <ctl:ImageSearchUserControl ImageContentType="" ClearStateWhenClosed="False" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" />
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+
+            <CommandBar.Content>
+                <ctl:PageHeader>
+                    <ctl:PageHeader.HeaderContent>
+						<TextBlock Text="Bing Visual Search" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
+                    </ctl:PageHeader.HeaderContent>
+                </ctl:PageHeader>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <TextBlock x:Name="landingMessage" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Select a photo to start" Style="{StaticResource HeaderTextBlockStyle}"/>
+
+        <Grid Grid.Row="1"  >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.15*"/>
+                <RowDefinition/>
+                <RowDefinition Height="0.1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.1*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0.6*" />
+            </Grid.ColumnDefinitions>
+            
+            <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Top">
+
+                <Grid x:Name="webCamHostGrid" Visibility="Collapsed" >
+                    <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" FlowDirection="RightToLeft" x:Name="imageFromCameraWithFaces" />
+                    <ctl:CameraControl x:Name="cameraControl"/>
+                </Grid>
+
+                <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" x:Name="imageWithFacesControl" />
+
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" Margin="6" HorizontalAlignment="Right" Grid.Column="2" VerticalAlignment="Top">
+                <TextBlock Text="Search type:" VerticalAlignment="Center" Margin="0,0,6,0" />
+                <ComboBox SelectionChanged="OnResultTypeSelectionChanged" x:Name="resultTypeComboBox">
+                    <ComboBoxItem Content="Similar celebrities" x:Name="celebrityResultType" />
+                    <ComboBoxItem Content="Similar images" IsSelected="True" x:Name="similarImagesResultType"/>
+                    <ComboBoxItem Content="Similar products" x:Name="similarProductsResultType"/>
+                </ComboBox>
+            </StackPanel>
+
+            <ScrollViewer x:Name="resultsDetails" Visibility="Visible" Grid.Row="1" Grid.Column="2" Margin="24,0,0,0" HorizontalScrollBarVisibility="Disabled">
+                <Grid>
+                    <GridView x:Name="resultsGridView" IsItemClickEnabled="False" SelectionMode="None" ItemTemplateSelector="{StaticResource SearchResultTemplateSelector}"/>
+                    <ProgressRing x:Name="progressRing" Width="100" Height="100" Foreground="White"/>
+                    <TextBlock x:Name="searchErrorTextBlock" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Text="Couldn't find any results.&#x0a;Try another photo or a different type of search." />
+                </Grid>
+            </ScrollViewer>
+
+        </Grid>
+    </Grid>
+</Page>

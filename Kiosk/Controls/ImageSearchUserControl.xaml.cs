@@ -99,7 +99,6 @@ namespace IntelligentKioskSample.Controls
 
         public event EventHandler<IEnumerable<ImageAnalyzer>> OnImageSearchCompleted;
         public event EventHandler OnImageSearchCanceled;
-        public event EventHandler OnImageSearchLocalFilesProvided;
 
         public bool DetectFacesOnLoad
         {
@@ -226,12 +225,7 @@ namespace IntelligentKioskSample.Controls
 
                 if (selectedFiles != null)
                 {
-                    this.imageResultsGrid.ItemsSource = selectedFiles.Select(file => new ImageAnalyzer(file.OpenStreamForReadAsync, file.Path));
-                }
-
-                if (this.OnImageSearchLocalFilesProvided != null)
-                {
-                    this.OnImageSearchLocalFilesProvided(this, EventArgs.Empty);
+                    this.OnImageSearchCompleted?.Invoke(this, selectedFiles.Select(file => new ImageAnalyzer(file.OpenStreamForReadAsync, file.Path)));
                 }
             }
             catch (Exception ex)

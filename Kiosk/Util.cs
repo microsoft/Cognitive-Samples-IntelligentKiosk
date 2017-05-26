@@ -48,6 +48,7 @@ using Windows.Storage.Streams;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace IntelligentKioskSample
 {
@@ -192,6 +193,38 @@ namespace IntelligentKioskSample
             {
                 list.Add(item);
             }
+        }
+
+        internal static async Task<Stream> ResizePhoto(Stream photo, int height)
+        {
+            InMemoryRandomAccessStream result = new InMemoryRandomAccessStream();
+            await ResizePhoto(photo, height, result);
+            return result.AsStream();
+        }
+
+        private static async Task<Tuple<double, double>> ResizePhoto(Stream photo, int height, IRandomAccessStream resultStream)
+        {
+            WriteableBitmap wb = new WriteableBitmap(1, 1);
+            wb = await wb.FromStream(photo.AsRandomAccessStream());
+
+            int originalWidth = wb.PixelWidth;
+            int originalHeight = wb.PixelHeight;
+
+            if (wb.PixelHeight > height)
+            {
+                wb = wb.Resize((int)(((double)wb.PixelWidth / wb.PixelHeight) * height), height, WriteableBitmapExtensions.Interpolation.Bilinear);
+            }
+
+            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, resultStream);
+
+            encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                                    BitmapAlphaMode.Ignore,
+                                    (uint)wb.PixelWidth, (uint)wb.PixelHeight,
+                                    DisplayInformation.GetForCurrentView().LogicalDpi, DisplayInformation.GetForCurrentView().LogicalDpi, wb.PixelBuffer.ToArray());
+
+            await encoder.FlushAsync();
+
+            return new Tuple<double, double>((double)originalWidth / wb.PixelWidth, (double)originalHeight / wb.PixelHeight);
         }
     }
 }

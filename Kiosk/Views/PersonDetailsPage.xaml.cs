@@ -242,10 +242,5 @@ namespace IntelligentKioskSample.Views
                 }
             }
         }
-
-        private void OnImageSearchLocalFilesProvided(object sender, EventArgs e)
-        {
-            this.trainingImageCollectorFlyout.ShowAt(this.AddFacesAppBarButton);
-        }
     }
 }

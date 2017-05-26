@@ -62,6 +62,8 @@ namespace IntelligentKioskSample.Controls
 
     public sealed partial class ImageWithFaceBorderUserControl : UserControl
     {
+        private ImageAnalyzer currentImage;
+
         public ImageWithFaceBorderUserControl()
         {
             this.InitializeComponent();
@@ -210,6 +212,18 @@ namespace IntelligentKioskSample.Controls
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
             ImageAnalyzer dataContext = this.DataContext as ImageAnalyzer;
+
+            if (this.currentImage != dataContext)
+            {
+                this.currentImage = dataContext;
+            }
+            else
+            {
+                // Windows sometimes fires multiple DataContextChanged events. 
+                // If we are here that is one of those cases, and since we already set 
+                // the data context to this value we can ignore it
+                return;
+            }
 
             foreach (var child in this.hostGrid.Children.Where(c => !(c is Image)).ToArray())
             {
@@ -395,7 +409,7 @@ namespace IntelligentKioskSample.Controls
 
         private async void OnBitmapImageOpened(object sender, RoutedEventArgs e)
         {
-            await PreviewImageFaces();
+            await this.PreviewImageFaces();
         }
 
         private async void OnImageSizeChanged(object sender, SizeChangedEventArgs e)

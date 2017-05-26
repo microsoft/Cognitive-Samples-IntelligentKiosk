@@ -131,10 +131,5 @@ namespace IntelligentKioskSample.Views
         {
             this.webCamHostGrid.Width = this.webCamHostGrid.ActualHeight * (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
         }
-
-        private void OnImageSearchLocalFilesProvided(object sender, EventArgs e)
-        {
-            this.imageSearchFlyout.ShowAt(this.PicturesAppBarButton);
-        }
     }
 }

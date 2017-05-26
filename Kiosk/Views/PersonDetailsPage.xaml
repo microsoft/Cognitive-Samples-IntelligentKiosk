@@ -25,7 +25,7 @@
             <AppBarButton x:Name="AddFacesAppBarButton" Icon="Add" Label="Add Faces">
                 <AppBarButton.Flyout>
                     <Flyout x:Name="trainingImageCollectorFlyout">
-                        <ctl:ImageSearchUserControl x:Name="bingSearchControl" DetectFacesOnLoad="False" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" OnImageSearchLocalFilesProvided="OnImageSearchLocalFilesProvided" />
+                        <ctl:ImageSearchUserControl x:Name="bingSearchControl" DetectFacesOnLoad="False" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled"/>
                     </Flyout>
                 </AppBarButton.Flyout>
             </AppBarButton>
