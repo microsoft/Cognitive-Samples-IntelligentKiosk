@@ -88,5 +88,15 @@ namespace IntelligentKioskSample.Views
         {
             SettingsHelper.Instance.RestoreMallKioskSettingsToDefaultFile();
         }
+
+        private void OnLoadKeysFromConfigFileButtonClick(object sender, RoutedEventArgs e)
+        {
+            SettingsHelper.Instance.LoadKeysFromConfigFile();
+        }
+
+        private void OnClearButtonClick(object sender, RoutedEventArgs e)
+        {
+            SettingsHelper.Instance.ClearApiKeys();
+        }
     }
 }

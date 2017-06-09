@@ -1,0 +1,9 @@
+﻿{
+  "FaceApiKey": "849e561e4ebe458ca6f5477dd187efc9",
+  "VisionApiKey": "7772eacc3f8f4a589785da878fa2460d",
+  "VideoApiKey": "",
+  "EmotionApiKey": "adc21337c7b5497d81e6aa238fb0993e",
+  "BingSearchApiKey": "07720a805f6249bb9ab92a70b90618e8",
+  "BingAutoSuggestionApiKey": "07720a805f6249bb9ab92a70b90618e8",
+  "TextAnalyticsApiKey": "6215a7129c3c4dcdacfc74fd6479d11a"
+}

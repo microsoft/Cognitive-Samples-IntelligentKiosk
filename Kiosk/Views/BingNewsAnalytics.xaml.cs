@@ -72,7 +72,7 @@ namespace IntelligentKioskSample.Views
         {
             EnterKioskMode();
 
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.TextAnalyticsKey))
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.TextAnalyticsApiKey))
             {
                 await new MessageDialog("Missing Text Analytics Key. Please enter the key in the Settings page.", "Missing API Key").ShowAsync();
             }
@@ -107,7 +107,7 @@ namespace IntelligentKioskSample.Views
 
                 string userLanguage = this.languageComboBox.SelectedValue.ToString();
 
-                var news = await BingSearchHelper.GetNewsSearchResults(query, count: 50, offset:0, market: GetBingSearchMarketFromLanguage(userLanguage));
+                var news = await BingSearchHelper.GetNewsSearchResults(query, count: 50, offset: 0, market: GetBingSearchMarketFromLanguage(userLanguage));
 
                 Task<SentimentResult> sentimentTask = TextAnalyticsHelper.GetTextSentimentAsync(news.Select(n => n.Title).ToArray(), language: GetTextAnalyticsLanguageCodeFromLanguage(userLanguage));
 
@@ -118,7 +118,7 @@ namespace IntelligentKioskSample.Views
                 }
                 else
                 {
-                    keyPhrasesTask = Task.FromResult(new KeyPhrasesResult { KeyPhrases = new string[][] { new string [] { "Not available in this language" } } });
+                    keyPhrasesTask = Task.FromResult(new KeyPhrasesResult { KeyPhrases = new string[][] { new string[] { "Not available in this language" } } });
                 }
 
                 await Task.WhenAll(sentimentTask, keyPhrasesTask);
@@ -178,9 +178,9 @@ namespace IntelligentKioskSample.Views
         {
             switch (language)
             {
-                case "English": 
-                case "Spanish": 
-                case "German": 
+                case "English":
+                case "Spanish":
+                case "German":
                 case "Japanese":
                     return true;
                 default:
@@ -266,7 +266,7 @@ namespace IntelligentKioskSample.Views
             double score = (double)value;
 
             // Linear gradient function, from a red 0x99 when score = 0 to a green 0x77 when score = 1.
-            return new SolidColorBrush(Color.FromArgb(0xff, (byte) (0x99 - (score * 0x99)), (byte) (score * 0x77), 0));
+            return new SolidColorBrush(Color.FromArgb(0xff, (byte)(0x99 - (score * 0x99)), (byte)(score * 0x77), 0));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

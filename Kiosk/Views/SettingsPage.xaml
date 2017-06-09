@@ -9,7 +9,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-          EntranceNavigationTransitionInfo.IsTargetElement="True">
+        EntranceNavigationTransitionInfo.IsTargetElement="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -26,72 +26,99 @@
                 </ctl:PageHeader>
             </CommandBar.Content>
         </CommandBar>
-        
-        <ScrollViewer Grid.Row="1">
 
-            <StackPanel Orientation="Vertical" Margin="12,12" >
-                <StackPanel >
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Keys" Style="{StaticResource SubheaderTextBlockStyle}"/>
-                        <HyperlinkButton Margin="6,0,0,0" VerticalAlignment="Bottom" NavigateUri="https://azure.microsoft.com/en-us/try/cognitive-services/">Click here if you need keys</HyperlinkButton>
-                    </StackPanel>
+        <ScrollViewer Grid.Row="1" HorizontalAlignment="Stretch" Margin="0,0,12,-6">
+            <StackPanel Orientation="Vertical" Margin="12,12,24,12" HorizontalAlignment="stretch" >
+                <StackPanel Name="KeyStackPanel" HorizontalAlignment="Stretch" >
+
+                    <Grid Margin="0,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="API Keys" Grid.Column="0" Style="{StaticResource SubheaderTextBlockStyle}" Width="120" HorizontalAlignment="Left" />
+
+                        <HyperlinkButton Margin="6,0,0,0" Grid.Column="1" VerticalAlignment="Bottom" NavigateUri="https://azure.microsoft.com/en-us/try/cognitive-services/">Click here if you need keys</HyperlinkButton>
+                        <TextBlock Margin="6,0,0,6" Grid.Column="2" VerticalAlignment="Bottom" Text=" | "></TextBlock>
+                        <HyperlinkButton Margin="6,0,0,0" Grid.Column="3" VerticalAlignment="Bottom" NavigateUri="" Click="OnLoadKeysFromConfigFileButtonClick">Load keys from configuration file</HyperlinkButton>
+                        <TextBlock Margin="6,0,0,6" Grid.Column="4" VerticalAlignment="Bottom" Text=" | "></TextBlock>
+                        <HyperlinkButton Margin="6,0" Grid.Column="5" VerticalAlignment="Bottom" NavigateUri="" Click="OnClearButtonClick">Clear Keys</HyperlinkButton>
+                    </Grid>
+
                     <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox Header="Workspace Key" Text="{Binding WorkspaceKey, Mode=TwoWay}"  />
+                        <TextBox x:Name="WorkspaceKey" Header="Workspace Key" Text="{Binding WorkspaceKey, Mode=TwoWay}"  />
                         <Button Content="Generate New Key" Grid.Column="1" Margin="10,0,6,0" Click="OnGenerateNewKeyClicked" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
                     </Grid>
-                    
+
                     <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Face API Key" Password="{Binding FaceApiKey, Mode=TwoWay}" VerticalAlignment="Top" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Region" ItemsSource="{Binding AvailableApiRegions}" SelectedItem="{Binding FaceApiKeyRegion, Mode=TwoWay}"/>
+                        <PasswordBox x:Name="FaceApiKey" Header="Face API Key" Password="{Binding FaceApiKey, Mode=TwoWay}" VerticalAlignment="Top" />
+                        <ComboBox Grid.Column="1" Margin="10,0,7,0" Header="Region" ItemsSource="{Binding AvailableApiRegions}" SelectedItem="{Binding FaceApiKeyRegion, Mode=TwoWay}"/>
                     </Grid>
 
-                    <PasswordBox Margin="0,10,0,0" Header="Emotion API Key" Password="{Binding EmotionApiKey, Mode=TwoWay}" />
+                    <PasswordBox x:Name="EmotionApiKey" Margin="0,10,6,0" Header="Emotion API Key" Password="{Binding EmotionApiKey, Mode=TwoWay}" />
 
                     <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Computer Vision API Key" Password="{Binding VisionApiKey, Mode=TwoWay}" />
+                        <PasswordBox x:Name="ComputerVisionApiKey" Header="Computer Vision API Key" Password="{Binding VisionApiKey, Mode=TwoWay}" />
                         <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Region" ItemsSource="{Binding AvailableApiRegions}" SelectedItem="{Binding VisionApiKeyRegion, Mode=TwoWay}"/>
                     </Grid>
 
-                    <PasswordBox Header="Bing Search API Key" Margin="0,10,0,0" Password="{Binding BingSearchApiKey, Mode=TwoWay}" />
+                    <PasswordBox x:Name="BingSearchApiKey" Header="Bing Search API Key" Margin="0,10,6,0" Password="{Binding BingSearchApiKey, Mode=TwoWay}" />
 
-                    <PasswordBox Header="Bing Auto Suggestion API Key" Password="{Binding BingAutoSuggestionApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
+                    <PasswordBox x:Name="BingAutoSuggestionApiKey" Header="Bing Auto Suggestion API Key" Password="{Binding BingAutoSuggestionApiKey, Mode=TwoWay}" Margin="0,10,6,0" />
 
-                    <PasswordBox Header="Text Analytics Key" Password="{Binding TextAnalyticsKey, Mode=TwoWay}" Margin="0,10,0,0"/>
+                    <PasswordBox x:Name="TextAnalyticsApiKey" Header="Text Analytics API Key" Password="{Binding TextAnalyticsApiKey, Mode=TwoWay}" Margin="0,10,6,0"/>
+
 
                 </StackPanel>
 
-                <StackPanel Margin="0,50,0,0">
-                    <TextBlock Text="Miscellaneous" Style="{StaticResource SubheaderTextBlockStyle}"/>
-                    <ComboBox x:Name="cameraSourceComboBox" Header="Camera Source"  SelectionChanged="OnCameraSourceSelectionChanged"/>               
-                    <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info:" Margin="0,6,0,0"/>
-                
-                    <StackPanel Orientation="Horizontal">
-                        <Slider x:Name="MinDetectableFaceSizeSlider" Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" SmallChange="1" LargeChange="5" Header="Minimum detectable face size (as % of image height):" HorizontalAlignment="Left" Margin="0,0,0,0" StepFrequency="1"/>
-                        <TextBlock Text="{Binding ElementName=MinDetectableFaceSizeSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>
-                    </StackPanel>
-                 </StackPanel>
+                <StackPanel Margin="0,40,0,0">
+                    <TextBlock Grid.Column="0" Text="Miscellaneous" Style="{StaticResource SubheaderTextBlockStyle}"/>
+                    <Grid Margin="0,10,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="80*" />
+                            <ColumnDefinition Width="360*" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox Grid.Row="0" Grid.Column="0" x:Name="cameraSourceComboBox" Header="Camera Source"  SelectionChanged="OnCameraSourceSelectionChanged" Margin="0,14,0,2" VerticalAlignment="Center" Height="60" Width="132"/>
+                        <ToggleSwitch Grid.Row="0" Grid.Column="1" IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info" Margin="100,16,0,0" HorizontalAlignment="Left" Grid.ColumnSpan="2" Height="60" Width="154"/>
+                        <Slider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="MinDetectableFaceSizeSlider" Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" SmallChange="1" LargeChange="5" Header="Minimum detectable face size (as % of image height)" HorizontalAlignment="Left" Margin="0,20,0,0" StepFrequency="1" Width="350"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding ElementName=MinDetectableFaceSizeSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="0,40,0,12" Height="32"/>
+                    </Grid>
 
-                <StackPanel Margin="0,25,0,0">
+                </StackPanel>
+
+                <StackPanel Margin="0,25,6,0">
                     <TextBlock Text="Mall Kiosk" Style="{StaticResource SubheaderTextBlockStyle}"/>
                     <TextBox TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding MallKioskDemoCustomSettings, Mode=TwoWay}" PlaceholderText="Paste custom settings for Mall Kiosk Demo here"/>
                     <Button Margin="0,6,0,0" Click="ResetMallKioskSettingsButtonClick">Reset to Default Mall Kiosk Settings</Button>
                 </StackPanel>
 
             </StackPanel>
-            
+
         </ScrollViewer>
 
     </Grid>
+
+
 </Page>

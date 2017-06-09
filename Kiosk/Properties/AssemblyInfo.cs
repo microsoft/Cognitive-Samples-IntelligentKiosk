@@ -41,9 +41,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("IntelligentKioskSample")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("IntelligentKioskSample")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCompanyAttribute("Microsoft")]
+[assembly: AssemblyProductAttribute("IntelligentKioskSample")]
+[assembly: AssemblyCopyrightAttribute("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -60,3 +60,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: ComVisible(false)]
+

@@ -32,6 +32,7 @@
 // 
 
 using IntelligentKioskSample.Views;
+using Newtonsoft.Json;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -163,10 +164,10 @@ namespace IntelligentKioskSample
                 this.WorkspaceKey = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsKey"];
+            value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKey"]; //2017-06-08 ADS: Renamed TextAnalyticsKey to TextAnalyticsApiKey for consistency with other API Key variables.
             if (value != null)
             {
-                this.TextAnalyticsKey = value.ToString();
+                this.TextAnalyticsApiKey = value.ToString(); //2017-06-08 ADS: Renamed TextAnalyticsKey to TextAnalyticsApiKey for consistency with other API Key variables.
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["CameraName"];
@@ -235,6 +236,32 @@ namespace IntelligentKioskSample
         public void RestoreMallKioskSettingsToDefaultFile()
         {
             this.MallKioskDemoCustomSettings = File.ReadAllText("Views\\MallKioskDemoConfig\\MallKioskDemoSettings.xml");
+        }
+
+        public void LoadKeysFromConfigFile()
+        {
+            var keys = File.ReadAllText("ApiKeys.json");
+
+            var apiKeys = JsonConvert.DeserializeObject<Keys>(keys);
+
+            this.FaceApiKey = apiKeys.FaceApiKey;
+            this.VisionApiKey = apiKeys.VisionApiKey;
+            this.EmotionApiKey = apiKeys.EmotionApiKey;
+            this.BingSearchApiKey = apiKeys.BingSearchApiKey;
+            this.BingAutoSuggestionApiKey = apiKeys.BingAutoSuggestionApiKey;
+            this.TextAnalyticsApiKey = apiKeys.TextAnalyticsApiKey;
+            //this.VideoApiKey = apiKeys.VideoApiKey;
+        }
+
+        public void ClearApiKeys()
+        {
+            this.FaceApiKey = "";
+            this.VisionApiKey = "";
+            this.EmotionApiKey = "";
+            this.BingSearchApiKey = "";
+            this.BingAutoSuggestionApiKey = "";
+            this.TextAnalyticsApiKey = "";
+            //this.VideoApiKey = apiKeys.VideoApiKey;
         }
 
         public void RestoreAllSettings()
@@ -341,14 +368,15 @@ namespace IntelligentKioskSample
             }
         }
 
-        private string textAnalyticsKey = string.Empty;
-        public string TextAnalyticsKey
+        //2017-06-08 ADS: Renamed TextAnalyticsKey to TextAnalyticsApiKey for consistency with other API Key variables.
+        private string textAnalyticsApiKey = string.Empty;
+        public string TextAnalyticsApiKey
         {
-            get { return textAnalyticsKey; }
+            get { return textAnalyticsApiKey; }
             set
             {
-                this.textAnalyticsKey = value;
-                this.OnSettingChanged("TextAnalyticsKey", value);
+                this.textAnalyticsApiKey = value;
+                this.OnSettingChanged("TextAnalyticsApiKey", value);
             }
         }
 
@@ -408,5 +436,18 @@ namespace IntelligentKioskSample
         }
 
         public string[] AvailableApiRegions { get { return new string[] { "eastus2", "southeastasia", "westcentralus", "westeurope", "westus" }; } }
+    }
+
+
+
+    public class Keys
+    {
+        public string FaceApiKey { get; set; }
+        public string EmotionApiKey { get; set; }
+        public string VisionApiKey { get; set; }
+        public string VideoApiKey { get; set; }
+        public string TextAnalyticsApiKey { get; set; }
+        public string BingSearchApiKey { get; set; }
+        public string BingAutoSuggestionApiKey { get; set; }
     }
 }
