@@ -23,8 +23,8 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
-    <PackageCertificateThumbprint>899D660B6D0731596A1CAEE79BA8B65280A9CFCE</PackageCertificateThumbprint>
-    <PackageCertificateKeyFile>IntelligentKiosk_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>A2A536CBDF9CCE70F4A52F05A19CF50AB0C9D324</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>RaspberryPiIntelligentKioskSample_TemporaryKey.pfx</PackageCertificateKeyFile>
     <ApplicationInsightsResourceId />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
@@ -97,9 +97,9 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="IntelligentKiosk_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="project.json" />
+    <None Include="RaspberryPiIntelligentKioskSample_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
