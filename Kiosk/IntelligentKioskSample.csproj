@@ -171,6 +171,13 @@
     <Compile Include="Views\BingVisualSearch.xaml.cs">
       <DependentUpon>BingVisualSearch.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CusomVision\CustomVisionExplorer.xaml.cs">
+      <DependentUpon>CustomVisionExplorer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CusomVision\CustomVisionServiceHelper.cs" />
+    <Compile Include="Views\CusomVision\CustomVisionSetup.xaml.cs">
+      <DependentUpon>CustomVisionSetup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
     </Compile>
@@ -228,6 +235,7 @@
     <Content Include="Assets\BingNewsAnalytics.png" />
     <Content Include="Assets\BingVisualSearch.jpg" />
     <Content Include="Assets\camera.png" />
+    <Content Include="Assets\CustomVisionExplorer.png" />
     <Content Include="Assets\female.png" />
     <Content Include="Assets\GreetingKiosk.JPG" />
     <Content Include="Assets\male_blue.png" />
@@ -338,6 +346,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BingVisualSearch.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CusomVision\CustomVisionExplorer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CusomVision\CustomVisionSetup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

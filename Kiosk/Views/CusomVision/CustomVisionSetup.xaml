@@ -1,0 +1,185 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.CustomVisionSetup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ctl:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+        <ctl:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+           
+            <AppBarButton Icon="Play" Label="Train Project" Click="OnStartTrainingClicked" x:Name="trainButton"/>
+            <AppBarButton Icon="Setting" Label="Settings" x:Name="settingsButton">
+                <AppBarButton.Flyout>
+                    <Flyout Closed="OnSettingsFlyoutClosed">
+                        <StackPanel Width="400">
+                            <TextBox Header="Training Key" Text="{Binding CustomVisionTrainingApiKey, Mode=TwoWay}"/>
+                            <TextBox Margin="0,12,0,0" Header="Prediction Key" Text="{Binding CustomVisionPredictionApiKey, Mode=TwoWay}"/>
+                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Margin="0,12,0,0" Text="You can get API Keys by visiting http://CustomVision.ai. Once you can create your first project through the website (you don't need to populate the project, just create an empty one) you will be able to find the keys in the project's Settings panel." TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+
+            <CommandBar.Content>
+                <ctl:PageHeader>
+                    <ctl:PageHeader.HeaderContent>
+                        <TextBlock Text="CUSTOM VISION SETUP" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
+                    </ctl:PageHeader.HeaderContent>
+                </ctl:PageHeader>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" MinWidth="200" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+
+            <Grid Margin="0,6,0,6" Padding="6" MinWidth="160" Background="#ff151515" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Projects:" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"  >
+                    <Button   Background="Transparent" Click="OnDeleteProjectClicked" x:Name="deleteGroupButton" Visibility="{Binding ElementName=projectsListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}">
+                        <SymbolIcon Symbol="Delete"/>
+                    </Button>
+                    <Button Background="Transparent" x:Name="addProjectButton">
+                        <SymbolIcon Symbol="Add"/>
+                        <Button.Flyout>
+                            <Flyout x:Name="addProjectFlyout">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox x:Name="projectNameTextBox" TextWrapping="Wrap" Width="262" PlaceholderText="Enter project name (e.g. Flowers)"/>
+                                    <Button Content="Add" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0" Click="OnAddProjectButtonClicked"/>
+                                    <Button Content="Cancel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="OnCancelAddProjectButtonClicked"/>
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                </StackPanel>
+
+                <ComboBox Grid.Row="1" Margin="0,12,0,0" x:Name="projectsListView" HorizontalAlignment="Stretch" ItemsSource="{Binding Projects}" SelectionChanged="OnProjectSelectionChanged" >
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+            </Grid>
+
+            <Grid Padding="6" Margin="0,0,0,6" Grid.Row="1" Background="#ff151515" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid >
+                    <TextBlock Text="Tags:" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Left" />
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button   Background="Transparent" Click="OnDeleteTagClicked" Visibility="{Binding ElementName=projectTagsListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}">
+                            <SymbolIcon Symbol="Delete"/>
+                        </Button>
+
+                        <Button HorizontalAlignment="Right" Background="Transparent" Visibility="{Binding ElementName=projectsListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}">
+                            <SymbolIcon Symbol="Add" />
+                            <Button.Flyout>
+                                <Flyout x:Name="addTagFlyout">
+                                    <StackPanel Orientation="Horizontal">
+                                        <AutoSuggestBox x:Name="tagNameTextBox" QuerySubmitted="OnTagNameQuerySubmitted" TextChanged="OnTagNameTextBoxChanged" Width="262" PlaceholderText="Enter tag name (e.g. Cat)"/>
+                                        <Button x:Name="addButton" Content="Add" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0" Click="OnAddTagButtonClicked"/>
+                                        <Button x:Name="cancelButton" Content="Cancel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="OnCancelAddTagButtonClicked"/>
+                                    </StackPanel>
+                                </Flyout>
+
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+
+                <ListView Grid.Row="1" 
+                      x:Name="projectTagsListView"
+                      ItemsSource="{Binding TagsInCurrentGroup}"
+                      SelectionChanged="OnTagSelectionChanged"
+                      SelectionMode="Single"
+                      IsItemClickEnabled="false">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" HorizontalAlignment="Center" Text="{Binding Name}" Margin="0,0,24,0"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <Grid Padding="6,6,0,6" Margin="6,6,0,6" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Background="#ff151515">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Images:" Style="{StaticResource SubtitleTextBlockStyle}" />
+                <StackPanel Margin="100,0,0,0"  Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Background="Transparent" Click="OnDeleteImageClicked" x:Name="deleteFaceButton" Visibility="{Binding ElementName=selectedTagImagesGridView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}" >
+                        <SymbolIcon Symbol="Delete"/>
+                    </Button>
+
+                    <Button Background="Transparent" x:Name="addImagesButton">
+                        <SymbolIcon Symbol="Add" Visibility="{Binding ElementName=projectTagsListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}"/>
+                        <Button.Flyout>
+                            <Flyout x:Name="trainingImageCollectorFlyout" Opened="OnImageSearchFlyoutOpened">
+                                <ctl:ImageSearchUserControl x:Name="bingSearchControl" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" ImageContentType="" EnableCameraCapture="True" RequireFaceInCameraCapture="False"/>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+                </StackPanel>
+
+                <GridView Grid.Row="1" Margin="0,12,0,0" x:Name="selectedTagImagesGridView" IsMultiSelectCheckBoxEnabled="False" SelectionMode="Multiple" ItemsSource="{Binding SelectedTagImages}">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="120" Height="90" Margin="6">
+                                <Image Source="{Binding ThumbnailUri}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </Grid>
+            
+        </Grid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="12">
+            <SymbolIcon Symbol="Library" VerticalAlignment="Top"/>
+            <StackPanel Margin="6,0,0,0" >
+                <TextBlock Text="- This is where you can manage the objects to be recognized by the Custom Vision Service." Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Text="- Start by creating a project, then add tags to the project and add images to those tags." Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Text="- When you are done making modifications, click on the Train button to re-train the model in the cloud." Style="{StaticResource CaptionTextBlockStyle}" />
+                <!--<TextBlock Text="- You can also add people in batches ('...' near the top), either from local photo albums or from Bing Image searches." Style="{StaticResource CaptionTextBlockStyle}" />-->
+            </StackPanel>
+        </StackPanel>
+
+        <ProgressRing x:Name="progressControl" Width="100" Height="100" Foreground="White" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Grid>
+</Page>

@@ -49,6 +49,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Microsoft.Rest;
 
 namespace IntelligentKioskSample
 {
@@ -80,6 +81,18 @@ namespace IntelligentKioskSample
             if (commonException?.Error?.Message != null)
             {
                 errorDetails = commonException.Error.Message;
+            }
+
+            Microsoft.ProjectOxford.Vision.ClientException visionException = ex as Microsoft.ProjectOxford.Vision.ClientException;
+            if (visionException?.Error?.Message != null)
+            {
+                errorDetails = visionException.Error.Message;
+            }
+
+            HttpOperationException httpException = ex as HttpOperationException;
+            if (httpException?.Response?.ReasonPhrase != null)
+            {
+                errorDetails = string.Format("{0}. The error message was \"{1}\".", ex.Message, httpException?.Response?.ReasonPhrase);
             }
 
             return errorDetails;

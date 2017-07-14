@@ -215,6 +215,18 @@ namespace IntelligentKioskSample
                 }
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["CustomVisionPredictionApiKey"];
+            if (value != null)
+            {
+                this.CustomVisionPredictionApiKey = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["CustomVisionTrainingApiKey"];
+            if (value != null)
+            {
+                this.CustomVisionTrainingApiKey = value.ToString();
+            }
+
             // load mall kiosk demo custom settings from file as the content is too big to be saved as a string-like setting
             try
             {
@@ -404,6 +416,28 @@ namespace IntelligentKioskSample
             {
                 this.driverMonitoringYawningThreshold = value;
                 this.OnSettingChanged("DriverMonitoringYawningThreshold", value);
+            }
+        }
+
+        private string customVisionTrainingApiKey = string.Empty;
+        public string CustomVisionTrainingApiKey
+        {
+            get { return this.customVisionTrainingApiKey; }
+            set
+            {
+                this.customVisionTrainingApiKey = value;
+                this.OnSettingChanged("CustomVisionTrainingApiKey", value);
+            }
+        }
+
+        private string customVisionPredictionApiKey = string.Empty;
+        public string CustomVisionPredictionApiKey
+        {
+            get { return this.customVisionPredictionApiKey; }
+            set
+            {
+                this.customVisionPredictionApiKey = value;
+                this.OnSettingChanged("CustomVisionPredictionApiKey", value);
             }
         }
 
