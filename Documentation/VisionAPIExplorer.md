@@ -1,6 +1,6 @@
 # Vision API Explorer
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/VisionAPIExplorer.png "Vision API Explorer")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/VisionApiExplorer.PNG "Vision API Explorer")
 
 Similar to the Face API and Emotion API Explorer demos, this demo shows how to process photos through the Computer Vision APIs. It will show tags, faces, description of the photo, celebrities, OCR results and color analysis. Photos can be provided from a list of suggested photos, from a web cam, from local photos or from Bing Image results.  
  
