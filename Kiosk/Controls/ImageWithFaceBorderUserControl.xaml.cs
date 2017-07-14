@@ -43,6 +43,7 @@ using Windows.UI.Xaml.Media;
 using System.Collections.Generic;
 using System.IO;
 using ServiceHelpers;
+using Newtonsoft.Json.Linq;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -149,6 +150,22 @@ namespace IntelligentKioskSample.Controls
             new PropertyMetadata(false)
             );
 
+        public static readonly DependencyProperty PerformComputerVisionAnalysisProperty =
+            DependencyProperty.Register(
+            "PerformComputerVisionAnalysis",
+            typeof(bool),
+            typeof(ImageWithFaceBorderUserControl),
+            new PropertyMetadata(false)
+            );
+
+        public static readonly DependencyProperty PerformOCRAnalysisProperty =
+            DependencyProperty.Register(
+            "PerformOCRAnalysis",
+            typeof(bool),
+            typeof(ImageWithFaceBorderUserControl),
+            new PropertyMetadata(false)
+            );
+
         public SolidColorBrush BalloonBackground
         {
             get { return (SolidColorBrush)GetValue(BalloonBackgroundProperty); }
@@ -207,6 +224,18 @@ namespace IntelligentKioskSample.Controls
         {
             get { return (bool)GetValue(DetectFaceLandmarksProperty); }
             set { SetValue(DetectFaceLandmarksProperty, (bool)value); }
+        }
+
+        public bool PerformComputerVisionAnalysis
+        {
+            get { return (bool)GetValue(PerformComputerVisionAnalysisProperty); }
+            set { SetValue(PerformComputerVisionAnalysisProperty, (bool)value); }
+        }
+
+        public bool PerformOCRAnalysis
+        {
+            get { return (bool)GetValue(PerformOCRAnalysisProperty); }
+            set { SetValue(PerformOCRAnalysisProperty, (bool)value); }
         }
 
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -338,6 +367,134 @@ namespace IntelligentKioskSample.Controls
             this.progressIndicator.IsActive = false;
         }
 
+        private async Task DetectAndShowComputerVisionAnalysis()
+        {
+            this.progressIndicator.IsActive = true;
+
+            this.imageControl.RenderTransform = null;
+            foreach (var child in this.hostGrid.Children.Where(c => !(c is Image)).ToArray())
+            {
+                this.hostGrid.Children.Remove(child);
+            }
+
+            ImageAnalyzer img = this.DataContext as ImageAnalyzer;
+            if (img != null)
+            {
+                if (this.PerformOCRAnalysis && img.OcrResults == null)
+                {
+                    await Task.WhenAll(img.AnalyzeImageAsync(detectCelebrities: true), img.RecognizeTextAsync());
+                }
+                else if (img.AnalysisResult == null)
+                {
+                    await img.AnalyzeImageAsync(detectCelebrities: true);
+                }
+
+                double renderedImageXTransform = this.imageControl.RenderSize.Width / this.bitmapImage.PixelWidth;
+                double renderedImageYTransform = this.imageControl.RenderSize.Height / this.bitmapImage.PixelHeight;
+
+                if (img.AnalysisResult.Faces != null)
+                {
+                    foreach (Microsoft.ProjectOxford.Vision.Contract.Face face in img.AnalysisResult.Faces)
+                    {
+                        FaceIdentificationBorder faceUI = new FaceIdentificationBorder();
+
+                        faceUI.Margin = new Thickness((face.FaceRectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
+                                                      (face.FaceRectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0);
+
+                        faceUI.BalloonBackground = this.BalloonBackground;
+                        faceUI.BalloonForeground = this.BalloonForeground;
+                        faceUI.ShowFaceRectangle(face.FaceRectangle.Width * renderedImageXTransform, face.FaceRectangle.Height * renderedImageYTransform);
+
+                        faceUI.ShowIdentificationData(face.Age, face.Gender, 0, null);
+                        this.hostGrid.Children.Add(faceUI);
+
+                        double celebRecoConfidence = 0;
+                        string celebRecoName;
+                        this.GetCelebrityInfoIfAvailable(img, face.FaceRectangle, out celebRecoName, out celebRecoConfidence);
+                        if (!string.IsNullOrEmpty(celebRecoName))
+                        {
+                            Border celebUI = new Border
+                            {
+                                Child = new TextBlock
+                                {
+                                    Text = string.Format("{0} ({1}%)", celebRecoName, (uint)Math.Round(celebRecoConfidence * 100)),
+                                    Foreground = this.BalloonForeground,
+                                    FontSize = 14
+                                },
+                                Background = this.BalloonBackground,
+                                VerticalAlignment = VerticalAlignment.Top,
+                                HorizontalAlignment = HorizontalAlignment.Left
+                            };
+
+                            celebUI.SizeChanged += (ev, ar) =>
+                            {
+                                celebUI.Margin = new Thickness(faceUI.Margin.Left - (celebUI.ActualWidth - face.FaceRectangle.Width * renderedImageXTransform) / 2,
+                                                               faceUI.Margin.Top + 2 + face.FaceRectangle.Height * renderedImageYTransform, 0, 0);
+                            };
+                            this.hostGrid.Children.Add(celebUI);
+                        }
+                    }
+                }
+
+                if (this.PerformOCRAnalysis && img.OcrResults.Regions != null)
+                {
+                    if (img.OcrResults.TextAngle.HasValue)
+                    {
+                        this.imageControl.RenderTransform = new RotateTransform { Angle = -img.OcrResults.TextAngle.Value, CenterX = this.imageControl.RenderSize.Width / 2, CenterY = this.imageControl.RenderSize.Height / 2 };
+                    }
+
+                    foreach (Microsoft.ProjectOxford.Vision.Contract.Region ocrRegion in img.OcrResults.Regions)
+                    {
+                        foreach (var line in ocrRegion.Lines)
+                        {
+                            foreach (var word in line.Words)
+                            {
+                                OCRBorder ocrUI = new OCRBorder();
+
+                                ocrUI.Margin = new Thickness((word.Rectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
+                                                      (word.Rectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0);
+
+                                ocrUI.SetData(word.Rectangle.Width * renderedImageXTransform, word.Rectangle.Height * renderedImageYTransform, word.Text);
+
+                                this.hostGrid.Children.Add(ocrUI);
+                            }
+                        }
+                    }
+                }
+            }
+
+            this.progressIndicator.IsActive = false;
+        }
+
+        private void GetCelebrityInfoIfAvailable(ImageAnalyzer analyzer, Microsoft.ProjectOxford.Vision.Contract.FaceRectangle rectangle, out string name, out double confidence)
+        {
+            if (analyzer.AnalysisResult?.Categories != null)
+            {
+                foreach (var category in analyzer.AnalysisResult.Categories.Where(c => c.Detail != null))
+                {
+                    dynamic detail = JObject.Parse(category.Detail.ToString());
+                    if (detail.celebrities != null)
+                    {
+                        foreach (var celebrity in detail.celebrities)
+                        {
+                            int left = Int32.Parse(celebrity.faceRectangle.left.ToString());
+                            int top = Int32.Parse(celebrity.faceRectangle.top.ToString());
+
+                            if (Math.Abs(left - rectangle.Left) <= 20 && Math.Abs(top - rectangle.Top) <= 20)
+                            {
+                                name = celebrity.name.ToString();
+                                confidence = celebrity.confidence;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+            name = null;
+            confidence = 0;
+        }
+
         private async Task DetectAndShowEmotion()
         {
             this.progressIndicator.IsActive = true;
@@ -404,6 +561,10 @@ namespace IntelligentKioskSample.Controls
             else if (this.DetectFaceAttributes)
             {
                 await this.DetectAndShowFaceBorders();
+            }
+            else if (this.PerformComputerVisionAnalysis)
+            {
+                await this.DetectAndShowComputerVisionAnalysis();
             }
         }
 

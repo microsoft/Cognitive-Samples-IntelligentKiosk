@@ -46,10 +46,13 @@ namespace ServiceHelpers
     public class ImageAnalyzer
     {
         private static FaceAttributeType[] DefaultFaceAttributeTypes = new FaceAttributeType[] { FaceAttributeType.Age, FaceAttributeType.Gender, FaceAttributeType.HeadPose };
+        private static VisualFeature[] DefaultVisualFeatures = new VisualFeature[] { VisualFeature.Tags, VisualFeature.Faces, VisualFeature.Categories, VisualFeature.Description, VisualFeature.Color };
 
         public event EventHandler FaceDetectionCompleted;
         public event EventHandler FaceRecognitionCompleted;
         public event EventHandler EmotionRecognitionCompleted;
+        public event EventHandler ComputerVisionAnalysisCompleted;
+        public event EventHandler OcrAnalysisCompleted;
 
         public static string PeopleGroupsUserDataFilter = null;
 
@@ -66,6 +69,7 @@ namespace ServiceHelpers
         public IEnumerable<SimilarFaceMatch> SimilarFaceMatches { get; set; }
 
         public Microsoft.ProjectOxford.Vision.Contract.AnalysisResult AnalysisResult { get; set; }
+        public Microsoft.ProjectOxford.Vision.Contract.OcrResults OcrResults { get; set; }
 
         // Default to no errors, since this could trigger a stream of popup errors since we might call this
         // for several images at once while auto-detecting the Bing Image Search results.
@@ -225,6 +229,75 @@ namespace ServiceHelpers
                 {
                     await ErrorTrackingHelper.GenericApiCallExceptionHandler(e, "Vision API failed.");
                 }
+            }
+        }
+
+        public async Task AnalyzeImageAsync(bool detectCelebrities = false, IEnumerable<VisualFeature> visualFeatures = null)
+        {
+            try
+            {
+                if (visualFeatures == null)
+                {
+                    visualFeatures = DefaultVisualFeatures;
+                }
+
+                if (this.ImageUrl != null)
+                {
+                    this.AnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(
+                        this.ImageUrl,
+                        visualFeatures,
+                        detectCelebrities ? new string[] { "Celebrities" } : null);
+                }
+                else if (this.GetImageStreamCallback != null)
+                {
+                    this.AnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(
+                        this.GetImageStreamCallback,
+                        visualFeatures,
+                        detectCelebrities ? new string[] { "Celebrities" } : null);
+                }
+            }
+            catch (Exception e)
+            {
+
+                this.AnalysisResult = new Microsoft.ProjectOxford.Vision.Contract.AnalysisResult();
+
+                if (this.ShowDialogOnFaceApiErrors)
+                {
+                    await ErrorTrackingHelper.GenericApiCallExceptionHandler(e, "Vision API failed.");
+                }
+            }
+            finally
+            {
+                this.ComputerVisionAnalysisCompleted?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        public async Task RecognizeTextAsync()
+        {
+            try
+            {
+                if (this.ImageUrl != null)
+                {
+                    this.OcrResults = await VisionServiceHelper.RecognizeTextAsync(this.ImageUrl);
+                }
+                else if (this.GetImageStreamCallback != null)
+                {
+                    this.OcrResults = await VisionServiceHelper.RecognizeTextAsync(this.GetImageStreamCallback);
+                }
+            }
+            catch (Exception e)
+            {
+
+                this.OcrResults = new Microsoft.ProjectOxford.Vision.Contract.OcrResults();
+
+                if (this.ShowDialogOnFaceApiErrors)
+                {
+                    await ErrorTrackingHelper.GenericApiCallExceptionHandler(e, "Vision API failed.");
+                }
+            }
+            finally
+            {
+                this.OcrAnalysisCompleted?.Invoke(this, EventArgs.Empty);
             }
         }
 
