@@ -76,7 +76,7 @@ namespace IntelligentKioskSample
                 {
                     Symbol = Symbol.Contact2,
                     Label = "Face Identification Setup",
-                    DestPage = typeof(PersonGroupsPage)
+                    DestPage = typeof(FaceIdentificationSetup)
                 },
 
                 new NavMenuItem()

@@ -142,8 +142,15 @@ namespace IntelligentKioskSample.Controls
         {
             try
             {
-                if (captureManager == null || captureManager.CameraStreamState == CameraStreamState.Shutdown)
+                if (captureManager == null ||
+                    captureManager.CameraStreamState == CameraStreamState.Shutdown ||
+                    captureManager.CameraStreamState == CameraStreamState.NotStreaming)
                 {
+                    if (captureManager != null)
+                    {
+                        captureManager.Dispose();
+                    }
+
                     captureManager = new MediaCapture();
 
                     MediaCaptureInitializationSettings settings = new MediaCaptureInitializationSettings();
@@ -476,7 +483,7 @@ namespace IntelligentKioskSample.Controls
             return false;
         }
 
-        public async Task StopStreamAsync(bool keepCameraRunningButHidden = false)
+        public async Task StopStreamAsync()
         {
             try
             {
@@ -485,7 +492,7 @@ namespace IntelligentKioskSample.Controls
                     this.frameProcessingTimer.Cancel();
                 }
 
-                if (captureManager != null && captureManager.CameraStreamState == Windows.Media.Devices.CameraStreamState.Streaming)
+                if (captureManager != null && captureManager.CameraStreamState != Windows.Media.Devices.CameraStreamState.Shutdown)
                 {
                     this.FaceTrackingVisualizationCanvas.Children.Clear();
                     await this.captureManager.StopPreviewAsync();

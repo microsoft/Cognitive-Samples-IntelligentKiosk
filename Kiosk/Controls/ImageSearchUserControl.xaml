@@ -12,6 +12,10 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
+    <UserControl.Resources>
+        <controls:BooleanToVisibilityConverter x:Key="bolleanToVisibilityConverter"/>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -33,14 +37,27 @@
                     <SymbolIcon Symbol="Pictures"/>
                 </Button>
 
-                <!--<Button Background="Transparent" ToolTipService.ToolTip="Take photo from webcam">
+                <Button Background="Transparent" ToolTipService.ToolTip="Take photo from webcam" Visibility="{Binding ElementName=SearchControl, Path=EnableCameraCapture, Converter={StaticResource bolleanToVisibilityConverter}}" >
                     <Button.Flyout>
-                        <Flyout >
-                            <controls:CameraControl Width="400" Height="225"/>
+                        <Flyout x:Name="cameraCaptureFlyout" Opened="OnCameraFlyoutOpened" Closed="OnCameraFlyoutClosed" >
+                            <Grid Width="420" Height="400" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Margin="0,0,0,12" Text="Click on the camera button to capture a photo and use it as input." TextWrapping="WrapWholeWords"/>
+                                <controls:CameraControl Grid.Row="1" x:Name="cameraControl" ImageCaptured="OnCameraImageCaptured" HorizontalAlignment="Center" VerticalAlignment="Center" ShowDialogOnApiErrors="False" FlowDirection="LeftToRight"/>
+                                <StackPanel Orientation="Vertical" Grid.Row="2" Margin="0,12,0,0" >
+                                    <TextBlock Text="You can also flip this switch and start a loop that will keep auto-capturing a photo every second. The loop will stop once you close this panel or turn the switch off." TextWrapping="WrapWholeWords"/>
+                                    <ToggleSwitch x:Name="autoCaptureToggle" Toggled="OnCameraAutoCaptureToggleChanged"/>
+                                </StackPanel>
+                            </Grid>
                         </Flyout>
                     </Button.Flyout>
                     <SymbolIcon Symbol="Video"/>
-                </Button>-->
+                </Button>
+
             </StackPanel>
 
         </Grid>

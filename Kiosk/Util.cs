@@ -115,6 +115,31 @@ namespace IntelligentKioskSample
             return deviceInfo.OrderBy(d => d.Name).Select(d => d.Name);
         }
 
+        async private static Task CropBitmapAsync(Stream localFileStream, Microsoft.ProjectOxford.Common.Rectangle rectangle, StorageFile resultFile)
+        {
+            //Get pixels of the crop region
+            var pixels = await GetCroppedPixelsAsync(localFileStream.AsRandomAccessStream(), rectangle);
+
+            // Save result to new image
+            using (Stream resultStream = await resultFile.OpenStreamForWriteAsync())
+            {
+                IRandomAccessStream randomAccessStream = resultStream.AsRandomAccessStream();
+                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, randomAccessStream);
+
+                encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                                        BitmapAlphaMode.Ignore,
+                                        (uint)rectangle.Width, (uint)rectangle.Height,
+                                        DisplayInformation.GetForCurrentView().LogicalDpi, DisplayInformation.GetForCurrentView().LogicalDpi, pixels);
+
+                await encoder.FlushAsync();
+            }
+        }
+
+        async public static Task CropBitmapAsync(Func<Task<Stream>> localFile, Microsoft.ProjectOxford.Common.Rectangle rectangle, StorageFile resultFile)
+        {
+            await CropBitmapAsync(await localFile(), rectangle, resultFile);
+        }
+
         async public static Task<ImageSource> GetCroppedBitmapAsync(Func<Task<Stream>> originalImgFile, Microsoft.ProjectOxford.Common.Rectangle rectangle)
         {
             try

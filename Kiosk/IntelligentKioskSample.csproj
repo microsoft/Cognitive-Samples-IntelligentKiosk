@@ -171,6 +171,9 @@
     <Compile Include="Views\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\FaceIdentificationSetup.xaml.cs" >
+      <DependentUpon>FaceIdentificationSetup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GreetingKiosk.xaml.cs">
       <DependentUpon>GreetingKiosk.xaml</DependentUpon>
     </Compile>
@@ -183,9 +186,6 @@
     </Compile>
     <Compile Include="Views\AutomaticPhotoCapturePage.xaml.cs">
       <DependentUpon>AutomaticPhotoCapturePage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PersonDetailsPage.xaml.cs">
-      <DependentUpon>PersonDetailsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\EmotionRecognitionPage.xaml.cs">
       <DependentUpon>EmotionRecognitionPage.xaml</DependentUpon>
@@ -201,12 +201,6 @@
     </Compile>
     <Compile Include="AppShell.xaml.cs">
       <DependentUpon>AppShell.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PersonGroupDetailsPage.xaml.cs">
-      <DependentUpon>PersonGroupDetailsPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\PersonGroupsPage.xaml.cs">
-      <DependentUpon>PersonGroupsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LandingPage.xaml.cs">
       <DependentUpon>LandingPage.xaml</DependentUpon>
@@ -340,6 +334,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\FaceIdentificationSetup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\GreetingKiosk.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -353,10 +351,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\AutomaticPhotoCapturePage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\PersonDetailsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -377,14 +371,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AppShell.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\PersonGroupDetailsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\PersonGroupsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
