@@ -39,12 +39,10 @@ against one of your projects, a message will be displayed above the results (red
 with the corrected result that you provide, as an input signal back into your project. All you do is provide the proper tags and the 
 kiosk does the rest – it will add the image to the proper tag(s) in your project and trigger a re-train of the project. 
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionActiveLearning.png "Custom Vision Active Learning")
-
 Here is the UI that pops up when you enter the Active Learning UI. Just toggle all the tags that should be associated with the image 
 and click the big “Save and re-train the project” button.
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionActiveLearningFlyout.png "Custom Vision Active Learning Flyout")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionActiveLearning.png "Custom Vision Active Learning")
 
 As of now you can only use this workflow to correct images that still belong to at least one of the tags in the project. If you need to 
 correct images that shouldn't belong to any tags, the current approach is to create an Other tag an associate such images to that tag.
