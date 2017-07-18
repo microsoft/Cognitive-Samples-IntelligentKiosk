@@ -6,12 +6,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
+    x:Name="cameraControl"
     d:DesignHeight="300"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    FlowDirection="RightToLeft">
 
-    <Grid>
-        <CaptureElement x:Name="webCamCaptureElement" FlowDirection="RightToLeft" />
-        <Canvas x:Name="FaceTrackingVisualizationCanvas" FlowDirection="RightToLeft" />
+    <Grid FlowDirection="LeftToRight">
+        <CaptureElement x:Name="webCamCaptureElement" FlowDirection="{Binding ElementName=cameraControl, Path=FlowDirection}" />
+        <Canvas x:Name="FaceTrackingVisualizationCanvas" FlowDirection="{Binding ElementName=cameraControl, Path=FlowDirection}" />
 
         <Grid x:Name="commandBar" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="2" >
             <Button Opacity="0.8" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="#FF222222" BorderBrush="Transparent" Click="CameraControlButtonClick" >
