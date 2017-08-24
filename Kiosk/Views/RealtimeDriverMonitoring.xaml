@@ -28,105 +28,107 @@
             <TextBlock Text="Realtime Driver Monitoring" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontFamily="Segoe UI Light"  Style="{StaticResource HeaderTextBlockStyle}"/>
         </Viewbox>
 
-        <Grid x:Name="cameraHostGrid" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.RowSpan="3" Margin="5" >
-            <ctl:CameraControl x:Name="cameraControl" />
-        </Grid>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0.2*" x:Name="driverPanelColumn"/>
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.RowSpan="4" VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.6" >
-            <TextBlock x:Name="sleeping" Text="Sleeping!" Visibility="Collapsed" Foreground="#FF42BBFA" FontSize="100" FontFamily="Segoe UI Light"   />
-            <TextBlock x:Name="lookingAway" Text="Looking away!" Visibility="Collapsed" Foreground="#FF42BBFA" FontSize="100" FontFamily="Segoe UI Light"/>
-            <TextBlock x:Name="yawning" Text="Yawning!" Visibility="Collapsed" Foreground="#FF42BBFA" FontSize="100" FontFamily="Segoe UI Light"/>
-            <TextBlock x:Name="objectDistraction" Foreground="#FF42BBFA" FontSize="100" Visibility="Collapsed" FontFamily="Segoe UI Light"/>
-        </StackPanel>
+            <Grid Grid.Column="1" VerticalAlignment="Top"    >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,36,5,5" Width="200" >
+                <StackPanel Orientation="Horizontal" Opacity="0.7" Margin="0,0,0,6" >
 
-            <StackPanel Opacity="0.6" Background="#33FFFFFF" Padding="6">
-                <Grid >
-                    <TextBlock Text="Driver Id" Style="{StaticResource TitleTextBlockStyle}" FontFamily="Segoe UI Light"  />
-                    <Button Opacity="0.3" HorizontalAlignment="Right" Background="Transparent" DataContext="{Binding ElementName=page}">
+                    <ComboBox x:Name="inputSourceComboBox" >
+                        <ComboBoxItem Content="Web Cam" IsSelected="True"/>
+                        <ComboBoxItem Content="Video" x:Name="videoInputSource"/>
+                    </ComboBox>
+
+                    <Button VerticalAlignment="Bottom" Margin="6,0,0,0" Background="Transparent" Click="OpenVideoClicked" Visibility="{Binding ElementName=videoInputSource, Path=IsSelected, Converter={StaticResource bolleanToVisibilityConverter}}">
+                        <SymbolIcon Symbol="OpenFile" />
+                    </Button>
+
+                </StackPanel>
+
+                <Grid x:Name="cameraHostGrid" VerticalAlignment="Top" Height="350" Grid.Row="1" >
+                    <ctl:CameraControl x:Name="cameraControl" />
+
+                    <MediaElement x:Name="videoPlayer" AreTransportControlsEnabled="True" Height="350" Visibility="Collapsed">
+                        <MediaElement.TransportControls>
+                            <MediaTransportControls IsPlaybackRateButtonVisible="False" IsFullWindowEnabled="False" IsFullWindowButtonVisible="False" IsZoomButtonVisible="False" IsPlaybackRateEnabled="False" />
+                        </MediaElement.TransportControls>
+                    </MediaElement>
+                </Grid>
+
+                <Grid Background="#11FFFFFF" x:Name="driverPanel" Opacity="1" Margin="6,0,0,0" Grid.Column="1" Grid.Row="1"  Padding="6" >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" >
+                        <TextBlock Text="Driver Id:" Style="{StaticResource SubtitleTextBlockStyle}" FontFamily="Segoe UI Light"  />
+                        <TextBlock x:Name="driverId" Margin="6,0,0,0" Foreground="#FF42BBFA" Text="No faces detected" FontFamily="Segoe UI Light" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    </StackPanel>
+
+                    <Button Opacity="0.7"  Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Right" >
                         <Button.Content>
-                            <SymbolIcon Symbol="Setting"/>
+                            <SymbolIcon Symbol="Help"/>
                         </Button.Content>
                         <Button.Flyout>
                             <Flyout>
-                                <StackPanel>
-                                    <TextBlock Width="300" TextWrapping="WrapWholeWords">
-The Driver Id is determined by identifying the face against the trained faces. 
+                                <ScrollViewer Height="400">
+                                    <TextBlock Margin="0,0,16,0"  Width="400" TextWrapping="WrapWholeWords">
+How to interpret the data?
 <LineBreak/>
-<LineBreak/>The Facial Features are used to flag yawning and sleeping (see below how to tweak the thresholds for this if needed).
 <LineBreak/>
-<LineBreak/>The Head Pose is used to flag when the driver is looking away.
+The Driver Id is determined by identifying the face against the trained faces in the kiosk. You can add more faces via the Face Identification Setup.
 <LineBreak/>
-<LineBreak/>When Activity tracking is enabled and the captioning from the Vision API contains certain keywords, like &quot;phone&quot; or &quot;banana&quot;, a special message will be displayed.
-                                    </TextBlock> 
-
-                                    <TextBlock Text="Eyes" Margin="0,12,0,0" Style="{StaticResource TitleTextBlockStyle}"/>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Current aperture:" />
-                                        <TextBlock x:Name="currentEyeAperture" Margin="4,0,0,0" />
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Slider x:Name="sleepingApertureThresholdSlider" Header="Minimum aperture for eyes to be considered open:" Minimum="0" Maximum="1" StepFrequency="0.01" SmallChange="0.01" LargeChange="0.05" Value="{Binding SleepingApertureThreshold, Mode=TwoWay}" Width="200" HorizontalAlignment="Left"/>
-                                        <TextBlock VerticalAlignment="Center" Margin="12,0,0,0" Text="{Binding ElementName=sleepingApertureThresholdSlider, Path=Value}"/>
-                                    </StackPanel>
-
-                                    <TextBlock Text="Mouth" Margin="0,12,0,0" Style="{StaticResource TitleTextBlockStyle}"/>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Current aperture:" />
-                                        <TextBlock x:Name="currentMouthAperture" Margin="4,0,0,0" />
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Slider x:Name="yawningApertureThresholdSlider" Header="Minimun aperture for mouth to be considered yawning:" Minimum="0" Maximum="1" StepFrequency="0.01" SmallChange="0.01" LargeChange="0.05" Value="{Binding YawningApertureThreshold, Mode=TwoWay}" Width="200" HorizontalAlignment="Left"/>
-                                        <TextBlock VerticalAlignment="Center" Margin="12,0,0,0" Text="{Binding ElementName=yawningApertureThresholdSlider, Path=Value}"/>
-                                    </StackPanel>
-
-                                    <Button Content="Restore default thresholds" Click="RestoreDefaultThresholdsClicked"/>
-
-                                </StackPanel>
+<LineBreak/>
+The Head Pose chart tracks the direction the driver is looking in relation to the camera. The bars indicate how big the deviation is from the neutral angle. The bars will turn red when the angle crosses above a built-in threshold. The idea here is to flag when a driver is looking away from the road ahead, so try to look towards the left or right and observe what happens to the chart. 
+<LineBreak/>
+<LineBreak/>
+The Mouth Aperture chart tracks the shape of the mouth. The more open the mouth is, the greater the bar. The bars will turn red when the aperture crosses above a built-in threshold. The idea here is to flag when a driver is yawning, so try to fake a yawn and observe what happens to the chart. 
+<LineBreak/>
+<LineBreak/>
+The Eye Aperture chart tracks the shape of the eyes. The more open the eye is, the greater the bar. The bars will turn red when the aperture crosses below a built-in threshold. The idea here is to flag when a driver is napping, so try to close your eyes for a few seconds and observe what happens to the chart. 
+<LineBreak/>
+<LineBreak/>
+The Distractions chart indicates when certain activities are detected. It uses the Computer Vision API to get a caption of what is in front of the camera, and flags with a red bar when it sees certain keywords, like &quot;phone&quot; or &quot;banana&quot;. The idea here is to flag when the driver is doing something not safe, like using the phone or eating a banana."
+                                    </TextBlock>
+                                </ScrollViewer>
                             </Flyout>
                         </Button.Flyout>
                     </Button>
+
+                    <ctl:VerticalBarTimelineControl x:Name="headPoseChart" Header="Head Pose" Grid.Row="1" Margin="0,10,0,0" />
+                    <ctl:VerticalBarTimelineControl x:Name="mouthApertureChart" Header="Mouth Aperture" Grid.Row="2" Margin="0,10,0,0" BarType="Centered" />
+                    <ctl:VerticalBarTimelineControl x:Name="eyeApertureChart" Header="Eye Aperture" Grid.Row="3" Margin="0,10,0,0" BarType="Centered" />
+                    <ctl:VerticalBarTimelineControl x:Name="distractionChart" Header="Distractions" Grid.Row="4" Margin="0,10,0,0" BarType="Centered" />
+
+                    <TextBlock Grid.Row="5" Text="Click on the chart values to see the associated video frames" HorizontalAlignment="Right" FontStyle="Italic" Opacity="0.9" Style="{StaticResource CaptionTextBlockStyle}"/>
                 </Grid>
-                <TextBlock x:Name="driverId" Text="No faces detected. Please look at the camera to start." FontFamily="Segoe UI Light" Margin="0,0,0,20" Style="{StaticResource BodyTextBlockStyle}"/>
+            </Grid>
+        </Grid>
 
-                <TextBlock Text="Facial Features" Style="{StaticResource TitleTextBlockStyle}" FontFamily="Segoe UI Light" Margin="0,0,0,2"/>
-                <Grid Height="150" Width="120">
-                    <Ellipse Fill="#99FFFFFF" />
-                    <Grid  Width="40" Margin="40,94,40,16" >
-                        <Ellipse Fill="#99FFFFFF" x:Name="mouthUX" Height="4" />
-                    </Grid>
-                    <Grid Width="30" Margin="20,45,70,75">
-                        <Ellipse Fill="#99FFFFFF" x:Name="leftEyeUX" Height="15" />
-                    </Grid>
-                    <Grid Width="30" Margin="71,45,19,75">
-                        <Ellipse Fill="#99FFFFFF" x:Name="rightEyeUX" Height="15" />
-                    </Grid>
-                </Grid>
 
-                <TextBlock Margin="0,20,0,0" Text="Head Pose" Style="{StaticResource TitleTextBlockStyle}" FontFamily="Segoe UI Light" />
-                <Grid Height="16" Background="#99FFFFFF" Margin="0,2,0,0" x:Name="headPoseIndicatorHost">
-                    <Rectangle Width="2" Fill="White"/>
-                    <Rectangle Width="2" Fill="#FF02E2FF" x:Name="headPoseIndicator"/>
-                    <TextBlock Text="left" FontStyle="Italic" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Margin="2,0,0,0"/>
-                    <TextBlock Text="right" FontStyle="Italic" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Margin="0,0,2,0"/>
-                </Grid>
-
-                <Grid Margin="0,20,0,0" >
-                    <TextBlock Text="Activities" Style="{StaticResource TitleTextBlockStyle}" FontFamily="Segoe UI Light" VerticalAlignment="Center" />
-                    <ToggleSwitch x:Name="visionToggle" HorizontalAlignment="Right" MinWidth="10" Margin="12,0,0,0" Toggled="visionToggleChanged" />
-                </Grid>
-
-                <TextBlock x:Name="visionAPICaptionTextBlock" Text="enable to start analyzing activities (e.g. cell phone)" Style="{StaticResource BodyTextBlockStyle}" FontFamily="Segoe UI Light" Height="55" HorizontalAlignment="Left" FontStyle="Italic" />
-
-            </StackPanel>
-
-            <TextBlock x:Name="faceLantencyDebugText" TextAlignment="Right" HorizontalAlignment="Right" Opacity="0.3" Margin="0,4,0,0" Width="180" />
-            <TextBlock x:Name="visionLantencyDebugText" TextAlignment="Right" HorizontalAlignment="Right" Visibility="{Binding ElementName=visionToggle, Path=IsOn, Converter={StaticResource bolleanToVisibilityConverter}}" Opacity="0.3" Width="180"/>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,12,64" Opacity="0.7" >
             <TextBlock x:Name="highLatencyWarning" Text="Latency is too high!" Foreground="#FF42BBFA" Visibility="Collapsed" HorizontalAlignment="Right" Opacity="0.5"/>
-
+            <TextBlock x:Name="faceLantencyDebugText" TextAlignment="Right" HorizontalAlignment="Right" Opacity="0.3" Margin="0,4,0,0" Width="180" />
+            <TextBlock x:Name="visionLantencyDebugText" TextAlignment="Right" HorizontalAlignment="Right" Opacity="0.3" Width="180"/>
         </StackPanel>
 
-        <MediaElement x:Name="alarmSound" AutoPlay="False"/>
     </Grid>
 </Page>

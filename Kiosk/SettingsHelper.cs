@@ -195,26 +195,6 @@ namespace IntelligentKioskSample
                 }
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["DriverMonitoringSleepingThreshold"];
-            if (value != null)
-            {
-                double threshold;
-                if (double.TryParse(value.ToString(), out threshold))
-                {
-                    this.DriverMonitoringSleepingThreshold = threshold;
-                }
-            }
-
-            value = ApplicationData.Current.RoamingSettings.Values["DriverMonitoringYawningThreshold"];
-            if (value != null)
-            {
-                double threshold;
-                if (double.TryParse(value.ToString(), out threshold))
-                {
-                    this.DriverMonitoringYawningThreshold = threshold;
-                }
-            }
-
             value = ApplicationData.Current.RoamingSettings.Values["CustomVisionPredictionApiKey"];
             if (value != null)
             {
@@ -394,28 +374,6 @@ namespace IntelligentKioskSample
             {
                 this.showDebugInfo = value;
                 this.OnSettingChanged("ShowDebugInfo", value);
-            }
-        }
-
-        private double driverMonitoringSleepingThreshold = RealtimeDriverMonitoring.DefaultSleepingApertureThreshold;
-        public double DriverMonitoringSleepingThreshold
-        {
-            get { return this.driverMonitoringSleepingThreshold; }
-            set
-            {
-                this.driverMonitoringSleepingThreshold = value;
-                this.OnSettingChanged("DriverMonitoringSleepingThreshold", value);
-            }
-        }
-
-        private double driverMonitoringYawningThreshold = RealtimeDriverMonitoring.DefaultYawningApertureThreshold;
-        public double DriverMonitoringYawningThreshold
-        {
-            get { return this.driverMonitoringYawningThreshold; }
-            set
-            {
-                this.driverMonitoringYawningThreshold = value;
-                this.OnSettingChanged("DriverMonitoringYawningThreshold", value);
             }
         }
 

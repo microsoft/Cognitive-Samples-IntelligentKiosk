@@ -105,6 +105,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\CenteredVerticalBarControl.xaml.cs">
+      <DependentUpon>CenteredVerticalBarControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Converters.cs" />
     <Compile Include="Controls\EmotionToColoredBar.xaml.cs">
       <DependentUpon>EmotionToColoredBar.xaml</DependentUpon>
@@ -123,6 +126,12 @@
     </Compile>
     <Compile Include="Controls\SpeechToTextControl.xaml.cs">
       <DependentUpon>SpeechToTextControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\UpDownVerticalBarControl.xaml.cs">
+      <DependentUpon>UpDownVerticalBarControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\VerticalBarTimelineControl.xaml.cs">
+      <DependentUpon>VerticalBarTimelineControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\VerticalBarWithValueControl.xaml.cs">
       <DependentUpon>VerticalBarWithValueControl.xaml</DependentUpon>
@@ -264,6 +273,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\CenteredVerticalBarControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\EmotionToColoredBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -289,6 +302,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\SpeechToTextControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\UpDownVerticalBarControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\VerticalBarTimelineControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

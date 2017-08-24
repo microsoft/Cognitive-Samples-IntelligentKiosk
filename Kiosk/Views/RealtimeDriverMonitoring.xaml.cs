@@ -31,26 +31,27 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using ServiceHelpers;
-using IntelligentKioskSample.Controls;
+using KioskRuntimeComponent;
 using Microsoft.ProjectOxford.Common;
-using Microsoft.ProjectOxford.Emotion.Contract;
 using Microsoft.ProjectOxford.Face.Contract;
+using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Windows.Graphics.Imaging;
+using Windows.Media.Editing;
+using Windows.Media.Effects;
 using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using System.ComponentModel;
-using Windows.Media.SpeechSynthesis;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -61,48 +62,24 @@ namespace IntelligentKioskSample.Views
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     [KioskExperience(Title = "Realtime Driver Monitoring", ImagePath = "ms-appx:/Assets/RealtimeDriverMonitoring.jpg", ExperienceType = ExperienceType.Other)]
-    public sealed partial class RealtimeDriverMonitoring : Page, INotifyPropertyChanged
+    public sealed partial class RealtimeDriverMonitoring : Page
     {
-        private DateTime lastEyeOpenTime = DateTime.MinValue;
-        private DateTime lastFrontalHeadPoseTime = DateTime.MinValue;
-        private DateTime lastNotYawningTime = DateTime.MinValue;
-
-        private double mouthAperture;
-        private double eyeAperture;
-        private double headPoseDeviation;
-
         private Task processingLoopTask;
         private bool isProcessingLoopInProgress;
         private bool isProcessingPhoto;
         private bool isDescribingPhoto;
         private bool isProcessingDriverId;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public const double SleepingApertureThreshold = 0.45;
+        public const double YawningApertureThreshold = 0.7;
+        public const int LookingAwayAngleThreshold = 20;
 
-        public const double DefaultSleepingApertureThreshold = 0.15;
-        public const double DefaultYawningApertureThreshold = 0.35;
+        private bool isInputSourceFromVideo = false;
+        private Queue<VideoFrameData> queuedVideoFrames = new Queue<VideoFrameData>();
+        private HashSet<double> processedFrames = new HashSet<double>();
 
-        private double sleepingApertureThreshold;
-        public double SleepingApertureThreshold
-        {
-            get { return this.sleepingApertureThreshold; }
-            set
-            {
-                this.sleepingApertureThreshold = value;
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SleepingApertureThreshold"));
-            }
-        }
-
-        private double yawningApertureThreshold;
-        public double YawningApertureThreshold
-        {
-            get { return this.yawningApertureThreshold; }
-            set
-            {
-                this.yawningApertureThreshold = value;
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("YawningApertureThreshold"));
-            }
-        }
+        static SolidColorBrush BarChartColor = new SolidColorBrush(Color.FromArgb(0xff, 0x42, 0xbb, 0xfa));
+        static SolidColorBrush BarChartAlertColor = new SolidColorBrush(Color.FromArgb(0xff, 0xff, 0x44, 0x44));
 
         public RealtimeDriverMonitoring()
         {
@@ -113,6 +90,8 @@ namespace IntelligentKioskSample.Views
             this.cameraControl.HideCameraControls();
             this.cameraControl.ShowDialogOnApiErrors = false;
             this.cameraControl.CameraAspectRatioChanged += CameraControl_CameraAspectRatioChanged;
+
+            this.inputSourceComboBox.SelectionChanged += this.InputSourceChanged;
         }
 
         private void CameraControl_CameraAspectRatioChanged(object sender, EventArgs e)
@@ -137,22 +116,71 @@ namespace IntelligentKioskSample.Views
             {
                 await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                 {
-                    if (!this.isProcessingPhoto)
+                    if (isInputSourceFromVideo)
                     {
-                        this.isProcessingPhoto = true;
-                        if (this.cameraControl.NumFacesOnLastFrame == 0)
+                        if (FrameRelayVideoEffect.LatestSoftwareBitmap != null &&
+                            (this.videoPlayer.CurrentState == MediaElementState.Playing || this.videoPlayer.CurrentState == MediaElementState.Paused))
                         {
-                            await this.ProcessCameraCapture(null);
-                        }
-                        else
-                        {
-                            await this.ProcessCameraCapture(await this.cameraControl.CaptureFrameAsync());
+                            this.ProcessVideoFrame();
                         }
                     }
-                });
+                    else
+                    {
+                        if (!this.isProcessingPhoto)
+                        {
+                            this.isProcessingPhoto = true;
+                            if (this.cameraControl.NumFacesOnLastFrame == 0)
+                            {
+                                await this.ProcessImage(null);
+                            }
+                            else
+                            {
+                                await this.ProcessImage(await this.cameraControl.TakeAutoCapturePhoto());
+                            }
+                        }
+                    }
 
-                await Task.Delay(500);
+                    await Task.Delay(500);
+                });
             }
+        }
+
+        private async void ProcessVideoFrame()
+        {
+            int frameNumber = GetVideoFrameNumber();
+
+            if (!this.processedFrames.Contains(frameNumber))
+            {
+                this.processedFrames.Add(frameNumber);
+
+                ImageAnalyzer img = new ImageAnalyzer(await Util.GetPixelBytesFromSoftwareBitmapAsync(FrameRelayVideoEffect.LatestSoftwareBitmap));
+                img.UpdateDecodedImageSize(FrameRelayVideoEffect.LatestSoftwareBitmap.PixelHeight, FrameRelayVideoEffect.LatestSoftwareBitmap.PixelWidth);
+
+                this.queuedVideoFrames.Enqueue(
+                    new VideoFrameData
+                    {
+                        FrameNumber = (int)frameNumber,
+                        Image = img
+                    });
+            }
+
+            if (this.isProcessingPhoto || !this.queuedVideoFrames.Any())
+            {
+                return;
+            }
+
+            this.isProcessingPhoto = true;
+
+            var queuedVideoFrame = this.queuedVideoFrames.Dequeue();
+            var analyzer = queuedVideoFrame.Image;
+
+            await this.ProcessImage(analyzer);
+        }
+
+        private int GetVideoFrameNumber()
+        {
+            // Equivalent of 2 fps
+            return (int)(this.videoPlayer.Position.TotalMilliseconds / 500);
         }
 
         private async void CurrentWindowActivationStateChanged(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
@@ -167,18 +195,13 @@ namespace IntelligentKioskSample.Views
             }
         }
 
-        private async Task ProcessCameraCapture(ImageAnalyzer e)
+        private async Task ProcessImage(ImageAnalyzer e)
         {
             if (e == null)
             {
                 this.UpdateUIForNoDriverDetected();
                 this.isProcessingPhoto = false;
                 return;
-            }
-
-            if (this.visionToggle.IsOn)
-            {
-                this.StartCaptioningAsync(e);
             }
 
             DateTime start = DateTime.Now;
@@ -190,16 +213,17 @@ namespace IntelligentKioskSample.Views
             this.faceLantencyDebugText.Text = string.Format("Face API latency: {0}ms", (int)latency.TotalMilliseconds);
             this.highLatencyWarning.Visibility = latency.TotalSeconds <= 1 ? Visibility.Collapsed : Visibility.Visible;
 
+            this.StartCaptioningAsync(e);
             this.StartDriverIdAsync(e);
 
-            UpdateStateFromFacialFeatures(e);
+            await UpdateStateFromFacialFeatures(e);
 
             this.isProcessingPhoto = false;
         }
 
         private async void StartCaptioningAsync(ImageAnalyzer e)
         {
-            if (this.isDescribingPhoto)
+            if (this.isDescribingPhoto || !e.DetectedFaces.Any())
             {
                 return;
             }
@@ -213,27 +237,11 @@ namespace IntelligentKioskSample.Views
             this.highLatencyWarning.Visibility = latency.TotalSeconds <= 3 ? Visibility.Collapsed : Visibility.Visible;
 
             string desc = e.AnalysisResult.Description?.Captions?[0].Text;
-            if (string.IsNullOrEmpty(desc) || !this.visionToggle.IsOn)
-            {
-                this.objectDistraction.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                this.visionAPICaptionTextBlock.Text = string.Format("{0} ({1}%)", desc, (int)(e.AnalysisResult.Description.Captions[0].Confidence * 100));
-
-                string distraction = string.Empty;
-                if (desc.Contains("phone"))
-                {
-                    distraction = "On the phone!";
-                }
-                else if (desc.Contains("banana"))
-                {
-                    distraction = "Eating a banana!?";
-                }
-
-                this.objectDistraction.Text = distraction;
-                this.objectDistraction.Visibility = distraction != "" ? Visibility.Visible : Visibility.Collapsed;
-            }
+            bool distractionDetected = desc.Contains("phone") || desc.Contains("banana");
+            this.distractionChart.DrawDataPoint(distractionDetected ? 1 : 0.02,
+                                                distractionDetected ? BarChartAlertColor : BarChartColor,
+                                                await GetFaceCropAsync(e),
+                                                this.isInputSourceFromVideo ? Controls.WrapBehavior.Slide : Controls.WrapBehavior.Clear);
 
             this.isDescribingPhoto = false;
         }
@@ -244,9 +252,7 @@ namespace IntelligentKioskSample.Views
             this.visionLantencyDebugText.Text = "";
             this.highLatencyWarning.Visibility = Visibility.Collapsed;
 
-            this.driverId.Text = "No faces detected. Please look at the camera to start.";
-            this.sleeping.Visibility = this.lookingAway.Visibility = this.yawning.Visibility = this.objectDistraction.Visibility  = Visibility.Collapsed;
-            this.headPoseIndicator.Margin = new Thickness(0);
+            this.driverId.Text = "No faces detected";
         }
 
         private async void StartDriverIdAsync(ImageAnalyzer e)
@@ -265,7 +271,7 @@ namespace IntelligentKioskSample.Views
             await Task.WhenAll(e.IdentifyFacesAsync(), e.FindSimilarPersistedFacesAsync());
 
             SimilarFaceMatch faceMatch = e.SimilarFaceMatches.FirstOrDefault();
-            if(faceMatch != null)
+            if (faceMatch != null)
             {
                 string name = "Unknown";
 
@@ -286,13 +292,13 @@ namespace IntelligentKioskSample.Views
                     }
                 }
 
-                this.driverId.Text = string.Format("{0}\nFace Id: {1}", name, faceMatch.SimilarPersistedFace.PersistedFaceId.ToString("N").Substring(0, 4));
+                this.driverId.Text = string.Format("{0}", name, faceMatch.SimilarPersistedFace.PersistedFaceId.ToString("N").Substring(0, 4));
             }
 
             this.isProcessingDriverId = false;
         }
 
-        private void UpdateStateFromFacialFeatures(ImageAnalyzer e)
+        private async Task UpdateStateFromFacialFeatures(ImageAnalyzer e)
         {
             var f = e.DetectedFaces.FirstOrDefault();
             if (f == null)
@@ -301,83 +307,56 @@ namespace IntelligentKioskSample.Views
                 return;
             }
 
-            this.ProcessHeadPose(f);
-            this.ProcessMouth(f);
-            this.ProcessEyes(f);
-
-            this.sleeping.Visibility = (DateTime.Now - this.lastEyeOpenTime).TotalSeconds >= 2 ? Visibility.Visible : Visibility.Collapsed;
-            this.lookingAway.Visibility = (DateTime.Now - this.lastFrontalHeadPoseTime).TotalSeconds >= 0.5 ? Visibility.Visible : Visibility.Collapsed;
-            this.yawning.Visibility = (DateTime.Now - this.lastNotYawningTime).TotalSeconds >= 2 ? Visibility.Visible : Visibility.Collapsed;
-
-            if (this.sleeping.Visibility == Visibility.Visible &&
-                this.alarmSound.CurrentState != Windows.UI.Xaml.Media.MediaElementState.Playing)
-            {
-                this.alarmSound.Play();
-            }
+            this.ProcessHeadPose(f, await GetFaceCropAsync(e));
+            this.ProcessMouth(f, await GetFaceCropAsync(e));
+            this.ProcessEyes(f, await GetFaceCropAsync(e));
         }
 
-        private void ProcessHeadPose(Face f)
+        private void ProcessHeadPose(Face f, Image img)
         {
-            headPoseDeviation = Math.Abs(f.FaceAttributes.HeadPose.Yaw);
+            double headPoseDeviation = Math.Abs(f.FaceAttributes.HeadPose.Yaw);
 
-            this.headPoseIndicator.Margin = new Thickness((-f.FaceAttributes.HeadPose.Yaw / 90) * headPoseIndicatorHost.ActualWidth / 2, 0, 0, 0);
+            double deviationRatio = f.FaceAttributes.HeadPose.Yaw / 35;
 
-            double threshold = 25;
-            if (headPoseDeviation <= threshold)
-            {
-                this.lastFrontalHeadPoseTime = DateTime.Now;
-            }
+            this.headPoseChart.DrawDataPoint(deviationRatio >= 0 ? Math.Max(0.05, deviationRatio) : Math.Min(-0.02, deviationRatio),
+                                             headPoseDeviation <= LookingAwayAngleThreshold ? BarChartColor : BarChartAlertColor,
+                                             img,
+                                             this.isInputSourceFromVideo ? Controls.WrapBehavior.Slide : Controls.WrapBehavior.Clear);
         }
 
-        private void ProcessMouth(Face f)
-        {            
+        private void ProcessMouth(Face f, Image img)
+        {
             double mouthWidth = Math.Abs(f.FaceLandmarks.MouthRight.X - f.FaceLandmarks.MouthLeft.X);
             double mouthHeight = Math.Abs(f.FaceLandmarks.UpperLipBottom.Y - f.FaceLandmarks.UnderLipTop.Y);
 
-            this.mouthUX.Height = Math.Max(2, this.mouthUX.ActualWidth * 1.1 * mouthHeight / mouthWidth);
+            double mouthAperture = mouthHeight / mouthWidth;
+            mouthAperture = Math.Min((mouthAperture - 0.1) / 0.4, 1);
 
-            mouthAperture = mouthHeight / mouthWidth;
-            this.currentMouthAperture.Text = mouthAperture.ToString("F2");
-
-            if (mouthAperture <= this.YawningApertureThreshold)
-            {
-                this.lastNotYawningTime = DateTime.Now;
-            }
+            this.mouthApertureChart.DrawDataPoint(Math.Max(0.05, mouthAperture),
+                                                  mouthAperture <= YawningApertureThreshold ? BarChartColor : BarChartAlertColor,
+                                                  img,
+                                                  this.isInputSourceFromVideo ? Controls.WrapBehavior.Slide : Controls.WrapBehavior.Clear);
         }
 
-        private void ProcessEyes(Face f)
+        private void ProcessEyes(Face f, Image img)
         {
             double leftEyeWidth = Math.Abs(f.FaceLandmarks.EyeLeftInner.X - f.FaceLandmarks.EyeLeftOuter.X);
             double leftEyeHeight = Math.Abs(f.FaceLandmarks.EyeLeftBottom.Y - f.FaceLandmarks.EyeLeftTop.Y);
 
-            this.leftEyeUX.Height = Math.Max(2, this.leftEyeUX.ActualWidth * 0.9 * leftEyeHeight / leftEyeWidth);
-
             double rightEyeWidth = Math.Abs(f.FaceLandmarks.EyeRightInner.X - f.FaceLandmarks.EyeRightOuter.X);
             double rightEyeHeight = Math.Abs(f.FaceLandmarks.EyeRightBottom.Y - f.FaceLandmarks.EyeRightTop.Y);
 
-            this.rightEyeUX.Height = Math.Max(2, this.rightEyeUX.ActualWidth * 0.9 * rightEyeHeight / rightEyeWidth);
+            double eyeAperture = Math.Max(leftEyeHeight / leftEyeWidth, rightEyeHeight / rightEyeWidth);
+            eyeAperture = Math.Min((eyeAperture - 0.2) / 0.3, 1);
 
-            eyeAperture = Math.Max(leftEyeHeight / leftEyeWidth, rightEyeHeight / rightEyeWidth);
-            this.currentEyeAperture.Text = eyeAperture.ToString("F2");
-
-            if (eyeAperture >= this.SleepingApertureThreshold)
-            {
-                this.lastEyeOpenTime = DateTime.Now;
-            }
+            this.eyeApertureChart.DrawDataPoint(Math.Max(0.05, eyeAperture),
+                                                eyeAperture >= SleepingApertureThreshold ? BarChartColor : BarChartAlertColor,
+                                                img,
+                                                this.isInputSourceFromVideo ? Controls.WrapBehavior.Slide : Controls.WrapBehavior.Clear);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            this.SleepingApertureThreshold = SettingsHelper.Instance.DriverMonitoringSleepingThreshold;
-            this.YawningApertureThreshold = SettingsHelper.Instance.DriverMonitoringYawningThreshold;
-
-            using (var speech = new SpeechSynthesizer())
-            {
-                speech.Voice = SpeechSynthesizer.AllVoices.First(gender => gender.Gender == VoiceGender.Female);
-                SpeechSynthesisStream stream = await speech.SynthesizeTextToStreamAsync("Wake up!");
-                this.alarmSound.SetSource(stream, stream.ContentType);
-            }
-
             EnterKioskMode();
 
             if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey) || string.IsNullOrEmpty(SettingsHelper.Instance.VisionApiKey))
@@ -410,16 +389,6 @@ namespace IntelligentKioskSample.Views
             Window.Current.Activated -= CurrentWindowActivationStateChanged;
             this.cameraControl.CameraAspectRatioChanged -= CameraControl_CameraAspectRatioChanged;
 
-            if (SettingsHelper.Instance.DriverMonitoringSleepingThreshold != this.SleepingApertureThreshold)
-            {
-                SettingsHelper.Instance.DriverMonitoringSleepingThreshold = this.SleepingApertureThreshold;
-            }
-
-            if (SettingsHelper.Instance.DriverMonitoringYawningThreshold != this.YawningApertureThreshold)
-            {
-                SettingsHelper.Instance.DriverMonitoringYawningThreshold = this.YawningApertureThreshold;
-            }
-
             await FaceListManager.ResetFaceLists();
 
             await this.cameraControl.StopStreamAsync();
@@ -436,19 +405,111 @@ namespace IntelligentKioskSample.Views
             this.cameraHostGrid.Width = this.cameraHostGrid.ActualHeight * (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
         }
 
-        private void visionToggleChanged(object sender, RoutedEventArgs e)
+        private async void OpenVideoClicked(object sender, RoutedEventArgs e)
         {
-            if (!this.visionToggle.IsOn)
+            FileOpenPicker fileOpenPicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.Downloads, ViewMode = PickerViewMode.Thumbnail };
+            fileOpenPicker.FileTypeFilter.Add(".mp4");
+
+            var pickedFile = await fileOpenPicker.PickSingleFileAsync();
+            if (pickedFile != null)
             {
-                this.visionAPICaptionTextBlock.Text = "enable to start analyzing activities (e.g. cell phone)";
-                this.objectDistraction.Visibility = Visibility.Collapsed;
+                //Set the stream source to the MediaElement control
+                await this.StartVideoAsync(pickedFile);
+
+                this.ResetState();
+                StartProcessingLoop();
             }
         }
 
-        private void RestoreDefaultThresholdsClicked(object sender, RoutedEventArgs e)
+        private async Task StartVideoAsync(StorageFile file)
         {
-            this.SleepingApertureThreshold = DefaultSleepingApertureThreshold;
-            this.YawningApertureThreshold = DefaultYawningApertureThreshold;
+            try
+            {
+                if (this.videoPlayer.CurrentState == MediaElementState.Playing)
+                {
+                    this.videoPlayer.Stop();
+                }
+
+                FrameRelayVideoEffect.ResetState();
+
+                MediaClip clip = await MediaClip.CreateFromFileAsync(file);
+                clip.VideoEffectDefinitions.Add(new VideoEffectDefinition(typeof(FrameRelayVideoEffect).FullName));
+
+                MediaComposition compositor = new MediaComposition();
+                compositor.Clips.Add(clip);
+
+                this.videoPlayer.SetMediaStreamSource(compositor.GenerateMediaStreamSource());
+            }
+            catch (Exception ex)
+            {
+                await Util.GenericApiCallExceptionHandler(ex, "Error starting playback.");
+            }
+        }
+
+        private async void InputSourceChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.videoInputSource.IsSelected)
+            {
+                await this.cameraControl.StopStreamAsync();
+                this.cameraControl.Visibility = Visibility.Collapsed;
+                this.videoPlayer.Visibility = Visibility.Visible;
+                this.isInputSourceFromVideo = true;
+            }
+            else
+            {
+                await this.cameraControl.StartStreamAsync(isForRealTimeProcessing: true);
+                this.cameraControl.Visibility = Visibility.Visible;
+                this.videoPlayer.Visibility = Visibility.Collapsed;
+                this.isInputSourceFromVideo = false;
+            }
+
+            this.ResetState();
+        }
+
+        private void ResetState()
+        {
+            this.queuedVideoFrames.Clear();
+            this.processedFrames.Clear();
+            this.distractionChart.Clear();
+            this.headPoseChart.Clear();
+            this.mouthApertureChart.Clear();
+            this.eyeApertureChart.Clear();
+        }
+
+        private async Task<Image> GetFaceCropAsync(ImageAnalyzer img)
+        {
+            ImageSource croppedImage;
+
+            if (img.DetectedFaces == null || !img.DetectedFaces.Any())
+            {
+                croppedImage = new BitmapImage();
+                await ((BitmapImage)croppedImage).SetSourceAsync((await img.GetImageStreamCallback()).AsRandomAccessStream());
+            }
+            else
+            {
+                // Crop the primary face
+                FaceRectangle rect = img.DetectedFaces.First().FaceRectangle;
+                double heightScaleFactor = 1.8;
+                double widthScaleFactor = 1.8;
+                Rectangle biggerRectangle = new Rectangle
+                {
+                    Height = Math.Min((int)(rect.Height * heightScaleFactor), img.DecodedImageHeight),
+                    Width = Math.Min((int)(rect.Width * widthScaleFactor), img.DecodedImageWidth)
+                };
+                biggerRectangle.Left = Math.Max(0, rect.Left - (int)(rect.Width * ((widthScaleFactor - 1) / 2)));
+                biggerRectangle.Top = Math.Max(0, rect.Top - (int)(rect.Height * ((heightScaleFactor - 1) / 1.4)));
+
+                croppedImage = await Util.GetCroppedBitmapAsync(img.GetImageStreamCallback, biggerRectangle);
+            }
+
+            return new Image { Source = croppedImage, Height = 200 };
         }
     }
+
+    internal class VideoFrameData
+    {
+        public double FrameNumber { get; set; }
+        public ImageAnalyzer Image { get; set; }
+    }
+
 }
