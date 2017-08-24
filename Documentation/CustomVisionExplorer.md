@@ -6,7 +6,7 @@ Once you have it configured and at least one project created, just select a targ
 so from local files, Bing Image Search results or from a web camera capture. Once you submit a photo, the results are shown on above 
 the photo as a list of tags and their associated confidence level. 
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionExplorer.png "Custom Vision Explorer")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionExplorer.JPG "Custom Vision Explorer")
 
 # Custom Vision Setup
 
@@ -18,14 +18,14 @@ You can get to the Custom Vision Setup page by clicking on the ‘+’ button ne
 The Setup page will prompt you for API keys. In case you don’t have keys for the service you can find the key acquisition steps by 
 clicking on the Settings button on the top-right of the Setup page.
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionSetup.png "Custom Vision Setup")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionSetup.JPG "Custom Vision Setup")
 
 # Camera integration during the Custom Vision Setup workflow
 
 When you are creating your image classifiers the web cam capture can come in very handy. You can just enable auto-capture in the UI 
 and spend a few seconds moving the object in front of the camera while it captures photos from several angles.
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionCameraCapture.png "Custom Vision Camera Capture")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionCameraCapture.JPG "Custom Vision Camera Capture")
 
 # Active Learning
 
@@ -39,12 +39,10 @@ against one of your projects, a message will be displayed above the results (red
 with the corrected result that you provide, as an input signal back into your project. All you do is provide the proper tags and the 
 kiosk does the rest – it will add the image to the proper tag(s) in your project and trigger a re-train of the project. 
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionActiveLearning.png "Custom Vision Active Learning")
-
 Here is the UI that pops up when you enter the Active Learning UI. Just toggle all the tags that should be associated with the image 
 and click the big “Save and re-train the project” button.
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionActiveLearningFlyout.png "Custom Vision Active Learning Flyout")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionActiveLearning.JPG "Custom Vision Active Learning")
 
 As of now you can only use this workflow to correct images that still belong to at least one of the tags in the project. If you need to 
 correct images that shouldn't belong to any tags, the current approach is to create an Other tag an associate such images to that tag.
