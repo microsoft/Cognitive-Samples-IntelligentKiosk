@@ -240,6 +240,15 @@ namespace IntelligentKioskSample
             return result.AsStream();
         }
 
+        internal static async Task<Tuple<double, double>> ResizePhoto(Stream photo, int height, StorageFile resultFile)
+        {
+            var resultStream = (await resultFile.OpenStreamForWriteAsync()).AsRandomAccessStream();
+            var result = await ResizePhoto(photo, height, resultStream);
+            resultStream.Dispose();
+
+            return result;
+        }
+
         private static async Task<Tuple<double, double>> ResizePhoto(Stream photo, int height, IRandomAccessStream resultStream)
         {
             WriteableBitmap wb = new WriteableBitmap(1, 1);

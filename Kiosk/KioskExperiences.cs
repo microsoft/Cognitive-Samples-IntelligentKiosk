@@ -48,7 +48,7 @@ namespace IntelligentKioskSample
         static KioskExperiences()
         {
             expTypes = typeof(KioskExperiences).GetTypeInfo().Assembly.GetTypes().Where(t =>
-                t.Namespace == "IntelligentKioskSample.Views"
+                t.Namespace != null && t.Namespace.StartsWith("IntelligentKioskSample.Views")
                 && t.GetTypeInfo().GetCustomAttribute<KioskExperienceAttribute>() != null)
                 .ToArray();
         }
