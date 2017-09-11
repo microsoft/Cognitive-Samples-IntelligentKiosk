@@ -1,6 +1,6 @@
 # Image Collection Insights
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/ImageCollectionInsights.png "Image Collection Insights")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/ImageCollectionInsights.JPG "Image Collection Insights")
 
 This demo showcases an example of using Cognitive Services to add a layer of intelligence on top of a collection of 
 photos (e.g. filter by face, by emotion, by tag, etc). 
