@@ -32,19 +32,26 @@
 // 
 
 using IntelligentKioskSample.Controls;
+using IntelligentKioskSample.Views.VideoInsights;
 using KioskRuntimeComponent;
 using Microsoft.ProjectOxford.Common;
 using Microsoft.ProjectOxford.Common.Contract;
+using Microsoft.ProjectOxford.Vision;
 using Newtonsoft.Json.Linq;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Windows.Graphics.Imaging;
 using Windows.Media.Editing;
 using Windows.Media.Effects;
+using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Popups;
@@ -53,6 +60,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views
@@ -71,7 +79,7 @@ namespace IntelligentKioskSample.Views
         private Dictionary<Guid, int> pendingIdentificationAttemptCount = new Dictionary<Guid, int>();
         private HashSet<int> processedFrames = new HashSet<int>();
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        private Dictionary<string, int> tagsInVideo = new Dictionary<string, int>();
 
         public VideoInsightsPage()
         {
@@ -96,8 +104,8 @@ namespace IntelligentKioskSample.Views
             {
                 await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                 {
-                    if (!this.isProcessingPhoto && 
-                        FrameRelayVideoEffect.LatestSoftwareBitmap != null && 
+                    if (!this.isProcessingPhoto &&
+                        FrameRelayVideoEffect.LatestSoftwareBitmap != null &&
                         (this.videoPlayer.CurrentState == MediaElementState.Playing || this.videoPlayer.CurrentState == MediaElementState.Paused))
                     {
                         this.isProcessingPhoto = true;
@@ -139,21 +147,32 @@ namespace IntelligentKioskSample.Views
 
             DateTime start = DateTime.Now;
 
-            // Compute Emotion, Age and Gender
-            await Task.WhenAll(analyzer.DetectEmotionAsync(), analyzer.DetectFacesAsync(detectFaceAttributes: true));
+            // Compute Emotion, Age, Gender, Celebrities and Visual Features
+            await Task.WhenAll(
+                analyzer.DetectEmotionAsync(),
+                analyzer.DetectFacesAsync(detectFaceAttributes: true),
+                analyzer.AnalyzeImageAsync(true, new VisualFeature[] { VisualFeature.Categories, VisualFeature.Tags }));
 
             // Compute Face Identification and Unique Face Ids
             await Task.WhenAll(analyzer.IdentifyFacesAsync(), analyzer.FindSimilarPersistedFacesAsync());
 
+            await Task.WhenAll(ProcessPeopleInsightsAsync(analyzer, frameNumber), ProcessVisualFeaturesInsightsAsync(analyzer, frameNumber));
+
+            if (videoIdBeforeProcessing != this.currentVideoId)
+            {
+                // Media source changed while we were processing. Make sure we are in a clear state again.
+                await this.ResetStateAsync();
+            }
+
+            debugText.Text = string.Format("Latency: {0:0}ms", (DateTime.Now - start).TotalMilliseconds);
+
+            this.processedFrames.Add(frameNumber);
+        }
+
+        private async Task ProcessPeopleInsightsAsync(ImageAnalyzer analyzer, int frameNumber)
+        {
             foreach (var item in analyzer.SimilarFaceMatches)
             {
-                if (videoIdBeforeProcessing != this.currentVideoId)
-                {
-                    // Media source changed while we were processing. Make sure we are in a clear state again.
-                    await this.ResetStateAsync();
-                    break;
-                }
-
                 bool demographicsChanged = false;
                 Visitor personInVideo;
                 if (this.peopleInVideo.TryGetValue(item.SimilarPersistedFace.PersistedFaceId, out personInVideo))
@@ -165,7 +184,7 @@ namespace IntelligentKioskSample.Views
                         // This is a face we haven't identified yet. See how many times we have tried it, if we need to do it again or stop trying
                         if (this.pendingIdentificationAttemptCount[item.SimilarPersistedFace.PersistedFaceId] <= 5)
                         {
-                            string personName = await GetDisplayTextForPersonAsync(analyzer, item);
+                            string personName = GetDisplayTextForPersonAsync(analyzer, item);
                             if (string.IsNullOrEmpty(personName))
                             {
                                 // Increment the times we have tried and failed to identify this person
@@ -215,7 +234,7 @@ namespace IntelligentKioskSample.Views
 
                     demographicsChanged = true;
 
-                    string personName = await GetDisplayTextForPersonAsync(analyzer, item);
+                    string personName = GetDisplayTextForPersonAsync(analyzer, item);
                     if (string.IsNullOrEmpty(personName))
                     {
                         personName = item.Face.FaceAttributes.Gender;
@@ -241,11 +260,11 @@ namespace IntelligentKioskSample.Views
 
                     videoTrack.Tapped += this.TimelineTapped;
 
-                    this.peopleListView.Children.Add(videoTrack);
+                    this.peopleListView.Children.Insert(0, videoTrack);
                 }
 
                 // Update the timeline for this person
-                VideoTrack track = (VideoTrack) this.peopleListView.Children.FirstOrDefault(f => (Guid)((FrameworkElement)f).Tag == item.SimilarPersistedFace.PersistedFaceId);
+                VideoTrack track = (VideoTrack)this.peopleListView.Children.FirstOrDefault(f => (Guid)((FrameworkElement)f).Tag == item.SimilarPersistedFace.PersistedFaceId);
                 if (track != null)
                 {
                     Emotion matchingEmotion = CoreUtil.FindFaceClosestToRegion(analyzer.DetectedEmotion, item.Face.FaceRectangle);
@@ -255,6 +274,13 @@ namespace IntelligentKioskSample.Views
                     }
 
                     track.SetVideoFrameState(frameNumber, matchingEmotion.Scores);
+
+                    uint childIndex = (uint)this.peopleListView.Children.IndexOf(track);
+                    if (childIndex > 5)
+                    {
+                        // Bring to towards the top so it becomes visible
+                        this.peopleListView.Children.Move(childIndex, 5);
+                    }
                 }
 
                 if (demographicsChanged)
@@ -264,10 +290,116 @@ namespace IntelligentKioskSample.Views
 
                 this.overallStatsControl.UpdateData(this.demographics);
             }
+        }
 
-            debugText.Text = string.Format("Latency: {0:0}ms", (DateTime.Now - start).TotalMilliseconds);
+        private async Task ProcessVisualFeaturesInsightsAsync(ImageAnalyzer analyzer, int frameNumber)
+        {
+            foreach (var tag in analyzer.AnalysisResult.Tags)
+            {
+                if (this.tagsInVideo.ContainsKey(tag.Name))
+                {
+                    this.tagsInVideo[tag.Name]++;
+                }
+                else
+                {
+                    this.tagsInVideo[tag.Name] = 1;
 
-            this.processedFrames.Add(frameNumber);
+                    BitmapImage frameBitmap = new BitmapImage();
+                    await frameBitmap.SetSourceAsync((await analyzer.GetImageStreamCallback()).AsRandomAccessStream());
+                    VideoTrack videoTrack = new VideoTrack
+                    {
+                        Tag = tag.Name,
+                        CroppedFace = frameBitmap,
+                        DisplayText = tag.Name,
+                        Duration = (int)this.videoPlayer.NaturalDuration.TimeSpan.TotalSeconds,
+                    };
+
+                    videoTrack.Tapped += this.TimelineTapped;
+                    this.tagsListView.Children.Insert(0, videoTrack);
+
+                    this.FilterFeatureTimeline();
+                }
+
+                // Update the timeline for this tag
+                VideoTrack track = (VideoTrack)this.tagsListView.Children.FirstOrDefault(f => (string)((FrameworkElement)f).Tag == tag.Name);
+                if (track != null)
+                {
+                    track.SetVideoFrameState(frameNumber, new EmotionScores { Neutral = 1 });
+
+                    uint childIndex = (uint)this.tagsListView.Children.IndexOf(track);
+                    if (childIndex > 5)
+                    {
+                        // Bring towards the top so it becomes visible
+                        this.tagsListView.Children.Move(childIndex, 5);
+                    }
+                }
+            }
+
+            this.UpdateTagFilters();
+        }
+
+        private void UpdateTagFilters()
+        {
+            int index = 0;
+            List<KeyValuePair<String, int>> tagsGroupedByCountAndSorted = new List<KeyValuePair<String, int>>();
+            foreach (var group in this.tagsInVideo.GroupBy(t => t.Value).OrderByDescending(g => g.Key))
+            {
+                tagsGroupedByCountAndSorted.AddRange(group.OrderBy(g => g.Key));
+            }
+
+            foreach (var item in tagsGroupedByCountAndSorted)
+            {
+                TagFilterControl tagFilterControl = tagFilterPanel.Children.FirstOrDefault(t => (string)((UserControl)t).Tag == item.Key) as TagFilterControl;
+                if (tagFilterControl != null)
+                {
+                    TagFilterViewModel vm = tagFilterControl.DataContext as TagFilterViewModel;
+                    vm.Count = item.Value;
+
+                    int filterControlIndex = tagFilterPanel.Children.IndexOf(tagFilterControl);
+                    if (filterControlIndex != index)
+                    {
+                        tagFilterPanel.Children.Move((uint)filterControlIndex, (uint)index);
+                    }
+                }
+                else
+                {
+                    TagFilterControl newControl = new TagFilterControl
+                    {
+                        Tag = item.Key,
+                        DataContext = new TagFilterViewModel(item.Key) { Count = item.Value }
+                    };
+
+                    newControl.FilterChanged += (s, a) =>
+                    {
+                        this.FilterFeatureTimeline();
+                    };
+
+                    tagFilterPanel.Children.Add(newControl);
+                }
+                index++;
+            }
+        }
+
+        private void FilterFeatureTimeline()
+        {
+            IEnumerable<string> checkedTags = tagFilterPanel.Children.Select(c => (TagFilterViewModel)((TagFilterControl)c).DataContext)
+                .Where(vm => vm.IsChecked)
+                .Select(vm => vm.Tag);
+
+            if (checkedTags.Any())
+            {
+                foreach (var item in this.tagsListView.Children)
+                {
+                    item.Visibility = checkedTags.Contains((string)((VideoTrack)item).Tag) ? Visibility.Visible : Visibility.Collapsed;
+                }
+            }
+            else
+            {
+                foreach (var item in this.tagsListView.Children)
+                {
+                    item.Visibility = Visibility.Visible;
+                }
+            }
         }
 
         private void UpdateDemographics(SimilarFaceMatch item)
@@ -310,7 +442,7 @@ namespace IntelligentKioskSample.Views
             }
         }
 
-        private static async Task<string> GetDisplayTextForPersonAsync(ImageAnalyzer analyzer, SimilarFaceMatch item)
+        private static string GetDisplayTextForPersonAsync(ImageAnalyzer analyzer, SimilarFaceMatch item)
         {
             // See if we identified this person against a trained model
             IdentifiedPerson identifiedPerson = analyzer.IdentifiedPersons.FirstOrDefault(p => p.FaceId == item.Face.FaceId);
@@ -323,11 +455,6 @@ namespace IntelligentKioskSample.Views
             if (identifiedPerson == null)
             {
                 // Let's see if this is a celebrity
-                if (analyzer.AnalysisResult == null)
-                {
-                    await analyzer.IdentifyCelebrityAsync();
-                }
-
                 if (analyzer.AnalysisResult?.Categories != null)
                 {
                     foreach (var category in analyzer.AnalysisResult.Categories.Where(c => c.Detail != null))
@@ -367,6 +494,10 @@ namespace IntelligentKioskSample.Views
                 Visitors = new List<Visitor>()
             };
 
+            this.tagsInVideo.Clear();
+            this.tagFilterPanel.Children.Clear();
+            this.tagsListView.Children.Clear();
+
             this.pendingIdentificationAttemptCount.Clear();
             this.processedFrames.Clear();
         }
@@ -375,7 +506,7 @@ namespace IntelligentKioskSample.Views
         {
             this.EnterKioskMode();
 
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.EmotionApiKey) || 
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.EmotionApiKey) ||
                 string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey) ||
                 string.IsNullOrEmpty(SettingsHelper.Instance.VisionApiKey))
             {
@@ -451,6 +582,11 @@ namespace IntelligentKioskSample.Views
                 }
             }
         }
+
+        private void TagFilterChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 
     public class DurationToStringConverter : IValueConverter
@@ -463,6 +599,30 @@ namespace IntelligentKioskSample.Views
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             return new Duration(TimeSpan.Parse(value.ToString()));
+        }
+    }
+
+    public class TagFilterViewModel : INotifyPropertyChanged
+    {
+        public bool IsChecked { get; set; }
+        public string Tag { get; set; }
+
+        private int count;
+        public int Count
+        {
+            get { return this.count; }
+            set
+            {
+                this.count = value;
+                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public TagFilterViewModel(string tag)
+        {
+            this.Tag = tag;
         }
     }
 }

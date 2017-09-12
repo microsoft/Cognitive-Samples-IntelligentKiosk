@@ -237,7 +237,8 @@
     <Compile Include="Controls\ImageSearchUserControl.xaml.cs">
       <DependentUpon>ImageSearchUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VideoInsightsPage.xaml.cs">
+    <Compile Include="Views\VideoInsights\TagFilterControl.xaml.cs" />
+    <Compile Include="Views\VideoInsights\VideoInsightsPage.xaml.cs">
       <DependentUpon>VideoInsightsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\VisionApiExplorer.xaml.cs">
@@ -444,7 +445,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\VideoInsightsPage.xaml">
+    <Page Include="Views\VideoInsights\TagFilterControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\VideoInsights\VideoInsightsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -6,10 +6,12 @@
     xmlns:ctl="using:IntelligentKioskSample.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="mainPage"
     mc:Ignorable="d">
 
     <Page.Resources>
         <local:DurationToStringConverter x:Key="DurationToStringConverter"/>
+        <ctl:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <ctl:EmotionToColoredBar x:Key="EmotionToColoredBarControl"/>
     </Page.Resources>
 
@@ -38,13 +40,8 @@
                 <RowDefinition Height="0.4*"/>
                 <RowDefinition Height="0.6*"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.1*"/>
-                <ColumnDefinition />
-                <ColumnDefinition Width="0.1*"/>
-            </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="1" MaxWidth="640" MaxHeight="360" VerticalAlignment="Center" HorizontalAlignment="Center" >
+            <Grid MaxWidth="640" MaxHeight="360" VerticalAlignment="Center" HorizontalAlignment="Center" >
                 <MediaElement x:Name="videoPlayer" AreTransportControlsEnabled="True" >
                     <MediaElement.TransportControls>
                         <MediaTransportControls IsPlaybackRateButtonVisible="True" IsFullWindowEnabled="False" IsFullWindowButtonVisible="False" IsZoomButtonVisible="False" IsPlaybackRateEnabled="True" />
@@ -52,13 +49,18 @@
                 </MediaElement>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="1" Margin="0,6,0,6">
+            <ComboBox  Foreground="LightGray" Width="180" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="4" Header="Visualization Type">
+                <ComboBoxItem x:Name="peopleVisualizationComboBoxItem" Content="People and emotion" IsSelected="True"/>
+                <ComboBoxItem x:Name="tagVisualizationComboBoxItem" Content="Visual features"/>
+            </ComboBox>
+
+            <Grid Grid.Row="1" Margin="6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <Grid Margin="0,0,6,0">
+                <Grid Margin="0,0,6,0" Visibility="{Binding ElementName=peopleVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                     <Grid.RowDefinitions>
                         <RowDefinition/>
@@ -69,6 +71,21 @@
                     <ctl:AgeGenderDistributionControl x:Name="ageGenderDistributionControl" Width="300" Margin="0,6,0,0" Grid.Row="1" HeaderText="Demographics"/>
                 </Grid>
 
+                <Grid Margin="0,0,6,0" Background="#FF222222" Width="220" Visibility="{Binding ElementName=tagVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Margin="6" Text="Visual Features" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}" />
+                    <Rectangle Height="1" Fill="Gray" Grid.Row="1" Margin="0,0,0,12"/>
+
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" >
+                        <StackPanel x:Name="tagFilterPanel" Grid.Row="2" Orientation="Vertical"/>
+                    </ScrollViewer>
+                </Grid>
+
                 <Grid Grid.Column="1" Margin="6,0,0,0" Background="#FF222222">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
@@ -77,7 +94,8 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Margin="6" Text="Emotion Timeline" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}"/>
+                    <TextBlock Margin="6" Text="People and Emotion Timeline" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding ElementName=peopleVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Margin="6" Text="Visual Feature Timeline" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding ElementName=tagVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <Rectangle Height="1" Fill="Gray" Grid.Row="1" Margin="0,0,0,12"/>
 
                     <Grid Grid.Row="2" Margin="140,0,0,0">
@@ -87,7 +105,7 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
 
-                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Visibility="{Binding ElementName=peopleVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" >
                             <StackPanel Orientation="Horizontal">
                                 <Rectangle Width="8" Height="8" Fill="#ff542c" />
                                 <TextBlock Foreground="Gray" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" Margin="2,0,24,2" Text="Anger"/>
@@ -139,13 +157,16 @@
                     </Grid>
 
                     <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" Margin="0,0,10,0" >
-                        <StackPanel x:Name="peopleListView" Grid.Row="1" />
+                        <Grid>
+                            <StackPanel x:Name="peopleListView" Grid.Row="1" Visibility="{Binding ElementName=peopleVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            <StackPanel x:Name="tagsListView" Grid.Row="1" Visibility="{Binding ElementName=tagVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </Grid>
                     </ScrollViewer>
                 </Grid>
 
             </Grid >
 
-            <TextBlock Margin="0,0,6,6" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" x:Name="debugText" Opacity="0.6" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+            <TextBlock Margin="0,0,6,6" Grid.Row="1" x:Name="debugText" Opacity="0.6" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
 
         </Grid>
 
