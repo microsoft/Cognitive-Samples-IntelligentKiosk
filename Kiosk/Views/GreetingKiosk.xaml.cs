@@ -381,7 +381,7 @@ namespace IntelligentKioskSample.Views
                         try
                         {
                             //checks for new person every minute 
-                            SaveImage(img.GetImageStreamCallback(), "new-person-detected-" + DateTime.Now.ToString("dd-yyyy-HHmm"), "New Person Detected " + DateTime.Now.ToString("dd yyyy HH:mm"));
+                            SaveImage(img.GetImageStreamCallback(), "new-person-detected-" + DateTime.Now.ToString("dd-yyyy-HHmm"), "New Person Detected " + DateTime.Now.ToString("dd yyyy HHmm"));
                             imageSaveCount++;
                         }
                         catch(Exception)
