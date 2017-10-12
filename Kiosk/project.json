@@ -7,6 +7,8 @@
     "Microsoft.ProjectOxford.Face": "1.2.5",
     "Microsoft.ProjectOxford.Vision": "1.0.372",
     "Newtonsoft.Json": "9.0.1",
+    "System.Data.SqlClient": "4.4.0",
+    "WindowsAzure.Storage": "8.5.0",
     "WriteableBitmapEx": "1.5.0"
   },
   "frameworks": {

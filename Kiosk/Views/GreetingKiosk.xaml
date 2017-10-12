@@ -17,11 +17,13 @@
             <RowDefinition Height="0.05*" />
             <RowDefinition Height="0.10*" />
             <RowDefinition Height="0.05*" />
+            
             <RowDefinition />
         </Grid.RowDefinitions>
 
         <Grid x:Name="cameraHostGrid" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.RowSpan="3" Margin="5" >
             <ctl:CameraControl x:Name="cameraControl" />
+            
         </Grid>
 
         <Grid Grid.RowSpan="4" >
@@ -37,9 +39,13 @@
                     <SymbolIcon Symbol="Contact" x:Name="greetingSymbol" />
                 </Viewbox>
                 <TextBlock x:Name="greetingTextBlock" HorizontalAlignment="Center" Margin="0,24,0,0" Text="Step in front of the camera to start"  Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe UI Light" FontStyle="Italic"  />
+                <TextBlock x:Name="PactWorkerTextBlock" HorizontalAlignment="Center" Margin="0,24,0,0" Text="{x:Bind Path=allFiles.Count}" Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe UI Light"   />
+                <TextBlock x:Name="MetaTextBlock" HorizontalAlignment="Center" Margin="0,24,0,0" Text="{x:Bind Path=Worker.Name}"  Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe UI Light"   />
+                <TextBlock x:Name="other" HorizontalAlignment="Center" Margin="0,24,0,0" Text="{x:Bind Path=Worker.Authorization}"  Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe UI Light"   />
+                <TextBlock x:Name="other2" HorizontalAlignment="Center" Margin="0,24,0,0" Text="{x:Bind Path=Worker.Role}"  Style="{StaticResource HeaderTextBlockStyle}" FontFamily="Segoe UI Light"   />
             </StackPanel>
 
-            <Button  HorizontalAlignment="Center" Content="Learn more" Grid.Row="2" Opacity="0.5">
+            <Button  HorizontalAlignment="Center" Content="Iterate" Grid.Row="2" Opacity="0.5" Click="buttonClick">
                 <Button.Flyout>
                     <Flyout>
                         <TextBlock Width="400" TextWrapping="WrapWholeWords" Text="This demo is an example of a hands-free and real-time workflow for identifying when a person in front of the camera matches a known face.&#x0a; &#x0a;This could be used, for example, as a simple log-in mechanism to greet people by name and present them with some personalized information, like photos, weather, news, etc.&#x0a;&#x0a;You can use the Face Identification Setup in the Intelligent Kiosk to add or remove faces to the trained model."/>
