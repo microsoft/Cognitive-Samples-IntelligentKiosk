@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 // 
@@ -76,8 +76,8 @@ namespace IntelligentKioskSample.Views
         public GreetingKiosk()
         {
             //insert keys and storage account values 
-            _visionClient = new VisionServiceClient("<YOURKEYHERE>", "https://southeastasia.api.cognitive.microsoft.com/vision/v1.0");
-            storageAccount = CloudStorageAccount.Parse("<STORAGEACCOUNT>");
+            _visionClient = new VisionServiceClient("<>", "https://southeastasia.api.cognitive.microsoft.com/vision/v1.0");
+            storageAccount = CloudStorageAccount.Parse("<>");
             
             //Generate dummy users 
             allFiles = new WorkerDataHelper().Initialise();
@@ -206,7 +206,7 @@ namespace IntelligentKioskSample.Views
                     this.greetingTextBlock.Foreground = new SolidColorBrush(Windows.UI.Colors.Orange);
                     this.greetingSymbol.Foreground = new SolidColorBrush(Windows.UI.Colors.Orange);
                     this.greetingSymbol.Symbol = Symbol.Remove;
-                    SaveToQueueAsync(metadata[3] + " has attempted to enter the workroom but is not wearing their safety gear: " + DateTime.Now.ToString("dd yyyy HH:mm"));
+                    SaveToQueueAsync(metadata[3] + " has attempted to enter the workroom but is not wearing their safety gear: " + DateTime.Now.ToString("dd yyyy HHmm"));
                 }
             }
             else
@@ -259,6 +259,7 @@ namespace IntelligentKioskSample.Views
             return tags;
         }
 
+       
 
 
         private async void  SaveImage(Task<Stream> task, String containertxt, String message)
