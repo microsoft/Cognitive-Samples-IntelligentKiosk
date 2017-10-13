@@ -199,7 +199,17 @@ namespace IntelligentKioskSample.ViewModels
         private async Task<List<Tag>> TaggingAnalysisFunction(Stream imageStream)
         {
             // Submit image to API.
-            return (await _visionClient.GetTagsAsync(imageStream)).Tags.ToList();
+            try
+            {
+                var analysisResult = await _visionClient.GetTagsAsync(imageStream);
+                return analysisResult.Tags.ToList();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return Enumerable.Empty<Tag>().ToList();
         }
 
         private async Task SaveImage(Stream imageStream, string containertxt, string message)
@@ -258,38 +268,37 @@ namespace IntelligentKioskSample.ViewModels
                 var message2 = "";
                 foreach (var worker in _allFiles)
                 {
-                    if (worker.Name.Equals(img.IdentifiedPersons.First().Person.Name))
+                    if (!img.IdentifiedPersons.Any(x => x.Person.Name.Equals(worker.Name)))
+                        continue;
+
+                    strings[3] = worker.Name;
+                    _worker = worker;
+                    OnPropertyChanged(nameof(Authorization));
+                    OnPropertyChanged(nameof(Role));
+
+                    message += $"Role: {worker.Role}{Environment.NewLine}Mobile No: {worker.MobileNo}{Environment.NewLine}";
+
+                    switch (worker.Authorization)
                     {
-                        strings[3] = worker.Name;
-                        _worker = worker;
-                        OnPropertyChanged(nameof(Authorization));
-                        OnPropertyChanged(nameof(Role));
-
-                        message = "Role: " + worker.Role
-                                  + "\r\nMobile No:" + worker.MobileNo;
-
-                        switch (worker.Authorization)
-                        {
-                            case 2:
-                                SavedToQueue = false;
-                                message2 = "Auth Level: Room Access" + "\r\nObjects: unauthorized to use objects";
-                                break;
-                            case 3:
-                                SavedToQueue = false;
-                                message2 = "Auth Level: Full Access" + "\r\nObjects: " + worker.Objects;
-                                break;
-                            default:
-                                message2 = "User not authorized to be in room";
-                                if (!SavedToQueue)
-                                {
-                                    SavedToQueue = true;
-                                    await SaveToQueueAsync(
-                                        worker.Name +
-                                        " has attempted to enter workroom but is not authorized. Call now " +
-                                        worker.MobileNo);
-                                }
-                                break;
-                        }
+                        case 2:
+                            SavedToQueue = false;
+                            message2 += "Auth Level: Room Access" + "\r\nObjects: unauthorized to use objects";
+                            break;
+                        case 3:
+                            SavedToQueue = false;
+                            message2 += "Auth Level: Full Access" + "\r\nObjects: " + worker.Objects;
+                            break;
+                        default:
+                            message2 += "User not authorized to be in room";
+                            if (!SavedToQueue)
+                            {
+                                SavedToQueue = true;
+                                await SaveToQueueAsync(
+                                    worker.Name +
+                                    " has attempted to enter workroom but is not authorized. Call now " +
+                                    worker.MobileNo);
+                            }
+                            break;
                     }
                 }
                 strings[1] = message;

@@ -62,7 +62,6 @@ namespace IntelligentKioskSample.Views
             cameraControl.CameraAspectRatioChanged += CameraControl_CameraAspectRatioChanged;
         }
 
-
         private void StartProcessingLoop()
         {
             _isProcessingLoopInProgress = true;
@@ -73,31 +72,30 @@ namespace IntelligentKioskSample.Views
             }
         }
 
-
         private async void ProcessingLoop()
         {
             while (_isProcessingLoopInProgress)
             {
                 await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                 {
-                    if (!_isProcessingPhoto)
+                    if (_isProcessingPhoto)
+                        return;
+
+                    _isProcessingPhoto = true;
+                    var start = DateTime.Now;
+
+                    if (cameraControl.NumFacesOnLastFrame == 0)
                     {
-                        _isProcessingPhoto = true;
-                        var start = DateTime.Now;
-
-                        if (cameraControl.NumFacesOnLastFrame == 0)
-                        {
-                            await ViewModel.ProcessCameraCapture(null);
-                        }
-                        else
-                        {
-                            await ViewModel.ProcessCameraCapture(await cameraControl.CaptureFrameAsync());
-                        }
-
-                        var latency = DateTime.Now - start;
-                        faceLantencyDebugText.Text = string.Format("Face API latency: {0}ms", (int)latency.TotalMilliseconds);
-                        _isProcessingPhoto = false;
+                        await ViewModel.ProcessCameraCapture(null);
                     }
+                    else
+                    {
+                        await ViewModel.ProcessCameraCapture(await cameraControl.CaptureFrameAsync());
+                    }
+
+                    var latency = DateTime.Now - start;
+                    faceLantencyDebugText.Text = string.Format("Face API latency: {0}ms", (int)latency.TotalMilliseconds);
+                    _isProcessingPhoto = false;
                 });
 
                 //simplify timing 

@@ -20,6 +20,7 @@ namespace IntelligentKioskSample.Model
             list.Add(new PactWorker("Rick Roll", "Board 7", "123456789", 2, 0, "Unauthorised to use objects"));
             list.Add(new PactWorker("Bruce Wayne", "Batman", "123456789", 3, 23, "Batmobile, Baterang, Smoke bomb"));
             list.Add(new PactWorker("Ryan Preece", "Consultant", "0403 123 456", 3, 0, "Visual Studio, UWP, HoloLens"));
+            list.Add(new PactWorker("Safe Worker", "Model", "0403 123 456", 3, 0, "Jackhammer, Saw"));
 
             return list;
         }
