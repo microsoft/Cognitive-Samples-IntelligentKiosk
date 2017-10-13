@@ -31,8 +31,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using System.Linq;
+using System;
+using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views
 {
@@ -43,14 +45,22 @@ namespace IntelligentKioskSample.Views
     {
         public DemoLauncherPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            this.DataContext = KioskExperiences.Experiences;
+            DataContext = KioskExperiences.Experiences;
         }
 
         private void OnDemoClick(object sender, ItemClickEventArgs e)
         {
-            this.Frame.Navigate(((KioskExperience)e.ClickedItem).PageType);
+            Frame.Navigate(((KioskExperience)e.ClickedItem).PageType);
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            if (e.Parameter as string == "Initial" && e.NavigationMode == NavigationMode.New)
+                await Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                    () => Frame.Navigate(typeof(GreetingKiosk)));
         }
     }
 }

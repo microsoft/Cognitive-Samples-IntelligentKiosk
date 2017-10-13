@@ -132,7 +132,7 @@ namespace IntelligentKioskSample
             NavMenuItem navMenuItem = null;
             Type destPage = null;
 
-            navMenuItem = navlist.First();
+            navMenuItem = navlist[1]; // Nav to demo page launcher
             destPage = navMenuItem.DestPage;
 
             if (navMenuItem != null)
@@ -140,14 +140,14 @@ namespace IntelligentKioskSample
                 NavMenuList.SelectedItem = navMenuItem;
             }
 
-            NavigateToPage(destPage);
+            NavigateToPage(destPage, "Initial");
         }
 
-        public void NavigateToPage(Type destPage)
+        public void NavigateToPage(Type destPage, string parameter = "")
         {
             if (this.AppFrame.CurrentSourcePageType != destPage)
             {
-                AppFrame.Navigate(destPage, string.Empty, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
+                AppFrame.Navigate(destPage, parameter, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
             }
         }
 
