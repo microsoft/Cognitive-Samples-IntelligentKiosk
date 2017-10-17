@@ -171,9 +171,15 @@
     <Compile Include="Controls\PageHeader.xaml.cs">
       <DependentUpon>PageHeader.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Model\LiveCameraResult.cs" />
+    <Compile Include="Model\PactWorker.cs" />
+    <Compile Include="Model\CustomVisionResult.cs" />
+    <Compile Include="Model\Predictions.cs" />
+    <Compile Include="Model\WorkerDataHelper.cs" />
     <Compile Include="NavMenuItem.cs" />
     <Compile Include="SettingsHelper.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="ViewModels\GreetingKioskViewModel.cs" />
     <Compile Include="Views\BingNewsAnalytics.xaml.cs">
       <DependentUpon>BingNewsAnalytics.xaml</DependentUpon>
     </Compile>
@@ -468,6 +474,7 @@
       <Name>ServiceHelpers</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

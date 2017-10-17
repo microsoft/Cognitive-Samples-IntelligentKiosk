@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license.
 // 
@@ -31,16 +31,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using ServiceHelpers;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using IntelligentKioskSample.ViewModels;
 
 namespace IntelligentKioskSample.Views
 {
@@ -48,57 +45,62 @@ namespace IntelligentKioskSample.Views
     [KioskExperience(Title = "Greeting Kiosk", ImagePath = "ms-appx:/Assets/GreetingKiosk.jpg", ExperienceType = ExperienceType.Kiosk)]
     public sealed partial class GreetingKiosk : Page
     {
-        private Task processingLoopTask;
-        private bool isProcessingLoopInProgress;
-        private bool isProcessingPhoto;
+        private Task _processingLoopTask;
+        private bool _isProcessingLoopInProgress;
+        private bool _isProcessingPhoto;
+        
+
+        public GreetingKioskViewModel ViewModel => DataContext as GreetingKioskViewModel;
 
         public GreetingKiosk()
         {
-            this.InitializeComponent();
-
+            InitializeComponent();
+            DataContext = new GreetingKioskViewModel();
             Window.Current.Activated += CurrentWindowActivationStateChanged;
-            this.cameraControl.FilterOutSmallFaces = true;
-            this.cameraControl.HideCameraControls();
-            this.cameraControl.CameraAspectRatioChanged += CameraControl_CameraAspectRatioChanged;
-        }
-
-        private void CameraControl_CameraAspectRatioChanged(object sender, EventArgs e)
-        {
-            this.UpdateCameraHostSize();
+            cameraControl.FilterOutSmallFaces = true;
+            cameraControl.HideCameraControls();
+            cameraControl.CameraAspectRatioChanged += CameraControl_CameraAspectRatioChanged;
         }
 
         private void StartProcessingLoop()
         {
-            this.isProcessingLoopInProgress = true;
+            _isProcessingLoopInProgress = true;
 
-            if (this.processingLoopTask == null || this.processingLoopTask.Status != TaskStatus.Running)
+            if (_processingLoopTask == null || _processingLoopTask.Status != TaskStatus.Running)
             {
-                this.processingLoopTask = Task.Run(() => this.ProcessingLoop());
+                _processingLoopTask = Task.Run(() => ProcessingLoop());
             }
         }
 
-
         private async void ProcessingLoop()
         {
-            while (this.isProcessingLoopInProgress)
+            while (_isProcessingLoopInProgress)
             {
-                await this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
+                await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, async () =>
                 {
-                    if (!this.isProcessingPhoto)
+                    if (_isProcessingPhoto)
+                        return;
+
+                    _isProcessingPhoto = true;
+                    var start = DateTime.Now;
+
+                    if (cameraControl.NumFacesOnLastFrame == 0)
                     {
-                        this.isProcessingPhoto = true;
-                        if (this.cameraControl.NumFacesOnLastFrame == 0)
-                        {
-                            await this.ProcessCameraCapture(null);
-                        }
-                        else
-                        {
-                            await this.ProcessCameraCapture(await this.cameraControl.CaptureFrameAsync());
-                        }
+                        await ViewModel.ProcessCameraCapture(null);
                     }
+                    else
+                    {
+                        await ViewModel.ProcessCameraCapture(await cameraControl.CaptureFrameAsync());
+                    }
+
+                    var latency = DateTime.Now - start;
+                    faceLantencyDebugText.Text = string.Format("Face API latency: {0}ms", (int)latency.TotalMilliseconds);
+                    _isProcessingPhoto = false;
                 });
 
-                await Task.Delay(this.cameraControl.NumFacesOnLastFrame == 0 ? 100 : 1000);
+                //simplify timing 
+                //add counter 
+                await Task.Delay(cameraControl.NumFacesOnLastFrame == 0 ? 100 : 1000);
             }
         }
 
@@ -106,90 +108,12 @@ namespace IntelligentKioskSample.Views
         {
             if ((e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.CodeActivated ||
                 e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.PointerActivated) &&
-                this.cameraControl.CameraStreamState == Windows.Media.Devices.CameraStreamState.Shutdown)
+                cameraControl.CameraStreamState == Windows.Media.Devices.CameraStreamState.Shutdown)
             {
                 // When our Window loses focus due to user interaction Windows shuts it down, so we 
                 // detect here when the window regains focus and trigger a restart of the camera.
-                await this.cameraControl.StartStreamAsync(isForRealTimeProcessing: true);
+                await cameraControl.StartStreamAsync(true);
             }
-        }
-
-        private async Task ProcessCameraCapture(ImageAnalyzer e)
-        {
-            if (e == null)
-            {
-                this.UpdateUIForNoFacesDetected();
-                this.isProcessingPhoto = false;
-                return;
-            }
-
-            DateTime start = DateTime.Now;
-
-            await e.DetectFacesAsync();
-
-            if (e.DetectedFaces.Any())
-            {
-                await e.IdentifyFacesAsync();
-                this.greetingTextBlock.Text = this.GetGreettingFromFaces(e);
-
-                if (e.IdentifiedPersons.Any())
-                {
-                    this.greetingTextBlock.Foreground = new SolidColorBrush(Windows.UI.Colors.GreenYellow);
-                    this.greetingSymbol.Foreground = new SolidColorBrush(Windows.UI.Colors.GreenYellow);
-                    this.greetingSymbol.Symbol = Symbol.Comment;
-                }
-                else
-                {
-                    this.greetingTextBlock.Foreground = new SolidColorBrush(Windows.UI.Colors.Yellow);
-                    this.greetingSymbol.Foreground = new SolidColorBrush(Windows.UI.Colors.Yellow);
-                    this.greetingSymbol.Symbol = Symbol.View;
-                }
-            }
-            else
-            {
-                this.UpdateUIForNoFacesDetected();
-            }
-
-            TimeSpan latency = DateTime.Now - start;
-            this.faceLantencyDebugText.Text = string.Format("Face API latency: {0}ms", (int)latency.TotalMilliseconds);
-
-            this.isProcessingPhoto = false;
-        }
-
-        private string GetGreettingFromFaces(ImageAnalyzer img)
-        {
-            if (img.IdentifiedPersons.Any())
-            {
-                string names = img.IdentifiedPersons.Count() > 1 ? string.Join(", ", img.IdentifiedPersons.Select(p => p.Person.Name)) : img.IdentifiedPersons.First().Person.Name;
-
-                if (img.DetectedFaces.Count() > img.IdentifiedPersons.Count())
-                {
-                    return string.Format("Welcome back, {0} and company!", names);
-                }
-                else
-                {
-                    return string.Format("Welcome back, {0}!", names);
-                }
-            }
-            else
-            {
-                if (img.DetectedFaces.Count() > 1)
-                {
-                    return "Hi everyone! If I knew any of you by name I would say it...";
-                }
-                else
-                {
-                    return "Hi there! If I knew you by name I would say it...";
-                }
-            }
-        }
-
-        private void UpdateUIForNoFacesDetected()
-        {
-            this.greetingTextBlock.Text = "Step in front of the camera to start";
-            this.greetingTextBlock.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
-            this.greetingSymbol.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
-            this.greetingSymbol.Symbol = Symbol.Contact;
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -202,8 +126,8 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                await this.cameraControl.StartStreamAsync(isForRealTimeProcessing: true);
-                this.StartProcessingLoop();
+                await cameraControl.StartStreamAsync(true);
+                StartProcessingLoop();
             }
 
             base.OnNavigatedTo(e);
@@ -211,31 +135,43 @@ namespace IntelligentKioskSample.Views
 
         private void EnterKioskMode()
         {
-            ApplicationView view = ApplicationView.GetForCurrentView();
+#if !DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+                return;
+
+            var view = ApplicationView.GetForCurrentView();
             if (!view.IsFullScreenMode)
             {
                 view.TryEnterFullScreenMode();
             }
+#endif
+
+
         }
 
         protected override async void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            this.isProcessingLoopInProgress = false;
+            _isProcessingLoopInProgress = false;
             Window.Current.Activated -= CurrentWindowActivationStateChanged;
-            this.cameraControl.CameraAspectRatioChanged -= CameraControl_CameraAspectRatioChanged;
+            cameraControl.CameraAspectRatioChanged -= CameraControl_CameraAspectRatioChanged;
 
-            await this.cameraControl.StopStreamAsync();
+            await cameraControl.StopStreamAsync();
             base.OnNavigatingFrom(e);
         }
 
         private void OnPageSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.UpdateCameraHostSize();
+            UpdateCameraHostSize();
+        }
+
+        private void CameraControl_CameraAspectRatioChanged(object sender, EventArgs e)
+        {
+            UpdateCameraHostSize();
         }
 
         private void UpdateCameraHostSize()
         {
-            this.cameraHostGrid.Width = this.cameraHostGrid.ActualHeight * (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
+            cameraHostGrid.Width = cameraHostGrid.ActualHeight * (cameraControl.CameraAspectRatio != 0 ? cameraControl.CameraAspectRatio : 1.777777777777);
         }
     }
 }
