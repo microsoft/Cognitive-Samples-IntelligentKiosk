@@ -46,9 +46,10 @@ namespace ServiceHelpers
 {
     public class BingSearchHelper
     {
-        private static string ImageSearchEndPoint = "https://api.cognitive.microsoft.com/bing/v5.0/images/search";
-        private static string AutoSuggestionEndPoint = "https://api.cognitive.microsoft.com/bing/v5.0/suggestions";
-        private static string NewsSearchEndPoint = "https://api.cognitive.microsoft.com/bing/v5.0/news/search";
+        private static string ImageSearchEndPoint = "https://api.cognitive.microsoft.com/bing/v7.0/images/search";
+        private static string ImageInsightsEndPoint = "https://api.cognitive.microsoft.com/bing/v7.0/images/details";
+        private static string AutoSuggestionEndPoint = "https://api.cognitive.microsoft.com/bing/v7.0/suggestions";
+        private static string NewsSearchEndPoint = "https://api.cognitive.microsoft.com/bing/v7.0/news/search";
 
         private static int RetryCountOnQuotaLimitError = 6;
         private static int RetryDelayOnQuotaLimitError = 500;
@@ -190,7 +191,7 @@ namespace ServiceHelpers
 
         private static async Task<HttpResponseMessage> CallBingImageInsightsAsync(string imgUrl, string module)
         {
-            var result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(string.Format("{0}?imgUrl={1}&modulesRequested={2}", ImageSearchEndPoint, WebUtility.UrlEncode(imgUrl), module)));
+            var result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(string.Format("{0}?imgUrl={1}&modules={2}", ImageInsightsEndPoint, WebUtility.UrlEncode(imgUrl), module)));
             result.EnsureSuccessStatusCode();
             return result;
         }
@@ -203,7 +204,7 @@ namespace ServiceHelpers
             var content = new MultipartFormDataContent();
             content.Add(strContent);
 
-            var result = await RequestAndAutoRetryWhenThrottled(() => searchClient.PostAsync(string.Format("{0}?modulesRequested={1}", ImageSearchEndPoint, module), content));
+            var result = await RequestAndAutoRetryWhenThrottled(() => searchClient.PostAsync(string.Format("{0}?modules={1}", ImageInsightsEndPoint, module), content));
             result.EnsureSuccessStatusCode();
             return result;
         }
@@ -225,15 +226,15 @@ namespace ServiceHelpers
             List<VisualSearchCelebrityResult> results = new List<VisualSearchCelebrityResult>();
 
             dynamic data = JObject.Parse(json);
-            if (data.recognizedEntityGroups != null && data.recognizedEntityGroups.Count > 0)
+            if (data.recognizedEntityGroups != null && data.recognizedEntityGroups.value.Count > 0)
             {
-                for (int i = 0; i < data.recognizedEntityGroups.Count; i++)
+                for (int i = 0; i < data.recognizedEntityGroups.value.Count; i++)
                 {
-                    for (int j = 0; j < data.recognizedEntityGroups[i].recognizedEntityRegions.Count; j++)
+                    for (int j = 0; j < data.recognizedEntityGroups.value[i].recognizedEntityRegions.Count; j++)
                     {
-                        for (int k = 0; k < data.recognizedEntityGroups[i].recognizedEntityRegions[j].matchingEntities.Count; k++)
+                        for (int k = 0; k < data.recognizedEntityGroups.value[i].recognizedEntityRegions[j].matchingEntities.Count; k++)
                         {
-                            dynamic entity = data.recognizedEntityGroups[i].recognizedEntityRegions[j].matchingEntities[k];
+                            dynamic entity = data.recognizedEntityGroups.value[i].recognizedEntityRegions[j].matchingEntities[k];
                             results.Add(new VisualSearchCelebrityResult
                             {
                                 Name = entity.entity.name.Value,
@@ -266,13 +267,13 @@ namespace ServiceHelpers
             List<VisualSearchPhotoResult> results = new List<VisualSearchPhotoResult>();
 
             dynamic data = JObject.Parse(json);
-            if (data.visuallySimilarImages != null && data.visuallySimilarImages.Count > 0)
+            if (data.visuallySimilarImages != null && data.visuallySimilarImages.value.Count > 0)
             {
-                for (int i = 0; i < data.visuallySimilarImages.Count; i++)
+                for (int i = 0; i < data.visuallySimilarImages.value.Count; i++)
                 {
                     results.Add(new VisualSearchPhotoResult
                     {
-                        ImageUrl = data.visuallySimilarImages[i].thumbnailUrl.Value
+                        ImageUrl = data.visuallySimilarImages.value[i].thumbnailUrl.Value
                     });
                 }
             }
@@ -297,19 +298,19 @@ namespace ServiceHelpers
             List<VisualSearchProductResult> products = new List<VisualSearchProductResult>();
 
             dynamic data = JObject.Parse(json);
-            if (data.visuallySimilarProducts != null && data.visuallySimilarProducts.Count > 0)
+            if (data.visuallySimilarProducts != null && data.visuallySimilarProducts.value.Count > 0)
             {
-                for (int i = 0; i < data.visuallySimilarProducts.Count; i++)
+                for (int i = 0; i < data.visuallySimilarProducts.value.Count; i++)
                 {
-                    dynamic prod = data.visuallySimilarProducts[i];
-                    if (prod?.aggregateOffer?.priceCurrency != null && prod?.aggregateOffer?.lowPrice != null)
+                    dynamic prod = data.visuallySimilarProducts.value[i];
+                    if (prod?.insightsMetadata?.aggregateOffer?.priceCurrency != null && prod?.insightsMetadata?.aggregateOffer?.lowPrice != null)
                     {
                         products.Add(new VisualSearchProductResult
                         {
-                            Name = prod.aggregateOffer.name.Value,
+                            Name = prod.insightsMetadata.aggregateOffer.name.Value,
                             ImageUrl = prod.thumbnailUrl.Value,
                             ReferenceUrl = prod.hostPageUrl.Value,
-                            Price = string.Format("{0} {1}", prod.aggregateOffer.priceCurrency.Value, prod.aggregateOffer.lowPrice.Value)
+                            Price = string.Format("{0} {1}", prod.insightsMetadata.aggregateOffer.priceCurrency.Value, prod.insightsMetadata.aggregateOffer.lowPrice.Value)
                         });
                     }
                 }
