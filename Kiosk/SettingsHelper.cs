@@ -169,6 +169,12 @@ namespace IntelligentKioskSample
                 this.TextAnalyticsKey = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyRegion"];
+            if (value != null)
+            {
+                this.TextAnalyticsApiKeyRegion = value.ToString();
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["CameraName"];
             if (value != null)
             {
@@ -341,6 +347,17 @@ namespace IntelligentKioskSample
             {
                 this.textAnalyticsKey = value;
                 this.OnSettingChanged("TextAnalyticsKey", value);
+            }
+        }
+
+        private string textAnalyticsApiKeyRegion = "westus";
+        public string TextAnalyticsApiKeyRegion
+        {
+            get { return textAnalyticsApiKeyRegion; }
+            set
+            {
+                this.textAnalyticsApiKeyRegion = value;
+                this.OnSettingChanged("TextAnalyticsApiKeyRegion", value);
             }
         }
 

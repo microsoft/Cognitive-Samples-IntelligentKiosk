@@ -46,8 +46,6 @@ namespace ServiceHelpers
 {
     public class TextAnalyticsHelper
     {
-        private const string ServiceBaseUri = "https://westus.api.cognitive.microsoft.com/";
-
         private static HttpClient httpClient { get; set; }
 
         private static string apiKey;
@@ -66,12 +64,30 @@ namespace ServiceHelpers
             }
         }
 
+        private static string apiKeyRegion;
+        public static string ApiKeyRegion
+        {
+            get { return apiKeyRegion; }
+            set
+            {
+                var changed = apiKeyRegion != value;
+                apiKeyRegion = value;
+                if (changed)
+                {
+                    InitializeTextAnalyticsClient();
+                }
+            }
+        }
+
         private static void InitializeTextAnalyticsClient()
         {
-            httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", ApiKey);
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.BaseAddress = new Uri(ServiceBaseUri);
+            if (!string.IsNullOrEmpty(ApiKey) && !string.IsNullOrEmpty(ApiKeyRegion))
+            {
+                httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", ApiKey);
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.BaseAddress = new Uri(string.Format("https://{0}.api.cognitive.microsoft.com/", ApiKeyRegion));
+            }
         }
 
         public static async Task<SentimentResult> GetTextSentimentAsync(string[] input, string language = "en")
