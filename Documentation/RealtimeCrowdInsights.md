@@ -18,7 +18,7 @@ This sample also shows how to use FaceLists to track unique faces.
 
 * [EmotionResponseTimelineControl](../Kiosk/Controls/EmotionResponseTimelineControl.xaml.cs): The control that displays the Crowd Average Emotion Timeline.
 
-* [AgeGenderDistributionControl](../Kiosk/Controls/AgeGenderDistributionControl.xaml.cs): The control that displays the Demographis data.
+* [AgeGenderDistributionControl](../Kiosk/Controls/AgeGenderDistributionControl.xaml.cs): The control that displays the Demographics data.
  
 * [OverallStatsControl](../Kiosk/Controls/OverallStatsControl.xaml.cs): The control that displays the Overall Stats data.
 
