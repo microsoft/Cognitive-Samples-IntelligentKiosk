@@ -13,7 +13,7 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 2. Right click on the IntelligentKioskSample project and set it as the StartUp Project 
 3. Run the solution (F5)
 4. Enter your API Keys in the Settings page (they will be saved in the user profile). See [Settings](Documentation/AppSettings.md) for  more details on the available settings.
-  * To generate cognitive API keys you can execute the following azure cli commands from bash / git bash
+  * If you prefer using command line you can execute the following azure cli commands from bash / git bash, to generate the cognitive services keys required for the Kiosk app
     ```sh
     # Create resource group, replace resouce group name and location of resource group as required
     az group create -n kiosk-cog-service-keys -l southcentralus
