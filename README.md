@@ -13,6 +13,64 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 2. Right click on the IntelligentKioskSample project and set it as the StartUp Project 
 3. Run the solution (F5)
 4. Enter your API Keys in the Settings page (they will be saved in the user profile). See [Settings](Documentation/AppSettings.md) for  more details on the available settings.
+  * To generate cognitive API keys you can execute the following azure cli commands from bash / git bash
+    ```sh
+    # Create resource group, replace resouce group name and location of resource group as required
+    az group create -n kiosk-cog-service-keys -l southcentralus
+     
+    # Cange working directory to Kiosk
+    cd Kiosk
+   
+    # The command below creates the cognitive service keys required by the KIOSK app, and then prints the keys. You can modifiy the tiers associated with the generated keys by modifying the parameter values
+     echo $(az group deployment create -n cog-keys-deploy -g kiosk-cog-service-keys --template-file cognitive-keys-azure-deploy.json --parameters @cognitive-keys-azure-deploy.parameters.json) | jq '.properties.outputs'
+     
+     ```
+      Sample output of above command is as follows:
+    
+    ```json
+
+     # Sample output of above command
+     {
+      "bingAugosuggestKey1": {
+        "type": "String",
+        "value": "31*************************"
+      },
+      "bingSearchKey1": {
+        "type": "String",
+        "value": "311*************************"
+      },
+      "compVisionEndpoint": {
+        "type": "String",
+        "value": "https://southcentralus.api.cognitive.microsoft.com/vision/v1.0"
+      },
+      "compVisionKey1": {
+        "type": "String",
+        "value": "3*********************************"
+      },
+      "emotionsKey1": {
+        "type": "String",
+        "value": "311******************************"
+      },
+      "faceEndpoint": {
+        "type": "String",
+        "value": "https://southcentralus.api.cognitive.microsoft.com/vision/v1.0"
+      },
+      "faceKey1": {
+        "type": "String",
+        "value": "311***********************************"
+      },
+      "textAnalyticsEndpoint": {
+        "type": "String",
+        "value": "https://southcentralus.api.cognitive.microsoft.com/vision/v1.0"
+      },
+      "textAnalyticsKey1": {
+        "type": "String",
+        "value": "311**********************************"
+      }
+    }
+
+
+    ```
 5. Explore one of the scenarios
 
 # Scenarios

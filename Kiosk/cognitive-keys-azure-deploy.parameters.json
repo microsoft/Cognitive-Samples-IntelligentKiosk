@@ -1,0 +1,24 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "ComputerVisionAccountName": {
+        "value": "kiosk-cog-serv-comp-vision"
+      },
+      "FaceAccountName": {
+        "value": "kiosk-face"
+      },
+      "EmotionAccountName": {
+        "value": "kiosk-emotion"
+      },
+      "TextAnalyticsAccountName": {
+        "value": "kiosk-text-analytics"
+      },
+      "BingSearchAccountName": {
+        "value": "kiosk-bing-search"
+      },
+      "BingAugosuggestAccountName": {
+        "value": "kiosk-bing-autosuggest"
+      }
+  }
+}
