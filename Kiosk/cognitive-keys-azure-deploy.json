@@ -116,12 +116,12 @@
   },
   "variables": {
     "cogServCompVisionId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]",
-    "cogServFaceId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]",
-    "cogServEmotionsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]",
-    "cogServTextAnalyticsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]"
+    "cogServFaceId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('FaceAccountName'))]",
+    "cogServEmotionsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('EmotionAccountName'))]",
+    "cogServTextAnalyticsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('TextAnalyticsAccountName'))]"
     ,
-    "cogServBingSearchId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]",
-    "cogServBingAutosuggestId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]"
+    "cogServBingSearchId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('BingSearchAccountName'))]",
+    "cogServBingAutosuggestId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('BingAugosuggestAccountName'))]"
   },
   "resources": [
     {
