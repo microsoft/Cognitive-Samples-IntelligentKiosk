@@ -15,6 +15,9 @@ Please note! **jq** needs to be installed to execute the commands below
   # The command below creates the cognitive service keys required by the KIOSK app, and then prints the keys
   echo $(az group deployment create -n cog-keys-deploy -g kiosk-cog-service-keys --template-uri https://raw.githubusercontent.com/Microsoft/Cognitive-Samples-IntelligentKiosk/master/Kiosk/cognitive-keys-azure-deploy.json) | jq '.properties.outputs'
 
+  # If you dont have jq installed you can execute the command, and manually search for the outputs section
+  # az group deployment create -n cog-keys-deploy -g kiosk-cog-service-keys --template-uri https://raw.githubusercontent.com/Microsoft/Cognitive-Samples-IntelligentKiosk/master/Kiosk/cognitive-keys-azure-deploy.json
+
   ```
 
 ### If in stead you want to modify the default parameters you need to get the cognitive-keys-azure-deploy.json and cognitive-keys-azure-deploy.parameters.json files locally and execute the following commands
@@ -24,6 +27,9 @@ Please note! **jq** needs to be installed to execute the commands below
    
  # The command below creates the cognitive service keys required by the KIOSK app, and then prints the keys. You can modifiy the tiers associated with the generated keys by modifying the parameter values
  echo $(az group deployment create -n cog-keys-deploy -g kiosk-cog-service-keys --template-file cognitive-keys-azure-deploy.json --parameters @cognitive-keys-azure-deploy.parameters.json) | jq '.properties.outputs'
+
+ # If you dont have jq installed you can execute the command, and manually search for the outputs section
+ # az group deployment create -n cog-keys-deploy -g kiosk-cog-service-keys --template-file cognitive-keys-azure-deploy.json --parameters @cognitive-keys-azure-deploy.parameters.json
      
  ```
 
