@@ -8,7 +8,7 @@
  ```
 
 ## Generate keys and echo the keys
-Please note! **jq** needs to be installed to execute the commands below
+Please note! **jq** needs to be installed to execute the commands below. If you do not want to use jq then you can just execute the az group deployment command and then search in the outputs section of the json where you will find the keys.
 
 ### To get the keys with the default parameters execute the following commands
   ```sh
