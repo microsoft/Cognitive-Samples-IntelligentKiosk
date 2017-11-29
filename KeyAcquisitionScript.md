@@ -8,6 +8,7 @@
  ```
 
 ## Generate keys and echo the keys
+Please note! **jq** needs to be installed to execute the commands below
 
 ### To get the keys with the default parameters execute the following commands
   ```sh
