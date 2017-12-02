@@ -20,7 +20,7 @@ Please note! **jq** needs to be installed to execute the commands below. If you 
 
   ```
 
-### If in stead you want to modify the default parameters you need to get the cognitive-keys-azure-deploy.json and cognitive-keys-azure-deploy.parameters.json files locally and execute the following commands
+### If instead you want to modify the default parameters you need to get the cognitive-keys-azure-deploy.json and cognitive-keys-azure-deploy.parameters.json files locally and execute the following commands
  ```sh    
  # Change working directory to Kiosk
  cd Kiosk
