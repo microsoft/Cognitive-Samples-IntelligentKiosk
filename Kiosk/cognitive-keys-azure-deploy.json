@@ -1,0 +1,241 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ComputerVisionAccountName": {
+      "defaultValue": "kiosk-computer-vision",
+      "metadata": {
+        "description": "Display name of Computer Vision API account"
+      },
+      "type": "string"
+    },
+    "FaceAccountName": {
+      "defaultValue": "kiosk-face",
+      "metadata": {
+        "description": "Display name of FACE API account"
+      },
+      "type": "string"
+    },
+    "EmotionAccountName": {
+      "defaultValue": "kiosk-emotion",
+      "metadata": {
+        "description": "Display name of Emotions API account"
+      },
+      "type": "string"
+    },
+    "TextAnalyticsAccountName": {
+      "defaultValue": "kiosk-text-analytics",
+      "metadata": {
+        "description": "Display name of Text Analytics API account"
+      },
+      "type": "string"
+    },
+    "BingSearchAccountName": {
+      "defaultValue": "kiosk-bing-search",
+      "metadata": {
+        "description": "Display name of Bing Search account"
+      },
+      "type": "string"
+    },
+    "BingAugosuggestAccountName": {
+      "defaultValue": "kiosk-bing-autosuggest",
+      "metadata": {
+        "description": "Display name of Bing Autosuggest account"
+      },
+      "type": "string"
+    },
+    "compVisionSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Computer Vision API"
+      },
+      "defaultValue": "S1",
+      "allowedValues": [
+        "F0",
+        "S1"
+      ]
+    },
+    "faceSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Computer Vision API"
+      },
+      "defaultValue": "S0",
+      "allowedValues": [
+        "F0",
+        "S0"
+      ]
+    },
+    "textAnalyticsSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Computer Vision API"
+      },
+      "defaultValue": "S0",
+      "allowedValues": [
+        "S0",
+        "S1",
+        "S2",
+        "S3",
+        "S4"
+      ]
+    },
+    "emotionsSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Computer Vision API"
+      },
+      "defaultValue": "S0",
+      "allowedValues": [
+        "F0",
+        "S0"
+      ]
+    },
+    "bingSearchSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Computer Vision API"
+      },
+      "defaultValue": "S1",
+      "allowedValues": [
+        "S1",
+        "S2"
+      ]
+    },
+    "bingAutosuggestSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Computer Vision API"
+      },
+      "defaultValue": "S1",
+      "allowedValues": [
+        "S1",
+        "S2"
+      ]
+    }
+  },
+  "variables": {
+    "cogServCompVisionId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]",
+    "cogServFaceId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('FaceAccountName'))]",
+    "cogServEmotionsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('EmotionAccountName'))]",
+    "cogServTextAnalyticsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('TextAnalyticsAccountName'))]"
+    ,
+    "cogServBingSearchId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('BingSearchAccountName'))]",
+    "cogServBingAutosuggestId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('BingAugosuggestAccountName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('faceSKU')]"
+      },
+      "kind": "Face",
+      "name": "[parameters('FaceAccountName')]",
+      "apiVersion": "2017-04-18",
+      "location": "[resourceGroup().location]",
+      "properties": {},
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('emotionsSKU')]"
+      },
+      "kind": "Emotion",
+      "name": "[parameters('EmotionAccountName')]",
+      "apiVersion": "2017-04-18",
+      "location": "westus",
+      "properties": {},
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('textAnalyticsSKU')]"
+      },
+      "kind": "TextAnalytics",
+      "name": "[parameters('TextAnalyticsAccountName')]",
+      "apiVersion": "2017-04-18",
+      "location": "[resourceGroup().location]",
+      "properties": {},
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('bingSearchSKU')]"
+      },
+      "kind": "Bing.Search.v7",
+      "name": "[parameters('BingSearchAccountName')]",
+      "apiVersion": "2016-02-01-preview",
+      "location": "global",
+      "scale": null,
+      "properties": {},
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('bingAutosuggestSKU')]"
+      },
+      "kind": "Bing.Autosuggest.v7",
+      "name": "[parameters('BingAugosuggestAccountName')]",
+      "apiVersion": "2016-02-01-preview",
+      "location": "global",
+      "scale": null,
+      "properties": {},
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('compVisionSKU')]"
+      },
+      "kind": "ComputerVision",
+      "name": "[parameters('ComputerVisionAccountName')]",
+      "apiVersion": "2017-04-18",
+      "location": "[resourceGroup().location]",
+      "properties": {},
+      "dependsOn": []
+    }
+  ],
+  "outputs": {
+    "compVisionKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServCompVisionId'),'2017-04-18').key1]"
+    },
+    "compVisionEndpoint": {
+      "type": "string",
+      "value": "[reference(variables('cogServCompVisionId'),'2017-04-18').endpoint]"
+    },
+    "faceKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServFaceId'),'2017-04-18').key1]"
+    },
+    "faceEndpoint": {
+      "type": "string",
+      "value": "[reference(variables('cogServFaceId'),'2017-04-18').endpoint]"
+    },
+    "emotionsKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServEmotionsId'),'2017-04-18').key1]"
+    },
+    "textAnalyticsKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServTextAnalyticsId'),'2017-04-18').key1]"
+    },
+    "textAnalyticsEndpoint": {
+      "type": "string",
+      "value": "[reference(variables('cogServTextAnalyticsId'),'2017-04-18').endpoint]"
+    }
+    ,
+    "bingSearchKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServBingSearchId'),'2016-02-01-preview').key1]"
+    },
+    "bingAugosuggestKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServBingAutosuggestId'),'2016-02-01-preview').key1]"
+    }
+  }
+}

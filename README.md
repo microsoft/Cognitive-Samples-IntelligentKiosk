@@ -13,6 +13,7 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 2. Right click on the IntelligentKioskSample project and set it as the StartUp Project 
 3. Run the solution (F5)
 4. Enter your API Keys in the Settings page (they will be saved in the user profile). See [Settings](Documentation/AppSettings.md) for  more details on the available settings.
+  * If you prefer using command line to obtain the keys, you can follow the steps in the in the [Key Acquisition Steps](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/KeyAcquisitionScript.md) file on how to do that through azure cli commands from bash / git bash 
 5. Explore one of the scenarios
 
 # Scenarios
