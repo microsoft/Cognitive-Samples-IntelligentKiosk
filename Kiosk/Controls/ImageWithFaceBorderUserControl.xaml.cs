@@ -498,6 +498,7 @@ namespace IntelligentKioskSample.Controls
         private async Task DetectAndShowEmotion()
         {
             this.progressIndicator.IsActive = true;
+            this.DetectFaceAttributes = true;
 
             foreach (var child in this.hostGrid.Children.Where(c => !(c is Image)).ToArray())
             {
@@ -505,27 +506,38 @@ namespace IntelligentKioskSample.Controls
             }
 
             ImageAnalyzer imageWithFace = this.DataContext as ImageAnalyzer;
+
             if (imageWithFace != null)
             {
-                if (imageWithFace.DetectedEmotion == null)
-                {
-                    await imageWithFace.DetectEmotionAsync();
-                }
-
                 double renderedImageXTransform = this.imageControl.RenderSize.Width / this.bitmapImage.PixelWidth;
                 double renderedImageYTransform = this.imageControl.RenderSize.Height / this.bitmapImage.PixelHeight;
 
-                foreach (Emotion emotion in imageWithFace.DetectedEmotion)
+                if (imageWithFace.DetectedFaces == null)
+                {
+                    await imageWithFace.DetectFacesAsync(detectFaceAttributes: this.DetectFaceAttributes, detectFaceLandmarks: this.DetectFaceLandmarks);
+                }
+
+                foreach (Face face in imageWithFace.DetectedFaces)
                 {
                     FaceIdentificationBorder faceUI = new FaceIdentificationBorder();
-
-                    faceUI.Margin = new Thickness((emotion.FaceRectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
-                                                    (emotion.FaceRectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0);
+                    
+                    faceUI.Margin = new Thickness((face.FaceRectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
+                                                    (face.FaceRectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0);
 
                     faceUI.BalloonBackground = this.BalloonBackground;
                     faceUI.BalloonForeground = this.BalloonForeground;
 
-                    faceUI.ShowFaceRectangle(emotion.FaceRectangle.Width * renderedImageXTransform, emotion.FaceRectangle.Height * renderedImageYTransform);
+                    faceUI.ShowFaceRectangle(face.FaceRectangle.Width * renderedImageXTransform, face.FaceRectangle.Height * renderedImageYTransform);
+
+                    Microsoft.ProjectOxford.Common.Rectangle rectangle = new Microsoft.ProjectOxford.Common.Rectangle();
+                    rectangle.Height = face.FaceRectangle.Height;
+                    rectangle.Left = face.FaceRectangle.Left;
+                    rectangle.Top = face.FaceRectangle.Top;
+                    rectangle.Width = face.FaceRectangle.Width;
+
+                    Emotion emotion = new Emotion();
+                    emotion.FaceRectangle = rectangle;
+                    emotion.Scores = face.FaceAttributes.Emotion;
 
                     faceUI.ShowEmotionData(emotion);
 
@@ -535,6 +547,7 @@ namespace IntelligentKioskSample.Controls
                     {
                         break;
                     }
+
                 }
             }
 

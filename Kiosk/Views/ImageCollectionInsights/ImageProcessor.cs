@@ -52,7 +52,7 @@ namespace IntelligentKioskSample.Views.ImageCollectionInsights
             analyzer.ShowDialogOnFaceApiErrors = true;
 
             // trigger vision, face and emotion requests
-            await Task.WhenAll(analyzer.AnalyzeImageAsync(detectCelebrities: false, visualFeatures: DefaultVisualFeatureTypes), analyzer.DetectFacesAsync(detectFaceAttributes: true), analyzer.DetectEmotionAsync());
+            await Task.WhenAll(analyzer.AnalyzeImageAsync(detectCelebrities: false, visualFeatures: DefaultVisualFeatureTypes), analyzer.DetectFacesAsync(detectFaceAttributes: true));
 
             // trigger face match against previously seen faces
             await analyzer.FindSimilarPersistedFacesAsync();
