@@ -45,7 +45,7 @@ namespace ServiceHelpers
 {
     public class ImageAnalyzer
     {
-        private static FaceAttributeType[] DefaultFaceAttributeTypes = new FaceAttributeType[] { FaceAttributeType.Age, FaceAttributeType.Gender, FaceAttributeType.HeadPose };
+        private static FaceAttributeType[] DefaultFaceAttributeTypes = new FaceAttributeType[] { FaceAttributeType.Age, FaceAttributeType.Gender, FaceAttributeType.HeadPose, FaceAttributeType.Emotion };
         private static VisualFeature[] DefaultVisualFeatures = new VisualFeature[] { VisualFeature.Tags, VisualFeature.Faces, VisualFeature.Categories, VisualFeature.Description, VisualFeature.Color };
 
         public event EventHandler FaceDetectionCompleted;
@@ -144,41 +144,6 @@ namespace ServiceHelpers
             finally
             {
                 this.OnFaceDetectionCompleted();
-            }
-        }
-
-        public async Task DetectEmotionAsync()
-        {
-            try
-            {
-                if (this.ImageUrl != null)
-                {
-                    this.DetectedEmotion = await EmotionServiceHelper.RecognizeAsync(this.ImageUrl);
-                }
-                else if (this.GetImageStreamCallback != null)
-                {
-                    this.DetectedEmotion = await EmotionServiceHelper.RecognizeAsync(this.GetImageStreamCallback);
-                }
-
-                if (this.FilterOutSmallFaces)
-                {
-                    this.DetectedEmotion = this.DetectedEmotion.Where(f => CoreUtil.IsFaceBigEnoughForDetection(f.FaceRectangle.Height, this.DecodedImageHeight));
-                }
-            }
-            catch (Exception e)
-            {
-                ErrorTrackingHelper.TrackException(e, "Emotion API RecognizeAsync error");
-
-                this.DetectedEmotion = Enumerable.Empty<Emotion>();
-
-                if (this.ShowDialogOnFaceApiErrors)
-                {
-                    await ErrorTrackingHelper.GenericApiCallExceptionHandler(e, "Emotion detection failed.");
-                }
-            }
-            finally
-            {
-                this.OnEmotionRecognitionCompleted();
             }
         }
 

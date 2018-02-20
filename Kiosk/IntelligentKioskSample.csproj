@@ -22,10 +22,11 @@
     <SccProvider>SAK</SccProvider>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
-    <AppxBundlePlatforms>x86|x64|arm</AppxBundlePlatforms>
+    <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
     <PackageCertificateThumbprint>AFA97E8E34493A24325844C55BC66D56D9F3595C</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>IntelligentKioskSample_TemporaryKey.pfx</PackageCertificateKeyFile>
     <ApplicationInsightsResourceId />
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>

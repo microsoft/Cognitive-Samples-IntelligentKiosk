@@ -290,9 +290,6 @@ namespace IntelligentKioskSample.Views
                 return;
             }
 
-            // detect emotions
-            await e.DetectEmotionAsync();
-
             if (e.DetectedEmotion.Any())
             {
                 // Update the average emotion response

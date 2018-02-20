@@ -61,7 +61,6 @@ namespace IntelligentKioskSample.Views
         private bool isProcessingLoopInProgress;
         private bool isProcessingPhoto;
 
-        private IEnumerable<Emotion> lastEmotionSample;
         private IEnumerable<Face> lastDetectedFaceSample;
         private IEnumerable<Tuple<Face, IdentifiedPerson>> lastIdentifiedPersonSample;
         private IEnumerable<SimilarFaceMatch> lastSimilarPersistedFaceSample;
@@ -148,7 +147,6 @@ namespace IntelligentKioskSample.Views
                 this.lastDetectedFaceSample = null;
                 this.lastIdentifiedPersonSample = null;
                 this.lastSimilarPersistedFaceSample = null;
-                this.lastEmotionSample = null;
                 this.debugText.Text = "";
 
                 this.isProcessingPhoto = false;
@@ -158,31 +156,8 @@ namespace IntelligentKioskSample.Views
             DateTime start = DateTime.Now;
 
             // Compute Emotion, Age and Gender
-            await Task.WhenAll(e.DetectEmotionAsync(), e.DetectFacesAsync(detectFaceAttributes: true));
-
-            if (!e.DetectedEmotion.Any())
-            {
-                this.lastEmotionSample = null;
-                this.ShowTimelineFeedbackForNoFaces();
-            }
-            else
-            {
-                this.lastEmotionSample = e.DetectedEmotion;
-
-                EmotionScores averageScores = new EmotionScores
-                {
-                    Happiness = e.DetectedEmotion.Average(em => em.Scores.Happiness),
-                    Anger = e.DetectedEmotion.Average(em => em.Scores.Anger),
-                    Sadness = e.DetectedEmotion.Average(em => em.Scores.Sadness),
-                    Contempt = e.DetectedEmotion.Average(em => em.Scores.Contempt),
-                    Disgust = e.DetectedEmotion.Average(em => em.Scores.Disgust),
-                    Neutral = e.DetectedEmotion.Average(em => em.Scores.Neutral),
-                    Fear = e.DetectedEmotion.Average(em => em.Scores.Fear),
-                    Surprise = e.DetectedEmotion.Average(em => em.Scores.Surprise)
-                };
-
-                this.emotionDataTimelineControl.DrawEmotionData(averageScores);
-            }
+            //await Task.WhenAll(e.DetectFacesAsync(detectFaceAttributes: true));
+            await Task.WhenAll(e.DetectFacesAsync(detectFaceAttributes: true));
 
             if (e.DetectedFaces == null || !e.DetectedFaces.Any())
             {
@@ -190,6 +165,21 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
+
+                EmotionScores averageScores = new EmotionScores
+                {
+                    Happiness = e.DetectedFaces.Average(em => em.FaceAttributes.Emotion.Happiness),
+                    Anger = e.DetectedFaces.Average(em => em.FaceAttributes.Emotion.Anger),
+                    Sadness = e.DetectedFaces.Average(em => em.FaceAttributes.Emotion.Sadness),
+                    Contempt = e.DetectedFaces.Average(em => em.FaceAttributes.Emotion.Contempt),
+                    Disgust = e.DetectedFaces.Average(em => em.FaceAttributes.Emotion.Disgust),
+                    Neutral = e.DetectedFaces.Average(em => em.FaceAttributes.Emotion.Neutral),
+                    Fear = e.DetectedFaces.Average(em => em.FaceAttributes.Emotion.Fear),
+                    Surprise = e.DetectedFaces.Average(em => em.FaceAttributes.Emotion.Surprise)
+                };
+
+                this.emotionDataTimelineControl.DrawEmotionData(averageScores);
+
                 this.lastDetectedFaceSample = e.DetectedFaces;
             }
 
@@ -230,9 +220,9 @@ namespace IntelligentKioskSample.Views
         {
             EnterKioskMode();
 
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.EmotionApiKey) || string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey))
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey))
             {
-                await new MessageDialog("Missing Face or Emotion API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();
+                await new MessageDialog("Missing Face API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();
             }
             else
             {
@@ -382,12 +372,13 @@ namespace IntelligentKioskSample.Views
 
         public EmotionScores GetLastEmotionForFace(BitmapBounds faceBox)
         {
-            if (this.lastEmotionSample == null || !this.lastEmotionSample.Any())
+            if (this.lastDetectedFaceSample == null || !this.lastDetectedFaceSample.Any())
             {
                 return null;
             }
+            int test = Math.Abs(647 - 634) + Math.Abs(325 - 314);
 
-            return this.lastEmotionSample.OrderBy(f => Math.Abs(faceBox.X - f.FaceRectangle.Left) + Math.Abs(faceBox.Y - f.FaceRectangle.Top)).First().Scores;
+            return this.lastDetectedFaceSample.OrderBy(f => Math.Abs(faceBox.X - f.FaceRectangle.Left) + Math.Abs(faceBox.Y - f.FaceRectangle.Top)).First().FaceAttributes.Emotion;
         }
 
         public Face GetLastFaceAttributesForFace(BitmapBounds faceBox)
