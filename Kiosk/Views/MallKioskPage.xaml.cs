@@ -1,20 +1,18 @@
-﻿using ServiceHelpers;
-using Microsoft.ProjectOxford.Emotion.Contract;
+﻿using IntelligentKioskSample.Controls;
+using IntelligentKioskSample.MallKioskPageConfig;
+using Microsoft.ProjectOxford.Common.Contract;
 using Microsoft.ProjectOxford.Face.Contract;
+using ServiceHelpers;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Media;
-using System.Collections.ObjectModel;
-using Microsoft.ProjectOxford.Common;
-using IntelligentKioskSample.MallKioskPageConfig;
-using IntelligentKioskSample.Controls;
+using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -291,21 +289,21 @@ namespace IntelligentKioskSample.Views
             }
 
             // detect emotions
-            await e.DetectEmotionAsync();
+            await e.DetectFacesAsync(detectFaceAttributes: true);
 
-            if (e.DetectedEmotion.Any())
+            if (e.DetectedFaces.Any())
             {
                 // Update the average emotion response
-                Scores averageScores = new Scores
+                EmotionScores averageScores = new EmotionScores
                 {
-                    Happiness = e.DetectedEmotion.Average(em => em.Scores.Happiness),
-                    Anger = e.DetectedEmotion.Average(em => em.Scores.Anger),
-                    Sadness = e.DetectedEmotion.Average(em => em.Scores.Sadness),
-                    Contempt = e.DetectedEmotion.Average(em => em.Scores.Contempt),
-                    Disgust = e.DetectedEmotion.Average(em => em.Scores.Disgust),
-                    Neutral = e.DetectedEmotion.Average(em => em.Scores.Neutral),
-                    Fear = e.DetectedEmotion.Average(em => em.Scores.Fear),
-                    Surprise = e.DetectedEmotion.Average(em => em.Scores.Surprise)
+                    Happiness = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Happiness),
+                    Anger = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Anger),
+                    Sadness = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Sadness),
+                    Contempt = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Contempt),
+                    Disgust = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Disgust),
+                    Neutral = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Neutral),
+                    Fear = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Fear),
+                    Surprise = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Surprise)
                 };
 
                 double positiveEmotionResponse = Math.Min(averageScores.Happiness + averageScores.Surprise, 1);
@@ -317,16 +315,16 @@ namespace IntelligentKioskSample.Views
                 // show captured faces and their emotion
                 if (this.emotionFacesGrid.Visibility == Visibility.Visible)
                 {
-                    foreach (var face in e.DetectedEmotion)
+                    foreach (var face in e.DetectedFaces)
                     {
                         // Get top emotion on this face
-                        EmotionData topEmotion = EmotionServiceHelper.ScoresToEmotionData(face.Scores).OrderByDescending(em => em.EmotionScore).First();
+                        var topEmotion = face.FaceAttributes.Emotion.ToRankedList().First();
 
                         // Crop this face
-                        Rectangle rect = face.FaceRectangle;
+                        FaceRectangle rect = face.FaceRectangle;
                         double heightScaleFactor = 1.8;
                         double widthScaleFactor = 1.8;
-                        Rectangle biggerRectangle = new Rectangle
+                        FaceRectangle biggerRectangle = new FaceRectangle
                         {
                             Height = Math.Min((int)(rect.Height * heightScaleFactor), e.DecodedImageHeight),
                             Width = Math.Min((int)(rect.Width * widthScaleFactor), e.DecodedImageWidth)
@@ -344,7 +342,7 @@ namespace IntelligentKioskSample.Views
                                 this.EmotionFaces.Clear();
                             }
 
-                            this.EmotionFaces.Add(new EmotionExpressionCapture { CroppedFace = croppedImage, TopEmotion = topEmotion.EmotionName });
+                            this.EmotionFaces.Add(new EmotionExpressionCapture { CroppedFace = croppedImage, TopEmotion = topEmotion.Key });
                         }
                     }
                 }

@@ -127,12 +127,6 @@ namespace IntelligentKioskSample
                 this.FaceApiKeyRegion = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["EmotionApiKey"];
-            if (value != null)
-            {
-                this.EmotionApiKey = value.ToString();
-            }
-
             value = ApplicationData.Current.RoamingSettings.Values["VisionApiKey"];
             if (value != null)
             {
@@ -259,17 +253,6 @@ namespace IntelligentKioskSample
             {
                 this.faceApiKeyRegion = value;
                 this.OnSettingChanged("FaceApiKeyRegion", value);
-            }
-        }
-
-        private string emotionApiKey = string.Empty;
-        public string EmotionApiKey
-        {
-            get { return this.emotionApiKey; }
-            set
-            {
-                this.emotionApiKey = value;
-                this.OnSettingChanged("EmotionApiKey", value);
             }
         }
 
@@ -416,6 +399,26 @@ namespace IntelligentKioskSample
             }
         }
 
-        public string[] AvailableApiRegions { get { return new string[] { "eastus2", "southeastasia", "westcentralus", "westeurope", "westus", "southcentralus" }; } }
+        public string[] AvailableApiRegions
+        {
+            get
+            {
+                return new string[]
+                {
+                    "westus",
+                    "westus2",
+                    "eastus",
+                    "eastus2",
+                    "westcentralus",
+                    "southcentralus",
+                    "westeurope",
+                    "northeurope",
+                    "southeastasia",
+                    "eastasia",
+                    "australiaeast",
+                    "brazilsouth"
+                };
+            }
+        }
     }
 }

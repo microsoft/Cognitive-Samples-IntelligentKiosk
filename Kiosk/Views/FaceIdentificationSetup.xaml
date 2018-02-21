@@ -25,7 +25,7 @@
 
             <CommandBar.SecondaryCommands>
                 <AppBarButton Icon="Folder" Label="Auto-train from photo albums" Click="OnSelectFolderButtonClicked"/>
-                <AppBarButton Icon="World" Label="Auto-train from Bing Image search">
+                <AppBarButton Icon="World" Label="Auto-train from Bing Image search" AllowFocusOnInteraction="True">
                     <AppBarButton.Flyout>
                         <Flyout x:Name="addPeopleInBatchesFlyout">
                             <StackPanel Orientation="Vertical">

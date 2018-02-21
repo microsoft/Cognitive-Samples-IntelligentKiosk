@@ -64,7 +64,6 @@ namespace IntelligentKioskSample.Controls
 
     public interface IRealTimeDataProvider
     {
-        EmotionScores GetLastEmotionForFace(BitmapBounds faceBox);
         Face GetLastFaceAttributesForFace(BitmapBounds faceBox);
         IdentifiedPerson GetLastIdentifiedPersonForFace(BitmapBounds faceBox);
         SimilarPersistedFace GetLastSimilarPersistedFaceForFace(BitmapBounds faceBox);
@@ -312,12 +311,6 @@ namespace IntelligentKioskSample.Controls
 
                     if (this.realTimeDataProvider != null)
                     {
-                        EmotionScores lastEmotion = this.realTimeDataProvider.GetLastEmotionForFace(face.FaceBox);
-                        if (lastEmotion != null)
-                        {
-                            faceBorder.ShowRealTimeEmotionData(lastEmotion);
-                        }
-
                         Face detectedFace = this.realTimeDataProvider.GetLastFaceAttributesForFace(face.FaceBox);
                         IdentifiedPerson identifiedPerson = this.realTimeDataProvider.GetLastIdentifiedPersonForFace(face.FaceBox);
                         SimilarPersistedFace similarPersistedFace = this.realTimeDataProvider.GetLastSimilarPersistedFaceForFace(face.FaceBox);
@@ -340,6 +333,8 @@ namespace IntelligentKioskSample.Controls
                                 // only age and gender available
                                 faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age, detectedFace.FaceAttributes.Gender, 0, null, uniqueId: uniqueId);
                             }
+
+                            faceBorder.ShowRealTimeEmotionData(detectedFace.FaceAttributes.Emotion);
                         }
                         else if (identifiedPerson != null && identifiedPerson.Person != null)
                         {

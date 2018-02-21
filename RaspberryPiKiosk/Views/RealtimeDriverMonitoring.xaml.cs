@@ -31,27 +31,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using ServiceHelpers;
-using IntelligentKioskSample.Controls;
-using Microsoft.ProjectOxford.Common;
-using Microsoft.ProjectOxford.Emotion.Contract;
+using Emmellsoft.IoT.Rpi.SenseHat;
 using Microsoft.ProjectOxford.Face.Contract;
+using ServiceHelpers;
 using System;
-using System.Collections.Generic;
-using System.IO;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
-using Windows.Graphics.Imaging;
-using Windows.Storage;
+using Windows.Media.SpeechSynthesis;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
-using System.ComponentModel;
-using Windows.Media.SpeechSynthesis;
-using Emmellsoft.IoT.Rpi.SenseHat;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 

@@ -103,12 +103,6 @@ namespace IntelligentKioskSample
                 this.FaceApiKey = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["EmotionApiKey"];
-            if (value != null)
-            {
-                this.EmotionApiKey = value.ToString();
-            }
-
             value = ApplicationData.Current.RoamingSettings.Values["VisionApiKey"];
             if (value != null)
             {
@@ -181,18 +175,6 @@ namespace IntelligentKioskSample
             {
                 this.faceApiKey = value;
                 this.OnSettingChanged("FaceApiKey", value);
-            }
-        }
-
-
-        private string emotionApiKey = string.Empty;
-        public string EmotionApiKey
-        {
-            get { return this.emotionApiKey; }
-            set
-            {
-                this.emotionApiKey = value;
-                this.OnSettingChanged("EmotionApiKey", value);
             }
         }
 

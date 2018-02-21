@@ -31,14 +31,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using ServiceHelpers;
-using Microsoft.ProjectOxford.Common;
 using Microsoft.ProjectOxford.Face;
 using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.Rest;
+using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Graphics.Display;
@@ -48,8 +49,6 @@ using Windows.Storage.Streams;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Microsoft.Rest;
 
 namespace IntelligentKioskSample
 {
@@ -128,7 +127,7 @@ namespace IntelligentKioskSample
             return deviceInfo.OrderBy(d => d.Name).Select(d => d.Name);
         }
 
-        async private static Task CropBitmapAsync(Stream localFileStream, Microsoft.ProjectOxford.Common.Rectangle rectangle, StorageFile resultFile)
+        async private static Task CropBitmapAsync(Stream localFileStream, FaceRectangle rectangle, StorageFile resultFile)
         {
             //Get pixels of the crop region
             var pixels = await GetCroppedPixelsAsync(localFileStream.AsRandomAccessStream(), rectangle);
@@ -148,12 +147,12 @@ namespace IntelligentKioskSample
             }
         }
 
-        async public static Task CropBitmapAsync(Func<Task<Stream>> localFile, Microsoft.ProjectOxford.Common.Rectangle rectangle, StorageFile resultFile)
+        async public static Task CropBitmapAsync(Func<Task<Stream>> localFile, FaceRectangle rectangle, StorageFile resultFile)
         {
             await CropBitmapAsync(await localFile(), rectangle, resultFile);
         }
 
-        async public static Task<ImageSource> GetCroppedBitmapAsync(Func<Task<Stream>> originalImgFile, Microsoft.ProjectOxford.Common.Rectangle rectangle)
+        async public static Task<ImageSource> GetCroppedBitmapAsync(Func<Task<Stream>> originalImgFile, FaceRectangle rectangle)
         {
             try
             {
@@ -169,7 +168,7 @@ namespace IntelligentKioskSample
             }
         }
 
-        async public static Task<ImageSource> GetCroppedBitmapAsync(IRandomAccessStream stream, Microsoft.ProjectOxford.Common.Rectangle rectangle)
+        async public static Task<ImageSource> GetCroppedBitmapAsync(IRandomAccessStream stream, FaceRectangle rectangle)
         {
             var pixels = await GetCroppedPixelsAsync(stream, rectangle);
 
@@ -180,7 +179,7 @@ namespace IntelligentKioskSample
             return cropBmp;
         }
 
-        async private static Task<byte[]> GetCroppedPixelsAsync(IRandomAccessStream stream, Rectangle rectangle)
+        async private static Task<byte[]> GetCroppedPixelsAsync(IRandomAccessStream stream, FaceRectangle rectangle)
         {
             // Create a decoder from the stream. With the decoder, we can get  
             // the properties of the image. 

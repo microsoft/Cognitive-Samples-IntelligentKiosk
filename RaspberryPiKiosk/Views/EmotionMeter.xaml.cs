@@ -126,9 +126,9 @@ namespace IntelligentKioskSample.Views
 
             DateTime start = DateTime.Now;
 
-            await e.DetectEmotionAsync();
+            await e.DetectFacesAsync();
 
-            if (e.DetectedEmotion.Any())
+            if (e.DetectedFaces.Any())
             {
                 this.UpdateEmotionMeter(e);
             }
@@ -147,7 +147,7 @@ namespace IntelligentKioskSample.Views
         {
             if (senseHat != null)
             {
-                var scores = img.DetectedEmotion.First().Scores;
+                var scores = img.DetectedFaces.First().FaceAttributes.Emotion;
 
                 senseHat.Display.Clear();
 
@@ -223,7 +223,7 @@ namespace IntelligentKioskSample.Views
         {
             EnterKioskMode();
 
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.EmotionApiKey))
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey))
             {
                 await new MessageDialog("Missing Face API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();
             }

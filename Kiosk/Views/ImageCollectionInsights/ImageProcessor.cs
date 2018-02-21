@@ -31,7 +31,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Common.Contract;
 using Microsoft.ProjectOxford.Vision;
 using ServiceHelpers;
 using System;
@@ -52,7 +51,7 @@ namespace IntelligentKioskSample.Views.ImageCollectionInsights
             analyzer.ShowDialogOnFaceApiErrors = true;
 
             // trigger vision, face and emotion requests
-            await Task.WhenAll(analyzer.AnalyzeImageAsync(detectCelebrities: false, visualFeatures: DefaultVisualFeatureTypes), analyzer.DetectFacesAsync(detectFaceAttributes: true), analyzer.DetectEmotionAsync());
+            await Task.WhenAll(analyzer.AnalyzeImageAsync(detectCelebrities: false, visualFeatures: DefaultVisualFeatureTypes), analyzer.DetectFacesAsync(detectFaceAttributes: true));
 
             // trigger face match against previously seen faces
             await analyzer.FindSimilarPersistedFacesAsync();
@@ -74,19 +73,14 @@ namespace IntelligentKioskSample.Views.ImageCollectionInsights
                 {
                     FaceRectangle = face.FaceRectangle,
                     Age = face.FaceAttributes.Age,
-                    Gender = face.FaceAttributes.Gender
+                    Gender = face.FaceAttributes.Gender,
+                    TopEmotion = face.FaceAttributes.Emotion.ToRankedList().First().Key
                 };
 
                 SimilarFaceMatch similarFaceMatch = analyzer.SimilarFaceMatches.FirstOrDefault(s => s.Face.FaceId == face.FaceId);
                 if (similarFaceMatch != null)
                 {
                     faceInsights.UniqueFaceId = similarFaceMatch.SimilarPersistedFace.PersistedFaceId;
-                }
-
-                Emotion faceEmotion = CoreUtil.FindFaceClosestToRegion(analyzer.DetectedEmotion, face.FaceRectangle);
-                if (faceEmotion != null)
-                {
-                    faceInsights.TopEmotion = faceEmotion.Scores.ToRankedList().First().Key;
                 }
 
                 faceInsightsList.Add(faceInsights);

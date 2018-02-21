@@ -32,7 +32,6 @@
 // 
 
 using KioskRuntimeComponent;
-using Microsoft.ProjectOxford.Common;
 using Microsoft.ProjectOxford.Face.Contract;
 using ServiceHelpers;
 using System;
@@ -491,7 +490,7 @@ namespace IntelligentKioskSample.Views
                 FaceRectangle rect = img.DetectedFaces.First().FaceRectangle;
                 double heightScaleFactor = 1.8;
                 double widthScaleFactor = 1.8;
-                Rectangle biggerRectangle = new Rectangle
+                FaceRectangle biggerRectangle = new FaceRectangle
                 {
                     Height = Math.Min((int)(rect.Height * heightScaleFactor), img.DecodedImageHeight),
                     Width = Math.Min((int)(rect.Width * widthScaleFactor), img.DecodedImageWidth)

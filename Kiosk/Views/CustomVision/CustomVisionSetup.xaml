@@ -23,7 +23,7 @@
         <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
            
             <AppBarButton Icon="Play" Label="Train Project" Click="OnStartTrainingClicked" x:Name="trainButton"/>
-            <AppBarButton Icon="Setting" Label="Settings" x:Name="settingsButton">
+            <AppBarButton Icon="Setting" Label="Settings" x:Name="settingsButton" AllowFocusOnInteraction="True">
                 <AppBarButton.Flyout>
                     <Flyout Closed="OnSettingsFlyoutClosed">
                         <StackPanel Width="400">

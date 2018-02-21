@@ -50,10 +50,10 @@ namespace IntelligentKioskSample.Controls
 
         public void UpdateEmotion(EmotionScores scores)
         {
-            EmotionData topEmotion = EmotionServiceHelper.ScoresToEmotionData(scores).OrderByDescending(d => d.EmotionScore).First();
+            var topEmotion = scores.ToRankedList().First();
             string label = "", emoji = "";
 
-            switch (topEmotion.EmotionName)
+            switch (topEmotion.Key)
             {
                 case "Anger":
                     label = "Angry";

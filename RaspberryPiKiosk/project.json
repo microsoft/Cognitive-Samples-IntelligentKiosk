@@ -2,13 +2,12 @@
   "dependencies": {
     "Emmellsoft.IoT.RPi.SenseHat": "0.1.0.10",
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "Microsoft.ProjectOxford.Emotion": "1.0.336",
-    "Microsoft.ProjectOxford.Face": "1.2.5",
+    "Microsoft.ProjectOxford.Face": "1.3.0",
     "Microsoft.ProjectOxford.Vision": "1.0.372",
     "Newtonsoft.Json": "9.0.1"
   },
   "frameworks": {
-    "uap10.0": {}
+    "uap10.0.10240": {}
   },
   "runtimes": {
     "win10-arm": {},

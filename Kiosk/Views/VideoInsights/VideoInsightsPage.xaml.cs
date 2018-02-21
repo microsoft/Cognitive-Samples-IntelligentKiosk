@@ -36,6 +36,7 @@ using IntelligentKioskSample.Views.VideoInsights;
 using KioskRuntimeComponent;
 using Microsoft.ProjectOxford.Common;
 using Microsoft.ProjectOxford.Common.Contract;
+using Microsoft.ProjectOxford.Face.Contract;
 using Microsoft.ProjectOxford.Vision;
 using Newtonsoft.Json.Linq;
 using ServiceHelpers;
@@ -149,7 +150,6 @@ namespace IntelligentKioskSample.Views
 
             // Compute Emotion, Age, Gender, Celebrities and Visual Features
             await Task.WhenAll(
-                analyzer.DetectEmotionAsync(),
                 analyzer.DetectFacesAsync(detectFaceAttributes: true),
                 analyzer.AnalyzeImageAsync(true, new VisualFeature[] { VisualFeature.Categories, VisualFeature.Tags }));
 
@@ -216,7 +216,7 @@ namespace IntelligentKioskSample.Views
                     // Crop the face, enlarging the rectangle so we frame it better
                     double heightScaleFactor = 1.8;
                     double widthScaleFactor = 1.8;
-                    Rectangle biggerRectangle = new Rectangle
+                    FaceRectangle biggerRectangle = new FaceRectangle
                     {
                         Height = Math.Min((int)(item.Face.FaceRectangle.Height * heightScaleFactor), FrameRelayVideoEffect.LatestSoftwareBitmap.PixelHeight),
                         Width = Math.Min((int)(item.Face.FaceRectangle.Width * widthScaleFactor), FrameRelayVideoEffect.LatestSoftwareBitmap.PixelWidth)
@@ -267,13 +267,7 @@ namespace IntelligentKioskSample.Views
                 VideoTrack track = (VideoTrack)this.peopleListView.Children.FirstOrDefault(f => (Guid)((FrameworkElement)f).Tag == item.SimilarPersistedFace.PersistedFaceId);
                 if (track != null)
                 {
-                    Emotion matchingEmotion = CoreUtil.FindFaceClosestToRegion(analyzer.DetectedEmotion, item.Face.FaceRectangle);
-                    if (matchingEmotion == null)
-                    {
-                        matchingEmotion = new Emotion { Scores = new EmotionScores { Neutral = 1 } };
-                    }
-
-                    track.SetVideoFrameState(frameNumber, matchingEmotion.Scores);
+                    track.SetVideoFrameState(frameNumber, item.Face.FaceAttributes.Emotion);
 
                     uint childIndex = (uint)this.peopleListView.Children.IndexOf(track);
                     if (childIndex > 5)
@@ -506,11 +500,10 @@ namespace IntelligentKioskSample.Views
         {
             this.EnterKioskMode();
 
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.EmotionApiKey) ||
-                string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey) ||
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey) ||
                 string.IsNullOrEmpty(SettingsHelper.Instance.VisionApiKey))
             {
-                await new MessageDialog("Missing Face, Emotion or Vision API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();
+                await new MessageDialog("Missing Face or Vision API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();
             }
 
             FaceListManager.FaceListsUserDataFilter = SettingsHelper.Instance.WorkspaceKey + "_RealTimeFromVideo";

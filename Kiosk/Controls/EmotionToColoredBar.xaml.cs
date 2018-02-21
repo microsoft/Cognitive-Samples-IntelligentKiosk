@@ -32,7 +32,6 @@
 // 
 
 using Microsoft.ProjectOxford.Common.Contract;
-using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,11 +71,11 @@ namespace IntelligentKioskSample.Controls
 
         public void UpdateEmotion(EmotionScores scores)
         {
-            EmotionData topEmotion = EmotionServiceHelper.ScoresToEmotionData(scores).OrderByDescending(d => d.EmotionScore).First();
+            var topEmotion = scores.ToRankedList().First();
 
-            this.filledBar.Background = this.emotionToColorMapping[topEmotion.EmotionName];
-            this.emptySpaceRowDefinition.Height = new GridLength(1 - topEmotion.EmotionScore, Windows.UI.Xaml.GridUnitType.Star);
-            this.filledSpaceRowDefinition.Height = new GridLength(topEmotion.EmotionScore, Windows.UI.Xaml.GridUnitType.Star);
+            this.filledBar.Background = this.emotionToColorMapping[topEmotion.Key];
+            this.emptySpaceRowDefinition.Height = new GridLength(1 - topEmotion.Value, Windows.UI.Xaml.GridUnitType.Star);
+            this.filledSpaceRowDefinition.Height = new GridLength(topEmotion.Value, Windows.UI.Xaml.GridUnitType.Star);
         }
     }
 }

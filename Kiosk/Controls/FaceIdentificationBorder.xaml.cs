@@ -31,28 +31,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using ServiceHelpers;
-using Microsoft.ProjectOxford.Emotion.Contract;
+using Microsoft.ProjectOxford.Common.Contract;
+using Microsoft.ProjectOxford.Face.Contract;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
-using Microsoft.ProjectOxford.Face.Contract;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -90,7 +80,7 @@ namespace IntelligentKioskSample.Controls
 
         public string CaptionText { get; set; }
 
-        public EmotionData[] EmotionData { get; set; }
+        public KeyValuePair<string, float>[] EmotionData { get; set; }
 
         public FaceIdentificationBorder()
         {
@@ -177,9 +167,9 @@ namespace IntelligentKioskSample.Controls
             this.captionCanvas.Visibility = Visibility.Visible;
         }
 
-        public void ShowEmotionData(Emotion emotion)
+        public void ShowEmotionData(EmotionScores emotion)
         {
-            this.EmotionData = EmotionServiceHelper.ScoresToEmotionData(emotion.Scores).OrderByDescending(e => e.EmotionScore).ToArray();
+            this.EmotionData = emotion.ToRankedList().ToArray();
 
             this.DataContext = this;
 

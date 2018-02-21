@@ -67,9 +67,9 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
 
-                    <local:EmotionMeterControl EmotionName="{Binding EmotionData[0].EmotionName}" EmotionValue="{Binding EmotionData[0].EmotionScore}" MeterForeground="{Binding BalloonForeground}" />
-                    <local:EmotionMeterControl Grid.Row="1"  EmotionName="{Binding EmotionData[1].EmotionName}" EmotionValue="{Binding EmotionData[1].EmotionScore}" MeterForeground="{Binding BalloonForeground}"/>
-                    <local:EmotionMeterControl Grid.Row="2" EmotionName="{Binding EmotionData[2].EmotionName}" EmotionValue="{Binding EmotionData[2].EmotionScore}" MeterForeground="{Binding BalloonForeground}"/>
+                    <local:EmotionMeterControl EmotionName="{Binding EmotionData[0].Key}" EmotionValue="{Binding EmotionData[0].Value}" MeterForeground="{Binding BalloonForeground}" />
+                    <local:EmotionMeterControl Grid.Row="1"  EmotionName="{Binding EmotionData[1].Key}" EmotionValue="{Binding EmotionData[1].Value}" MeterForeground="{Binding BalloonForeground}"/>
+                    <local:EmotionMeterControl Grid.Row="2" EmotionName="{Binding EmotionData[2].Key}" EmotionValue="{Binding EmotionData[2].Value}" MeterForeground="{Binding BalloonForeground}"/>
                 </Grid>
             </Grid>
             

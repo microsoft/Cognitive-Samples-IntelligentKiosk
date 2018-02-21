@@ -9,6 +9,7 @@
     Height="300"
     Width="400"
     x:Name="SearchControl"
+    AllowFocusOnInteraction="True"
     d:DesignHeight="300"
     d:DesignWidth="400">
 

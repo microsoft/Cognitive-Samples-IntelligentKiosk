@@ -31,7 +31,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Emotion.Contract;
 using Microsoft.ProjectOxford.Face.Contract;
 using System;
 using System.Linq;
@@ -53,11 +52,6 @@ namespace IntelligentKioskSample.Controls
         public string Text { get; set; }
         public SolidColorBrush AccentColor { get; set; }
         public string ImageFileName { get; set; }
-    }
-
-    public interface IEmotionFeedbackDataProvider
-    {
-        EmotionFeedback GetEmotionFeedback(Emotion emotion);
     }
 
     public sealed partial class ImageWithFaceBorderUserControl : UserControl
@@ -336,27 +330,27 @@ namespace IntelligentKioskSample.Controls
             ImageAnalyzer imageWithFace = this.DataContext as ImageAnalyzer;
             if (imageWithFace != null)
             {
-                if (imageWithFace.DetectedEmotion == null)
+                if (imageWithFace.DetectedFaces == null)
                 {
-                    await imageWithFace.DetectEmotionAsync();
+                    await imageWithFace.DetectFacesAsync();
                 }
 
                 double renderedImageXTransform = this.imageControl.RenderSize.Width / this.bitmapImage.PixelWidth;
                 double renderedImageYTransform = this.imageControl.RenderSize.Height / this.bitmapImage.PixelHeight;
 
-                foreach (Emotion emotion in imageWithFace.DetectedEmotion)
+                foreach (Face face in imageWithFace.DetectedFaces)
                 {
                     FaceIdentificationBorder faceUI = new FaceIdentificationBorder();
 
-                    faceUI.Margin = new Thickness((emotion.FaceRectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
-                                                    (emotion.FaceRectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0);
+                    faceUI.Margin = new Thickness((face.FaceRectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
+                                                    (face.FaceRectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0);
 
                     faceUI.BalloonBackground = this.BalloonBackground;
                     faceUI.BalloonForeground = this.BalloonForeground;
 
-                    faceUI.ShowFaceRectangle(emotion.FaceRectangle.Width * renderedImageXTransform, emotion.FaceRectangle.Height * renderedImageYTransform);
+                    faceUI.ShowFaceRectangle(face.FaceRectangle.Width * renderedImageXTransform, face.FaceRectangle.Height * renderedImageYTransform);
 
-                    faceUI.ShowEmotionData(emotion);
+                    faceUI.ShowEmotionData(face.FaceAttributes.Emotion);
 
                     this.hostGrid.Children.Add(faceUI);
 
