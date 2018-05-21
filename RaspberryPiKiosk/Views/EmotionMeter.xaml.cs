@@ -126,7 +126,7 @@ namespace IntelligentKioskSample.Views
 
             DateTime start = DateTime.Now;
 
-            await e.DetectFacesAsync();
+            await e.DetectFacesAsync(detectFaceAttributes: true);
 
             if (e.DetectedFaces.Any())
             {
