@@ -150,9 +150,9 @@ namespace ServiceHelpers
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError<Face[]>(() => faceClient.DetectAsync(url, returnFaceId, returnFaceLandmarks, returnFaceAttributes));
         }
 
-        public static async Task<PersonFace> GetPersonFaceAsync(string personGroupId, Guid personId, Guid face)
+        public static async Task<PersistedFace> GetPersonFaceAsync(string personGroupId, Guid personId, Guid face)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<PersonFace>(() => faceClient.GetPersonFaceAsync(personGroupId, personId, face));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<PersistedFace>(() => faceClient.GetPersonFaceAsync(personGroupId, personId, face));
         }
 
         public static async Task<IEnumerable<PersonGroup>> GetPersonGroupsAsync(string userDataFilter = null)

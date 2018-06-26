@@ -59,7 +59,7 @@ namespace IntelligentKioskSample.Views
         public ObservableCollection<PersonGroup> PersonGroups { get; set; } = new ObservableCollection<PersonGroup>();
         public PersonGroup CurrentPersonGroup { get; set; }
         public ObservableCollection<Person> PersonsInCurrentGroup { get; set; } = new ObservableCollection<Person>();
-        public ObservableCollection<PersonFace> SelectedPersonFaces { get; set; } = new ObservableCollection<PersonFace>();
+        public ObservableCollection<PersistedFace> SelectedPersonFaces { get; set; } = new ObservableCollection<PersistedFace>();
         public Person SelectedPerson { get; set; }
 
         public FaceIdentificationSetup()
@@ -310,7 +310,7 @@ namespace IntelligentKioskSample.Views
                 {
                     foreach (Guid face in this.SelectedPerson.PersistedFaceIds)
                     {
-                        PersonFace personFace = await FaceServiceHelper.GetPersonFaceAsync(this.CurrentPersonGroup.PersonGroupId, this.SelectedPerson.PersonId, face);
+                        PersistedFace personFace = await FaceServiceHelper.GetPersonFaceAsync(this.CurrentPersonGroup.PersonGroupId, this.SelectedPerson.PersonId, face);
                         this.SelectedPersonFaces.Add(personFace);
                     }
                 }
@@ -362,7 +362,7 @@ namespace IntelligentKioskSample.Views
 
                     if (addResult != null)
                     {
-                        this.SelectedPersonFaces.Add(new PersonFace { PersistedFaceId = addResult.PersistedFaceId, UserData = item.GetImageStreamCallback != null ? item.LocalImagePath : item.ImageUrl });
+                        this.SelectedPersonFaces.Add(new PersistedFace { PersistedFaceId = addResult.PersistedFaceId, UserData = item.GetImageStreamCallback != null ? item.LocalImagePath : item.ImageUrl });
                         this.needsTraining = true;
                     }
                 }
@@ -392,7 +392,7 @@ namespace IntelligentKioskSample.Views
             {
                 foreach (var item in this.selectedPersonFacesGridView.SelectedItems.ToArray())
                 {
-                    PersonFace personFace = (PersonFace)item;
+                    PersistedFace personFace = (PersistedFace)item;
                     await FaceServiceHelper.DeletePersonFaceAsync(this.CurrentPersonGroup.PersonGroupId, this.SelectedPerson.PersonId, personFace.PersistedFaceId);
                     this.SelectedPersonFaces.Remove(personFace);
 
@@ -407,7 +407,7 @@ namespace IntelligentKioskSample.Views
 
         private async void OnImageDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-            PersonFace dataContext = sender.DataContext as PersonFace;
+            PersistedFace dataContext = sender.DataContext as PersistedFace;
 
             if (dataContext != null)
             {

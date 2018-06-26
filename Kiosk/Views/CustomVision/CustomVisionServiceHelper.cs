@@ -31,8 +31,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.Cognitive.CustomVision;
-using Microsoft.Cognitive.CustomVision.Models;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Rest;
 using System;
 using System.Collections.Generic;
@@ -72,14 +72,14 @@ namespace ServiceHelpers
             return response;
         }
 
-        public static async Task<ImagePredictionResultModel> PredictImageUrlWithRetryAsync(this IPredictionEndpoint predictionApi, Guid projectId, ImageUrl imageUrl, Guid iterationId)
+        public static async Task<ImagePrediction> PredictImageUrlWithRetryAsync(this IPredictionEndpoint predictionApi, Guid projectId, ImageUrl imageUrl, Guid iterationId)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<ImagePredictionResultModel>(async () => await predictionApi.PredictImageUrlAsync(projectId, imageUrl, iterationId));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<ImagePrediction>(async () => await predictionApi.PredictImageUrlAsync(projectId, imageUrl, iterationId));
         }
 
-        public static async Task<ImagePredictionResultModel> PredictImageWithRetryAsync(this IPredictionEndpoint predictionApi, Guid projectId, Func<Task<Stream>> imageStreamCallback, Guid iterationId)
+        public static async Task<ImagePrediction> PredictImageWithRetryAsync(this IPredictionEndpoint predictionApi, Guid projectId, Func<Task<Stream>> imageStreamCallback, Guid iterationId)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<ImagePredictionResultModel>(async () => await predictionApi.PredictImageAsync(projectId, await imageStreamCallback(), iterationId));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<ImagePrediction>(async () => await predictionApi.PredictImageAsync(projectId, await imageStreamCallback(), iterationId));
         }
     }
 }

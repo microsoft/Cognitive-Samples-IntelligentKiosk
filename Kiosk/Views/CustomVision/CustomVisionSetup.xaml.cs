@@ -31,8 +31,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.Cognitive.CustomVision;
-using Microsoft.Cognitive.CustomVision.Models;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
@@ -52,11 +52,11 @@ namespace IntelligentKioskSample.Views
     {
         private bool needsTraining = false;
 
-        public ObservableCollection<ProjectModel> Projects { get; set; } = new ObservableCollection<ProjectModel>();
-        public ProjectModel CurrentProject { get; set; }
-        public ObservableCollection<ImageTagModel> TagsInCurrentGroup { get; set; } = new ObservableCollection<ImageTagModel>();
-        public ObservableCollection<ImageModel> SelectedTagImages { get; set; } = new ObservableCollection<ImageModel>();
-        public ImageTagModel SelectedTag { get; set; }
+        public ObservableCollection<Project> Projects { get; set; } = new ObservableCollection<Project>();
+        public Project CurrentProject { get; set; }
+        public ObservableCollection<Tag> TagsInCurrentGroup { get; set; } = new ObservableCollection<Tag>();
+        public ObservableCollection<Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image> SelectedTagImages { get; set; } = new ObservableCollection<Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image>();
+        public Tag SelectedTag { get; set; }
 
         private TrainingApi trainingApi;
 
@@ -86,7 +86,7 @@ namespace IntelligentKioskSample.Views
 
         private async Task InitializeTrainingApi()
         {
-            trainingApi = new TrainingApi(new TrainingApiCredentials(SettingsHelper.Instance.CustomVisionTrainingApiKey));
+            trainingApi = new TrainingApi { BaseUri = new Uri("https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Training"), ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
             this.addProjectButton.IsEnabled = true;
             this.trainButton.IsEnabled = true;
 
@@ -113,7 +113,7 @@ namespace IntelligentKioskSample.Views
             try
             {
                 this.Projects.Clear();
-                IEnumerable<ProjectModel> projects = await trainingApi.GetProjectsAsync();
+                IEnumerable<Project> projects = await trainingApi.GetProjectsAsync();
                 this.Projects.AddRange(projects.OrderBy(p => p.Name));
 
                 if (this.projectsListView.Items.Any())
@@ -134,7 +134,7 @@ namespace IntelligentKioskSample.Views
             try
             {
                 string name = this.projectNameTextBox.Text;
-                ProjectModel model = await trainingApi.CreateProjectAsync(name);
+                Project model = await trainingApi.CreateProjectAsync(name);
 
                 this.Projects.Add(model);
                 this.projectsListView.SelectedValue = model;
@@ -181,7 +181,7 @@ namespace IntelligentKioskSample.Views
 
         private async void OnProjectSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (this.needsTraining && (ProjectModel)this.projectsListView.SelectedValue != this.CurrentProject)
+            if (this.needsTraining && (Project)this.projectsListView.SelectedValue != this.CurrentProject)
             {
                 // revert
                 this.projectsListView.SelectedValue = this.CurrentProject;
@@ -190,7 +190,7 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                this.CurrentProject = (ProjectModel)this.projectsListView.SelectedValue;
+                this.CurrentProject = (Project)this.projectsListView.SelectedValue;
 
                 if (this.CurrentProject != null)
                 {
@@ -207,7 +207,7 @@ namespace IntelligentKioskSample.Views
         {
             if (this.projectTagsListView.SelectedValue != null)
             {
-                this.SelectedTag = this.projectTagsListView.SelectedValue as ImageTagModel;
+                this.SelectedTag = this.projectTagsListView.SelectedValue as Tag;
                 await this.LoadTagImagesFromService();
             }
             else
@@ -222,15 +222,11 @@ namespace IntelligentKioskSample.Views
 
             try
             {
-                ImageTagListModel tagListModel = await trainingApi.GetTagsAsync(this.CurrentProject.Id);
-                foreach (ImageTagModel tag in tagListModel.Tags.OrderBy(t => t.Name))
-                {
-                    this.TagsInCurrentGroup.Add(tag);
-                }
+                this.TagsInCurrentGroup.AddRange((await trainingApi.GetTagsAsync(this.CurrentProject.Id)).OrderBy(t => t.Name));
             }
             catch (Exception e)
             {
-                await Util.GenericApiCallExceptionHandler(e, "Failure loading people in the group");
+                await Util.GenericApiCallExceptionHandler(e, "Failure loading tags in the project");
             }
         }
 
@@ -284,7 +280,7 @@ namespace IntelligentKioskSample.Views
         {
             try
             {
-                ImageTagModel result = await trainingApi.CreateTagAsync(this.CurrentProject.Id, name);
+                Tag result = await trainingApi.CreateTagAsync(this.CurrentProject.Id, name);
                 this.TagsInCurrentGroup.Add(result);
                 this.needsTraining = true;
                 this.DismissFlyout();
@@ -325,7 +321,7 @@ namespace IntelligentKioskSample.Views
 
             try
             {
-                IEnumerable<ImageModel> images = await trainingApi.GetImagesByTagsAsync(this.CurrentProject.Id, null, new string[] { this.SelectedTag.Id.ToString() }, null, 200);
+                IEnumerable<Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image> images = await trainingApi.GetTaggedImagesAsync(this.CurrentProject.Id, null, new string[] { this.SelectedTag.Id.ToString() }, null, 200);
                 this.SelectedTagImages.AddRange(images);
             }
             catch (Exception e)
@@ -353,7 +349,7 @@ namespace IntelligentKioskSample.Views
             {
                 try
                 {
-                    CreateImageSummaryModel addResult;
+                    ImageCreateSummary addResult;
                     if (item.GetImageStreamCallback != null)
                     {
                         addResult = await trainingApi.CreateImagesFromDataAsync(
@@ -364,7 +360,7 @@ namespace IntelligentKioskSample.Views
                     {
                         addResult = await trainingApi.CreateImagesFromUrlsAsync(
                             this.CurrentProject.Id,
-                            new ImageUrlCreateBatch(new Guid[] { this.SelectedTag.Id }, new string[] { item.ImageUrl }));
+                            new ImageUrlCreateBatch(new ImageUrlCreateEntry[] { new ImageUrlCreateEntry(item.ImageUrl) }, new Guid[] { this.SelectedTag.Id }));
                     }
 
                     if (addResult != null)
@@ -399,7 +395,7 @@ namespace IntelligentKioskSample.Views
             {
                 foreach (var item in this.selectedTagImagesGridView.SelectedItems.ToArray())
                 {
-                    ImageModel tagImage = (ImageModel)item;
+                    Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image tagImage = (Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image)item;
                     await trainingApi.DeleteImagesAsync(this.CurrentProject.Id, new string[] { tagImage.Id.ToString() });
                     this.SelectedTagImages.Remove(tagImage);
 
@@ -428,7 +424,7 @@ namespace IntelligentKioskSample.Views
             bool trainingSucceeded = true;
             try
             {
-                IterationModel iterationModel = await trainingApi.TrainProjectAsync(this.CurrentProject.Id);
+                Iteration iterationModel = await trainingApi.TrainProjectAsync(this.CurrentProject.Id);
 
                 while (true)
                 {

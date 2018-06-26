@@ -31,9 +31,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.Cognitive.CustomVision;
-using Microsoft.Cognitive.CustomVision.Models;
-using Newtonsoft.Json.Linq;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
@@ -88,7 +88,7 @@ namespace IntelligentKioskSample.Views
         {
             this.searchErrorTextBlock.Visibility = Visibility.Collapsed;
 
-            ImagePredictionResultModel result = null;
+            Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models.ImagePrediction result = null;
             var currentProjectViewModel = (ProjectViewModel)this.projectsComboBox.SelectedValue;
             var currentProject = ((ProjectViewModel)this.projectsComboBox.SelectedValue).Model;
 
@@ -108,7 +108,7 @@ namespace IntelligentKioskSample.Views
 
                 if (img.ImageUrl != null)
                 {
-                    result = await CustomVisionServiceHelper.PredictImageUrlWithRetryAsync(predictionApi, currentProject.Id, new ImageUrl(img.ImageUrl), latestTrainedIteraction.Id);
+                    result = await CustomVisionServiceHelper.PredictImageUrlWithRetryAsync(predictionApi, currentProject.Id, new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models.ImageUrl(img.ImageUrl), latestTrainedIteraction.Id);
                 }
                 else
                 {
@@ -131,7 +131,7 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                this.resultsGridView.ItemsSource = matches.Select(t => new { Tag = t.Tag, Probability = string.Format("{0}%", Math.Round(t.Probability * 100)) });
+                this.resultsGridView.ItemsSource = matches.Select(t => new { Tag = t.TagName, Probability = string.Format("{0}%", Math.Round(t.Probability * 100)) });
             }
 
             if (result?.Predictions != null)
@@ -144,7 +144,7 @@ namespace IntelligentKioskSample.Views
                     {
                         PredictionResultId = result.Id,
                         TagId = t.TagId,
-                        TagName = t.Tag,
+                        TagName = t.TagName,
                         HasTag = Math.Round(t.Probability * 100) > 0
                     }));
             }
@@ -185,8 +185,8 @@ namespace IntelligentKioskSample.Views
             if (!string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) && 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey))
             {
-                userProvidedTrainingApi = new TrainingApi(new TrainingApiCredentials(SettingsHelper.Instance.CustomVisionTrainingApiKey));
-                userProvidedPredictionApi = new PredictionEndpoint(new PredictionEndpointCredentials(SettingsHelper.Instance.CustomVisionPredictionApiKey));
+                userProvidedTrainingApi = new TrainingApi { BaseUri = new Uri("https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Training"), ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
+                userProvidedPredictionApi = new PredictionEndpoint { BaseUri = new Uri("https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction"), ApiKey = SettingsHelper.Instance.CustomVisionPredictionApiKey };
             }
 
             this.DataContext = this;
@@ -213,7 +213,7 @@ namespace IntelligentKioskSample.Views
                 // Add projects from API Keys provided by user
                 if (this.userProvidedTrainingApi != null && this.userProvidedPredictionApi != null)
                 {
-                    IEnumerable<ProjectModel> projects = await this.userProvidedTrainingApi.GetProjectsAsync();
+                    IEnumerable<Project> projects = await this.userProvidedTrainingApi.GetProjectsAsync();
                     foreach (var project in projects.OrderBy(p => p.Name))
                     {
                         this.Projects.Add(
@@ -250,11 +250,11 @@ namespace IntelligentKioskSample.Views
 
         private async void PopulateTagSamplesAsync(Guid projectId, TrainingApi trainingEndPoint, ObservableCollection<TagSampleViewModel> collection)
         {
-            foreach (var tag in (await trainingEndPoint.GetTagsAsync(projectId)).Tags.OrderBy(t => t.Name))
+            foreach (var tag in (await trainingEndPoint.GetTagsAsync(projectId)).OrderBy(t => t.Name))
             {
                 if (tag.ImageCount > 0)
                 {
-                    var imageModelSample = await trainingEndPoint.GetImagesByTagsAsync(projectId, null, new string[] { tag.Id.ToString() }, null, 1);
+                    var imageModelSample = await trainingEndPoint.GetTaggedImagesAsync(projectId, null, new string[] { tag.Id.ToString() }, null, 1);
                     collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = imageModelSample.First().ThumbnailUri });
                 }
             }
@@ -338,7 +338,7 @@ namespace IntelligentKioskSample.Views
                         new ImageIdCreateBatch
                         {
                             TagIds = tags,
-                            Ids = new List<Guid>(new Guid[] { this.PredictionDataForRetraining.First().PredictionResultId })
+                            Images = new List<ImageIdCreateEntry>(new ImageIdCreateEntry[] { new ImageIdCreateEntry(this.PredictionDataForRetraining.First().PredictionResultId) })
                         });
                 }
                 else
@@ -359,7 +359,7 @@ namespace IntelligentKioskSample.Views
 
             try
             {
-                IterationModel iterationModel = await userProvidedTrainingApi.TrainProjectAsync(currentProject.Id);
+                Iteration iterationModel = await userProvidedTrainingApi.TrainProjectAsync(currentProject.Id);
 
                 while (true)
                 {
@@ -392,7 +392,7 @@ namespace IntelligentKioskSample.Views
 
     public class ProjectViewModel
     {
-        public ProjectModel Model { get; set; }
+        public Project Model { get; set; }
         public ObservableCollection<TagSampleViewModel> TagSamples { get; set; }
     }
 

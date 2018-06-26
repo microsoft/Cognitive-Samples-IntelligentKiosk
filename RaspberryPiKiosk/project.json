@@ -1,9 +1,9 @@
 ﻿{
   "dependencies": {
     "Emmellsoft.IoT.RPi.SenseHat": "0.1.0.10",
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "Microsoft.ProjectOxford.Face": "1.3.0",
-    "Microsoft.ProjectOxford.Vision": "1.0.372",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "6.0.8",
+    "Microsoft.ProjectOxford.Face": "1.4.0",
+    "Microsoft.ProjectOxford.Vision": "1.0.393",
     "Newtonsoft.Json": "9.0.1"
   },
   "frameworks": {

@@ -22,10 +22,8 @@
       the application package. The asterisks are not wildcards.
     -->
     <Assembly Name="*Application*" Dynamic="Required All" />
-    
-    
     <!-- Add your application specific runtime directives here. -->
-
-
+    <Type Name="Microsoft.CSharp.RuntimeBinder.CSharpGetMemberBinder" Dynamic="Required All"  />
+    <Type Name="Microsoft.CSharp.RuntimeBinder.CSharpConvertBinder"  Dynamic="Required All"  />
   </Application>
 </Directives>
