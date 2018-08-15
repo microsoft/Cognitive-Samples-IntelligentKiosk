@@ -6,7 +6,7 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 2. A webcam, ideally top-mounted so you have a similar experience as looking at a mirror when interacting with the demos 
 3. [Visual Studio 2017](https://www.visualstudio.com) with the Universal Windows Platform workload enabled
 4. API Keys
-  * You will need Face, Computer Vision, Text Analytics, Bing Search and Bing AutoSuggestion API Keys. Visit  [Microsoft.com/cognitive](https://www.microsoft.com/cognitive-services) if you need keys. Please notice that some of the demos perform tasks in realtime, so if you are going to use some of those demos you will need to upgrade to a paid key so it has enough throughput and won't be throttled. 
+  * Between the various demos, you might need API keys for Face, Computer Vision, Custom Vision, Text Analytics, Bing Search and Bing AutoSuggestion. Visit  [Microsoft.com/cognitive](https://www.microsoft.com/cognitive-services) if you need keys. Please notice that some of the demos perform tasks in realtime, so if you are going to use some of those demos you will need to upgrade to a paid key so it has enough throughput and won't be throttled. 
 
 # Running the sample
 1. Open the solution in Visual Studio 2017
