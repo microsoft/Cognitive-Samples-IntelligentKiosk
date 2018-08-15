@@ -16,13 +16,6 @@
       },
       "type": "string"
     },
-    "EmotionAccountName": {
-      "defaultValue": "kiosk-emotion",
-      "metadata": {
-        "description": "Display name of Emotions API account"
-      },
-      "type": "string"
-    },
     "TextAnalyticsAccountName": {
       "defaultValue": "kiosk-text-analytics",
       "metadata": {
@@ -80,17 +73,6 @@
         "S4"
       ]
     },
-    "emotionsSKU": {
-      "type": "string",
-      "metadata": {
-        "description": "SKU for Computer Vision API"
-      },
-      "defaultValue": "S0",
-      "allowedValues": [
-        "F0",
-        "S0"
-      ]
-    },
     "bingSearchSKU": {
       "type": "string",
       "metadata": {
@@ -117,7 +99,6 @@
   "variables": {
     "cogServCompVisionId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]",
     "cogServFaceId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('FaceAccountName'))]",
-    "cogServEmotionsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('EmotionAccountName'))]",
     "cogServTextAnalyticsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('TextAnalyticsAccountName'))]"
     ,
     "cogServBingSearchId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('BingSearchAccountName'))]",
@@ -133,18 +114,6 @@
       "name": "[parameters('FaceAccountName')]",
       "apiVersion": "2017-04-18",
       "location": "[resourceGroup().location]",
-      "properties": {},
-      "dependsOn": []
-    },
-    {
-      "type": "Microsoft.CognitiveServices/accounts",
-      "sku": {
-        "name": "[parameters('emotionsSKU')]"
-      },
-      "kind": "Emotion",
-      "name": "[parameters('EmotionAccountName')]",
-      "apiVersion": "2017-04-18",
-      "location": "westus",
       "properties": {},
       "dependsOn": []
     },
@@ -215,10 +184,6 @@
     "faceEndpoint": {
       "type": "string",
       "value": "[reference(variables('cogServFaceId'),'2017-04-18').endpoint]"
-    },
-    "emotionsKey1": {
-      "type": "string",
-      "value": "[listKeys(variables('cogServEmotionsId'),'2017-04-18').key1]"
     },
     "textAnalyticsKey1": {
       "type": "string",
