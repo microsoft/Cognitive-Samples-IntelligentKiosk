@@ -55,10 +55,6 @@ Please note! **jq** needs to be installed to execute the commands below. If you 
         "type": "String",
         "value": "fa5**************************************"
     },
-    "emotionsKey1": {
-        "type": "String",
-        "value": "57ca**************************************"
-    },
     "faceEndpoint": {
         "type": "String",
         "value": "https://westus.api.cognitive.microsoft.com/face/v1.0"
