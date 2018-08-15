@@ -8,9 +8,6 @@
       "FaceAccountName": {
         "value": "kiosk-face"
       },
-      "EmotionAccountName": {
-        "value": "kiosk-emotion"
-      },
       "TextAnalyticsAccountName": {
         "value": "kiosk-text-analytics"
       },
