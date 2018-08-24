@@ -156,6 +156,7 @@ namespace IntelligentKioskSample.Views
                 case "Spanish": return "es-MX";
                 case "French": return "fr-FR";
                 case "Portuguese": return "pt-BR";
+                case "Japanese": return "ja-JP";
                 default:
                     return "en-US";
             }
@@ -169,6 +170,7 @@ namespace IntelligentKioskSample.Views
                 case "Spanish": return "es";
                 case "French": return "fr";
                 case "Portuguese": return "pt";
+                case "Japanese": return "ja";
                 default:
                     return "en";
             }
