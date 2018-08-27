@@ -61,6 +61,7 @@
                     <x:String>Spanish</x:String>
                     <x:String>French</x:String>
                     <x:String>Portuguese</x:String>
+                    <x:String>Japanese</x:String>
                 </ComboBox.Items>
             </ComboBox>
         </Grid>

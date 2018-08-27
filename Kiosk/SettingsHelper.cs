@@ -415,6 +415,7 @@ namespace IntelligentKioskSample
                     "northeurope",
                     "southeastasia",
                     "eastasia",
+                    "japaneast",
                     "australiaeast",
                     "brazilsouth"
                 };
