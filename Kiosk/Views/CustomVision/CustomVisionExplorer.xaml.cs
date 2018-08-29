@@ -32,6 +32,7 @@
 // 
 
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models;
 using ServiceHelpers;
@@ -40,9 +41,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views
@@ -58,6 +62,8 @@ namespace IntelligentKioskSample.Views
         public ObservableCollection<ProjectViewModel> Projects { get; set; } = new ObservableCollection<ProjectViewModel>();
 
         public ObservableCollection<ActiveLearningTagViewModel> PredictionDataForRetraining { get; set; } = new ObservableCollection<ActiveLearningTagViewModel>();
+
+        private IEnumerable<PredictionModel> currentDetectedObjects;
 
         public CustomVisionExplorer()
         {
@@ -75,12 +81,18 @@ namespace IntelligentKioskSample.Views
 
             this.imageFromCameraWithFaces.Visibility = Visibility.Collapsed;
             this.resultsDetails.Visibility = Visibility.Collapsed;
+            this.objectDetectionVisualizationCanvas.Children.Clear();
+            this.currentDetectedObjects = null;
         }
 
         private void DisplayProcessingUI()
         {
             this.resultsDetails.Visibility = Visibility.Collapsed;
             this.resultsGridView.ItemsSource = null;
+
+            this.objectDetectionVisualizationCanvas.Children.Clear();
+            this.currentDetectedObjects = null;
+
             this.progressRing.IsActive = true;
         }
 
@@ -131,10 +143,19 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                this.resultsGridView.ItemsSource = matches.Select(t => new { Tag = t.TagName, Probability = string.Format("{0}%", Math.Round(t.Probability * 100)) });
+                if (!currentProjectViewModel.IsObjectDetection)
+                {
+                    this.resultsGridView.ItemsSource = matches.Select(t => new { Tag = t.TagName, Probability = string.Format("{0}%", Math.Round(t.Probability * 100)) });
+                }
+                else
+                {
+                    this.resultsDetails.Visibility = Visibility.Collapsed;
+                    this.currentDetectedObjects = matches.Where(m => m.Probability >= 0.6);
+                    ShowObjectDetectionBoxes(this.currentDetectedObjects);
+                }
             }
 
-            if (result?.Predictions != null)
+            if (result?.Predictions != null && !currentProjectViewModel.IsObjectDetection)
             {
                 this.activeLearningButton.Opacity = 1;
 
@@ -151,6 +172,53 @@ namespace IntelligentKioskSample.Views
             else
             {
                 this.activeLearningButton.Opacity = 0;
+            }
+        }
+
+        private void ShowObjectDetectionBoxes(IEnumerable<PredictionModel> detectedObjects)
+        {
+            this.objectDetectionVisualizationCanvas.Children.Clear();
+
+            double canvasWidth = objectDetectionVisualizationCanvas.ActualWidth;
+            double canvasHeight = objectDetectionVisualizationCanvas.ActualHeight;
+
+            foreach (PredictionModel prediction in detectedObjects)
+            {
+                objectDetectionVisualizationCanvas.Children.Add(
+                    new Border
+                    {
+                        BorderBrush = new SolidColorBrush(Colors.Lime),
+                        BorderThickness = new Thickness(2),
+                        Margin = new Thickness(prediction.BoundingBox.Left * canvasWidth,
+                                               prediction.BoundingBox.Top * canvasHeight, 0, 0),
+                        Width = prediction.BoundingBox.Width * canvasWidth,
+                        Height = prediction.BoundingBox.Height * canvasHeight,
+                    });
+
+                objectDetectionVisualizationCanvas.Children.Add(
+                    new Border
+                    {
+                        Height = 40,
+                        FlowDirection = FlowDirection.LeftToRight,
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        Margin = new Thickness(prediction.BoundingBox.Left * canvasWidth,
+                                               prediction.BoundingBox.Top * canvasHeight - 40, 0, 0),
+
+                        Child = new Border
+                        {
+                            Background = new SolidColorBrush(Colors.Lime),
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            VerticalAlignment = VerticalAlignment.Bottom,
+                            Child =
+                                new TextBlock
+                                {
+                                    Foreground = new SolidColorBrush(Colors.Black),
+                                    Text = $"{prediction.TagName} ({Math.Round(prediction.Probability * 100)}%)",
+                                    FontSize = 16,
+                                    Margin = new Thickness(6, 0, 6, 0)
+                                }
+                        }
+                    });
             }
         }
 
@@ -209,6 +277,7 @@ namespace IntelligentKioskSample.Views
             try
             {
                 this.Projects.Clear();
+                Guid objectDetectionDomainGuid = new Guid("da2e3a8a-40a5-4171-82f4-58522f70fbc1");
 
                 // Add projects from API Keys provided by user
                 if (this.userProvidedTrainingApi != null && this.userProvidedPredictionApi != null)
@@ -220,7 +289,8 @@ namespace IntelligentKioskSample.Views
                             new ProjectViewModel
                             {
                                 Model = project,
-                                TagSamples = new ObservableCollection<TagSampleViewModel>()
+                                TagSamples = new ObservableCollection<TagSampleViewModel>(),
+                                IsObjectDetection = project.Settings.DomainId == objectDetectionDomainGuid
                             });
 
                     }
@@ -230,8 +300,6 @@ namespace IntelligentKioskSample.Views
                 {
                     this.projectsComboBox.SelectedIndex = 0;
                 }
-
-                this.progressRing.IsActive = false;
 
                 // Trigger loading of the tags associated with each project
                 foreach (var project in this.Projects)
@@ -246,6 +314,10 @@ namespace IntelligentKioskSample.Views
             {
                 await Util.GenericApiCallExceptionHandler(ex, "Failure loading projects");
             }
+            finally
+            {
+                this.progressRing.IsActive = false;
+            }
         }
 
         private async void PopulateTagSamplesAsync(Guid projectId, TrainingApi trainingEndPoint, ObservableCollection<TagSampleViewModel> collection)
@@ -254,8 +326,29 @@ namespace IntelligentKioskSample.Views
             {
                 if (tag.ImageCount > 0)
                 {
-                    var imageModelSample = await trainingEndPoint.GetTaggedImagesAsync(projectId, null, new string[] { tag.Id.ToString() }, null, 1);
-                    collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = imageModelSample.First().ThumbnailUri });
+                    var imageModelSample = (await trainingEndPoint.GetTaggedImagesAsync(projectId, null, new string[] { tag.Id.ToString() }, null, 1)).First();
+
+                    var tagRegion = imageModelSample.Regions?.FirstOrDefault(r => r.TagId == tag.Id);
+                    if (tagRegion == null || (tagRegion.Width == 0 && tagRegion.Height == 0))
+                    {
+                        collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = new BitmapImage(new Uri(imageModelSample.ThumbnailUri)) });
+                    }
+                    else
+                    {
+                        // Crop a region from the image that is associated with the tag, so we show something more 
+                        // relevant than the whole image. 
+                        ImageSource croppedImage = await Util.DownloadAndCropBitmapAsync(
+                            imageModelSample.ImageUri,
+                            new Microsoft.ProjectOxford.Face.Contract.FaceRectangle
+                            {
+                                Left = (int)(tagRegion.Left * imageModelSample.Width),
+                                Top = (int)(tagRegion.Top * imageModelSample.Height),
+                                Width = (int)(tagRegion.Width * imageModelSample.Width),
+                                Height = (int)(tagRegion.Height * imageModelSample.Height)
+                            });
+
+                        collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = croppedImage });
+                    }
                 }
             }
         }
@@ -388,18 +481,27 @@ namespace IntelligentKioskSample.Views
 
             this.progressRing.IsActive = false;
         }
+
+        private void OnObjectDetectionVisualizationCanvasSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.currentDetectedObjects != null)
+            {
+                this.ShowObjectDetectionBoxes(this.currentDetectedObjects);
+            }
+        }
     }
 
     public class ProjectViewModel
     {
         public Project Model { get; set; }
+        public bool IsObjectDetection { get; set; }
         public ObservableCollection<TagSampleViewModel> TagSamples { get; set; }
     }
 
     public class TagSampleViewModel
     {
         public string TagName { get; set; }
-        public string TagSampleImage { get; set; }
+        public ImageSource TagSampleImage { get; set; }
     }
 
     public class ActiveLearningTagViewModel

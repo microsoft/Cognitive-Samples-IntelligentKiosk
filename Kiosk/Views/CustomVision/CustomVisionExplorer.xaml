@@ -61,7 +61,10 @@
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="{Binding Model.Name}"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="{Binding Model.Name}"/>
+                                    <TextBlock Foreground="LightGray" Style="{ThemeResource BodyTextBlockStyle}" FontStyle="Italic" Text="(Object Detection)" Visibility="{Binding IsObjectDetection, Converter={StaticResource bolleanToVisibilityConverter}}" Margin="2,0,0,0" />                                    
+                                </StackPanel>
                                 <GridView IsHitTestVisible="False" ItemsSource="{Binding TagSamples}" SelectionMode="None" MaxWidth="600" >
                                     <GridView.ItemTemplate>
                                         <DataTemplate>
@@ -123,6 +126,8 @@
                 </Grid>
 
                 <ctl:ImageWithFaceBorderUserControl Grid.Row="1" BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" x:Name="imageWithFacesControl" />
+
+                <Canvas Grid.Row="1" x:Name="objectDetectionVisualizationCanvas" SizeChanged="OnObjectDetectionVisualizationCanvasSizeChanged"/>
 
                 <ScrollViewer x:Name="resultsDetails" Grid.Row="1" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalScrollBarVisibility="Disabled">
                     <Grid Background="#aa000000">

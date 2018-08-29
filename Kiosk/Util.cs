@@ -147,6 +147,15 @@ namespace IntelligentKioskSample
             }
         }
 
+        async public static Task<ImageSource> DownloadAndCropBitmapAsync(string imageUrl, FaceRectangle rectangle)
+        {
+            byte[] imgBytes = await new System.Net.Http.HttpClient().GetByteArrayAsync(imageUrl);
+            using (Stream stream = new MemoryStream(imgBytes))
+            {
+                return await GetCroppedBitmapAsync(stream.AsRandomAccessStream(), rectangle);
+            }
+        }
+
         async public static Task CropBitmapAsync(Func<Task<Stream>> localFile, FaceRectangle rectangle, StorageFile resultFile)
         {
             await CropBitmapAsync(await localFile(), rectangle, resultFile);
