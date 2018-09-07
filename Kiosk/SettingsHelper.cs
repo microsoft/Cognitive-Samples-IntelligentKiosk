@@ -195,6 +195,16 @@ namespace IntelligentKioskSample
                 }
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["PhotoAgeReductionPercentage"];
+            if (value != null)
+            {
+                uint size;
+                if (uint.TryParse(value.ToString(), out size))
+                {
+                    this.PhotoAgeReductionPercentage = size;
+                }
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["CustomVisionPredictionApiKey"];
             if (value != null)
             {
@@ -365,6 +375,19 @@ namespace IntelligentKioskSample
                 this.OnSettingChanged("MinDetectableFaceCoveragePercentage", value);
             }
         }
+
+        private uint photoAgeReductionPercentage = 0;
+        public uint PhotoAgeReductionPercentage
+        {
+            get { return this.photoAgeReductionPercentage; }
+            set
+            {
+                this.photoAgeReductionPercentage = value;
+                this.OnSettingChanged("PhotoAgeReductionPercentage", value);
+            }
+        }
+
+        
 
         private bool showDebugInfo = false;
         public bool ShowDebugInfo
