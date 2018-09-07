@@ -207,6 +207,12 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
+                // offset ages
+                foreach ( Face f in e.DetectedFaces)
+                {
+                    f.FaceAttributes.Age = f.FaceAttributes.Age - (f.FaceAttributes.Age * SettingsHelper.Instance.PhotoAgeReductionPercentage / 100 );
+                }
+
                 this.lastDetectedFaceSample = e.DetectedFaces;
             }
         }
