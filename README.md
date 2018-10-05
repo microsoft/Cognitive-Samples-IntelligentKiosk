@@ -2,7 +2,7 @@
 The Intelligent Kiosk Sample is a collection of demos showcasing workflows and experiences built on top of the Microsoft Cognitive Services. Most of the experiences are hands-free and autonomous, using the human faces in front of a web camera as the main form of input (thus the word "kiosk" in the name).
 
 # Requirements
-1. A Windows 10 computer (the sample is a UWP application). For a Windows 10 IoT deployment, see details later in this page. 
+1. Windows 10 version 1803 or later (the sample is a UWP application). For a Windows 10 IoT deployment, see details later in this page. 
 2. A webcam, ideally top-mounted so you have a similar experience as looking at a mirror when interacting with the demos 
 3. [Visual Studio 2017](https://www.visualstudio.com) with the Universal Windows Platform workload enabled
 4. API Keys
