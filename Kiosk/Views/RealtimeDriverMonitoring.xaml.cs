@@ -235,7 +235,7 @@ namespace IntelligentKioskSample.Views
             this.visionLantencyDebugText.Text = string.Format("Vision API latency: {0}ms", (int)latency.TotalMilliseconds);
             this.highLatencyWarning.Visibility = latency.TotalSeconds <= 3 ? Visibility.Collapsed : Visibility.Visible;
 
-            string desc = e.AnalysisResult.Description?.Captions?[0].Text;
+            string desc = e.AnalysisResult.Description?.Captions?.FirstOrDefault()?.Text;
             bool distractionDetected = desc.Contains("phone") || desc.Contains("banana");
             this.distractionChart.DrawDataPoint(distractionDetected ? 1 : 0.02,
                                                 distractionDetected ? BarChartAlertColor : BarChartColor,
