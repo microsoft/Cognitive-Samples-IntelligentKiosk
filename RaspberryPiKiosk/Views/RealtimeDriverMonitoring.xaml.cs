@@ -201,7 +201,7 @@ namespace IntelligentKioskSample.Views
             this.visionLantencyDebugText.Text = string.Format("Vision API latency: {0}ms", (int)latency.TotalMilliseconds);
             this.highLatencyWarning.Visibility = latency.TotalSeconds <= 3 ? Visibility.Collapsed : Visibility.Visible;
 
-            string desc = e.AnalysisResult.Description?.Captions?[0].Text;
+            string desc = e.AnalysisResult.Description?.Captions?.FirstOrDefault()?.Text;
             if (string.IsNullOrEmpty(desc) || !this.visionToggle.IsOn)
             {
                 this.objectDistraction.Visibility = Visibility.Collapsed;
