@@ -31,7 +31,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Newtonsoft.Json.Linq;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
@@ -124,7 +123,7 @@ namespace IntelligentKioskSample.Views
                 {
                     new { Description = "Dominant background color:", Colors = new string[] { img.AnalysisResult.Color.DominantColorBackground } },
                     new { Description = "Dominant foreground color:", Colors = new string[] { img.AnalysisResult.Color.DominantColorForeground } },
-                    new { Description = "Dominant colors:", Colors = img.AnalysisResult.Color.DominantColors },
+                    new { Description = "Dominant colors:", Colors = img.AnalysisResult.Color.DominantColors?.ToArray() },
                     new { Description = "Accent color:", Colors = new string[] { "#" + img.AnalysisResult.Color.AccentColor } }
                 };
             }
@@ -132,19 +131,17 @@ namespace IntelligentKioskSample.Views
             this.ocrToggle.IsEnabled = true;
         }
 
-        private IEnumerable<String> GetCelebrityNames(ImageAnalyzer analyzer)
+        private IEnumerable<string> GetCelebrityNames(ImageAnalyzer analyzer)
         {
             if (analyzer.AnalysisResult?.Categories != null)
             {
                 foreach (var category in analyzer.AnalysisResult.Categories.Where(c => c.Detail != null))
                 {
-                    dynamic detail = JObject.Parse(category.Detail.ToString());
-                    if (detail.celebrities != null)
+                    if (category.Detail.Celebrities != null)
                     {
-                        foreach (var celebrity in detail.celebrities)
+                        foreach (var celebrity in category.Detail.Celebrities)
                         {
-
-                            yield return celebrity.name.ToString();
+                            yield return celebrity.Name;
                         }
                     }
                 }

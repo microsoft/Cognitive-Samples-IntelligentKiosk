@@ -35,7 +35,6 @@ using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Rest;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 

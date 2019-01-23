@@ -31,7 +31,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using IntelligentKioskSample.Views;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -65,10 +64,7 @@ namespace IntelligentKioskSample
 
         private void OnSettingsChanged()
         {
-            if (instance.SettingsChanged != null)
-            {
-                instance.SettingsChanged(instance, EventArgs.Empty);
-            }
+            instance.SettingsChanged?.Invoke(instance, EventArgs.Empty);
         }
 
         private async void OnSettingChanged(string propertyName, object value)
@@ -99,10 +95,7 @@ namespace IntelligentKioskSample
 
         private void OnPropertyChanged(string propertyName)
         {
-            if (instance.PropertyChanged != null)
-            {
-                instance.PropertyChanged(instance, new PropertyChangedEventArgs(propertyName));
-            }
+            instance.PropertyChanged?.Invoke(instance, new PropertyChangedEventArgs(propertyName));
         }
 
         public static SettingsHelper Instance

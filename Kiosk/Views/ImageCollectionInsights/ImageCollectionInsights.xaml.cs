@@ -31,7 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using Newtonsoft.Json;
 using ServiceHelpers;
 using System;
@@ -241,7 +241,13 @@ namespace IntelligentKioskSample.Views.ImageCollectionInsights
                     StorageFile file = (await rootFolder.GetFileAsync(insights.ImageId));
                     ImageSource croppedFaced = await Util.GetCroppedBitmapAsync(
                         file.OpenStreamForReadAsync,
-                        new FaceRectangle { Height = faceInsights.FaceRectangle.Height, Width = faceInsights.FaceRectangle.Width, Left = faceInsights.FaceRectangle.Left, Top = faceInsights.FaceRectangle.Top });
+                        new FaceRectangle
+                        {
+                            Height = faceInsights.FaceRectangle.Height,
+                            Width = faceInsights.FaceRectangle.Width,
+                            Left = faceInsights.FaceRectangle.Left,
+                            Top = faceInsights.FaceRectangle.Top
+                        });
 
                     fvm = new FaceFilterViewModel(faceInsights.UniqueFaceId, croppedFaced);
                     this.FaceFilters.Add(fvm);
