@@ -464,25 +464,25 @@
       <Name>KioskRuntimeComponent</Name>
     </ProjectReference>
     <ProjectReference Include="ServiceHelpers\ServiceHelpers.csproj">
-      <Project>{5d9320af-a9e4-48e3-89bc-9f7f0954b298}</Project>
+      <Project>{568b29f2-d125-4bc4-b07e-f7b385dbb6d9}</Project>
       <Name>ServiceHelpers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision">
+      <Version>3.3.0</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction">
       <Version>0.10.0-preview</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training">
       <Version>0.10.0-preview</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face">
+      <Version>2.2.0-preview</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.0.8</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.ProjectOxford.Face">
-      <Version>1.4.0</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.ProjectOxford.Vision">
-      <Version>1.0.393</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Rest.ClientRuntime">
       <Version>2.3.11</Version>

@@ -36,7 +36,6 @@ using IntelligentKioskSample.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Metadata;
 using Windows.UI.Core;

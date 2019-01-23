@@ -31,7 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Common.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
 using Windows.UI;
 using Windows.UI.Xaml;
@@ -55,10 +55,10 @@ namespace IntelligentKioskSample.Controls
             //Background = new SolidColorBrush(Colors.LightGray);
         }
 
-        public void DrawEmotionData(EmotionScores emotionScores)
+        public void DrawEmotionData(Emotion emotion)
         {
-            double positiveEmotionResponse = Math.Min(emotionScores.Happiness + emotionScores.Surprise, 1);
-            double negativeEmotionResponse = Math.Min(emotionScores.Sadness + emotionScores.Fear + emotionScores.Disgust + emotionScores.Contempt, 1);
+            double positiveEmotionResponse = Math.Min(emotion.Happiness + emotion.Surprise, 1);
+            double negativeEmotionResponse = Math.Min(emotion.Sadness + emotion.Fear + emotion.Disgust + emotion.Contempt, 1);
             double netResponse = positiveEmotionResponse - negativeEmotionResponse;
 
             if (netResponse > 0)

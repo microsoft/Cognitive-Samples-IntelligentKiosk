@@ -31,7 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Common.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,9 +69,9 @@ namespace IntelligentKioskSample.Controls
             InitializeComponent();
         }
 
-        public void UpdateEmotion(EmotionScores scores)
+        public void UpdateEmotion(Emotion emotion)
         {
-            var topEmotion = scores.ToRankedList().First();
+            KeyValuePair<string, double> topEmotion = Util.EmotionToRankedList(emotion).First();
 
             this.filledBar.Background = this.emotionToColorMapping[topEmotion.Key];
             this.emptySpaceRowDefinition.Height = new GridLength(1 - topEmotion.Value, Windows.UI.Xaml.GridUnitType.Star);
