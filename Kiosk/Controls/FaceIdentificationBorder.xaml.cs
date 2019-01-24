@@ -31,12 +31,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Common.Contract;
-using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -80,7 +77,7 @@ namespace IntelligentKioskSample.Controls
 
         public string CaptionText { get; set; }
 
-        public KeyValuePair<string, float>[] EmotionData { get; set; }
+        public KeyValuePair<string, double>[] EmotionData { get; set; }
 
         public FaceIdentificationBorder()
         {
@@ -95,7 +92,7 @@ namespace IntelligentKioskSample.Controls
             this.faceRectangle.Visibility = Visibility.Visible;
         }
 
-        public void ShowFaceLandmarks(double renderedImageXTransform, double renderedImageYTransform, Face face)
+        public void ShowFaceLandmarks(double renderedImageXTransform, double renderedImageYTransform, DetectedFace face)
         {
             // Mouth (6)
             AddFacialLandmark(face, face.FaceLandmarks.MouthLeft, renderedImageXTransform, renderedImageYTransform, Colors.White);
@@ -133,15 +130,15 @@ namespace IntelligentKioskSample.Controls
             AddFacialLandmark(face, face.FaceLandmarks.EyebrowRightOuter, renderedImageXTransform, renderedImageYTransform, Colors.Yellow);
         }
 
-        private void AddFacialLandmark(Face face, FeatureCoordinate feature, double renderedImageXTransform, double renderedImageYTransform, Color color)
+        private void AddFacialLandmark(DetectedFace face, Coordinate coordinate, double renderedImageXTransform, double renderedImageYTransform, Color color)
         {
             double dotSize = 3;
             Rectangle b = new Rectangle { Fill = new SolidColorBrush(color), Width = dotSize, Height = dotSize, HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
-            b.Margin = new Thickness(((feature.X - face.FaceRectangle.Left) * renderedImageXTransform) - dotSize / 2, ((feature.Y - face.FaceRectangle.Top) * renderedImageYTransform) - dotSize / 2, 0, 0);
+            b.Margin = new Thickness(((coordinate.X - face.FaceRectangle.Left) * renderedImageXTransform) - dotSize / 2, ((coordinate.Y - face.FaceRectangle.Top) * renderedImageYTransform) - dotSize / 2, 0, 0);
             this.hostGrid.Children.Add(b);
         }
 
-        public void ShowIdentificationData(double age, string gender, uint confidence, string name = null)
+        public void ShowIdentificationData(double age, Gender? gender, uint confidence, string name = null)
         {
             int roundedAge = (int)Math.Round(age);
 
@@ -150,16 +147,17 @@ namespace IntelligentKioskSample.Controls
                 this.CaptionText = string.Format("{0}, {1} ({2}%)", name, roundedAge, confidence);
                 this.genderIcon.Visibility = Visibility.Collapsed;
             }
-            else if (!string.IsNullOrEmpty(gender))
+            else if (gender.HasValue)
             {
                 this.CaptionText = roundedAge.ToString();
-                if (string.Compare(gender, "male", true) == 0)
+                switch (gender)
                 {
-                    this.genderIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/male.png"));
-                }
-                else if (string.Compare(gender, "female", true) == 0)
-                {
-                    this.genderIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/female.png"));
+                    case Gender.Male:
+                        this.genderIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/male.png"));
+                        break;
+                    case Gender.Female:
+                        this.genderIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/female.png"));
+                        break;
                 }
             }
 
@@ -167,9 +165,9 @@ namespace IntelligentKioskSample.Controls
             this.captionCanvas.Visibility = Visibility.Visible;
         }
 
-        public void ShowEmotionData(EmotionScores emotion)
+        public void ShowEmotionData(Emotion emotion)
         {
-            this.EmotionData = emotion.ToRankedList().ToArray();
+            this.EmotionData = Util.EmotionToRankedList(emotion);
 
             this.DataContext = this;
 

@@ -31,12 +31,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Common;
-using Microsoft.ProjectOxford.Common.Contract;
-using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace ServiceHelpers
 {
@@ -57,15 +53,10 @@ namespace ServiceHelpers
             return faceHeightPercentage >= MinDetectableFaceCoveragePercentage;
         }
 
-        public static Emotion FindFaceClosestToRegion(IEnumerable<Emotion> emotion, FaceRectangle region)
-        {
-            return emotion?.Where(e => CoreUtil.AreFacesPotentiallyTheSame(e.FaceRectangle, region))
-                                  .OrderBy(e => Math.Abs(region.Left - e.FaceRectangle.Left) + Math.Abs(region.Top - e.FaceRectangle.Top)).FirstOrDefault();
-        }
 
-        public static bool AreFacesPotentiallyTheSame(Rectangle face1, FaceRectangle face2)
+        public static bool AreFacesPotentiallyTheSame(FaceRectangle face1, FaceRectangle face2)
         {
-            return AreFacesPotentiallyTheSame((int)face1.Left, (int)face1.Top, (int)face1.Width, (int)face1.Height, face2.Left, face2.Top, face2.Width, face2.Height);
+            return AreFacesPotentiallyTheSame(face1.Left, face1.Top, face1.Width, face1.Height, face2.Left, face2.Top, face2.Width, face2.Height);
         }
 
         public static bool AreFacesPotentiallyTheSame(int face1X, int face1Y, int face1Width, int face1Height,

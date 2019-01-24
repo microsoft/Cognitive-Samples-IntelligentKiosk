@@ -31,8 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Face;
-using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using Microsoft.Rest;
 using ServiceHelpers;
 using System;
@@ -70,22 +69,16 @@ namespace IntelligentKioskSample
         {
             string errorDetails = ex.Message;
 
-            FaceAPIException faceApiException = ex as FaceAPIException;
-            if (faceApiException?.ErrorMessage != null)
+            APIErrorException faceApiException = ex as APIErrorException;
+            if (faceApiException?.Message != null)
             {
-                errorDetails = faceApiException.ErrorMessage;
+                errorDetails = faceApiException.Message;
             }
 
-            Microsoft.ProjectOxford.Common.ClientException commonException = ex as Microsoft.ProjectOxford.Common.ClientException;
-            if (commonException?.Error?.Message != null)
+            var visionException = ex as Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ComputerVisionErrorException;
+            if (visionException?.Body?.Message != null)
             {
-                errorDetails = commonException.Error.Message;
-            }
-
-            Microsoft.ProjectOxford.Vision.ClientException visionException = ex as Microsoft.ProjectOxford.Vision.ClientException;
-            if (visionException?.Error?.Message != null)
-            {
-                errorDetails = visionException.Error.Message;
+                errorDetails = visionException.Body.Message;
             }
 
             HttpOperationException httpException = ex as HttpOperationException;
@@ -97,7 +90,7 @@ namespace IntelligentKioskSample
             return errorDetails;
         }
 
-        internal static Face FindFaceClosestToRegion(IEnumerable<Face> faces, BitmapBounds region)
+        internal static DetectedFace FindFaceClosestToRegion(IEnumerable<DetectedFace> faces, BitmapBounds region)
         {
             return faces?.Where(f => Util.AreFacesPotentiallyTheSame(region, f.FaceRectangle))
                                   .OrderBy(f => Math.Abs(region.X - f.FaceRectangle.Left) + Math.Abs(region.Y - f.FaceRectangle.Top)).FirstOrDefault();
@@ -125,6 +118,36 @@ namespace IntelligentKioskSample
         {
             DeviceInformationCollection deviceInfo = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
             return deviceInfo.OrderBy(d => d.Name).Select(d => d.Name);
+        }
+
+        public static KeyValuePair<string, double>[] EmotionToRankedList(Emotion emotion)
+        {
+            return new KeyValuePair<string, double>[]
+            {
+                new KeyValuePair<string, double>("Anger", emotion.Anger),
+                new KeyValuePair<string, double>("Contempt", emotion.Contempt),
+                new KeyValuePair<string, double>("Disgust", emotion.Disgust),
+                new KeyValuePair<string, double>("Fear", emotion.Fear),
+                new KeyValuePair<string, double>("Happiness", emotion.Happiness),
+                new KeyValuePair<string, double>("Neutral", emotion.Neutral),
+                new KeyValuePair<string, double>("Sadness", emotion.Sadness),
+                new KeyValuePair<string, double>("Surprise", emotion.Surprise)
+            }
+            .OrderByDescending(e => e.Value)
+            .ToArray();
+        }
+
+        public static Microsoft.Azure.CognitiveServices.Vision.Face.Models.Gender? GetFaceGender(Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.Gender? gender)
+        {
+            switch (gender)
+            {
+                case Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.Gender.Male:
+                    return Gender.Male;
+                case Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.Gender.Female:
+                    return Gender.Female;
+                default:
+                    return null;
+            }
         }
 
         async private static Task CropBitmapAsync(Stream localFileStream, FaceRectangle rectangle, StorageFile resultFile)

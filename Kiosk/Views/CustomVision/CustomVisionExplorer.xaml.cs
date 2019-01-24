@@ -35,6 +35,7 @@ using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
@@ -339,7 +340,7 @@ namespace IntelligentKioskSample.Views
                         // relevant than the whole image. 
                         ImageSource croppedImage = await Util.DownloadAndCropBitmapAsync(
                             imageModelSample.ImageUri,
-                            new Microsoft.ProjectOxford.Face.Contract.FaceRectangle
+                            new FaceRectangle
                             {
                                 Left = (int)(tagRegion.Left * imageModelSample.Width),
                                 Top = (int)(tagRegion.Top * imageModelSample.Height),

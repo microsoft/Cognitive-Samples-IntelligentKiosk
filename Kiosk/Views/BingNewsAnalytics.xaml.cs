@@ -35,7 +35,6 @@ using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -109,7 +108,7 @@ namespace IntelligentKioskSample.Views
 
                 var news = await BingSearchHelper.GetNewsSearchResults(query, count: 50, offset:0, market: GetBingSearchMarketFromLanguage(userLanguage));
 
-                Task<SentimentResult> sentimentTask = TextAnalyticsHelper.GetTextSentimentAsync(news.Select(n => n.Title).ToArray(), language: GetTextAnalyticsLanguageCodeFromLanguage(userLanguage));
+                Task<SentimentResult> sentimentTask = TextAnalyticsHelper.GetSentimentAsync(news.Select(n => n.Title).ToArray(), language: GetTextAnalyticsLanguageCodeFromLanguage(userLanguage));
 
                 Task<KeyPhrasesResult> keyPhrasesTask;
                 if (IsLanguageSupportedByKeyPhraseAPI(userLanguage))
