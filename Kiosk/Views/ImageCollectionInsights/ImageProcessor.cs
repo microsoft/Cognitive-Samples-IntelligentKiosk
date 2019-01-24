@@ -65,7 +65,7 @@ namespace IntelligentKioskSample.Views.ImageCollectionInsights
             // assign computer vision results
             result.VisionInsights = new VisionInsights
             {
-                Caption = analyzer.AnalysisResult.Description?.Captions[0].Text,
+                Caption = analyzer.AnalysisResult.Description?.Captions.FirstOrDefault()?.Text,
                 Tags = analyzer.AnalysisResult.Tags != null ? analyzer.AnalysisResult.Tags.Select(t => t.Name).ToArray() : new string[0]
             };
 
