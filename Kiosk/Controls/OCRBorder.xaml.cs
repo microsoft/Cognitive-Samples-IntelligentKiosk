@@ -31,8 +31,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
@@ -40,23 +42,46 @@ namespace IntelligentKioskSample.Controls
 {
     public sealed partial class OCRBorder : UserControl
     {
+        private double captionAngle = 0;
+        private PointCollection points;
+
         public OCRBorder()
         {
             this.InitializeComponent();
         }
 
-        public void SetData(double width, double height, string text)
+        public void SetPoints(PointCollection points, string text, double captionAngle = 0)
         {
-            this.borderRectangle.Width = width;
-            this.borderRectangle.Height = height;
+            this.points = points;
+            this.borderRectangle.Points = points;
             this.captionText.Text = text;
+            this.captionAngle = captionAngle;
+
+            // set size
+            if (points.Count >= 4)
+            {
+                double width = Math.Abs(this.points[0].X - this.points[1].X);
+                double height = Math.Abs(this.points[0].Y - this.points[3].Y);
+                this.captionBorder.Width = width;
+                this.captionBorder.Height = height;
+            }
+
+            // set angle
+            var transform = new RotateTransform { Angle = this.captionAngle };
+            this.captionViewBox.RenderTransform = transform;
+            this.captionBorder.RenderTransform = transform;
+            captionText.RenderTransform = new RotateTransform { Angle = -this.captionAngle };
         }
 
         private void OnCaptionSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            this.captionCanvas.Margin = new Thickness(this.borderRectangle.Margin.Left - (this.captionCanvas.ActualWidth - this.borderRectangle.ActualWidth) / 2,
-                                                      -this.captionCanvas.ActualHeight, 0, 0);
-
+            // set margins
+            if (this.points.Count >= 4)
+            {
+                double left = this.points[0].X > this.points[3].X ? this.points[0].X : this.points[3].X;
+                double top = this.points[0].Y;
+                this.captionBorder.Margin = new Thickness(left, top, 0, 0);
+            }
         }
     }
 }

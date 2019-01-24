@@ -10,11 +10,15 @@
     >
 
     <Grid x:Name="hostGrid" >
-        <Rectangle x:Name="borderRectangle" Stroke="Red" Fill="Transparent" HorizontalAlignment="Left" VerticalAlignment="Top" />
+        <Polygon x:Name="borderRectangle" Stroke="Red" Fill="Yellow" Opacity="0.9" HorizontalAlignment="Left" VerticalAlignment="Top" />
 
-        <Grid FlowDirection="LeftToRight" VerticalAlignment="Top" x:Name="captionCanvas"  HorizontalAlignment="Left" SizeChanged="OnCaptionSizeChanged" Background="White" >
-            <TextBlock x:Name="captionText" Foreground="Red" Margin="2,0,2,0" VerticalAlignment="Center"  FontSize="14" FontFamily="Segoe UI Semilight"/>
-        </Grid>
+        <Border x:Name="captionBorder" SizeChanged="OnCaptionSizeChanged"
+                FlowDirection="LeftToRight" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <Viewbox x:Name="captionViewBox" Stretch="Uniform">
+                <TextBlock x:Name="captionText" Foreground="Red" Opacity="0.6"
+                       VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="Segoe UI Semilight"/>
+            </Viewbox>
+        </Border>
     </Grid>
 
 </UserControl>

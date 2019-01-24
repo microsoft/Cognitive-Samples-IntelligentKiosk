@@ -31,6 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
@@ -59,7 +60,12 @@ namespace IntelligentKioskSample.Views
                     "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/2.jpg",
                     "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/3.jpg",
                     "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/4.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/5.jpg"
+                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/5.jpg",
+
+
+                    "https://intelligentkioskstore.blob.core.windows.net/visionapi/suggestedphotos/3.png",
+                    "https://intelligentkioskstore.blob.core.windows.net/visionapi/suggestedphotos/1.png",
+                    "https://intelligentkioskstore.blob.core.windows.net/visionapi/suggestedphotos/2.png",
                 };
         }
 
@@ -81,6 +87,7 @@ namespace IntelligentKioskSample.Views
             this.colorInfoListView.ItemsSource = new[] { new { Description = "Analyzing..." } };
 
             this.ocrToggle.IsEnabled = false;
+            this.ocrTextBox.Text = "";
         }
 
         private void UpdateResults(ImageAnalyzer img)
@@ -135,7 +142,7 @@ namespace IntelligentKioskSample.Views
         {
             if (analyzer.AnalysisResult?.Categories != null)
             {
-                foreach (var category in analyzer.AnalysisResult.Categories.Where(c => c.Detail != null))
+                foreach (var category in analyzer.AnalysisResult.Categories?.Where(c => c.Detail != null))
                 {
                     if (category.Detail.Celebrities != null)
                     {
@@ -174,6 +181,21 @@ namespace IntelligentKioskSample.Views
                 {
                     this.UpdateResults(img);
                 };
+            }
+
+            if (this.ocrToggle.IsOn)
+            {
+                if (img.TextOperationResult?.RecognitionResult != null)
+                {
+                    this.UpdateOcrTextBoxContent(img);
+                }
+                else
+                {
+                    img.TextRecognitionCompleted += (s, args) =>
+                    {
+                        this.UpdateOcrTextBoxContent(img);
+                    };
+                }
             }
         }
 
@@ -268,12 +290,58 @@ namespace IntelligentKioskSample.Views
 
         private void OnOCRToggled(object sender, RoutedEventArgs e)
         {
+            this.printedOCRComboBoxItem.IsSelected = true;
+            UpdateTextRecognition(TextRecognitionMode.Printed);
+        }
+
+        private void OcrModeSelectionChanged(object sender, SelectionChangedEventArgs args)
+        {
+            if (printedOCRComboBoxItem.IsSelected)
+            {
+                UpdateTextRecognition(TextRecognitionMode.Printed);
+            }
+            else if (handwrittigOCRComboBoxItem.IsSelected)
+            {
+                UpdateTextRecognition(TextRecognitionMode.Handwritten);
+            }
+        }
+
+        private void UpdateTextRecognition(TextRecognitionMode textRecognitionMode)
+        {
+            imageFromCameraWithFaces.TextRecognitionMode = textRecognitionMode;
+            imageWithFacesControl.TextRecognitionMode = textRecognitionMode;
+
             var currentImageDisplay = this.imageWithFacesControl.Visibility == Visibility.Visible ? this.imageWithFacesControl : this.imageFromCameraWithFaces;
             if (currentImageDisplay.DataContext != null)
             {
                 var img = currentImageDisplay.DataContext;
+
+                ImageAnalyzer analyzer = (ImageAnalyzer)img;
+
+                if (analyzer.TextOperationResult?.RecognitionResult != null)
+                {
+                    UpdateOcrTextBoxContent(analyzer);
+                }
+                else
+                {
+                    analyzer.TextRecognitionCompleted += (s, args) =>
+                    {
+                        UpdateOcrTextBoxContent(analyzer);
+                    };
+                }
+
                 currentImageDisplay.DataContext = null;
                 currentImageDisplay.DataContext = img;
+            }
+        }
+
+        private void UpdateOcrTextBoxContent(ImageAnalyzer imageAnalyzer)
+        {
+            this.ocrTextBox.Text = string.Empty;
+            if (imageAnalyzer.TextOperationResult?.RecognitionResult?.Lines != null)
+            {
+                IEnumerable<string> lines = imageAnalyzer.TextOperationResult.RecognitionResult.Lines.Select(l => string.Join(" ", l?.Words?.Select(w => w.Text)));
+                this.ocrTextBox.Text = string.Join("\n", lines);
             }
         }
     }
