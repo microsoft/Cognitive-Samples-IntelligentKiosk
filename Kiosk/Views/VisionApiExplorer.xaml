@@ -78,7 +78,8 @@
                                                         x:Name="imageFromCameraWithFaces" 
                                                         PerformComputerVisionAnalysis="True" 
                                                         PerformOCRAnalysis="{Binding ElementName=ocrToggle, Path=IsOn}" 
-                                                        DetectFacesOnLoad="True"/>
+                                                        DetectFacesOnLoad="True"
+                                                        PerformObjectDetection="{Binding ElementName=objectDetectionToggle, Path=IsOn}"/>
                     <ctl:CameraControl x:Name="cameraControl"/>
                 </Grid>
 
@@ -87,7 +88,8 @@
                                                     x:Name="imageWithFacesControl" 
                                                     PerformComputerVisionAnalysis="True" 
                                                     PerformOCRAnalysis="{Binding ElementName=ocrToggle, Path=IsOn}" 
-                                                    DetectFacesOnLoad="True"/>
+                                                    DetectFacesOnLoad="True"
+                                                    PerformObjectDetection="{Binding ElementName=objectDetectionToggle, Path=IsOn}"/>
             </Grid>
 
             <ScrollViewer x:Name="resultsDetails" Visibility="Collapsed"  Grid.Row="1" Grid.Column="2" Margin="12,0,12,0" HorizontalScrollBarVisibility="Disabled">
@@ -189,6 +191,7 @@
                     <TextBox x:Name="ocrTextBox" Margin="0,5,24,0" AcceptsReturn="True" Height="200"
                              Visibility="{Binding ElementName=ocrToggle, Path=IsOn, Converter={StaticResource bolleanToVisibilityConverter}}"/>
 
+                    <ToggleSwitch Header="Object Detection:" Margin="0,8,0,0" x:Name="objectDetectionToggle" Toggled="OnObjectDetectionToggled"/>
                 </StackPanel>
             </ScrollViewer>
 

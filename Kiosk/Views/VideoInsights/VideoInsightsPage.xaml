@@ -52,6 +52,7 @@
             <ComboBox  Foreground="LightGray" Width="180" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="4" Header="Visualization Type">
                 <ComboBoxItem x:Name="peopleVisualizationComboBoxItem" Content="People and emotion" IsSelected="True"/>
                 <ComboBoxItem x:Name="tagVisualizationComboBoxItem" Content="Visual features"/>
+                <ComboBoxItem x:Name="objectDetectionVisualizationComboBoxItem" Content="Object detection"/>
             </ComboBox>
 
             <Grid Grid.Row="1" Margin="6">
@@ -86,6 +87,21 @@
                     </ScrollViewer>
                 </Grid>
 
+                <Grid Margin="0,0,6,0" Background="#FF222222" Width="220" Visibility="{Binding ElementName=objectDetectionVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Margin="6" Text="Detected Objects" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}" />
+                    <Rectangle Height="1" Fill="Gray" Grid.Row="1" Margin="0,0,0,12"/>
+
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" >
+                        <StackPanel x:Name="detectedObjectFilterPanel" Grid.Row="2" Orientation="Vertical"/>
+                    </ScrollViewer>
+                </Grid>
+
                 <Grid Grid.Column="1" Margin="6,0,0,0" Background="#FF222222">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
@@ -96,6 +112,7 @@
 
                     <TextBlock Margin="6" Text="People and Emotion Timeline" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding ElementName=peopleVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <TextBlock Margin="6" Text="Visual Feature Timeline" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding ElementName=tagVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <TextBlock Margin="6" Text="Object Detection Timeline" Foreground="Gray" Style="{StaticResource BaseTextBlockStyle}" Visibility="{Binding ElementName=objectDetectionVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <Rectangle Height="1" Fill="Gray" Grid.Row="1" Margin="0,0,0,12"/>
 
                     <Grid Grid.Row="2" Margin="140,0,0,0">
@@ -160,6 +177,7 @@
                         <Grid>
                             <StackPanel x:Name="peopleListView" Grid.Row="1" Visibility="{Binding ElementName=peopleVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             <StackPanel x:Name="tagsListView" Grid.Row="1" Visibility="{Binding ElementName=tagVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <StackPanel x:Name="detectedObjectsListView" Grid.Row="1" Visibility="{Binding ElementName=objectDetectionVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         </Grid>
                     </ScrollViewer>
                 </Grid>
