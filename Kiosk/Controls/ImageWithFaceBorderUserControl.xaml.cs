@@ -35,6 +35,7 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -231,6 +232,8 @@ namespace IntelligentKioskSample.Controls
             set { SetValue(PerformOCRAnalysisProperty, (bool)value); }
         }
 
+        public TextRecognitionMode TextRecognitionMode { get; set; }
+
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
             ImageAnalyzer dataContext = this.DataContext as ImageAnalyzer;
@@ -372,14 +375,18 @@ namespace IntelligentKioskSample.Controls
 
             if (this.DataContext is ImageAnalyzer img)
             {
-                if (this.PerformOCRAnalysis && img.OcrResults == null)
+                List<Task> tasks = new List<Task>();
+                if (img.AnalysisResult == null)
                 {
-                    await Task.WhenAll(img.AnalyzeImageAsync(detectCelebrities: true), img.RecognizeTextAsync());
+                    tasks.Add(img.AnalyzeImageAsync(detectCelebrities: true));
                 }
-                else if (img.AnalysisResult == null)
+
+                if (this.PerformOCRAnalysis && (img.TextOperationResult == null || img.TextRecognitionMode != this.TextRecognitionMode))
                 {
-                    await img.AnalyzeImageAsync(detectCelebrities: true);
+                    tasks.Add(img.RecognizeTextAsync(this.TextRecognitionMode));
                 }
+
+                await Task.WhenAll(tasks);
 
                 double renderedImageXTransform = this.imageControl.RenderSize.Width / this.bitmapImage.PixelWidth;
                 double renderedImageYTransform = this.imageControl.RenderSize.Height / this.bitmapImage.PixelHeight;
@@ -429,32 +436,59 @@ namespace IntelligentKioskSample.Controls
                     }
                 }
 
-                if (this.PerformOCRAnalysis && img.OcrResults.Regions != null)
+                // Clean up any old results
+                foreach (var child in this.hostGrid.Children.Where(c => (c is OCRBorder)).ToArray())
                 {
-                    this.imageControl.RenderTransform = new RotateTransform { Angle = -img.OcrResults.TextAngle, CenterX = this.imageControl.RenderSize.Width / 2, CenterY = this.imageControl.RenderSize.Height / 2 };
+                    this.hostGrid.Children.Remove(child);
+                }
 
-                    foreach (OcrRegion ocrRegion in img.OcrResults.Regions)
+                // OCR request (Printed / Handwritten)
+                if (this.PerformOCRAnalysis && img.TextOperationResult?.RecognitionResult?.Lines != null)
+                {
+                    this.imageControl.RenderTransform = new RotateTransform { Angle = 0, CenterX = this.imageControl.RenderSize.Width / 2, CenterY = this.imageControl.RenderSize.Height / 2 };
+
+                    foreach (Line line in img.TextOperationResult.RecognitionResult.Lines)
                     {
-                        foreach (var line in ocrRegion.Lines)
+                        foreach (var word in line.Words)
                         {
-                            foreach (var word in line.Words)
+                            int[] boundingBox = word?.BoundingBox?.ToArray() ?? new int[] { };
+                            if (boundingBox.Length == 8)
                             {
-                                OCRBorder ocrUI = new OCRBorder();
-
-                                string[] boundingBox = word?.BoundingBox?.Split(",") ?? new string[] { };
-                                if (boundingBox.Length == 4)
+                                double minLeft = renderedImageXTransform * (new List<int>() { boundingBox[0], boundingBox[2], boundingBox[4], boundingBox[6] }).Min();
+                                double minTop = renderedImageYTransform * (new List<int>() { boundingBox[1], boundingBox[3], boundingBox[5], boundingBox[7] }).Min();
+                                var points = new PointCollection()
                                 {
-                                    int.TryParse(boundingBox[0], out int left);
-                                    int.TryParse(boundingBox[1], out int top);
-                                    int.TryParse(boundingBox[2], out int width);
-                                    int.TryParse(boundingBox[3], out int height);
-                                    ocrUI.Margin = new Thickness((left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
-                                                      (top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0);
+                                    new Windows.Foundation.Point(boundingBox[0] * renderedImageXTransform - minLeft, boundingBox[1] * renderedImageYTransform - minTop),
+                                    new Windows.Foundation.Point(boundingBox[2] * renderedImageXTransform - minLeft, boundingBox[3] * renderedImageYTransform - minTop),
+                                    new Windows.Foundation.Point(boundingBox[4] * renderedImageXTransform - minLeft, boundingBox[5] * renderedImageYTransform - minTop),
+                                    new Windows.Foundation.Point(boundingBox[6] * renderedImageXTransform - minLeft, boundingBox[7] * renderedImageYTransform - minTop)
+                                };
 
-                                    ocrUI.SetData(width * renderedImageXTransform, height * renderedImageYTransform, word.Text);
+                                // The four points (x-coordinate, y-coordinate) of the detected rectangle from the left-top corner and clockwise
+                                IEnumerable<Windows.Foundation.Point> leftPoints = points.OrderBy(p => p.X).Take(2);
+                                IEnumerable<Windows.Foundation.Point> rightPoints = points.OrderByDescending(p => p.X).Take(2);
+                                Windows.Foundation.Point leftTop = leftPoints.OrderBy(p => p.Y).FirstOrDefault();
+                                Windows.Foundation.Point leftBottom = leftPoints.OrderByDescending(p => p.Y).FirstOrDefault();
+                                Windows.Foundation.Point rightTop = rightPoints.OrderBy(p => p.Y).FirstOrDefault();
+                                Windows.Foundation.Point rightBottom = rightPoints.OrderByDescending(p => p.Y).FirstOrDefault();
+                                var orderedPoints = new PointCollection()
+                                {
+                                    leftTop, rightTop, rightBottom, leftBottom
+                                };
 
-                                    this.hostGrid.Children.Add(ocrUI);
-                                }
+                                // simple math to get angle of the text
+                                double diffWidth = Math.Abs(leftTop.X - rightTop.X);
+                                double diffHeight = Math.Abs(leftTop.Y - rightTop.Y);
+                                double sign = leftTop.Y > rightTop.Y ? -1 : 1;
+                                double angle = sign * Math.Atan2(diffHeight, diffWidth) * (180 / Math.PI); // angle in degrees
+
+                                OCRBorder ocrUI = new OCRBorder
+                                {
+                                    Margin = new Thickness(minLeft + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
+                                      minTop + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0)
+                                };
+                                ocrUI.SetPoints(orderedPoints, word.Text, angle);
+                                this.hostGrid.Children.Add(ocrUI);
                             }
                         }
                     }

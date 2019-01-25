@@ -62,7 +62,7 @@ namespace ServiceHelpers
         public event EventHandler FaceDetectionCompleted;
         public event EventHandler FaceRecognitionCompleted;
         public event EventHandler ComputerVisionAnalysisCompleted;
-        public event EventHandler OcrAnalysisCompleted;
+        public event EventHandler TextRecognitionCompleted;
 
         public static string PeopleGroupsUserDataFilter = null;
 
@@ -78,7 +78,8 @@ namespace ServiceHelpers
 
         public ImageAnalysis AnalysisResult { get; set; }
         public ImageDescription ImageDescription { get; set; }
-        public OcrResult OcrResults { get; set; }
+        public TextOperationResult TextOperationResult { get; set; }
+        public TextRecognitionMode TextRecognitionMode { get; set; }
 
         // Default to no errors, since this could trigger a stream of popup errors since we might call this
         // for several images at once while auto-detecting the Bing Image Search results.
@@ -254,24 +255,25 @@ namespace ServiceHelpers
             }
         }
 
-        public async Task RecognizeTextAsync()
+        public async Task RecognizeTextAsync(TextRecognitionMode textRecognitionMode)
         {
             try
             {
+                this.TextRecognitionMode = textRecognitionMode;
                 if (this.ImageUrl != null)
                 {
-                    this.OcrResults = await VisionServiceHelper.RecognizeOCRTextAsync(this.ImageUrl);
+                    this.TextOperationResult = await VisionServiceHelper.RecognizeTextAsync(this.ImageUrl, textRecognitionMode);
                 }
                 else if (this.GetImageStreamCallback != null)
                 {
-                    this.OcrResults = await VisionServiceHelper.RecognizeOCRTextAsync(this.GetImageStreamCallback);
+                    this.TextOperationResult = await VisionServiceHelper.RecognizeTextAsync(this.GetImageStreamCallback, textRecognitionMode);
                 }
             }
             catch (Exception ex)
             {
                 ErrorTrackingHelper.TrackException(ex, "Vision API RecognizeTextAsync error");
 
-                this.OcrResults = new OcrResult();
+                this.TextOperationResult = new TextOperationResult();
 
                 if (this.ShowDialogOnFaceApiErrors)
                 {
@@ -280,7 +282,7 @@ namespace ServiceHelpers
             }
             finally
             {
-                this.OcrAnalysisCompleted?.Invoke(this, EventArgs.Empty);
+                this.TextRecognitionCompleted?.Invoke(this, EventArgs.Empty);
             }
         }
 

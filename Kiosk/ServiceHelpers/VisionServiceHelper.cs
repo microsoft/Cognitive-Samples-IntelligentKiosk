@@ -158,14 +158,34 @@ namespace ServiceHelpers
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.DescribeImageAsync(imageUrl));
         }
 
-        public static async Task<OcrResult> RecognizeOCRTextAsync(string imageUrl, TextRecognitionMode textRecognitionMode = TextRecognitionMode.Printed)
+        public static async Task<TextOperationResult> RecognizeTextAsync(string imageUrl, TextRecognitionMode textRecognitionMode, bool detectOrientation = true)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.RecognizePrintedTextAsync(detectOrientation: true, url: imageUrl));
+            RecognizeTextHeaders textHeaders = await client.RecognizeTextAsync(imageUrl, textRecognitionMode);
+            return await GetTextRecognitionResultAsync(client, textHeaders.OperationLocation);
         }
 
-        public static async Task<OcrResult> RecognizeOCRTextAsync(Func<Task<Stream>> imageStreamCallback, TextRecognitionMode textRecognitionMode = TextRecognitionMode.Printed)
+        public static async Task<TextOperationResult> RecognizeTextAsync(Func<Task<Stream>> imageStreamCallback, TextRecognitionMode textRecognitionMode, bool detectOrientation = true)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await client.RecognizePrintedTextInStreamAsync(detectOrientation: true, image: await imageStreamCallback()));
+            RecognizeTextInStreamHeaders textHeaders = await client.RecognizeTextInStreamAsync(await imageStreamCallback(), textRecognitionMode);
+            return await GetTextRecognitionResultAsync(client, textHeaders.OperationLocation);
+        }
+
+        private static async Task<TextOperationResult> GetTextRecognitionResultAsync(ComputerVisionClient computerVision, string operationLocation)
+        {
+            // Retrieve the URI where the recognized text will be stored from the Operation-Location header
+            string operationId = operationLocation.Substring(operationLocation.Length - NumberOfCharsInOperationId);
+            TextOperationResult result = await computerVision.GetTextOperationResultAsync(operationId);
+
+            // Wait for the operation to complete
+            int i = 0;
+            while ((result.Status == TextOperationStatusCodes.Running || result.Status == TextOperationStatusCodes.NotStarted) &&
+                i++ < MaxRetriesOnTextRecognition)
+            {
+                await Task.Delay(DelayOnTextRecognition);
+                result = await computerVision.GetTextOperationResultAsync(operationId);
+            }
+
+            return result;
         }
     }
 }
