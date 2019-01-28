@@ -170,6 +170,16 @@ namespace ServiceHelpers
             return await GetTextRecognitionResultAsync(client, textHeaders.OperationLocation);
         }
 
+        public static async Task<DetectResult> DetectObjectsInStreamAsync(Func<Task<Stream>> imageStreamCallback)
+        {
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await client.DetectObjectsInStreamAsync(await imageStreamCallback()));
+        }
+
+        public static async Task<DetectResult> DetectObjectsAsync(string imageUrl)
+        {
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.DetectObjectsAsync(imageUrl));
+        }
+
         private static async Task<TextOperationResult> GetTextRecognitionResultAsync(ComputerVisionClient computerVision, string operationLocation)
         {
             // Retrieve the URI where the recognized text will be stored from the Operation-Location header

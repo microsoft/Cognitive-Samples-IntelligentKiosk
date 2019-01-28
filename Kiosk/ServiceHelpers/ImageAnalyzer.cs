@@ -62,6 +62,7 @@ namespace ServiceHelpers
         public event EventHandler FaceDetectionCompleted;
         public event EventHandler FaceRecognitionCompleted;
         public event EventHandler ComputerVisionAnalysisCompleted;
+        public event EventHandler ObjectDetectionCompleted;
         public event EventHandler TextRecognitionCompleted;
 
         public static string PeopleGroupsUserDataFilter = null;
@@ -78,6 +79,7 @@ namespace ServiceHelpers
 
         public ImageAnalysis AnalysisResult { get; set; }
         public ImageDescription ImageDescription { get; set; }
+        public IEnumerable<DetectedObject> DetectedObjects { get; set; }
         public TextOperationResult TextOperationResult { get; set; }
         public TextRecognitionMode TextRecognitionMode { get; set; }
 
@@ -393,6 +395,38 @@ namespace ServiceHelpers
             }
 
             this.SimilarFaceMatches = result;
+        }
+
+        public async Task DetectObjectsAsync()
+        {
+            try
+            {
+                if (this.ImageUrl != null)
+                {
+                    var response = await VisionServiceHelper.DetectObjectsAsync(this.ImageUrl);
+                    this.DetectedObjects = response?.Objects?.ToList();
+                }
+                else if (this.GetImageStreamCallback != null)
+                {
+                    var response = await VisionServiceHelper.DetectObjectsInStreamAsync(this.GetImageStreamCallback);
+                    this.DetectedObjects = response?.Objects?.ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorTrackingHelper.TrackException(e, "Vision API DetectObjectsAsync error");
+
+                this.DetectedObjects = new List<DetectedObject>();
+
+                if (this.ShowDialogOnFaceApiErrors)
+                {
+                    await ErrorTrackingHelper.GenericApiCallExceptionHandler(e, "Vision API failed.");
+                }
+            }
+            finally
+            {
+                this.ObjectDetectionCompleted?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         private void OnFaceDetectionCompleted()

@@ -87,6 +87,7 @@ namespace IntelligentKioskSample.Views
             this.colorInfoListView.ItemsSource = new[] { new { Description = "Analyzing..." } };
 
             this.ocrToggle.IsEnabled = false;
+            this.objectDetectionToggle.IsEnabled = false;
             this.ocrTextBox.Text = "";
         }
 
@@ -136,6 +137,7 @@ namespace IntelligentKioskSample.Views
             }
 
             this.ocrToggle.IsEnabled = true;
+            this.objectDetectionToggle.IsEnabled = true;
         }
 
         private IEnumerable<string> GetCelebrityNames(ImageAnalyzer analyzer)
@@ -342,6 +344,20 @@ namespace IntelligentKioskSample.Views
             {
                 IEnumerable<string> lines = imageAnalyzer.TextOperationResult.RecognitionResult.Lines.Select(l => string.Join(" ", l?.Words?.Select(w => w.Text)));
                 this.ocrTextBox.Text = string.Join("\n", lines);
+            }
+        }
+
+        private void OnObjectDetectionToggled(object sender, RoutedEventArgs e)
+        {
+            var currentImageDisplay = this.imageWithFacesControl.Visibility == Visibility.Visible ? this.imageWithFacesControl : this.imageFromCameraWithFaces;
+            if (currentImageDisplay.DataContext != null)
+            {
+                var img = currentImageDisplay.DataContext;
+
+                ImageAnalyzer analyzer = (ImageAnalyzer)img;
+
+                currentImageDisplay.DataContext = null;
+                currentImageDisplay.DataContext = img;
             }
         }
     }

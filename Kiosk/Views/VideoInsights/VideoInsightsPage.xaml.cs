@@ -73,6 +73,8 @@ namespace IntelligentKioskSample.Views
         private HashSet<int> processedFrames = new HashSet<int>();
 
         private Dictionary<string, int> tagsInVideo = new Dictionary<string, int>();
+        private Dictionary<string, int> detectedObjectsInVideo = new Dictionary<string, int>();
+        private Dictionary<int, ImageAnalyzer> detectedObjectsInFrame = new Dictionary<int, ImageAnalyzer>();
 
         public VideoInsightsPage()
         {
@@ -143,12 +145,15 @@ namespace IntelligentKioskSample.Views
             // Compute Emotion, Age, Gender, Celebrities and Visual Features
             await Task.WhenAll(
                 analyzer.DetectFacesAsync(detectFaceAttributes: true),
-                analyzer.AnalyzeImageAsync(true, new List<VisualFeatureTypes>() { VisualFeatureTypes.Categories, VisualFeatureTypes.Tags }));
+                analyzer.AnalyzeImageAsync(true, new List<VisualFeatureTypes>() { VisualFeatureTypes.Categories, VisualFeatureTypes.Tags }),
+                analyzer.DetectObjectsAsync());
 
             // Compute Face Identification and Unique Face Ids
             await Task.WhenAll(analyzer.IdentifyFacesAsync(), analyzer.FindSimilarPersistedFacesAsync());
 
-            await Task.WhenAll(ProcessPeopleInsightsAsync(analyzer, frameNumber), ProcessVisualFeaturesInsightsAsync(analyzer, frameNumber));
+            await Task.WhenAll(ProcessPeopleInsightsAsync(analyzer, frameNumber), 
+                               ProcessVisualFeaturesInsightsAsync(analyzer, frameNumber),
+                               ProcessObjectDetectionInsightsAsync(analyzer, frameNumber));
 
             if (videoIdBeforeProcessing != this.currentVideoId)
             {
@@ -367,6 +372,105 @@ namespace IntelligentKioskSample.Views
             }
         }
 
+        private async Task ProcessObjectDetectionInsightsAsync(ImageAnalyzer analyzer, int frameNumber)
+        {
+            this.detectedObjectsInFrame.Add(frameNumber, analyzer);
+
+            foreach (var detectedObject in analyzer.DetectedObjects)
+            {
+                if (this.detectedObjectsInVideo.ContainsKey(detectedObject.ObjectProperty))
+                {
+                    this.detectedObjectsInVideo[detectedObject.ObjectProperty]++;
+                }
+                else
+                {
+                    this.detectedObjectsInVideo[detectedObject.ObjectProperty] = 1;
+
+                    ImageSource croppedContent = await Util.GetCroppedBitmapAsync(analyzer.GetImageStreamCallback,
+                                                                        new Microsoft.Azure.CognitiveServices.Vision.Face.Models.FaceRectangle
+                                                                        {
+                                                                            Left = detectedObject.Rectangle.X,
+                                                                            Top = detectedObject.Rectangle.Y,
+                                                                            Width = detectedObject.Rectangle.W,
+                                                                            Height = detectedObject.Rectangle.H
+                                                                        });
+
+                    BitmapImage frameBitmap = new BitmapImage();
+                    await frameBitmap.SetSourceAsync((await analyzer.GetImageStreamCallback()).AsRandomAccessStream());
+                    VideoTrack videoTrack = new VideoTrack
+                    {
+                        Tag = detectedObject.ObjectProperty,
+                        CroppedFace = croppedContent,
+                        DisplayText = detectedObject.ObjectProperty,
+                        Duration = (int)this.videoPlayer.NaturalDuration.TimeSpan.TotalSeconds,
+                    };
+
+                    videoTrack.Tapped += this.TimelineTapped;
+                    this.detectedObjectsListView.Children.Insert(0, videoTrack);
+
+                    this.FilterDetectedObjectTimeline();
+                }
+
+                // Update the timeline for this tag
+                VideoTrack track = (VideoTrack)this.detectedObjectsListView.Children.FirstOrDefault(f => (string)((FrameworkElement)f).Tag == detectedObject.ObjectProperty);
+                if (track != null)
+                {
+                    track.SetVideoFrameState(frameNumber, new Emotion { Neutral = 1 }, analyzer);
+
+                    uint childIndex = (uint)this.detectedObjectsListView.Children.IndexOf(track);
+                    if (childIndex > 5)
+                    {
+                        // Bring towards the top so it becomes visible
+                        this.detectedObjectsListView.Children.Move(childIndex, 5);
+                    }
+                }
+            }
+
+            this.UpdateObjectDetectionFilters();
+        }
+
+        private void UpdateObjectDetectionFilters()
+        {
+            int index = 0;
+            List<KeyValuePair<String, int>> objectssGroupedByCountAndSorted = new List<KeyValuePair<String, int>>();
+            foreach (var group in this.detectedObjectsInVideo.GroupBy(t => t.Value).OrderByDescending(g => g.Key))
+            {
+                objectssGroupedByCountAndSorted.AddRange(group.OrderBy(g => g.Key));
+            }
+
+            foreach (var item in objectssGroupedByCountAndSorted)
+            {
+                TagFilterControl tagFilterControl = detectedObjectFilterPanel.Children.FirstOrDefault(t => (string)((UserControl)t).Tag == item.Key) as TagFilterControl;
+                if (tagFilterControl != null)
+                {
+                    TagFilterViewModel vm = tagFilterControl.DataContext as TagFilterViewModel;
+                    vm.Count = item.Value;
+
+                    int filterControlIndex = detectedObjectFilterPanel.Children.IndexOf(tagFilterControl);
+                    if (filterControlIndex != index)
+                    {
+                        detectedObjectFilterPanel.Children.Move((uint)filterControlIndex, (uint)index);
+                    }
+                }
+                else
+                {
+                    TagFilterControl newControl = new TagFilterControl
+                    {
+                        Tag = item.Key,
+                        DataContext = new TagFilterViewModel(item.Key) { Count = item.Value }
+                    };
+
+                    newControl.FilterChanged += (s, a) =>
+                    {
+                        this.FilterDetectedObjectTimeline();
+                    };
+
+                    detectedObjectFilterPanel.Children.Add(newControl);
+                }
+                index++;
+            }
+        }
+
         private void FilterFeatureTimeline()
         {
             IEnumerable<string> checkedTags = tagFilterPanel.Children.Select(c => (TagFilterViewModel)((TagFilterControl)c).DataContext)
@@ -383,6 +487,28 @@ namespace IntelligentKioskSample.Views
             else
             {
                 foreach (var item in this.tagsListView.Children)
+                {
+                    item.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+        private void FilterDetectedObjectTimeline()
+        {
+            IEnumerable<string> checkedTags = detectedObjectFilterPanel.Children.Select(c => (TagFilterViewModel)((TagFilterControl)c).DataContext)
+                .Where(vm => vm.IsChecked)
+                .Select(vm => vm.Tag);
+
+            if (checkedTags.Any())
+            {
+                foreach (var item in this.detectedObjectsListView.Children)
+                {
+                    item.Visibility = checkedTags.Contains((string)((VideoTrack)item).Tag) ? Visibility.Visible : Visibility.Collapsed;
+                }
+            }
+            else
+            {
+                foreach (var item in this.detectedObjectsListView.Children)
                 {
                     item.Visibility = Visibility.Visible;
                 }
@@ -483,6 +609,11 @@ namespace IntelligentKioskSample.Views
             this.tagFilterPanel.Children.Clear();
             this.tagsListView.Children.Clear();
 
+            this.detectedObjectsInVideo.Clear();
+            this.detectedObjectFilterPanel.Children.Clear();
+            this.detectedObjectsListView.Children.Clear();
+            this.detectedObjectsInFrame.Clear();
+
             this.pendingIdentificationAttemptCount.Clear();
             this.processedFrames.Clear();
         }
@@ -501,6 +632,12 @@ namespace IntelligentKioskSample.Views
             await FaceListManager.Initialize();
 
             base.OnNavigatedTo(e);
+        }
+
+        protected override async void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            await FaceListManager.ResetFaceLists();
+            base.OnNavigatingFrom(e);
         }
 
         private void EnterKioskMode()

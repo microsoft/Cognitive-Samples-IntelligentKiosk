@@ -40,6 +40,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -160,6 +161,14 @@ namespace IntelligentKioskSample.Controls
             new PropertyMetadata(false)
             );
 
+        public static readonly DependencyProperty PerformObjectDetectionProperty =
+            DependencyProperty.Register(
+            "PerformObjectDetection",
+            typeof(bool),
+            typeof(ImageWithFaceBorderUserControl),
+            new PropertyMetadata(false)
+            );
+
         public SolidColorBrush BalloonBackground
         {
             get { return (SolidColorBrush)GetValue(BalloonBackgroundProperty); }
@@ -232,6 +241,12 @@ namespace IntelligentKioskSample.Controls
             set { SetValue(PerformOCRAnalysisProperty, (bool)value); }
         }
 
+        public bool PerformObjectDetection
+        {
+            get { return (bool)GetValue(PerformObjectDetectionProperty); }
+            set { SetValue(PerformObjectDetectionProperty, (bool)value); }
+        }
+
         public TextRecognitionMode TextRecognitionMode { get; set; }
 
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
@@ -292,8 +307,7 @@ namespace IntelligentKioskSample.Controls
                 this.hostGrid.Children.Remove(child);
             }
 
-            ImageAnalyzer imageWithFace = this.DataContext as ImageAnalyzer;
-            if (imageWithFace != null)
+            if (this.DataContext is ImageAnalyzer imageWithFace)
             {
                 if (imageWithFace.DetectedFaces == null)
                 {
@@ -386,6 +400,11 @@ namespace IntelligentKioskSample.Controls
                     tasks.Add(img.RecognizeTextAsync(this.TextRecognitionMode));
                 }
 
+                if (this.PerformObjectDetection && img.DetectedObjects == null)
+                {
+                    tasks.Add(img.DetectObjectsAsync());
+                }
+
                 await Task.WhenAll(tasks);
 
                 double renderedImageXTransform = this.imageControl.RenderSize.Width / this.bitmapImage.PixelWidth;
@@ -395,22 +414,20 @@ namespace IntelligentKioskSample.Controls
                 {
                     foreach (FaceDescription face in img.AnalysisResult.Faces)
                     {
-                        FaceIdentificationBorder faceUI = new FaceIdentificationBorder();
-
-                        faceUI.Margin = new Thickness((face.FaceRectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
-                                                      (face.FaceRectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0);
-
-                        faceUI.BalloonBackground = this.BalloonBackground;
-                        faceUI.BalloonForeground = this.BalloonForeground;
+                        FaceIdentificationBorder faceUI = new FaceIdentificationBorder
+                        {
+                            Margin = new Thickness((face.FaceRectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
+                                                      (face.FaceRectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0),
+                            BalloonBackground = this.BalloonBackground,
+                            BalloonForeground = this.BalloonForeground
+                        };
                         faceUI.ShowFaceRectangle(face.FaceRectangle.Width * renderedImageXTransform, face.FaceRectangle.Height * renderedImageYTransform);
 
                         var faceGender = Util.GetFaceGender(face.Gender);
                         faceUI.ShowIdentificationData(face.Age, faceGender, 0, null);
                         this.hostGrid.Children.Add(faceUI);
 
-                        double celebRecoConfidence = 0;
-                        string celebRecoName;
-                        this.GetCelebrityInfoIfAvailable(img, face.FaceRectangle, out celebRecoName, out celebRecoConfidence);
+                        this.GetCelebrityInfoIfAvailable(img, face.FaceRectangle, out string celebRecoName, out double celebRecoConfidence);
                         if (!string.IsNullOrEmpty(celebRecoName))
                         {
                             Border celebUI = new Border
@@ -493,9 +510,62 @@ namespace IntelligentKioskSample.Controls
                         }
                     }
                 }
+
+                if (this.PerformObjectDetection && img.DetectedObjects != null)
+                {
+                    this.ShowObjectDetectionRegions(img.DetectedObjects);
+                }
             }
 
             this.progressIndicator.IsActive = false;
+        }
+
+        private void ShowObjectDetectionRegions(IEnumerable<DetectedObject> predictions)
+        {
+            double renderedImageXTransform = this.imageControl.RenderSize.Width / this.bitmapImage.PixelWidth;
+            double renderedImageYTransform = this.imageControl.RenderSize.Height / this.bitmapImage.PixelHeight;
+
+            foreach (DetectedObject prediction in predictions)
+            {
+                this.hostGrid.Children.Add(
+                    new Border
+                    {
+                        BorderBrush = new SolidColorBrush(Colors.Lime),
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        VerticalAlignment = VerticalAlignment.Top,
+                        BorderThickness = new Thickness(2),
+                        Margin = new Thickness(prediction.Rectangle.X * renderedImageXTransform + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
+                                                prediction.Rectangle.Y * renderedImageYTransform + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0),
+                        Width = prediction.Rectangle.W * renderedImageXTransform,
+                        Height = prediction.Rectangle.H * renderedImageYTransform,
+                    });
+
+                this.hostGrid.Children.Add(
+                    new Border
+                    {
+                        Height = 40,
+                        FlowDirection = FlowDirection.LeftToRight,
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        VerticalAlignment = VerticalAlignment.Top,
+                        Margin = new Thickness(prediction.Rectangle.X * renderedImageXTransform + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
+                                                prediction.Rectangle.Y * renderedImageYTransform + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2) - 40, 0, 0),
+
+                        Child = new Border
+                        {
+                            Background = new SolidColorBrush(Colors.Lime),
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            VerticalAlignment = VerticalAlignment.Bottom,
+                            Child =
+                                new TextBlock
+                                {
+                                    Foreground = new SolidColorBrush(Colors.Black),
+                                    Text = $"{prediction.ObjectProperty} ({Math.Round(prediction.Confidence * 100)}%)",
+                                    FontSize = 16,
+                                    Margin = new Thickness(6, 0, 6, 0)
+                                }
+                        }
+                    });
+            }
         }
 
         private void GetCelebrityInfoIfAvailable(ImageAnalyzer analyzer, Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.FaceRectangle rectangle, out string name, out double confidence)
@@ -535,8 +605,7 @@ namespace IntelligentKioskSample.Controls
                 this.hostGrid.Children.Remove(child);
             }
 
-            ImageAnalyzer imageWithFace = this.DataContext as ImageAnalyzer;
-            if (imageWithFace != null)
+            if (this.DataContext is ImageAnalyzer imageWithFace)
             {
                 if (imageWithFace.DetectedFaces == null)
                 {
@@ -548,13 +617,13 @@ namespace IntelligentKioskSample.Controls
 
                 foreach (DetectedFace face in imageWithFace.DetectedFaces)
                 {
-                    FaceIdentificationBorder faceUI = new FaceIdentificationBorder();
-
-                    faceUI.Margin = new Thickness((face.FaceRectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
-                                                    (face.FaceRectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0);
-
-                    faceUI.BalloonBackground = this.BalloonBackground;
-                    faceUI.BalloonForeground = this.BalloonForeground;
+                    FaceIdentificationBorder faceUI = new FaceIdentificationBorder
+                    {
+                        Margin = new Thickness((face.FaceRectangle.Left * renderedImageXTransform) + ((this.ActualWidth - this.imageControl.RenderSize.Width) / 2),
+                                                    (face.FaceRectangle.Top * renderedImageYTransform) + ((this.ActualHeight - this.imageControl.RenderSize.Height) / 2), 0, 0),
+                        BalloonBackground = this.BalloonBackground,
+                        BalloonForeground = this.BalloonForeground
+                    };
 
                     faceUI.ShowFaceRectangle(face.FaceRectangle.Width * renderedImageXTransform, face.FaceRectangle.Height * renderedImageYTransform);
 
@@ -579,8 +648,7 @@ namespace IntelligentKioskSample.Controls
                 return;
             }
 
-            ImageAnalyzer img = this.DataContext as ImageAnalyzer;
-            if (img != null)
+            if (this.DataContext is ImageAnalyzer img)
             {
                 img.UpdateDecodedImageSize(this.bitmapImage.PixelHeight, this.bitmapImage.PixelWidth);
             }

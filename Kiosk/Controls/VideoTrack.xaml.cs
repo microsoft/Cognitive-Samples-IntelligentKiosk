@@ -32,9 +32,11 @@
 // 
 
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using ServiceHelpers;
 using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
@@ -86,9 +88,9 @@ namespace IntelligentKioskSample.Controls
 
                 this.chart.Children.Clear();
             }
-        } 
+        }
 
-        public void SetVideoFrameState(int videoFrameTimestampInSeconds, Emotion emotion)
+        public void SetVideoFrameState(int videoFrameTimestampInSeconds, Emotion emotion, ImageAnalyzer analysisResult = null)
         {
             EmotionToColoredBar emotionResponse = new EmotionToColoredBar();
             emotionResponse.UpdateEmotion(emotion);
@@ -98,10 +100,15 @@ namespace IntelligentKioskSample.Controls
 
             emotionResponse.Margin = new Thickness
             {
-                Left = ((double) videoFrameTimestampInSeconds / this.duration) * this.chart.ActualWidth
+                Left = ((double)videoFrameTimestampInSeconds / this.duration) * this.chart.ActualWidth
             };
 
             this.chart.Children.Add(emotionResponse);
+
+            if (analysisResult != null)
+            {
+                this.AddFlyoutToElement(emotionResponse, analysisResult);
+            }
         }
 
         private void ChartSizeChanged(object sender, SizeChangedEventArgs e)
@@ -117,6 +124,25 @@ namespace IntelligentKioskSample.Controls
                     Left = ((double) ((int)element.Tag) / this.duration) * this.chart.ActualWidth
                 };
             }
+        }
+
+        private void AddFlyoutToElement(FrameworkElement element, ImageAnalyzer analysisResult)
+        {
+            var content = new ImageWithFaceBorderUserControl
+            {
+                PerformComputerVisionAnalysis = true,
+                PerformObjectDetection = true,
+                DetectFacesOnLoad = true,
+                DataContext = analysisResult,
+                Width = 400
+            };
+
+            FlyoutBase.SetAttachedFlyout(element, new Flyout { Content = content });
+
+            element.PointerReleased += (s, e) =>
+            {
+                FlyoutBase.ShowAttachedFlyout(element);
+            };
         }
     }
 }
