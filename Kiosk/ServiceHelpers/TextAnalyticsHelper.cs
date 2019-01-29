@@ -69,14 +69,14 @@ namespace ServiceHelpers
             }
         }
 
-        private static string apiKeyRegion;
-        public static string ApiKeyRegion
+        private static string apiEndpoint;
+        public static string ApiEndpoint
         {
-            get { return apiKeyRegion; }
+            get { return apiEndpoint; }
             set
             {
-                var changed = apiKeyRegion != value;
-                apiKeyRegion = value;
+                var changed = apiEndpoint != value;
+                apiEndpoint = value;
                 if (changed)
                 {
                     InitializeTextAnalyticsService();
@@ -86,19 +86,25 @@ namespace ServiceHelpers
 
         private static void InitializeTextAnalyticsService()
         {
-            client = string.IsNullOrEmpty(ApiKeyRegion)
+            bool hasEndpoint = !string.IsNullOrEmpty(ApiEndpoint) ? Uri.IsWellFormedUriString(ApiEndpoint, UriKind.Absolute) : false;
+            client = !hasEndpoint
                 ? new TextAnalyticsClient(new ApiKeyServiceClientCredentials(ApiKey))
                 : new TextAnalyticsClient(new ApiKeyServiceClientCredentials(ApiKey))
                 {
-                    Endpoint = $"https://{ApiKeyRegion}.api.cognitive.microsoft.com"
+                    Endpoint = ApiEndpoint
                 };
         }
 
         public static async Task<SentimentResult> GetSentimentAsync(string[] input, string language = "en")
         {
-            if (input == null || !input.Any())
+            if (input == null)
             {
                 throw new ArgumentNullException("input");
+            }
+
+            if (!input.Any())
+            {
+                throw new ArgumentException("Input array is empty.");
             }
 
             var inputList = new List<MultiLanguageInput>();
@@ -114,9 +120,14 @@ namespace ServiceHelpers
 
         public static async Task<KeyPhrasesResult> GetKeyPhrasesAsync(string[] input, string language = "en")
         {
-            if (input == null || !input.Any())
+            if (input == null)
             {
                 throw new ArgumentNullException("input");
+            }
+
+            if (!input.Any())
+            {
+                throw new ArgumentException("Input array is empty.");
             }
 
             var inputList = new List<MultiLanguageInput>();

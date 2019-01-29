@@ -42,7 +42,9 @@ using Windows.UI.Xaml.Navigation;
 namespace IntelligentKioskSample
 {
     using ServiceHelpers;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Threading.Tasks;
     using Views;
     using Windows.Data.Xml.Dom;
     using Windows.UI.Notifications;
@@ -86,13 +88,13 @@ namespace IntelligentKioskSample
                 SettingsHelper.Instance.SettingsChanged += (target, args) =>
                 {
                     FaceServiceHelper.ApiKey = SettingsHelper.Instance.FaceApiKey;
-                    FaceServiceHelper.ApiKeyRegion = SettingsHelper.Instance.FaceApiKeyRegion;
+                    FaceServiceHelper.ApiEndpoint = SettingsHelper.Instance.FaceApiKeyEndpoint;
                     VisionServiceHelper.ApiKey = SettingsHelper.Instance.VisionApiKey;
-                    VisionServiceHelper.ApiKeyRegion = SettingsHelper.Instance.VisionApiKeyRegion;
+                    VisionServiceHelper.ApiEndpoint = SettingsHelper.Instance.VisionApiKeyEndpoint;
                     BingSearchHelper.SearchApiKey = SettingsHelper.Instance.BingSearchApiKey;
                     BingSearchHelper.AutoSuggestionApiKey = SettingsHelper.Instance.BingAutoSuggestionApiKey;
                     TextAnalyticsHelper.ApiKey = SettingsHelper.Instance.TextAnalyticsKey;
-                    TextAnalyticsHelper.ApiKeyRegion = SettingsHelper.Instance.TextAnalyticsApiKeyRegion;
+                    TextAnalyticsHelper.ApiEndpoint = SettingsHelper.Instance.TextAnalyticsApiKeyEndpoint;
                     TextAnalyticsHelper.ApiKey = SettingsHelper.Instance.TextAnalyticsKey;
                     ImageAnalyzer.PeopleGroupsUserDataFilter = SettingsHelper.Instance.WorkspaceKey;
                     FaceListManager.FaceListsUserDataFilter = SettingsHelper.Instance.WorkspaceKey;
@@ -100,8 +102,8 @@ namespace IntelligentKioskSample
                 };
 
                 // callbacks for core library
-                FaceServiceHelper.Throttled = () => ShowThrottlingToast("Face");
-                VisionServiceHelper.Throttled = () => ShowThrottlingToast("Vision");
+                FaceServiceHelper.Throttled = () => ShowToastNotification("The Face API is throttling your requests. Consider upgrading to a Premium Key.");
+                VisionServiceHelper.Throttled = () => ShowToastNotification("The Vision API is throttling your requests. Consider upgrading to a Premium Key.");
                 ErrorTrackingHelper.TrackException = (ex, msg) => LogException(ex, msg);
                 ErrorTrackingHelper.GenericApiCallExceptionHandler = Util.GenericApiCallExceptionHandler;
 
@@ -141,15 +143,53 @@ namespace IntelligentKioskSample
 
             // Ensure the current window is active
             Window.Current.Activate();
+
+            // Trigger a test of the api keys in the background to alert the user if any of them are bad (e.g. expired, out of quota, etc)
+            TestApiKeysAsync();
         }
 
-        private static void ShowThrottlingToast(string api)
+        private static async void TestApiKeysAsync()
+        {
+            List<Task> testTasks = new List<Task>
+            {
+                !string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey)
+                ? CognitiveServiceApiKeyTester.TestFaceApiKeyAsync(SettingsHelper.Instance.FaceApiKey, SettingsHelper.Instance.FaceApiKeyEndpoint)
+                : Task.CompletedTask,
+
+                !string.IsNullOrEmpty(SettingsHelper.Instance.VisionApiKey)
+                ? CognitiveServiceApiKeyTester.TestComputerVisionApiKeyAsync(SettingsHelper.Instance.VisionApiKey, SettingsHelper.Instance.VisionApiKeyEndpoint)
+                : Task.CompletedTask,
+
+                !string.IsNullOrEmpty(SettingsHelper.Instance.BingSearchApiKey)
+                ? CognitiveServiceApiKeyTester.TestBingSearchApiKeyAsync(SettingsHelper.Instance.BingSearchApiKey)
+                : Task.CompletedTask,
+
+                !string.IsNullOrEmpty(SettingsHelper.Instance.BingAutoSuggestionApiKey)
+                ? CognitiveServiceApiKeyTester.TestBingAutosuggestApiKeyAsync(SettingsHelper.Instance.BingAutoSuggestionApiKey)
+                : Task.CompletedTask,
+
+                !string.IsNullOrEmpty(SettingsHelper.Instance.TextAnalyticsKey)
+                ? CognitiveServiceApiKeyTester.TestTextAnalyticsApiKeyAsync(SettingsHelper.Instance.TextAnalyticsKey, SettingsHelper.Instance.TextAnalyticsApiKeyEndpoint)
+                : Task.CompletedTask
+            };
+
+            try
+            {
+                await Task.WhenAll(testTasks);
+            }
+            catch (Exception)
+            {
+                ShowToastNotification("Failure validating your API Keys. Please run the Key Validation Test in the Settings Page for more details.");
+            }
+        }
+
+        private static void ShowToastNotification(string errorMessage)
         {
             ToastTemplateType toastTemplate = ToastTemplateType.ToastText02;
             XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
             XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
             toastTextElements[0].AppendChild(toastXml.CreateTextNode("Intelligent Kiosk"));
-            toastTextElements[1].AppendChild(toastXml.CreateTextNode("The " + api + " API is throttling your requests. Consider upgrading to a Premium Key."));
+            toastTextElements[1].AppendChild(toastXml.CreateTextNode(errorMessage));
 
             ToastNotification toast = new ToastNotification(toastXml);
             ToastNotificationManager.CreateToastNotifier().Show(toast);

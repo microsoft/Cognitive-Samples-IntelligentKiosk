@@ -76,14 +76,14 @@ namespace ServiceHelpers
             }
         }
 
-        private static string apiKeyRegion;
-        public static string ApiKeyRegion
+        private static string apiEndpoint;
+        public static string ApiEndpoint
         {
-            get { return apiKeyRegion; }
+            get { return apiEndpoint; }
             set
             {
-                var changed = apiKeyRegion != value;
-                apiKeyRegion = value;
+                var changed = apiEndpoint != value;
+                apiEndpoint = value;
                 if (changed)
                 {
                     InitializeVisionService();
@@ -93,11 +93,12 @@ namespace ServiceHelpers
 
         private static void InitializeVisionService()
         {
-            client = string.IsNullOrEmpty(ApiKeyRegion)
+            bool hasEndpoint = !string.IsNullOrEmpty(ApiEndpoint) ? Uri.IsWellFormedUriString(ApiEndpoint, UriKind.Absolute) : false;
+            client = !hasEndpoint
                 ? new ComputerVisionClient(new ApiKeyServiceClientCredentials(ApiKey))
                 : new ComputerVisionClient(new ApiKeyServiceClientCredentials(ApiKey))
                 {
-                    Endpoint = $"https://{ApiKeyRegion}.api.cognitive.microsoft.com"
+                    Endpoint = ApiEndpoint
                 };
         }
 

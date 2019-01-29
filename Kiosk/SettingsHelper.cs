@@ -34,12 +34,36 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using Windows.Storage;
 
 namespace IntelligentKioskSample
 {
     internal class SettingsHelper : INotifyPropertyChanged
     {
+        public static readonly string DefaultApiEndpoint = "https://westus.api.cognitive.microsoft.com";
+        public static readonly string CustomEndpointName = "Custom";
+
+        public static readonly string[] AvailableApiRegions = new string[]
+        {
+            "westus",
+            "westus2",
+            "eastus",
+            "eastus2",
+            "westcentralus",
+            "southcentralus",
+            "westeurope",
+            "northeurope",
+            "southeastasia",
+            "eastasia",
+            "australiaeast",
+            "brazilsouth",
+            "canadacentral",
+            "centralindia",
+            "uksouth",
+            "japaneast"
+        };
+
         public event EventHandler SettingsChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -114,10 +138,15 @@ namespace IntelligentKioskSample
                 this.FaceApiKey = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["FaceApiKeyRegion"];
+            value = ApplicationData.Current.RoamingSettings.Values["FaceApiKeyEndpoint"];
+            if (value == null && ApplicationData.Current.RoamingSettings.Values["FaceApiKeyRegion"] != null)
+            {
+                var faceApiRegion = ApplicationData.Current.RoamingSettings.Values["FaceApiKeyRegion"].ToString();
+                value = GetRegionEndpoint(faceApiRegion);
+            }
             if (value != null)
             {
-                this.FaceApiKeyRegion = value.ToString();
+                this.FaceApiKeyEndpoint = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["VisionApiKey"];
@@ -126,10 +155,15 @@ namespace IntelligentKioskSample
                 this.VisionApiKey = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["VisionApiKeyRegion"];
+            value = ApplicationData.Current.RoamingSettings.Values["VisionApiKeyEndpoint"];
+            if (value == null && ApplicationData.Current.RoamingSettings.Values["VisionApiKeyRegion"] != null)
+            {
+                var visionApiRegion = ApplicationData.Current.RoamingSettings.Values["VisionApiKeyRegion"].ToString();
+                value = GetRegionEndpoint(visionApiRegion);
+            }
             if (value != null)
             {
-                this.VisionApiKeyRegion = value.ToString();
+                this.VisionApiKeyEndpoint = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["BingSearchApiKey"];
@@ -156,10 +190,15 @@ namespace IntelligentKioskSample
                 this.TextAnalyticsKey = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyRegion"];
+            value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyEndpoint"];
+            if (value == null && ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyRegion"] != null)
+            {
+                var textAnalyticsApiRegion = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyRegion"].ToString();
+                value = GetRegionEndpoint(textAnalyticsApiRegion);
+            }
             if (value != null)
             {
-                this.TextAnalyticsApiKeyRegion = value.ToString();
+                this.TextAnalyticsApiKeyEndpoint = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["CameraName"];
@@ -200,6 +239,24 @@ namespace IntelligentKioskSample
                 this.CustomVisionTrainingApiKey = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["CustomFaceApiEndpoint"];
+            if (value != null)
+            {
+                this.CustomFaceApiEndpoint = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["CustomVisionApiEndpoint"];
+            if (value != null)
+            {
+                this.CustomVisionApiEndpoint = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["CustomTextAnalyticsEndpoint"];
+            if (value != null)
+            {
+                this.CustomTextAnalyticsEndpoint = value.ToString();
+            }
+
             // load mall kiosk demo custom settings from file as the content is too big to be saved as a string-like setting
             try
             {
@@ -215,6 +272,15 @@ namespace IntelligentKioskSample
             {
                 this.RestoreMallKioskSettingsToDefaultFile();
             }
+        }
+
+        public string GetRegionEndpoint(string region)
+        {
+            if (!string.IsNullOrEmpty(region) && AvailableApiRegions.Any(x => string.Compare(x, region, StringComparison.OrdinalIgnoreCase) > 0))
+            {
+                return $"https://{region.ToLower()}.api.cognitive.microsoft.com";
+            }
+            return DefaultApiEndpoint;
         }
 
         public void RestoreMallKioskSettingsToDefaultFile()
@@ -238,14 +304,29 @@ namespace IntelligentKioskSample
             }
         }
 
-        private string faceApiKeyRegion = "westus";
-        public string FaceApiKeyRegion
+        private string faceApiKeyEndpoint = DefaultApiEndpoint;
+        public string FaceApiKeyEndpoint
         {
-            get { return this.faceApiKeyRegion; }
+            get
+            {
+                return string.Equals(this.faceApiKeyEndpoint, SettingsHelper.CustomEndpointName, StringComparison.OrdinalIgnoreCase)
+                    ? this.customFaceApiEndpoint
+                    : this.faceApiKeyEndpoint;
+            }
             set
             {
-                this.faceApiKeyRegion = value;
-                this.OnSettingChanged("FaceApiKeyRegion", value);
+                this.faceApiKeyEndpoint = value;
+                this.OnSettingChanged("FaceApiKeyEndpoint", value);
+            }
+        }
+
+        public string BindingFaceApiKeyEndpoint
+        {
+            get { return this.faceApiKeyEndpoint; }
+            set
+            {
+                this.faceApiKeyEndpoint = value;
+                this.OnSettingChanged("FaceApiKeyEndpoint", value);
             }
         }
 
@@ -260,14 +341,29 @@ namespace IntelligentKioskSample
             }
         }
 
-        private string visionApiKeyRegion = "westus";
-        public string VisionApiKeyRegion
+        private string visionApiKeyEndpoint = DefaultApiEndpoint;
+        public string VisionApiKeyEndpoint
         {
-            get { return this.visionApiKeyRegion; }
+            get
+            {
+                return string.Equals(this.visionApiKeyEndpoint, SettingsHelper.CustomEndpointName, StringComparison.OrdinalIgnoreCase)
+                    ? this.customVisionApiEndpoint
+                    : this.visionApiKeyEndpoint;
+            }
             set
             {
-                this.visionApiKeyRegion = value;
-                this.OnSettingChanged("VisionApiKeyRegion", value);
+                this.visionApiKeyEndpoint = value;
+                this.OnSettingChanged("VisionApiKeyEndpoint", value);
+            }
+        }
+
+        public string BindingVisionApiKeyEndpoint
+        {
+            get { return this.visionApiKeyEndpoint; }
+            set
+            {
+                this.visionApiKeyEndpoint = value;
+                this.OnSettingChanged("VisionApiKeyEndpoint", value);
             }
         }
 
@@ -326,14 +422,29 @@ namespace IntelligentKioskSample
             }
         }
 
-        private string textAnalyticsApiKeyRegion = "westus";
-        public string TextAnalyticsApiKeyRegion
+        private string textAnalyticsApiKeyEndpoint = DefaultApiEndpoint;
+        public string TextAnalyticsApiKeyEndpoint
         {
-            get { return textAnalyticsApiKeyRegion; }
+            get
+            {
+                return string.Equals(this.textAnalyticsApiKeyEndpoint, SettingsHelper.CustomEndpointName, StringComparison.OrdinalIgnoreCase)
+                    ? this.customTextAnalyticsEndpoint
+                    : this.textAnalyticsApiKeyEndpoint;
+            }
             set
             {
-                this.textAnalyticsApiKeyRegion = value;
-                this.OnSettingChanged("TextAnalyticsApiKeyRegion", value);
+                this.textAnalyticsApiKeyEndpoint = value;
+                this.OnSettingChanged("TextAnalyticsApiKeyEndpoint", value);
+            }
+        }
+
+        public string BindingTextAnalyticsApiKeyEndpoint
+        {
+            get { return this.textAnalyticsApiKeyEndpoint; }
+            set
+            {
+                this.textAnalyticsApiKeyEndpoint = value;
+                this.OnSettingChanged("TextAnalyticsApiKeyEndpoint", value);
             }
         }
 
@@ -392,25 +503,62 @@ namespace IntelligentKioskSample
             }
         }
 
-        public string[] AvailableApiRegions
+        private string customFaceApiEndpoint = string.Empty;
+        public string CustomFaceApiEndpoint
+        {
+            get { return this.customFaceApiEndpoint; }
+            set
+            {
+                this.customFaceApiEndpoint = value;
+                this.OnSettingChanged("CustomFaceApiEndpoint", value);
+            }
+        }
+
+        private string customVisionApiEndpoint = string.Empty;
+        public string CustomVisionApiEndpoint
+        {
+            get { return this.customVisionApiEndpoint; }
+            set
+            {
+                this.customVisionApiEndpoint = value;
+                this.OnSettingChanged("CustomVisionApiEndpoint", value);
+            }
+        }
+
+        private string customTextAnalyticsEndpoint = string.Empty;
+        public string CustomTextAnalyticsEndpoint
+        {
+            get { return this.customTextAnalyticsEndpoint; }
+            set
+            {
+                this.customTextAnalyticsEndpoint = value;
+                this.OnSettingChanged("CustomTextAnalyticsEndpoint", value);
+            }
+        }
+
+        public string[] AvailableApiEndpoints
         {
             get
             {
                 return new string[]
                 {
-                    "westus",
-                    "westus2",
-                    "eastus",
-                    "eastus2",
-                    "westcentralus",
-                    "southcentralus",
-                    "westeurope",
-                    "northeurope",
-                    "southeastasia",
-                    "eastasia",
-                    "japaneast",
-                    "australiaeast",
-                    "brazilsouth"
+                    CustomEndpointName,
+                    "https://westus.api.cognitive.microsoft.com",
+                    "https://westus2.api.cognitive.microsoft.com",
+                    "https://eastus.api.cognitive.microsoft.com",
+                    "https://eastus2.api.cognitive.microsoft.com",
+                    "https://westcentralus.api.cognitive.microsoft.com",
+                    "https://southcentralus.api.cognitive.microsoft.com",
+                    "https://westeurope.api.cognitive.microsoft.com",
+                    "https://northeurope.api.cognitive.microsoft.com",
+                    "https://southeastasia.api.cognitive.microsoft.com",
+                    "https://eastasia.api.cognitive.microsoft.com",
+                    "https://australiaeast.api.cognitive.microsoft.com",
+                    "https://brazilsouth.api.cognitive.microsoft.com",
+                    "https://canadacentral.api.cognitive.microsoft.com",
+                    "https://centralindia.api.cognitive.microsoft.com",
+                    "https://uksouth.api.cognitive.microsoft.com",
+                    "https://japaneast.api.cognitive.microsoft.com"
                 };
             }
         }

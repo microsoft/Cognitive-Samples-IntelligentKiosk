@@ -87,5 +87,47 @@ namespace IntelligentKioskSample.Views
         {
             SettingsHelper.Instance.RestoreMallKioskSettingsToDefaultFile();
         }
+
+        private async void KeyTestFlyoutOpened(object sender, object e)
+        {
+            this.keyTestResultTextBox.Text = "";
+
+            await (!string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey)
+                ? CallApiAndReportResult("Face API Test: ", async () => await CognitiveServiceApiKeyTester.TestFaceApiKeyAsync(
+                    SettingsHelper.Instance.FaceApiKey, SettingsHelper.Instance.FaceApiKeyEndpoint))
+                : Task.CompletedTask);
+
+            await (!string.IsNullOrEmpty(SettingsHelper.Instance.VisionApiKey)
+                ? CallApiAndReportResult("Computer Vision API Test: ", async () => await CognitiveServiceApiKeyTester.TestComputerVisionApiKeyAsync(
+                    SettingsHelper.Instance.VisionApiKey, SettingsHelper.Instance.VisionApiKeyEndpoint))
+                : Task.CompletedTask);
+
+            await (!string.IsNullOrEmpty(SettingsHelper.Instance.BingSearchApiKey)
+                ? CallApiAndReportResult("Bing Search API Test: ", async () => await CognitiveServiceApiKeyTester.TestBingSearchApiKeyAsync(SettingsHelper.Instance.BingSearchApiKey))
+                : Task.CompletedTask);
+
+            await (!string.IsNullOrEmpty(SettingsHelper.Instance.BingAutoSuggestionApiKey)
+                ? CallApiAndReportResult("Bing Auto Suggestion API Test: ", async () => await CognitiveServiceApiKeyTester.TestBingAutosuggestApiKeyAsync(SettingsHelper.Instance.BingAutoSuggestionApiKey))
+                : Task.CompletedTask);
+
+            await (!string.IsNullOrEmpty(SettingsHelper.Instance.TextAnalyticsKey)
+                ? CallApiAndReportResult("Text Analytics API Test: ", async () => await CognitiveServiceApiKeyTester.TestTextAnalyticsApiKeyAsync(
+                    SettingsHelper.Instance.TextAnalyticsKey, SettingsHelper.Instance.TextAnalyticsApiKeyEndpoint))
+                : Task.CompletedTask);
+        }
+
+        private async Task CallApiAndReportResult(string testName, Func<Task> testTask)
+        {
+            try
+            {
+                this.keyTestResultTextBox.Text += testName;
+                await testTask();
+                this.keyTestResultTextBox.Text += "Passed!\n\n";
+            }
+            catch (Exception ex)
+            {
+                this.keyTestResultTextBox.Text += string.Format("Failed! Error message: \"{0}\"\n\n", Util.GetMessageFromException(ex));
+            }
+        }
     }
 }

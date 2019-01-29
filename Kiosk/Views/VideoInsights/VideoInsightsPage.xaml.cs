@@ -235,7 +235,7 @@ namespace IntelligentKioskSample.Views
                     string personName = GetDisplayTextForPersonAsync(analyzer, item);
                     if (string.IsNullOrEmpty(personName))
                     {
-                        personName = item.Face.FaceAttributes.Gender.ToString();
+                        personName = item.Face.FaceAttributes.Gender?.ToString() ?? string.Empty;
 
                         // Add the person to the list of pending identifications so we can try again on some future frames
                         this.pendingIdentificationAttemptCount.Add(persistedFaceId, 1);

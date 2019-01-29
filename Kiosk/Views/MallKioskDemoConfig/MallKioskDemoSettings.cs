@@ -31,6 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -121,10 +122,10 @@ namespace IntelligentKioskSample.MallKioskPageConfig
             return result;
         }
 
-        public Recommendation GetGenericRecommendationForPerson(int age, string gender)
+        public Recommendation GetGenericRecommendationForPerson(int age, Gender? gender)
         {
             List<Tuple<int, Recommendation>> recommendationPool;
-            if (gender.Equals("Male", StringComparison.OrdinalIgnoreCase))
+            if (gender == Gender.Male)
             {
                 recommendationPool = this.MaleRecommendations;
             }

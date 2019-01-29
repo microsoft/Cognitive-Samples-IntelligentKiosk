@@ -137,7 +137,7 @@ namespace IntelligentKioskSample.Views
                 var wordGroups = keyPhrasesTask.Result.KeyPhrases.SelectMany(k => k).GroupBy(phrase => phrase, StringComparer.OrdinalIgnoreCase).OrderByDescending(g => g.Count()).Take(10).OrderBy(g => g.Key);
                 this.TopKeyPhrases.AddRange(wordGroups.Select(g => new KeyPhraseCount { KeyPhrase = g.Key, Count = g.Count() }));
             }
-            catch (HttpRequestException ex)
+            catch (Exception ex)
             {
                 await Util.GenericApiCallExceptionHandler(ex, "Processing error");
             }
