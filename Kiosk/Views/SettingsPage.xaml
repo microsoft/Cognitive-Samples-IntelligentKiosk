@@ -25,7 +25,7 @@
                         <Flyout>
                             <StackPanel Orientation="Vertical" Width="350">
                                 <TextBlock Text="In order for the kiosk app to make http requests to another process in the local machine, such as a Docker application running a container, Windows needs to be configured to enable it.&#x0a;&#x0a;Please run the following command from an admin command line prompt in your machine (you can select and copy the text below to the clipboard):" TextWrapping="Wrap"/>
-                                <TextBlock IsTextSelectionEnabled="True" FontStyle="Italic" Foreground="OrangeRed" Margin="0,16,0,0" Text="CheckNetIsolation.exe LoopbackExempt -a -n=microsoft.cortanaanalyticsfaceapiexplorer_8wekyb3d8bbwe" TextWrapping="Wrap"/>
+                                <TextBlock IsTextSelectionEnabled="True" FontStyle="Italic" Foreground="OrangeRed" Margin="0,16,0,0" Text="CheckNetIsolation.exe LoopbackExempt -a -n=intelligentkiosksample_csqyw2evbp0ke" TextWrapping="Wrap"/>
                             </StackPanel>
                         </Flyout>
                     </Setter.Value>
