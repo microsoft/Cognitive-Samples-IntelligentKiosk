@@ -105,6 +105,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CognitiveServiceApiKeyTester.cs" />
     <Compile Include="Controls\CenteredVerticalBarControl.xaml.cs">
       <DependentUpon>CenteredVerticalBarControl.xaml</DependentUpon>
     </Compile>

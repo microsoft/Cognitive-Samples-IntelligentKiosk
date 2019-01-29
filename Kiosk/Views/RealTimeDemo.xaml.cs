@@ -286,7 +286,7 @@ namespace IntelligentKioskSample.Views
 
                         // Update the demographics stats. We only do it for new visitors to avoid double counting. 
                         AgeDistribution genderBasedAgeDistribution = null;
-                        if (string.Compare(item.Face.FaceAttributes.Gender.ToString(), "male", StringComparison.OrdinalIgnoreCase) == 0)
+                        if (item.Face.FaceAttributes.Gender == Gender.Male)
                         {
                             this.demographics.OverallMaleCount++;
                             genderBasedAgeDistribution = this.demographics.AgeGenderDistribution.MaleDistribution;

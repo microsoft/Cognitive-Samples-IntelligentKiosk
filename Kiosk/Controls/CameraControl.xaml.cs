@@ -323,13 +323,13 @@ namespace IntelligentKioskSample.Controls
                             {
                                 // age, gender and id available
                                 faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age.GetValueOrDefault(), 
-                                    detectedFace.FaceAttributes.Gender.ToString(), (uint)Math.Round(identifiedPerson.Confidence * 100), identifiedPerson.Person.Name, uniqueId: uniqueId);
+                                    detectedFace.FaceAttributes.Gender?.ToString(), (uint)Math.Round(identifiedPerson.Confidence * 100), identifiedPerson.Person.Name, uniqueId: uniqueId);
                             }
                             else
                             {
                                 // only age and gender available
                                 faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age.GetValueOrDefault(), 
-                                    detectedFace.FaceAttributes.Gender.ToString(), 0, null, uniqueId: uniqueId);
+                                    detectedFace.FaceAttributes.Gender?.ToString(), 0, null, uniqueId: uniqueId);
                             }
 
                             faceBorder.ShowRealTimeEmotionData(detectedFace.FaceAttributes.Emotion);

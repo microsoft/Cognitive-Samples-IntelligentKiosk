@@ -65,14 +65,14 @@ namespace ServiceHelpers
             }
         }
 
-        private static string apiKeyRegion;
-        public static string ApiKeyRegion
+        private static string apiEndpoint;
+        public static string ApiEndpoint
         {
-            get { return apiKeyRegion; }
+            get { return apiEndpoint; }
             set
             {
-                var changed = apiKeyRegion != value;
-                apiKeyRegion = value;
+                var changed = apiEndpoint != value;
+                apiEndpoint = value;
                 if (changed)
                 {
                     InitializeFaceServiceClient();
@@ -87,10 +87,13 @@ namespace ServiceHelpers
 
         private static void InitializeFaceServiceClient()
         {
-            faceClient = new FaceClient(new ApiKeyServiceClientCredentials(ApiKey))
-            {
-                Endpoint = ApiKeyRegion != null ? string.Format("https://{0}.api.cognitive.microsoft.com", ApiKeyRegion) : string.Empty
-            };
+            bool hasEndpoint = !string.IsNullOrEmpty(ApiEndpoint) ? Uri.IsWellFormedUriString(ApiEndpoint, UriKind.Absolute) : false;
+            faceClient = !hasEndpoint
+                ? new FaceClient(new ApiKeyServiceClientCredentials(ApiKey))
+                : new FaceClient(new ApiKeyServiceClientCredentials(ApiKey))
+                {
+                    Endpoint = ApiEndpoint
+                };
         }
 
         private static async Task<TResponse> RunTaskWithAutoRetryOnQuotaLimitExceededError<TResponse>(Func<Task<TResponse>> action)

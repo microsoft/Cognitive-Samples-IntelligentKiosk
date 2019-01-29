@@ -77,7 +77,7 @@ namespace IntelligentKioskSample.Views.ImageCollectionInsights
                 {
                     FaceRectangle = face.FaceRectangle,
                     Age = face.FaceAttributes.Age.GetValueOrDefault(),
-                    Gender = face.FaceAttributes.Gender.ToString(),
+                    Gender = face.FaceAttributes.Gender?.ToString() ?? string.Empty,
                     TopEmotion = Util.EmotionToRankedList(face.FaceAttributes.Emotion).First().Key
                 };
 

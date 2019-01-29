@@ -231,7 +231,7 @@ namespace IntelligentKioskSample.Views
                     // Didn't find a personalized recommendation (or we don't have anyone recognized), so default to 
                     // the age/gender-based generic recommendation
                     DetectedFace face = imageWithFaces.DetectedFaces.First();
-                    recommendation = this.kioskSettings.GetGenericRecommendationForPerson((int)face.FaceAttributes.Age, face.FaceAttributes.Gender.ToString());
+                    recommendation = this.kioskSettings.GetGenericRecommendationForPerson((int)face.FaceAttributes.Age, face.FaceAttributes.Gender);
                 }
             }
             else if (numberOfPeople > 1 && imageWithFaces.DetectedFaces.Any(f => f.FaceAttributes.Age <= 12) &&
