@@ -29,11 +29,7 @@
             <AppBarButton Icon="BrowsePhotos" Label="Select Folder" Click="ProcessImagesClicked" />
 
             <CommandBar.Content>
-                <ctl:PageHeader>
-                    <ctl:PageHeader.HeaderContent>
-                        <TextBlock Text="Image Collection Insights" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
-                    </ctl:PageHeader.HeaderContent>
-                </ctl:PageHeader>
+                <TextBlock Text="Image Collection Insights" Style="{ThemeResource PageTitleTextBlockStyle}"/>
             </CommandBar.Content>
         </CommandBar>
 

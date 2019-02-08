@@ -47,7 +47,7 @@ namespace IntelligentKioskSample.Views
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    [KioskExperience(Title = "Emotion API Explorer", ImagePath = "ms-appx:/Assets/EmotionRecognition.PNG", ExperienceType = ExperienceType.Other)]
+    [KioskExperience(Title = "Emotion Explorer", ImagePath = "ms-appx:/Assets/EmotionRecognition.PNG", ExperienceType = ExperienceType.Other)]
     public sealed partial class EmotionRecognitionPage : Page
     {
         public EmotionRecognitionPage()

@@ -44,11 +44,7 @@
             <AppBarButton Icon="Undo" Label="Reset Settings" Click="OnResetSettingsClick"/>
 
             <CommandBar.Content>
-                <ctl:PageHeader>
-                    <ctl:PageHeader.HeaderContent>
-                        <TextBlock Style="{ThemeResource PageTitleTextBlockStyle}" Text="SETTINGS"/>
-                    </ctl:PageHeader.HeaderContent>
-                </ctl:PageHeader>
+                <TextBlock Text="Settings" Style="{ThemeResource PageTitleTextBlockStyle}" Margin="14,10,12,0"/>
             </CommandBar.Content>
         </CommandBar>
         

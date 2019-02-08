@@ -27,11 +27,7 @@
             <AppBarButton Icon="OpenFile" Label="Open local video" Click="FromFileClick"/>
 
             <CommandBar.Content>
-                <ctl:PageHeader>
-                    <ctl:PageHeader.HeaderContent>
-                        <TextBlock Text="REALTIME VIDEO INSIGHTS" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
-                    </ctl:PageHeader.HeaderContent>
-                </ctl:PageHeader>
+                <TextBlock Text="Realtime Video Insights" Style="{ThemeResource PageTitleTextBlockStyle}"/>
             </CommandBar.Content>
         </CommandBar>
 

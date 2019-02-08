@@ -104,11 +104,7 @@
             </AppBarButton>
 
             <CommandBar.Content>
-                <ctl:PageHeader>
-                    <ctl:PageHeader.HeaderContent>
-						<TextBlock Text="Bing Visual Search" Style="{ThemeResource PageTitleTextBlockStyle}" TextWrapping="NoWrap"/>
-                    </ctl:PageHeader.HeaderContent>
-                </ctl:PageHeader>
+                <TextBlock Text="Bing Visual Search" Style="{ThemeResource PageTitleTextBlockStyle}"/>
             </CommandBar.Content>
         </CommandBar>
 

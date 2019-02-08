@@ -14,12 +14,12 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <ctl:PageHeader x:Name="pageHeader">
-            <ctl:PageHeader.HeaderContent>
-                <TextBlock x:Name="title" Style="{ThemeResource PageTitleTextBlockStyle}" Text="Demos"/>
-            </ctl:PageHeader.HeaderContent>
-        </ctl:PageHeader>
-
+        <CommandBar VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+            <CommandBar.Content>
+                <TextBlock Text="Demos" Style="{ThemeResource PageTitleTextBlockStyle}" Margin="14, 10, 12, 0" />
+            </CommandBar.Content>
+        </CommandBar>
+        
         <GridView Margin="12,24,12,24" Grid.Row="1" 
                   EntranceNavigationTransitionInfo.IsTargetElement="True"
                   IsMultiSelectCheckBoxEnabled="False"

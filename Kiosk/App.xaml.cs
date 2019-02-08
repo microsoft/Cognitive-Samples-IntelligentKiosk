@@ -46,6 +46,7 @@ namespace IntelligentKioskSample
     using System.Diagnostics;
     using System.Threading.Tasks;
     using Views;
+    using Windows.ApplicationModel.Core;
     using Windows.Data.Xml.Dom;
     using Windows.UI.Notifications;
     /// <summary>
@@ -129,6 +130,8 @@ namespace IntelligentKioskSample
                 titleBar.ForegroundColor = Windows.UI.Colors.White;
                 titleBar.ButtonBackgroundColor = Windows.UI.Colors.Black;
                 titleBar.ButtonForegroundColor = Windows.UI.Colors.White;
+
+                CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
             }
 
             // Place our app shell in the current Window
@@ -138,7 +141,7 @@ namespace IntelligentKioskSample
             {
                 // When the navigation stack isn't restored, navigate to the first page
                 // suppressing the initial entrance animation.
-                shell.AppFrame.Navigate(typeof(LandingPage), e.Arguments, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
+                shell.AppFrame.Navigate(typeof(DemoLauncherPage), e.Arguments, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
             }
 
             // Ensure the current window is active
