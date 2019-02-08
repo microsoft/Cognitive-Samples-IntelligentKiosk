@@ -6,8 +6,7 @@
     xmlns:ctl="using:IntelligentKioskSample.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Margin="4,0,0,0">
+    mc:Ignorable="d">
 
     <Page.Resources>
         <ctl:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
@@ -57,7 +56,7 @@
             </CommandBar.Content>
         </CommandBar>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Margin="4,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition/>

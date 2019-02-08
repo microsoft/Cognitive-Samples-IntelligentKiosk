@@ -173,11 +173,13 @@ namespace IntelligentKioskSample
                 if (!(control is DemoLauncherPage || control is FaceIdentificationSetup || control is SettingsPage || control is CustomVisionSetup))
                 {
                     navView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
+                    navView.PaneToggleButtonStyle = Application.Current.Resources["NavViewToggleButtonStyle"] as Style;
                     navView.SelectedItem = null;
                 }
                 else
                 {
                     navView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                    navView.PaneToggleButtonStyle = Application.Current.Resources["NavViewToggleButtonStyleSolid"] as Style;
 
                     var menuItem = navlist.FirstOrDefault(item => item.DestPage == control.GetType());
                     if (menuItem != null && menuItem != navView.SelectedItem)
