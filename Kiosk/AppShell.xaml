@@ -18,7 +18,7 @@
         <DataTemplate x:Key="NavMenuItemTemplate">
             <NavigationViewItem Content="{Binding Label}">
                 <NavigationViewItem.Icon>
-                    <SymbolIcon Symbol="{Binding Symbol}"/>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="{Binding Glyph}"/>
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
         </DataTemplate>
@@ -27,7 +27,6 @@
     <Grid>
         <!-- Top-level navigation menu + app content -->
         <NavigationView x:Name="navView"
-                        PaneToggleButtonStyle="{StaticResource NavViewToggleButtonStyle}"             
                         MenuItemTemplate="{StaticResource NavMenuItemTemplate}" 
                         PaneDisplayMode="LeftCompact" 
                         IsPaneOpen="False" 

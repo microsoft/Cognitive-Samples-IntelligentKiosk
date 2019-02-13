@@ -19,7 +19,7 @@
                                  light, dark, or high contrast dictionary is provided. These
                                  resources should be tested with both the light and dark themes,
                                  and specific light or dark resources provided as needed. -->
-                            <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" BackgroundSource="Backdrop" TintColor="Black" TintOpacity=".6"/>
+                            <AcrylicBrush x:Key="NavigationViewDefaultPaneBackground" BackgroundSource="Backdrop" TintColor="Black" TintOpacity=".9"/>
                         </ResourceDictionary>
                         <ResourceDictionary x:Key="HighContrast">
                             <!-- Always include a "HighContrast" dictionary when you override

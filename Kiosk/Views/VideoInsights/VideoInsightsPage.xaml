@@ -23,7 +23,7 @@
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+        <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
             <AppBarButton Icon="OpenFile" Label="Open local video" Click="FromFileClick"/>
 
             <CommandBar.Content>

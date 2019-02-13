@@ -19,7 +19,7 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Grid.ColumnSpan="2">
+        <CommandBar x:Name="commandBar" Grid.ColumnSpan="2" Style="{StaticResource PageTitleCommandBarStyle}">
 
             <CommandBar.SecondaryCommands>
                 <AppBarButton x:Name="reprocessImagesButton" Label="Re-process this folder" Click="ReProcessImagesClicked" IsEnabled="False"/>

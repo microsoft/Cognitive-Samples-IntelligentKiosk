@@ -59,21 +59,21 @@ namespace IntelligentKioskSample
             {
                 new NavMenuItem()
                 {
-                    Symbol = Symbol.Home,
-                    Label = "Demos",
+                    Glyph = "\uECA5",
+                    Label = "Demo Gallery",
                     DestPage = typeof(DemoLauncherPage)
                 },
 
                 new NavMenuItem()
                 {
-                    Symbol = Symbol.Contact2,
+                    Glyph = "\uE8D4",
                     Label = "Face Identification Setup",
                     DestPage = typeof(FaceIdentificationSetup)
                 },
 
                 new NavMenuItem()
                 {
-                    Symbol = Symbol.View,
+                    Glyph = "\uE052",
                     Label = "Custom Vision Setup",
                     DestPage = typeof(CustomVisionSetup)
                 }
@@ -173,13 +173,11 @@ namespace IntelligentKioskSample
                 if (!(control is DemoLauncherPage || control is FaceIdentificationSetup || control is SettingsPage || control is CustomVisionSetup))
                 {
                     navView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftMinimal;
-                    navView.PaneToggleButtonStyle = Application.Current.Resources["NavViewToggleButtonStyle"] as Style;
                     navView.SelectedItem = null;
                 }
                 else
                 {
                     navView.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
-                    navView.PaneToggleButtonStyle = Application.Current.Resources["NavViewToggleButtonStyleSolid"] as Style;
 
                     var menuItem = navlist.FirstOrDefault(item => item.DestPage == control.GetType());
                     if (menuItem != null && menuItem != navView.SelectedItem)
