@@ -14,9 +14,9 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <CommandBar VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+        <CommandBar>
             <CommandBar.Content>
-                <TextBlock Text="Demos" Style="{ThemeResource PageTitleTextBlockStyle}" Margin="14, 10, 12, 0" />
+                <TextBlock Text="Demo Gallery" Style="{ThemeResource PageTitleTextBlockStyle}" Margin="14, 10, 12, 0" />
             </CommandBar.Content>
         </CommandBar>
         

@@ -42,7 +42,7 @@ namespace IntelligentKioskSample
     public class NavMenuItem
     {
         public string Label { get; set; }
-        public Symbol Symbol { get; set; }
+        public string Glyph { get; set; }
 
         public Type DestPage { get; set; }
         public object Arguments { get; set; }

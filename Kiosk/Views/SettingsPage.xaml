@@ -40,7 +40,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+        <CommandBar x:Name="commandBar" DefaultLabelPosition="Right" >
             <AppBarButton Icon="Undo" Label="Reset Settings" Click="OnResetSettingsClick"/>
 
             <CommandBar.Content>

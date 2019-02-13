@@ -19,7 +19,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+        <CommandBar x:Name="commandBar" DefaultLabelPosition="Right">
            
             <AppBarButton Icon="Play" Label="Train Group" Click="OnStartTrainingClicked" />
 
@@ -56,7 +56,7 @@
             </CommandBar.Content>
         </CommandBar>
 
-        <Grid Grid.Row="1" Margin="4,0,0,0">
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition/>

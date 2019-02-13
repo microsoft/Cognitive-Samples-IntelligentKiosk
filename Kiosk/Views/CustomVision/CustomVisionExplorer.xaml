@@ -20,7 +20,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
+        <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
            
             <AppBarButton Icon="Video" Label="WebCam" x:Name="webCamButton" Click="OnWebCamButtonClicked"/>
             
