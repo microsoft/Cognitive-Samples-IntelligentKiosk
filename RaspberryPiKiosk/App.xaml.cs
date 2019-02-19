@@ -86,9 +86,9 @@ namespace IntelligentKioskSample
                 SettingsHelper.Instance.SettingsChanged += (target, args) =>
                 {
                     FaceServiceHelper.ApiKey = SettingsHelper.Instance.FaceApiKey;
-                    FaceServiceHelper.ApiKeyRegion = SettingsHelper.Instance.FaceApiKeyRegion;
+                    FaceServiceHelper.ApiEndpoint = SettingsHelper.Instance.FaceApiKeyEndpoint;
                     VisionServiceHelper.ApiKey = SettingsHelper.Instance.VisionApiKey;
-                    VisionServiceHelper.ApiKeyRegion = SettingsHelper.Instance.VisionApiKeyRegion;
+                    VisionServiceHelper.ApiEndpoint = SettingsHelper.Instance.VisionApiKeyEndpoint;
                     ImageAnalyzer.PeopleGroupsUserDataFilter = SettingsHelper.Instance.WorkspaceKey;
                     FaceListManager.FaceListsUserDataFilter = SettingsHelper.Instance.WorkspaceKey;
                     CoreUtil.MinDetectableFaceCoveragePercentage = SettingsHelper.Instance.MinDetectableFaceCoveragePercentage;

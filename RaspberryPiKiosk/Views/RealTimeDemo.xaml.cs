@@ -33,8 +33,7 @@
 
 using Emmellsoft.IoT.Rpi.SenseHat;
 using IntelligentKioskSample.Controls;
-using Microsoft.ProjectOxford.Common.Contract;
-using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
@@ -64,9 +63,8 @@ namespace IntelligentKioskSample.Views
         private bool isProcessingLoopInProgress;
         private bool isProcessingPhoto;
 
-        private IEnumerable<Emotion> lastEmotionSample;
-        private IEnumerable<Face> lastDetectedFaceSample;
-        private IEnumerable<Tuple<Face, IdentifiedPerson>> lastIdentifiedPersonSample;
+        private IEnumerable<DetectedFace> lastDetectedFaceSample;
+        private IEnumerable<Tuple<DetectedFace, IdentifiedPerson>> lastIdentifiedPersonSample;
         private IEnumerable<SimilarFaceMatch> lastSimilarPersistedFaceSample;
 
         private DemographicsData demographics;
@@ -145,7 +143,6 @@ namespace IntelligentKioskSample.Views
                 this.lastDetectedFaceSample = null;
                 this.lastIdentifiedPersonSample = null;
                 this.lastSimilarPersistedFaceSample = null;
-                this.lastEmotionSample = null;
                 this.debugText.Text = "";
 
                 this.isProcessingPhoto = false;
@@ -192,7 +189,7 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                this.lastIdentifiedPersonSample = e.DetectedFaces.Select(f => new Tuple<Face, IdentifiedPerson>(f, e.IdentifiedPersons.FirstOrDefault(p => p.FaceId == f.FaceId)));
+                this.lastIdentifiedPersonSample = e.DetectedFaces.Select(f => new Tuple<DetectedFace, IdentifiedPerson>(f, e.IdentifiedPersons.FirstOrDefault(p => p.FaceId == f.FaceId)));
             }
         }
 
@@ -218,7 +215,7 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                EmotionScores averageScores = new EmotionScores
+                Emotion averageScores = new Emotion
                 {
                     Happiness = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Happiness),
                     Anger = e.DetectedFaces.Average(f => f.FaceAttributes.Emotion.Anger),
@@ -236,7 +233,7 @@ namespace IntelligentKioskSample.Views
 
         private void ShowTimelineFeedbackForNoFaces()
         {
-            this.emotionDataTimelineControl.DrawEmotionData(new EmotionScores { Neutral = 1 });
+            this.emotionDataTimelineControl.DrawEmotionData(new Emotion { Neutral = 1 });
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -284,7 +281,8 @@ namespace IntelligentKioskSample.Views
                 foreach (var item in this.lastSimilarPersistedFaceSample)
                 {
                     Visitor visitor;
-                    if (this.visitors.TryGetValue(item.SimilarPersistedFace.PersistedFaceId, out visitor))
+                    Guid persistedFaceId = item.SimilarPersistedFace.PersistedFaceId.GetValueOrDefault();
+                    if (this.visitors.TryGetValue(persistedFaceId, out visitor))
                     {
                         visitor.Count++;
                     }
@@ -292,13 +290,13 @@ namespace IntelligentKioskSample.Views
                     {
                         demographicsChanged = true;
 
-                        visitor = new Visitor { UniqueId = item.SimilarPersistedFace.PersistedFaceId, Count = 1 };
+                        visitor = new Visitor { UniqueId = persistedFaceId, Count = 1 };
                         this.visitors.Add(visitor.UniqueId, visitor);
                         this.demographics.Visitors.Add(visitor);
 
                         // Update the demographics stats. We only do it for new visitors to avoid double counting. 
                         AgeDistribution genderBasedAgeDistribution = null;
-                        if (string.Compare(item.Face.FaceAttributes.Gender, "male", StringComparison.OrdinalIgnoreCase) == 0)
+                        if (item.Face.FaceAttributes.Gender == Gender.Male)
                         {
                             this.demographics.OverallMaleCount++;
                             genderBasedAgeDistribution = this.demographics.AgeGenderDistribution.MaleDistribution;
@@ -427,17 +425,7 @@ namespace IntelligentKioskSample.Views
             this.cameraHostGrid.Width = this.cameraHostGrid.ActualHeight * (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
         }
 
-        public EmotionScores GetLastEmotionForFace(BitmapBounds faceBox)
-        {
-            if (this.lastEmotionSample == null || !this.lastEmotionSample.Any())
-            {
-                return null;
-            }
-
-            return this.lastEmotionSample.OrderBy(f => Math.Abs(faceBox.X - f.FaceRectangle.Left) + Math.Abs(faceBox.Y - f.FaceRectangle.Top)).First().Scores;
-        }
-
-        public Face GetLastFaceAttributesForFace(BitmapBounds faceBox)
+        public DetectedFace GetLastFaceAttributesForFace(BitmapBounds faceBox)
         {
             if (this.lastDetectedFaceSample == null || !this.lastDetectedFaceSample.Any())
             {
@@ -454,7 +442,7 @@ namespace IntelligentKioskSample.Views
                 return null;
             }
 
-            Tuple<Face, IdentifiedPerson> match =
+            Tuple<DetectedFace, IdentifiedPerson> match =
                 this.lastIdentifiedPersonSample.Where(f => Util.AreFacesPotentiallyTheSame(faceBox, f.Item1.FaceRectangle))
                                                .OrderBy(f => Math.Abs(faceBox.X - f.Item1.FaceRectangle.Left) + Math.Abs(faceBox.Y - f.Item1.FaceRectangle.Top)).FirstOrDefault();
             if (match != null)
@@ -465,7 +453,7 @@ namespace IntelligentKioskSample.Views
             return null;
         }
 
-        public SimilarPersistedFace GetLastSimilarPersistedFaceForFace(BitmapBounds faceBox)
+        public SimilarFace GetLastSimilarPersistedFaceForFace(BitmapBounds faceBox)
         {
             if (this.lastSimilarPersistedFaceSample == null || !this.lastSimilarPersistedFaceSample.Any())
             {

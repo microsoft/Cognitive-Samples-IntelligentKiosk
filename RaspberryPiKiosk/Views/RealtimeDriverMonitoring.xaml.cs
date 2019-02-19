@@ -32,7 +32,7 @@
 // 
 
 using Emmellsoft.IoT.Rpi.SenseHat;
-using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
 using System.ComponentModel;
@@ -267,17 +267,18 @@ namespace IntelligentKioskSample.Views
                 }
                 else
                 {
-                    if (faceMatch.Face.FaceAttributes.Gender == "male")
+                    switch (faceMatch.Face.FaceAttributes.Gender)
                     {
-                        name = "Unknown male";
-                    }
-                    else if (faceMatch.Face.FaceAttributes.Gender == "female")
-                    {
-                        name = "Unknown female";
+                        case Gender.Male:
+                            name = "Unknown male";
+                            break;
+                        case Gender.Female:
+                            name = "Unknown female";
+                            break;
                     }
                 }
 
-                this.driverId.Text = string.Format("{0}\nFace Id: {1}", name, faceMatch.SimilarPersistedFace.PersistedFaceId.ToString("N").Substring(0, 4));
+                this.driverId.Text = string.Format("{0}\nFace Id: {1}", name, faceMatch.SimilarPersistedFace.PersistedFaceId.GetValueOrDefault().ToString("N").Substring(0, 4));
             }
 
             this.isProcessingDriverId = false;
@@ -309,7 +310,7 @@ namespace IntelligentKioskSample.Views
             this.UpdateLEDLights();
         }
 
-        private void ProcessHeadPose(Face f)
+        private void ProcessHeadPose(DetectedFace f)
         {
             headPoseDeviation = Math.Abs(f.FaceAttributes.HeadPose.Yaw);
 
@@ -322,7 +323,7 @@ namespace IntelligentKioskSample.Views
             }
         }
 
-        private void ProcessMouth(Face f)
+        private void ProcessMouth(DetectedFace f)
         {            
             double mouthWidth = Math.Abs(f.FaceLandmarks.MouthRight.X - f.FaceLandmarks.MouthLeft.X);
             double mouthHeight = Math.Abs(f.FaceLandmarks.UpperLipBottom.Y - f.FaceLandmarks.UnderLipTop.Y);
@@ -338,7 +339,7 @@ namespace IntelligentKioskSample.Views
             }
         }
 
-        private void ProcessEyes(Face f)
+        private void ProcessEyes(DetectedFace f)
         {
             double leftEyeWidth = Math.Abs(f.FaceLandmarks.EyeLeftInner.X - f.FaceLandmarks.EyeLeftOuter.X);
             double leftEyeHeight = Math.Abs(f.FaceLandmarks.EyeLeftBottom.Y - f.FaceLandmarks.EyeLeftTop.Y);

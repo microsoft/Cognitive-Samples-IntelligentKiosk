@@ -8,6 +8,32 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <ctl:StringMatchToVisibilityConverter x:Key="StringMatchToVisibilityConverter"/>
+        <ctl:StringContainsToVisibilityConverter x:Key="StringContainsToVisibilityConverter"/>
+        <x:String x:Key="CustomEndpointName">Custom</x:String>
+        <x:String x:Key="LocalHost">://localhost</x:String>
+        <Style TargetType="Button" x:Key="LocalHostSetupButtonStyle">
+            <Style.Setters>
+                <Setter Property="Foreground" Value="OrangeRed"/>
+                <Setter Property="Margin" Value="0,0,0,-8"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="VerticalAlignment" Value="Bottom"/>
+                <Setter Property="Content" Value="Click here for extra setup steps&#x0a;when targeting localhost endpoints."/>
+                <Setter Property="Flyout">
+                    <Setter.Value>
+                        <Flyout>
+                            <StackPanel Orientation="Vertical" Width="350">
+                                <TextBlock Text="In order for the kiosk app to make http requests to another process in the local machine, such as a Docker application running a container, Windows needs to be configured to enable it.&#x0a;&#x0a;Please run the following command from an admin command line prompt in your machine (you can select and copy the text below to the clipboard):" TextWrapping="Wrap"/>
+                                <TextBlock IsTextSelectionEnabled="True" FontStyle="Italic" Foreground="OrangeRed" Margin="0,16,0,0" Text="CheckNetIsolation.exe LoopbackExempt -a -n=intelligentkiosksample_csqyw2evbp0ke" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Flyout>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+        </Style>
+    </Page.Resources>
+    
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
           EntranceNavigationTransitionInfo.IsTargetElement="True">
         <Grid.RowDefinitions>
@@ -50,18 +76,41 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Computer Vision API Key" Password="{Binding VisionApiKey, Mode=TwoWay}" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Region" ItemsSource="{Binding AvailableApiRegions}" SelectedItem="{Binding VisionApiKeyRegion, Mode=TwoWay}"/>
+                        <PasswordBox Header="Face API Key" Password="{Binding FaceApiKey, Mode=TwoWay}" VerticalAlignment="Top" />
+                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
+                                  x:Name="faceApiEndpointCombobox"
+                                  ItemsSource="{Binding AvailableApiEndpoints}" 
+                                  SelectedItem="{Binding BindingFaceApiKeyEndpoint, Mode=TwoWay}"/>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal"
+                                    Visibility="{Binding ElementName=faceApiEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
+                            <TextBox Header="Custom Face API Endpoint" MaxWidth="450" x:Name="faceApiEndpointTextBox"
+                                 PlaceholderText="Custom endpoint (e.g. https://virginia.api.cognitive.microsoft.us)" 
+                                 Text="{Binding CustomFaceApiEndpoint, Mode=TwoWay}" />
+                            <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=faceApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
+                        </StackPanel>
+
                     </Grid>
 
                     <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Face API Key" Password="{Binding FaceApiKey, Mode=TwoWay}" VerticalAlignment="Top" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Region" ItemsSource="{Binding AvailableApiRegions}" SelectedItem="{Binding FaceApiKeyRegion, Mode=TwoWay}"/>
+                        <PasswordBox Header="Computer Vision API Key" Password="{Binding VisionApiKey, Mode=TwoWay}" />
+                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355" 
+                                  x:Name="visionApiEndpointCombobox"
+                                  ItemsSource="{Binding AvailableApiEndpoints}" 
+                                  SelectedItem="{Binding BindingVisionApiKeyEndpoint, Mode=TwoWay}"/>
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" 
+                                    Visibility="{Binding ElementName=visionApiEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
+                            <TextBox Header="Custom Computer Vision API Endpoint" MaxWidth="450" x:Name="computerVisionApiEndpointTextBox"
+                                 PlaceholderText="Custom endpoint (e.g. https://virginia.api.cognitive.microsoft.us)" 
+                                 Text="{Binding CustomVisionApiEndpoint, Mode=TwoWay}" />
+                            <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=computerVisionApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
+                        </StackPanel>
                     </Grid>
 
                 </StackPanel>
