@@ -32,9 +32,6 @@
 // 
 
 using ServiceHelpers;
-using Microsoft.ProjectOxford.Common;
-using Microsoft.ProjectOxford.Face;
-using Microsoft.ProjectOxford.Face.Contract;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -48,6 +45,8 @@ using Windows.Storage.Streams;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.Rest;
 
 namespace IntelligentKioskSample
 {
@@ -64,22 +63,34 @@ namespace IntelligentKioskSample
         {
             string errorDetails = ex.Message;
 
-            FaceAPIException faceApiException = ex as FaceAPIException;
-            if (faceApiException?.ErrorMessage != null)
+            APIErrorException faceApiException = ex as APIErrorException;
+            if (faceApiException?.Message != null)
             {
-                errorDetails = faceApiException.ErrorMessage;
+                errorDetails = faceApiException.Message;
             }
 
-            Microsoft.ProjectOxford.Common.ClientException commonException = ex as Microsoft.ProjectOxford.Common.ClientException;
-            if (commonException?.Error?.Message != null)
+            var visionException = ex as Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ComputerVisionErrorException;
+            if (!string.IsNullOrEmpty(visionException?.Body?.Message))
             {
-                errorDetails = commonException.Error.Message;
+                errorDetails = visionException.Body.Message;
+            }
+
+            HttpOperationException httpException = ex as HttpOperationException;
+            if (httpException?.Response?.ReasonPhrase != null)
+            {
+                string errorReason = $"\"{httpException.Response.ReasonPhrase}\".";
+                if (httpException?.Response?.Content != null)
+                {
+                    errorReason += $" Some more details: {httpException.Response.Content}";
+                }
+
+                errorDetails = $"{ex.Message}. The error was {errorReason}.";
             }
 
             return errorDetails;
         }
 
-        internal static Face FindFaceClosestToRegion(IEnumerable<Face> faces, BitmapBounds region)
+        internal static DetectedFace FindFaceClosestToRegion(IEnumerable<DetectedFace> faces, BitmapBounds region)
         {
             return faces?.Where(f => Util.AreFacesPotentiallyTheSame(region, f.FaceRectangle))
                                   .OrderBy(f => Math.Abs(region.X - f.FaceRectangle.Left) + Math.Abs(region.Y - f.FaceRectangle.Top)).FirstOrDefault();
@@ -109,7 +120,24 @@ namespace IntelligentKioskSample
             return deviceInfo.OrderBy(d => d.Name).Select(d => d.Name);
         }
 
-		internal static async Task<byte[]> GetPixelBytesFromSoftwareBitmapAsync(SoftwareBitmap softwareBitmap)
+        public static KeyValuePair<string, double>[] EmotionToRankedList(Emotion emotion)
+        {
+            return new KeyValuePair<string, double>[]
+            {
+                new KeyValuePair<string, double>("Anger", emotion.Anger),
+                new KeyValuePair<string, double>("Contempt", emotion.Contempt),
+                new KeyValuePair<string, double>("Disgust", emotion.Disgust),
+                new KeyValuePair<string, double>("Fear", emotion.Fear),
+                new KeyValuePair<string, double>("Happiness", emotion.Happiness),
+                new KeyValuePair<string, double>("Neutral", emotion.Neutral),
+                new KeyValuePair<string, double>("Sadness", emotion.Sadness),
+                new KeyValuePair<string, double>("Surprise", emotion.Surprise)
+            }
+            .OrderByDescending(e => e.Value)
+            .ToArray();
+        }
+
+        internal static async Task<byte[]> GetPixelBytesFromSoftwareBitmapAsync(SoftwareBitmap softwareBitmap)
 		{
 			using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
 			{

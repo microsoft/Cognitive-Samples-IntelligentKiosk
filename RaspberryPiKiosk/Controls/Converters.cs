@@ -53,4 +53,42 @@ namespace IntelligentKioskSample.Controls
             return ((Visibility)value) == Visibility.Visible ? true : false;
         }
     }
+
+    public class StringMatchToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null && parameter != null &&
+                string.Equals((string)value, (string)parameter, StringComparison.OrdinalIgnoreCase))
+            {
+                return Visibility.Visible;
+            }
+
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return value;
+        }
+    }
+
+    public class StringContainsToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null && parameter != null &&
+                ((string)value).Contains((string)parameter, StringComparison.OrdinalIgnoreCase))
+            {
+                return Visibility.Visible;
+            }
+
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return value;
+        }
+    }
 }

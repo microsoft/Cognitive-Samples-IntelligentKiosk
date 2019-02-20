@@ -32,7 +32,7 @@
 // 
 
 using Emmellsoft.IoT.Rpi.SenseHat;
-using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using RPi.SenseHat.Demo.Demos;
 using ServiceHelpers;
 using System;
@@ -161,8 +161,8 @@ namespace IntelligentKioskSample.Views
 
         private void UpdateGreeting(ImageAnalyzer img)
         {
-            Face mainFace = img.DetectedFaces.First();
-            int age = (int)Math.Round(mainFace.FaceAttributes.Age);
+            DetectedFace mainFace = img.DetectedFaces.First();
+            int age = (int)Math.Round(mainFace.FaceAttributes.Age.GetValueOrDefault());
 
             string name = "";
             if (img.IdentifiedPersons.Any())
@@ -176,7 +176,7 @@ namespace IntelligentKioskSample.Views
 
             if (string.IsNullOrEmpty(name))
             {
-                if (img.DetectedFaces.First().FaceAttributes.Gender == "male")
+                if (img.DetectedFaces.First().FaceAttributes.Gender.GetValueOrDefault() == Gender.Male)
                 {
                     name = "Male";
                 }

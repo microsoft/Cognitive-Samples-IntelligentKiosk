@@ -44,7 +44,6 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Emmellsoft.IoT.Rpi.SenseHat;
 using RPi.SenseHat.Demo.Demos;
-using Microsoft.ProjectOxford.Face.Contract;
 using Windows.UI;
 
 namespace IntelligentKioskSample.Views

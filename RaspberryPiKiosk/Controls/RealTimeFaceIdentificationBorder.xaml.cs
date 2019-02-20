@@ -31,7 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Common.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -56,9 +56,9 @@ namespace IntelligentKioskSample.Controls
             this.faceRectangle.Visibility = Visibility.Visible;
         }
 
-        public void ShowRealTimeEmotionData(EmotionScores scores)
+        public void ShowRealTimeEmotionData(Emotion emotion)
         {
-            this.emotionEmojiControl.UpdateEmotion(scores);
+            this.emotionEmojiControl.UpdateEmotion(emotion);
         }
 
         public void ShowIdentificationData(double age, string gender, uint confidence, string name = null, string uniqueId = null)

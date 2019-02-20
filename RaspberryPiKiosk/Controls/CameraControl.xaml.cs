@@ -31,8 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.ProjectOxford.Common.Contract;
-using Microsoft.ProjectOxford.Face.Contract;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
@@ -64,10 +63,9 @@ namespace IntelligentKioskSample.Controls
 
     public interface IRealTimeDataProvider
     {
-        EmotionScores GetLastEmotionForFace(BitmapBounds faceBox);
-        Face GetLastFaceAttributesForFace(BitmapBounds faceBox);
+        Microsoft.Azure.CognitiveServices.Vision.Face.Models.DetectedFace GetLastFaceAttributesForFace(BitmapBounds faceBox);
         IdentifiedPerson GetLastIdentifiedPersonForFace(BitmapBounds faceBox);
-        SimilarPersistedFace GetLastSimilarPersistedFaceForFace(BitmapBounds faceBox);
+        SimilarFace GetLastSimilarPersistedFaceForFace(BitmapBounds faceBox);
     }
 
     public sealed partial class CameraControl : UserControl
@@ -127,7 +125,7 @@ namespace IntelligentKioskSample.Controls
         private ThreadPoolTimer frameProcessingTimer;
         private SemaphoreSlim frameProcessingSemaphore = new SemaphoreSlim(1);
         private AutoCaptureState autoCaptureState;
-        private IEnumerable<DetectedFace> detectedFacesFromPreviousFrame;
+        private IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> detectedFacesFromPreviousFrame;
         private DateTime timeSinceWaitingForStill;
         private DateTime lastTimeWhenAFaceWasDetected;
 
@@ -244,7 +242,7 @@ namespace IntelligentKioskSample.Controls
 
             try
             {
-                IEnumerable<DetectedFace> faces = null;
+                IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> faces = null;
 
                 // Create a VideoFrame object specifying the pixel format we want our capture image to be (NV12 bitmap in this case).
                 // GetPreviewFrame will convert the native webcam frame into this format.
@@ -289,7 +287,7 @@ namespace IntelligentKioskSample.Controls
             }
         }
 
-        private void ShowFaceTrackingVisualization(Windows.Foundation.Size framePixelSize, IEnumerable<DetectedFace> detectedFaces)
+        private void ShowFaceTrackingVisualization(Windows.Foundation.Size framePixelSize, IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> detectedFaces)
         {
             this.FaceTrackingVisualizationCanvas.Children.Clear();
 
@@ -302,7 +300,7 @@ namespace IntelligentKioskSample.Controls
                 double widthScale = framePixelSize.Width / actualWidth;
                 double heightScale = framePixelSize.Height / actualHeight;
 
-                foreach (DetectedFace face in detectedFaces)
+                foreach (Windows.Media.FaceAnalysis.DetectedFace face in detectedFaces)
                 {
                     RealTimeFaceIdentificationBorder faceBorder = new RealTimeFaceIdentificationBorder();
                     this.FaceTrackingVisualizationCanvas.Children.Add(faceBorder);
@@ -311,20 +309,14 @@ namespace IntelligentKioskSample.Controls
 
                     if (this.realTimeDataProvider != null)
                     {
-                        EmotionScores lastEmotion = this.realTimeDataProvider.GetLastEmotionForFace(face.FaceBox);
-                        if (lastEmotion != null)
-                        {
-                            faceBorder.ShowRealTimeEmotionData(lastEmotion);
-                        }
-
-                        Face detectedFace = this.realTimeDataProvider.GetLastFaceAttributesForFace(face.FaceBox);
+                        Microsoft.Azure.CognitiveServices.Vision.Face.Models.DetectedFace detectedFace = this.realTimeDataProvider.GetLastFaceAttributesForFace(face.FaceBox);
                         IdentifiedPerson identifiedPerson = this.realTimeDataProvider.GetLastIdentifiedPersonForFace(face.FaceBox);
-                        SimilarPersistedFace similarPersistedFace = this.realTimeDataProvider.GetLastSimilarPersistedFaceForFace(face.FaceBox);
+                        SimilarFace similarPersistedFace = this.realTimeDataProvider.GetLastSimilarPersistedFaceForFace(face.FaceBox);
 
                         string uniqueId = null;
                         if (similarPersistedFace != null)
                         {
-                            uniqueId = similarPersistedFace.PersistedFaceId.ToString("N").Substring(0, 4);
+                            uniqueId = similarPersistedFace.PersistedFaceId.GetValueOrDefault().ToString("N").Substring(0, 4);
                         }
 
                         if (detectedFace != null && detectedFace.FaceAttributes != null)
@@ -332,13 +324,17 @@ namespace IntelligentKioskSample.Controls
                             if (identifiedPerson != null && identifiedPerson.Person != null)
                             {
                                 // age, gender and id available
-                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age, detectedFace.FaceAttributes.Gender, (uint)Math.Round(identifiedPerson.Confidence * 100), identifiedPerson.Person.Name, uniqueId: uniqueId);
+                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age.GetValueOrDefault(), 
+                                    detectedFace.FaceAttributes.Gender?.ToString(), (uint)Math.Round(identifiedPerson.Confidence * 100), identifiedPerson.Person.Name, uniqueId: uniqueId);
                             }
                             else
                             {
                                 // only age and gender available
-                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age, detectedFace.FaceAttributes.Gender, 0, null, uniqueId: uniqueId);
+                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age.GetValueOrDefault(), 
+                                    detectedFace.FaceAttributes.Gender?.ToString(), 0, null, uniqueId: uniqueId);
                             }
+
+                            faceBorder.ShowRealTimeEmotionData(detectedFace.FaceAttributes.Emotion);
                         }
                         else if (identifiedPerson != null && identifiedPerson.Person != null)
                         {
@@ -364,7 +360,7 @@ namespace IntelligentKioskSample.Controls
             }
         }
 
-        private async void UpdateAutoCaptureState(IEnumerable<DetectedFace> detectedFaces)
+        private async void UpdateAutoCaptureState(IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> detectedFaces)
         {
             const int IntervalBeforeCheckingForStill = 500;
             const int IntervalWithoutFacesBeforeRevertingToWaitingForFaces = 3;
@@ -448,7 +444,7 @@ namespace IntelligentKioskSample.Controls
             this.OnAutoCaptureStateChanged(this.autoCaptureState);
         }
 
-        private bool AreFacesStill(IEnumerable<DetectedFace> detectedFacesFromPreviousFrame, IEnumerable<DetectedFace> detectedFacesFromCurrentFrame)
+        private bool AreFacesStill(IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> detectedFacesFromPreviousFrame, IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> detectedFacesFromCurrentFrame)
         {
             int horizontalMovementThreshold = (int)(videoProperties.Width * 0.02);
             int verticalMovementThreshold = (int)(videoProperties.Height * 0.02);
@@ -456,7 +452,7 @@ namespace IntelligentKioskSample.Controls
             int numStillFaces = 0;
             int totalFacesInPreviousFrame = detectedFacesFromPreviousFrame.Count();
 
-            foreach (DetectedFace faceInPreviousFrame in detectedFacesFromPreviousFrame)
+            foreach (Windows.Media.FaceAnalysis.DetectedFace faceInPreviousFrame in detectedFacesFromPreviousFrame)
             {
                 if (numStillFaces > 0 && numStillFaces >= totalFacesInPreviousFrame / 2)
                 {

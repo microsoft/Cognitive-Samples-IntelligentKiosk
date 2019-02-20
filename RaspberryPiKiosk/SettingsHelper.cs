@@ -41,6 +41,9 @@ namespace IntelligentKioskSample
 {
     internal class SettingsHelper : INotifyPropertyChanged
     {
+        public static readonly string DefaultApiEndpoint = "https://westus.api.cognitive.microsoft.com";
+        public static readonly string CustomEndpointName = "Custom";
+
         public event EventHandler SettingsChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -103,10 +106,10 @@ namespace IntelligentKioskSample
                 this.FaceApiKey = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["FaceApiKeyRegion"];
+            value = ApplicationData.Current.RoamingSettings.Values["FaceApiKeyEndpoint"];
             if (value != null)
             {
-                this.FaceApiKeyRegion = value.ToString();
+                this.FaceApiKeyEndpoint = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["VisionApiKey"];
@@ -115,10 +118,10 @@ namespace IntelligentKioskSample
                 this.VisionApiKey = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["VisionApiKeyRegion"];
+            value = ApplicationData.Current.RoamingSettings.Values["VisionApiKeyEndpoint"];
             if (value != null)
             {
-                this.VisionApiKeyRegion = value.ToString();
+                this.VisionApiKeyEndpoint = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["WorkspaceKey"];
@@ -190,14 +193,40 @@ namespace IntelligentKioskSample
             }
         }
 
-        private string faceApiKeyRegion = string.Empty;
-        public string FaceApiKeyRegion
+        private string faceApiKeyEndpoint = DefaultApiEndpoint;
+        public string FaceApiKeyEndpoint
         {
-            get { return this.faceApiKeyRegion; }
+            get
+            {
+                return string.Equals(this.faceApiKeyEndpoint, SettingsHelper.CustomEndpointName, StringComparison.OrdinalIgnoreCase)
+                    ? this.customFaceApiEndpoint
+                    : this.faceApiKeyEndpoint;
+            }
             set
             {
-                this.faceApiKeyRegion = value;
-                this.OnSettingChanged("FaceApiKeyRegion", value);
+                this.faceApiKeyEndpoint = value;
+                this.OnSettingChanged("FaceApiKeyEndpoint", value);
+            }
+        }
+
+        private string customFaceApiEndpoint = string.Empty;
+        public string CustomFaceApiEndpoint
+        {
+            get { return this.customFaceApiEndpoint; }
+            set
+            {
+                this.customFaceApiEndpoint = value;
+                this.OnSettingChanged("CustomFaceApiEndpoint", value);
+            }
+        }
+
+        public string BindingFaceApiKeyEndpoint
+        {
+            get { return this.faceApiKeyEndpoint; }
+            set
+            {
+                this.faceApiKeyEndpoint = value;
+                this.OnSettingChanged("FaceApiKeyEndpoint", value);
             }
         }
 
@@ -212,14 +241,40 @@ namespace IntelligentKioskSample
             }
         }
 
-        private string visionApiKeyRegion = string.Empty;
-        public string VisionApiKeyRegion
+        private string visionApiKeyEndpoint = DefaultApiEndpoint;
+        public string VisionApiKeyEndpoint
         {
-            get { return this.visionApiKeyRegion; }
+            get
+            {
+                return string.Equals(this.visionApiKeyEndpoint, SettingsHelper.CustomEndpointName, StringComparison.OrdinalIgnoreCase)
+                    ? this.customVisionApiEndpoint
+                    : this.visionApiKeyEndpoint;
+            }
             set
             {
-                this.visionApiKeyRegion = value;
-                this.OnSettingChanged("VisionApiKeyRegion", value);
+                this.visionApiKeyEndpoint = value;
+                this.OnSettingChanged("VisionApiKeyEndpoint", value);
+            }
+        }
+
+        public string BindingVisionApiKeyEndpoint
+        {
+            get { return this.visionApiKeyEndpoint; }
+            set
+            {
+                this.visionApiKeyEndpoint = value;
+                this.OnSettingChanged("VisionApiKeyEndpoint", value);
+            }
+        }
+
+        private string customVisionApiEndpoint = string.Empty;
+        public string CustomVisionApiEndpoint
+        {
+            get { return this.customVisionApiEndpoint; }
+            set
+            {
+                this.customVisionApiEndpoint = value;
+                this.OnSettingChanged("CustomVisionApiEndpoint", value);
             }
         }
 
@@ -289,25 +344,29 @@ namespace IntelligentKioskSample
             }
         }
 
-        public string[] AvailableApiRegions
+        public string[] AvailableApiEndpoints
         {
             get
             {
                 return new string[]
                 {
-                    "westus",
-                    "westus2",
-                    "eastus",
-                    "eastus2",
-                    "westcentralus",
-                    "southcentralus",
-                    "westeurope",
-                    "northeurope",
-                    "southeastasia",
-                    "eastasia",
-                    "japaneast",
-                    "australiaeast",
-                    "brazilsouth"
+                    CustomEndpointName,
+                    "https://westus.api.cognitive.microsoft.com",
+                    "https://westus2.api.cognitive.microsoft.com",
+                    "https://eastus.api.cognitive.microsoft.com",
+                    "https://eastus2.api.cognitive.microsoft.com",
+                    "https://westcentralus.api.cognitive.microsoft.com",
+                    "https://southcentralus.api.cognitive.microsoft.com",
+                    "https://westeurope.api.cognitive.microsoft.com",
+                    "https://northeurope.api.cognitive.microsoft.com",
+                    "https://southeastasia.api.cognitive.microsoft.com",
+                    "https://eastasia.api.cognitive.microsoft.com",
+                    "https://australiaeast.api.cognitive.microsoft.com",
+                    "https://brazilsouth.api.cognitive.microsoft.com",
+                    "https://canadacentral.api.cognitive.microsoft.com",
+                    "https://centralindia.api.cognitive.microsoft.com",
+                    "https://uksouth.api.cognitive.microsoft.com",
+                    "https://japaneast.api.cognitive.microsoft.com"
                 };
             }
         }
