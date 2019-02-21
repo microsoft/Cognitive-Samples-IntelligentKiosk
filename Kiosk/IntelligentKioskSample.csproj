@@ -98,8 +98,17 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Assets\RealtimeObjectDetection.png" />
+    <Content Include="Assets\simple_fruits.onnx" />
+    <Content Include="Assets\mixed_items.onnx" />
     <None Include="IntelligentKioskSample_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <Content Include="Views\CustomVision\BuiltInClassificationModels.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\CustomVision\BuiltInObjectDetectionModels.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -112,6 +121,9 @@
     <Compile Include="Controls\Converters.cs" />
     <Compile Include="Controls\EmotionToColoredBar.xaml.cs">
       <DependentUpon>EmotionToColoredBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TagScoreControl.xaml.cs">
+      <DependentUpon>TagScoreControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\OCRBorder.xaml.cs">
       <DependentUpon>OCRBorder.xaml</DependentUpon>
@@ -168,6 +180,7 @@
     <Compile Include="Controls\ImageWithFaceBorderUserControl.xaml.cs">
       <DependentUpon>ImageWithFaceBorderUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\CustomVisionModelData.cs" />
     <Compile Include="NavMenuItem.cs" />
     <Compile Include="SettingsHelper.cs" />
     <Compile Include="Util.cs" />
@@ -177,9 +190,12 @@
     <Compile Include="Views\BingVisualSearch.xaml.cs">
       <DependentUpon>BingVisualSearch.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CustomVision\CustomObjectDetectionModel.cs" />
+    <Compile Include="Views\CustomVision\CustomVisionDataLoader.cs" />
     <Compile Include="Views\CustomVision\CustomVisionExplorer.xaml.cs">
       <DependentUpon>CustomVisionExplorer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CustomVision\CustomVisionModel.cs" />
     <Compile Include="Views\CustomVision\CustomVisionServiceHelper.cs" />
     <Compile Include="Views\CustomVision\CustomVisionSetup.xaml.cs">
       <DependentUpon>CustomVisionSetup.xaml</DependentUpon>
@@ -217,6 +233,12 @@
     </Compile>
     <Compile Include="Views\RealtimeDriverMonitoring.xaml.cs">
       <DependentUpon>RealtimeDriverMonitoring.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RealtimeImageClassification.xaml.cs">
+      <DependentUpon>RealtimeImageClassification.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RealtimeObjectDetection.xaml.cs">
+      <DependentUpon>RealtimeObjectDetection.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RecognitionPage.xaml.cs">
       <DependentUpon>RecognitionPage.xaml</DependentUpon>
@@ -261,6 +283,7 @@
     <Content Include="Assets\RealTime.PNG" />
     <Content Include="Assets\RealtimeDriverMonitoring.jpg" />
     <Content Include="Assets\RealTimeFromVideo.PNG" />
+    <Content Include="Assets\RealtimeImageClassification.png" />
     <Content Include="Assets\smalltile-sdk.png" />
     <Content Include="Assets\splash-sdk.png" />
     <Content Include="Assets\StoreLogo.png" />
@@ -283,6 +306,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\EmotionToColoredBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\TagScoreControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -414,6 +441,14 @@
     <Page Include="Views\RealtimeDriverMonitoring.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\RealtimeImageClassification.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RealtimeObjectDetection.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RecognitionPage.xaml">
       <Generator>MSBuild:Compile</Generator>
