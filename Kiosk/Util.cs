@@ -37,12 +37,15 @@ using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
+using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.UI.Popups;
@@ -101,12 +104,21 @@ namespace IntelligentKioskSample
             return CoreUtil.AreFacesPotentiallyTheSame((int)face1.X, (int)face1.Y, (int)face1.Width, (int)face1.Height, face2.Left, face2.Top, face2.Width, face2.Height);
         }
 
-        public static async Task ConfirmActionAndExecute(string message, Func<Task> action)
+        public static async Task ConfirmActionAndExecute(string message, Func<Task> action,
+            Func<Task> cancelAction = null, string confirmActionLabel = "Yes", string cancelActionLabel = "Cancel")
         {
             var messageDialog = new MessageDialog(message);
 
-            messageDialog.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler(async (c) => await action())));
-            messageDialog.Commands.Add(new UICommand("Cancel", new UICommandInvokedHandler((c) => { })));
+            messageDialog.Commands.Add(new UICommand(confirmActionLabel, new UICommandInvokedHandler(async (c) => await action())));
+
+            if (cancelAction != null)
+            {
+                messageDialog.Commands.Add(new UICommand(cancelActionLabel, new UICommandInvokedHandler(async (c) => { await cancelAction(); })));
+            }
+            else
+            {
+                messageDialog.Commands.Add(new UICommand(cancelActionLabel, new UICommandInvokedHandler((c) => { })));
+            }
 
             messageDialog.DefaultCommandIndex = 1;
             messageDialog.CancelCommandIndex = 1;
@@ -148,6 +160,26 @@ namespace IntelligentKioskSample
                 default:
                     return null;
             }
+        }
+
+        public static bool ExtractFileFromZipArchive(StorageFile zipFile, string extractedFileName, StorageFile newFile)
+        {
+            try
+            {
+                using (ZipArchive archive = ZipFile.OpenRead(zipFile.Path))
+                {
+                    ZipArchiveEntry entry = archive.Entries.FirstOrDefault(e => e.FullName != null && e.FullName.Contains(extractedFileName, StringComparison.OrdinalIgnoreCase));
+                    if (entry != null)
+                    {
+                        entry.ExtractToFile(newFile.Path, true);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
         }
 
         async private static Task CropBitmapAsync(Stream localFileStream, FaceRectangle rectangle, StorageFile resultFile)
@@ -237,26 +269,33 @@ namespace IntelligentKioskSample
             return pix.DetachPixelData();
         }
 
-		internal static async Task<byte[]> GetPixelBytesFromSoftwareBitmapAsync(SoftwareBitmap softwareBitmap)
-		{
-			using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
-			{
-				BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, stream);
-				encoder.SetSoftwareBitmap(softwareBitmap);
-				await encoder.FlushAsync();
+        internal static async Task DownloadFileASync(string link, StorageFile destination, IProgress<DownloadOperation> progress, CancellationToken cancellationToken)
+        {
+            BackgroundDownloader downloader = new BackgroundDownloader();
+            DownloadOperation download = downloader.CreateDownload(new Uri(link), destination);
+            await download.StartAsync().AsTask(cancellationToken, progress);
+        }
 
-				// Read the pixel bytes from the memory stream
-				using (var reader = new DataReader(stream.GetInputStreamAt(0)))
-				{
-					var bytes = new byte[stream.Size];
-					await reader.LoadAsync((uint)stream.Size);
-					reader.ReadBytes(bytes);
-					return bytes;
-				}
-			}
-		}
+        internal static async Task<byte[]> GetPixelBytesFromSoftwareBitmapAsync(SoftwareBitmap softwareBitmap)
+        {
+            using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+            {
+                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, stream);
+                encoder.SetSoftwareBitmap(softwareBitmap);
+                await encoder.FlushAsync();
 
-		public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
+                // Read the pixel bytes from the memory stream
+                using (var reader = new DataReader(stream.GetInputStreamAt(0)))
+                {
+                    var bytes = new byte[stream.Size];
+                    await reader.LoadAsync((uint)stream.Size);
+                    reader.ReadBytes(bytes);
+                    return bytes;
+                }
+            }
+        }
+
+        public static void AddRange<T>(this IList<T> list, IEnumerable<T> items)
         {
             foreach (var item in items)
             {

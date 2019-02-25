@@ -33,15 +33,26 @@
 
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
 using Microsoft.Rest;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using TrainingModels = Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models;
 
 namespace ServiceHelpers
 {
     public static class CustomVisionServiceHelper
     {
+        private static readonly string platform = "onnx";
+        public static readonly List<Guid> ObjectDetectionDomainGuidList = new List<Guid>()
+        {
+            new Guid("da2e3a8a-40a5-4171-82f4-58522f70fbc1"), // Object Detection, General
+            new Guid("1d8ffafe-ec40-4fb2-8f90-72b3b6cecea4"), // Object Detection, Logo
+            new Guid("a27d5ca5-bb19-49d8-a70a-fec086c47f5b")  // Object Detection, General (exportable)
+        };
         public static int RetryCountOnQuotaLimitError = 6;
         public static int RetryDelayOnQuotaLimitError = 500;
 
@@ -71,14 +82,62 @@ namespace ServiceHelpers
             return response;
         }
 
-        public static async Task<ImagePrediction> PredictImageUrlWithRetryAsync(this IPredictionEndpoint predictionApi, Guid projectId, ImageUrl imageUrl, Guid iterationId)
+        public static async Task<ImagePrediction> PredictImageUrlWithRetryAsync(this ICustomVisionPredictionClient predictionApi, Guid projectId, ImageUrl imageUrl, Guid iterationId)
         {
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError<ImagePrediction>(async () => await predictionApi.PredictImageUrlAsync(projectId, imageUrl, iterationId));
         }
 
-        public static async Task<ImagePrediction> PredictImageWithRetryAsync(this IPredictionEndpoint predictionApi, Guid projectId, Func<Task<Stream>> imageStreamCallback, Guid iterationId)
+        public static async Task<ImagePrediction> PredictImageWithRetryAsync(this ICustomVisionPredictionClient predictionApi, Guid projectId, Func<Task<Stream>> imageStreamCallback, Guid iterationId)
         {
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError<ImagePrediction>(async () => await predictionApi.PredictImageAsync(projectId, await imageStreamCallback(), iterationId));
+        }
+
+        public static async Task<TrainingModels::Export> ExportIteration(
+                    this ICustomVisionTrainingClient trainingApi, Guid projectId, Guid iterationId, string flavor = "onnx12", int timeoutInSecond = 30)
+        {
+            TimeSpan timeout = TimeSpan.FromSeconds(timeoutInSecond);
+
+            TrainingModels::Export exportIteration = null;
+            try
+            {
+                exportIteration = exportIteration = string.IsNullOrEmpty(flavor)
+                    ? await trainingApi.ExportIterationAsync(projectId, iterationId, platform)
+                    : await trainingApi.ExportIterationAsync(projectId, iterationId, platform, flavor);
+            }
+            catch (HttpOperationException ex)
+            {
+                string exceptionContent = ex?.Response?.Content ?? string.Empty;
+                if (!exceptionContent.Contains("BadRequestExportAlreadyInProgress"))
+                {
+                    throw ex;
+                }
+            }
+
+            DateTime startTime = DateTime.Now;
+            while (true)
+            {
+                IList<TrainingModels::Export> exports = await trainingApi.GetExportsAsync(projectId, iterationId);
+                exportIteration = string.IsNullOrEmpty(flavor)
+                    ? exports?.FirstOrDefault(x => string.Equals(x.Platform, platform, StringComparison.OrdinalIgnoreCase))
+                    : exports?.FirstOrDefault(x => string.Equals(x.Platform, platform, StringComparison.OrdinalIgnoreCase) &&
+                                                   string.Equals(x.Flavor, flavor, StringComparison.OrdinalIgnoreCase));
+
+                if (exportIteration?.Status == "Exporting")
+                {
+                    await Task.Delay(1000);
+                }
+                else
+                {
+                    break;
+                }
+
+                if (DateTime.Now - startTime > timeout)
+                {
+                    throw new TimeoutException("The operation couldn't be completed due to a timeout.");
+                }
+            }
+
+            return exportIteration;
         }
     }
 }
