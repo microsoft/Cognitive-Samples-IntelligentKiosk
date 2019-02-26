@@ -35,6 +35,7 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 | [Realtime Image Classification](Documentation/RealtimeImageClassification.md)      | A realtime workflow for processing frames from a web camera to show classification models exported by Microsoft Custom Vision Service. | Custom Vision API; Windows Machine Learning |
 | [Realtime Object Detection](Documentation/RealtimeObjectDetection.md)      | A realtime workflow for processing frames from a web camera to show object detection models exported by Microsoft Custom Vision Service. | Custom Vision API; Windows Machine Learning |
 | [Realtime Video Insights](Documentation/RealtimeVideoInsights.md)      | A realtime workflow for processing frames from a video file  to derive realtime insights such as demographics, emotion, unique face counting and face identification | Realtime sampling; Age, gender and emotion prediction; Face identification; Unique face counting; Celebrity detection |
+| [Translator API Explorer](Documentation/TranslatorExplorer.md)      | Shows how to use the Translator Text API to text translation. | Translator Text API |
 | [Vision API Explorer](Documentation/VisionAPIExplorer.md)          | A playground for some of the offerings in the Computer Vision APIs. It shows how to extract tags, faces, description of the photo, celebrities, OCR results and color analysis. | Windows 10 Face Tracking; Computer Vision API; Bing Image Search API; Bing AutoSuggestion API |
 
 # Raspberry Pi + Sense HAT Kiosk
