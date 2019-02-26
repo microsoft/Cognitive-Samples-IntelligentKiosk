@@ -19,9 +19,8 @@
                 <ComboBox x:Name="platformsCombo" PlaceholderText="Please select a platform" HorizontalAlignment="Stretch"
                           ItemsSource="{Binding Platforms}" DisplayMemberPath="DisplayName" SelectionChanged="OnPlatformSelectionChanged" />
 
-                <Grid Margin="0,10">
+                <Grid Margin="0,10" Height="200">
                     <ProgressRing x:Name="projectShareProgressRing" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <Image Name="qrCodeImage" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="200"/>
                     <StackPanel x:Name="shareStatusPanelDescription" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
                         <TextBlock Name="shareStatusTextDescription" TextWrapping="Wrap" TextAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}"/>
                         <HyperlinkButton Click="OnNavigateToRealtimeScoringPageButtonClicked" HorizontalAlignment="Center">

@@ -639,7 +639,6 @@ namespace IntelligentKioskSample.Views
             try
             {
                 this.shareStatusTextBlock.Text = "Exporting model...";
-                this.qrCodeImage.Source = null;
                 this.shareStatusPanelDescription.Visibility = Visibility.Collapsed;
                 this.closeFlyoutBtn.Visibility = Visibility.Visible;
                 this.projectShareProgressRing.IsActive = true;
@@ -835,7 +834,6 @@ namespace IntelligentKioskSample.Views
 
         private void OnShareProjectFlyoutClosed(object sender, object e)
         {
-            this.qrCodeImage.Source = null;
             this.shareStatusTextBlock.Text = string.Empty;
             this.platformsCombo.SelectedItem = null;
             this.shareStatusPanelDescription.Visibility = Visibility.Collapsed;
