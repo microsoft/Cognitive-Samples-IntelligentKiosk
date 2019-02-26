@@ -95,7 +95,7 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
         {
             if (string.IsNullOrEmpty(SettingsHelper.Instance.TranslatorTextApiKey))
             {
-                await new MessageDialog("Missing Text Analytics Key. Please enter the key in the Settings page.", "Missing API Key").ShowAsync();
+                await new MessageDialog("Missing Translator Text API Key. Please enter the key in the Settings page.", "Missing API Key").ShowAsync();
             }
             else
             {
