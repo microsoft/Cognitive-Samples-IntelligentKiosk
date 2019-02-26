@@ -231,6 +231,12 @@
     <Compile Include="Controls\ImageSearchUserControl.xaml.cs">
       <DependentUpon>ImageSearchUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\TranslatorExplorer\AlternativeTranslationsControl.xaml.cs">
+      <DependentUpon>AlternativeTranslationsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TranslatorExplorer\TranslatorExplorerPage.xaml.cs">
+      <DependentUpon>TranslatorExplorerPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VideoInsights\TagFilterControl.xaml.cs" />
     <Compile Include="Views\VideoInsights\VideoInsightsPage.xaml.cs">
       <DependentUpon>VideoInsightsPage.xaml</DependentUpon>
@@ -266,6 +272,7 @@
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\squaretile-sdk.png" />
     <Content Include="Assets\squaretile-sdk-44.png" />
+    <Content Include="Assets\TranslatorExplorer.png" />
     <Content Include="Assets\VisionAPI.jpg" />
     <Content Include="Properties\Default.rd.xml">
       <SubType>Designer</SubType>
@@ -428,6 +435,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ImageSearchUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TranslatorExplorer\AlternativeTranslationsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TranslatorExplorer\TranslatorExplorerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

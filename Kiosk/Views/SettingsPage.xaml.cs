@@ -114,6 +114,10 @@ namespace IntelligentKioskSample.Views
                 ? CallApiAndReportResult("Text Analytics API Test: ", async () => await CognitiveServiceApiKeyTester.TestTextAnalyticsApiKeyAsync(
                     SettingsHelper.Instance.TextAnalyticsKey, SettingsHelper.Instance.TextAnalyticsApiKeyEndpoint))
                 : Task.CompletedTask);
+
+            await (!string.IsNullOrEmpty(SettingsHelper.Instance.TranslatorTextApiKey)
+                ? CallApiAndReportResult("Translator Text API Test: ", async () => await CognitiveServiceApiKeyTester.TestTranslatorTextApiKeyAsync(SettingsHelper.Instance.TranslatorTextApiKey))
+                : Task.CompletedTask);
         }
 
         private async Task CallApiAndReportResult(string testName, Func<Task> testTask)

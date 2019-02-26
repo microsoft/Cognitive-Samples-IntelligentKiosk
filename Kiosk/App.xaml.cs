@@ -173,6 +173,10 @@ namespace IntelligentKioskSample
 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.TextAnalyticsKey)
                 ? CognitiveServiceApiKeyTester.TestTextAnalyticsApiKeyAsync(SettingsHelper.Instance.TextAnalyticsKey, SettingsHelper.Instance.TextAnalyticsApiKeyEndpoint)
+                : Task.CompletedTask,
+
+                !string.IsNullOrEmpty(SettingsHelper.Instance.TranslatorTextApiKey)
+                ? CognitiveServiceApiKeyTester.TestTranslatorTextApiKeyAsync(SettingsHelper.Instance.TranslatorTextApiKey)
                 : Task.CompletedTask
             };
 
