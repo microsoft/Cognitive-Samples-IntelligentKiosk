@@ -163,7 +163,7 @@
                         <SymbolIcon Symbol="Add" Visibility="{Binding ElementName=personGroupPeopleListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}"/>
                         <Button.Flyout>
                             <Flyout x:Name="trainingImageCollectorFlyout" Opened="OnImageSearchFlyoutOpened">
-                                <ctl:ImageSearchUserControl x:Name="bingSearchControl" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" EnableCameraCapture="True" />
+                                <ctl:ImageSearchUserControl x:Name="bingSearchControl" ImageSelectionMode="Multiple" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" EnableCameraCapture="True" />
                             </Flyout>
                         </Button.Flyout>
                     </Button>

@@ -36,6 +36,7 @@ using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.Rest;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
@@ -55,10 +56,11 @@ namespace IntelligentKioskSample.Views
     [KioskExperience(Title = "Custom Vision Explorer", ImagePath = "ms-appx:/Assets/CustomVisionExplorer.png")]
     public sealed partial class CustomVisionExplorer : Page
     {
-        private ImageAnalyzer currentPhoto;
+        private const string SouthCentralUsEndpoint = "https://southcentralus.api.cognitive.microsoft.com";
 
-        private TrainingApi userProvidedTrainingApi;
-        private PredictionEndpoint userProvidedPredictionApi;
+        private ImageAnalyzer currentPhoto;
+        private CustomVisionTrainingClient userProvidedTrainingApi;
+        private CustomVisionPredictionClient userProvidedPredictionApi;
 
         public ObservableCollection<ProjectViewModel> Projects { get; set; } = new ObservableCollection<ProjectViewModel>();
 
@@ -254,8 +256,8 @@ namespace IntelligentKioskSample.Views
             if (!string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) && 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey))
             {
-                userProvidedTrainingApi = new TrainingApi { BaseUri = new Uri("https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Training"), ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
-                userProvidedPredictionApi = new PredictionEndpoint { BaseUri = new Uri("https://southcentralus.api.cognitive.microsoft.com/customvision/v2.0/Prediction"), ApiKey = SettingsHelper.Instance.CustomVisionPredictionApiKey };
+                userProvidedTrainingApi = new CustomVisionTrainingClient { Endpoint = SouthCentralUsEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
+                userProvidedPredictionApi = new CustomVisionPredictionClient { Endpoint = SouthCentralUsEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionPredictionApiKey };
             }
 
             this.DataContext = this;
@@ -278,7 +280,6 @@ namespace IntelligentKioskSample.Views
             try
             {
                 this.Projects.Clear();
-                Guid objectDetectionDomainGuid = new Guid("da2e3a8a-40a5-4171-82f4-58522f70fbc1");
 
                 // Add projects from API Keys provided by user
                 if (this.userProvidedTrainingApi != null && this.userProvidedPredictionApi != null)
@@ -291,7 +292,7 @@ namespace IntelligentKioskSample.Views
                             {
                                 Model = project,
                                 TagSamples = new ObservableCollection<TagSampleViewModel>(),
-                                IsObjectDetection = project.Settings.DomainId == objectDetectionDomainGuid
+                                IsObjectDetection = CustomVisionServiceHelper.ObjectDetectionDomainGuidList.Contains(project.Settings.DomainId)
                             });
 
                     }
@@ -305,7 +306,7 @@ namespace IntelligentKioskSample.Views
                 // Trigger loading of the tags associated with each project
                 foreach (var project in this.Projects)
                 {
-                    this.PopulateTagSamplesAsync(project.Model.Id, 
+                    this.PopulateTagSamplesAsync(project.Model.Id,
                                             this.userProvidedTrainingApi,
                                             project.TagSamples);
                 }
@@ -321,35 +322,43 @@ namespace IntelligentKioskSample.Views
             }
         }
 
-        private async void PopulateTagSamplesAsync(Guid projectId, TrainingApi trainingEndPoint, ObservableCollection<TagSampleViewModel> collection)
+        private async void PopulateTagSamplesAsync(Guid projectId, CustomVisionTrainingClient trainingEndPoint, ObservableCollection<TagSampleViewModel> collection)
         {
+            
             foreach (var tag in (await trainingEndPoint.GetTagsAsync(projectId)).OrderBy(t => t.Name))
-            {
-                if (tag.ImageCount > 0)
+            { 
+                try
                 {
-                    var imageModelSample = (await trainingEndPoint.GetTaggedImagesAsync(projectId, null, new string[] { tag.Id.ToString() }, null, 1)).First();
-
-                    var tagRegion = imageModelSample.Regions?.FirstOrDefault(r => r.TagId == tag.Id);
-                    if (tagRegion == null || (tagRegion.Width == 0 && tagRegion.Height == 0))
+                    if (tag.ImageCount > 0)
                     {
-                        collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = new BitmapImage(new Uri(imageModelSample.ThumbnailUri)) });
-                    }
-                    else
-                    {
-                        // Crop a region from the image that is associated with the tag, so we show something more 
-                        // relevant than the whole image. 
-                        ImageSource croppedImage = await Util.DownloadAndCropBitmapAsync(
-                            imageModelSample.ImageUri,
-                            new FaceRectangle
-                            {
-                                Left = (int)(tagRegion.Left * imageModelSample.Width),
-                                Top = (int)(tagRegion.Top * imageModelSample.Height),
-                                Width = (int)(tagRegion.Width * imageModelSample.Width),
-                                Height = (int)(tagRegion.Height * imageModelSample.Height)
-                            });
+                        var imageModelSample = (await trainingEndPoint.GetTaggedImagesAsync(projectId, null, new string[] { tag.Id.ToString() }, null, 1)).First();
 
-                        collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = croppedImage });
+                        var tagRegion = imageModelSample.Regions?.FirstOrDefault(r => r.TagId == tag.Id);
+                        if (tagRegion == null || (tagRegion.Width == 0 && tagRegion.Height == 0))
+                        {
+                            collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = new BitmapImage(new Uri(imageModelSample.ThumbnailUri)) });
+                        }
+                        else
+                        {
+                            // Crop a region from the image that is associated with the tag, so we show something more 
+                            // relevant than the whole image. 
+                            ImageSource croppedImage = await Util.DownloadAndCropBitmapAsync(
+                                imageModelSample.OriginalImageUri,
+                                new FaceRectangle
+                                {
+                                    Left = (int)(tagRegion.Left * imageModelSample.Width),
+                                    Top = (int)(tagRegion.Top * imageModelSample.Height),
+                                    Width = (int)(tagRegion.Width * imageModelSample.Width),
+                                    Height = (int)(tagRegion.Height * imageModelSample.Height)
+                                });
+
+                            collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = croppedImage });
+                        }
                     }
+                }
+                catch (HttpOperationException exception) when (exception.Response.StatusCode == (System.Net.HttpStatusCode)429)
+                {
+                    continue;
                 }
             }
         }
@@ -385,6 +394,7 @@ namespace IntelligentKioskSample.Views
             this.webCamHostGrid.Visibility = Visibility.Visible;
             this.imageWithFacesControl.Visibility = Visibility.Collapsed;
             this.resultsDetails.Visibility = Visibility.Collapsed;
+            this.objectDetectionVisualizationCanvas.Children.Clear();
 
             await this.cameraControl.StartStreamAsync();
             await Task.Delay(250);
@@ -485,7 +495,7 @@ namespace IntelligentKioskSample.Views
 
         private void OnObjectDetectionVisualizationCanvasSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (this.currentDetectedObjects != null)
+            if (this.currentDetectedObjects != null && this.objectDetectionVisualizationCanvas.Children.Any())
             {
                 this.ShowObjectDetectionBoxes(this.currentDetectedObjects);
             }

@@ -62,8 +62,9 @@
             </StackPanel>
 
         </Grid>
-               
-        <GridView x:Name="imageResultsGrid" Margin="0,10" Grid.Row="1" SelectionMode="Multiple" IsMultiSelectCheckBoxEnabled="False" SelectionChanged="OnImageResultSelectionChanged">
+
+        <GridView x:Name="imageResultsGrid" SelectionMode="{Binding ElementName=SearchControl, Path=ImageSelectionMode}" 
+                  Margin="0,10" Grid.Row="1" IsMultiSelectCheckBoxEnabled="False" SelectionChanged="OnImageResultSelectionChanged">
             <GridView.ItemTemplate>
                 <DataTemplate>
                     <controls:ImageWithFaceBorderUserControl DataContext="{Binding}" DetectFacesOnLoad="{Binding ElementName=SearchControl, Path=DetectFacesOnLoad}" Width="120" Height="90" />
@@ -74,13 +75,8 @@
         <ProgressRing x:Name="progressRing" Grid.Row="1"/>
 
         <CommandBar VerticalAlignment="Bottom" Grid.Row="2">
-            <AppBarButton x:Name="addSelectedPhotosButton" Icon="Accept" Label="Add selected photos" Click="OnAcceptButtonClicked" IsEnabled="False" >
-                
-            </AppBarButton>
-
-            <AppBarButton Icon="Cancel" Label="Cancel" Click="OnCancelButtonClicked">
-
-            </AppBarButton>
+            <AppBarButton x:Name="addSelectedPhotosButton" Icon="Accept" Label="Add selected photos" Click="OnAcceptButtonClicked" IsEnabled="False" />
+            <AppBarButton Icon="Cancel" Label="Cancel" Click="OnCancelButtonClicked" />
         </CommandBar>
 
     </Grid>

@@ -1,16 +1,20 @@
 # Custom Vision Explorer
 
-This example shows how to use the Custom Vision APIs to create image classifiers and how to score images against a target classifier. 
+This example shows how to use the Custom Vision APIs and how to score images against a custom image classifier or object detector. 
 
 Once you have it configured and at least one project created, just select a target project and send an image for scoring. You can do 
 so from local files, Bing Image Search results or from a web camera capture. Once you submit a photo, the results are shown on above 
 the photo as a list of tags and their associated confidence level. 
 
+Image Classification model:
 ![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionExplorer.JPG "Custom Vision Explorer")
+
+Object Detection model:
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionExplorer_ObjectDetection.png "Custom Vision Explorer")
 
 # Custom Vision Setup
 
-This is where you can create and manage your own classifiers. In case you have used the Face Identification Setup in the kiosk this 
+This is where you can create and manage your own models. In case you have used the Face Identification Setup in the kiosk this 
 will look very familiar to you. It integrates with Bing Images very nicely, which literally makes the task of creating a classifier a 
 matter of seconds. 
 
@@ -18,7 +22,11 @@ You can get to the Custom Vision Setup page by clicking on the ‘+’ button ne
 The Setup page will prompt you for API keys. In case you don’t have keys for the service you can find the key acquisition steps by 
 clicking on the Settings button on the top-right of the Setup page.
 
+Image Classification model:
 ![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionSetup.JPG "Custom Vision Setup")
+
+Object Detection model:
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/SetupObjectDetection.png "Custom Vision Setup")
 
 # Camera integration during the Custom Vision Setup workflow
 
@@ -26,6 +34,18 @@ When you are creating your image classifiers the web cam capture can come in ver
 and spend a few seconds moving the object in front of the camera while it captures photos from several angles.
 
 ![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/CustomVisionCameraCapture.JPG "Custom Vision Camera Capture")
+
+# Setup Object Detection model
+
+This is how you can create and manage your own object detection model. When you tag images in object detection project, you need to specify the region of each tagged object.
+
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/SetupObjectRegions.png "Setup Object Detection model")
+
+# Export your Custom Vision models
+
+Also you can export your Custom Vision models and run them offline in the Realtime Image Classification and Realtime Object Detection demo.
+
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/ExportCustomVisionModel.png "Export your Custom Vision models")
 
 # Active Learning
 
