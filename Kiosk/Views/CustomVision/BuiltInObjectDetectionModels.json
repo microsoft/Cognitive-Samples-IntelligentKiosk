@@ -1,0 +1,32 @@
+[
+  {
+    "Id": "f2002174-b90a-491d-b8d3-8fd892b53d95",
+    "Name": "Mixed Items",
+    "ClassLabels": [
+      "Aeroplane",
+      "Bicycle",
+      "Bird",
+      "Boat",
+      "Bottle",
+      "Bus",
+      "Car",
+      "Cat",
+      "Chair",
+      "Cow",
+      "Dining table",
+      "Dog",
+      "Horse",
+      "Motor bike",
+      "Person",
+      "Potted plant",
+      "Sheep",
+      "Sofa",
+      "Train",
+      "TV monitor"
+    ],
+    "ExportDate": "2019-02-11T12:00:00.33454Z",
+    "FileName": "mixed_items.onnx",
+    "FilePath": "Assets\\mixed_items.onnx",
+    "IsPrebuiltModel": "true"
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "Id": "e1e253a4-292e-435b-b5c3-598a4c716e49",
+    "Name": "Simple Fruits",
+    "ClassLabels": [ "Apple", "Banana", "Orange" ],
+    "ExportDate": "2018-10-26T23:53:36.33454Z",
+    "FileName": "simple_fruits.onnx",
+    "FilePath": "Assets\\simple_fruits.onnx",
+    "IsPrebuiltModel": "true"
+  }
+]

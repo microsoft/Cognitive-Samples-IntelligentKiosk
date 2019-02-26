@@ -1,0 +1,92 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.RealtimeImageClassification"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    SizeChanged="OnPageSizeChanged"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ctl:BooleanToVisibilityConverter x:Key="bolleanToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" EntranceNavigationTransitionInfo.IsTargetElement="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
+            <CommandBar.Content>
+                <TextBlock Text="Realtime Image Classification" Style="{ThemeResource PageTitleTextBlockStyle}"/>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1" Margin="12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <ComboBox x:Name="projectsComboBox" MinWidth="300" MaxWidth="600"
+                        ItemsSource="{Binding Projects}"
+                        DisplayMemberPath="Name" 
+                        Header="Target Project:"
+                        SelectionChanged="OnProjectSelectionChanged">
+                    </ComboBox>
+                    <Button x:Name="deleteBtn" Click="OnDeleteProjectClicked" VerticalAlignment="Top" Background="Transparent" Margin="-53,0,0,0" Padding="0">
+                        <SymbolIcon Symbol="Delete"/>
+                    </Button>
+                    <Button Click="OnAddProjectClicked" VerticalAlignment="Top" Background="Transparent" Margin="-24,0,0,0" Padding="0">
+                        <SymbolIcon Symbol="Add"/>
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,10">
+                    <TextBlock x:Name="modelObjects" FontStyle="Italic" Margin="0,0,8,0"/>
+                    <TextBlock x:Name="moreModelObjects" Tapped="OnShowAllSupportedClassesTapped" FontStyle="Italic" TextDecorations="Underline">
+                        <FlyoutBase.AttachedFlyout>
+                            <Flyout x:Name="supportedClassesBox">
+                                <StackPanel>
+                                    <TextBlock Text="Supported classes:" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                                    <ListView x:Name="allSupportedClassesListView" MaxHeight="350" SelectionMode="None" IsItemClickEnabled="False" />
+                                </StackPanel>
+                            </Flyout>
+                        </FlyoutBase.AttachedFlyout>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="24,0,24,24">
+
+                <Grid x:Name="webCamHostGrid" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ctl:CameraControl x:Name="cameraControl" FlowDirection="LeftToRight"/>
+                </Grid>
+
+                <ScrollViewer x:Name="resultsDetails" Grid.Row="0" Visibility="Collapsed" HorizontalAlignment="Right" VerticalAlignment="Top" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel x:Name="tagScorePanel" Background="#aa000000" Orientation="Vertical" />
+                </ScrollViewer>
+
+                <StackPanel x:Name="landingMessagePanel" Visibility="Visible" Margin="20" 
+                            HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Opacity="0.6">
+                    <TextBlock x:Name="camerePreviewMessage" Style="{StaticResource SubtitleTextBlockStyle}" Margin="15,15,15,5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="camerePreviewDescriptionLabel" Margin="15,5,15,15" HorizontalAlignment="Center" VerticalAlignment="Center" FontStyle="Italic"/>
+                </StackPanel>
+
+                <TextBlock x:Name="fpsTextBlock" Margin="0,0,2,0" Opacity="0.6" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+</Page>

@@ -2,7 +2,7 @@
     x:Class="IntelligentKioskSample.Views.CustomVisionSetup"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:IntelligentKioskSample"
+    xmlns:local="using:IntelligentKioskSample.Views.CustomVision"
     xmlns:ctl="using:IntelligentKioskSample.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,6 +11,29 @@
     <Page.Resources>
         <ctl:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
         <ctl:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
+        <Flyout x:Key="ProjectSharingFlyout" Opened="OnShareProjectFlyoutOpened" Closed="OnShareProjectFlyoutClosed">
+            <StackPanel Orientation="Vertical">
+                <TextBlock Name="shareStatusTextBlock" Width="200" TextWrapping="Wrap" TextAlignment="Center" 
+                           HorizontalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Margin="0,0,0,10"/>
+
+                <ComboBox x:Name="platformsCombo" PlaceholderText="Please select a platform" HorizontalAlignment="Stretch"
+                          ItemsSource="{Binding Platforms}" DisplayMemberPath="DisplayName" SelectionChanged="OnPlatformSelectionChanged" />
+
+                <Grid Margin="0,10" Height="200">
+                    <ProgressRing x:Name="projectShareProgressRing" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <StackPanel x:Name="shareStatusPanelDescription" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                        <TextBlock Name="shareStatusTextDescription" TextWrapping="Wrap" TextAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <HyperlinkButton Click="OnNavigateToRealtimeScoringPageButtonClicked" HorizontalAlignment="Center">
+                            <TextBlock x:Name="openPageTextBlock" TextWrapping="Wrap" TextAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
+                        </HyperlinkButton>
+                    </StackPanel>
+                </Grid>
+
+                <Button x:Name="closeFlyoutBtn" Click="OnProjectShareCloseButtonClicked" HorizontalAlignment="Stretch">
+                    <SymbolIcon Symbol="Cancel"/>
+                </Button>
+            </StackPanel>
+        </Flyout>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -21,7 +44,9 @@
         </Grid.RowDefinitions>
 
         <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch">
-           
+
+            <AppBarButton x:Name="exportButton" Icon="Download" Label="Export Project" IsEnabled="False" AllowFocusOnInteraction="True"
+                          Click="OnExportModelClicked" FlyoutBase.AttachedFlyout="{StaticResource ProjectSharingFlyout}"/>
             <AppBarButton Icon="Play" Label="Train Project" Click="OnStartTrainingClicked" x:Name="trainButton"/>
             <AppBarButton Icon="Setting" Label="Settings" x:Name="settingsButton" AllowFocusOnInteraction="True">
                 <AppBarButton.Flyout>
@@ -50,7 +75,6 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-
             <Grid Margin="0,6,0,6" Padding="6" MinWidth="160" Background="#ff151515" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
@@ -66,10 +90,15 @@
                         <SymbolIcon Symbol="Add"/>
                         <Button.Flyout>
                             <Flyout x:Name="addProjectFlyout">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBox x:Name="projectNameTextBox" TextWrapping="Wrap" Width="262" PlaceholderText="Enter project name (e.g. Flowers)"/>
-                                    <Button Content="Add" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0" Click="OnAddProjectButtonClicked"/>
-                                    <Button Content="Cancel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="OnCancelAddProjectButtonClicked"/>
+                                <StackPanel Orientation="Vertical">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox x:Name="projectNameTextBox" TextWrapping="Wrap" Width="262" PlaceholderText="Enter project name (e.g. Flowers)"/>
+                                        <Button Content="Add" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="10,0" Click="OnAddProjectButtonClicked"/>
+                                        <Button Content="Cancel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="OnCancelAddProjectButtonClicked"/>
+                                    </StackPanel>
+                                    <ComboBox x:Name="projectTypeComboBox" HorizontalAlignment="Left" Header="Project Type:" Margin="0,12,0,0" 
+                                              DisplayMemberPath="DisplayName" SelectedValuePath="DomainId"/>
+
                                 </StackPanel>
                             </Flyout>
                         </Button.Flyout>
@@ -147,7 +176,7 @@
                         <SymbolIcon Symbol="Add" Visibility="{Binding ElementName=projectTagsListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}"/>
                         <Button.Flyout>
                             <Flyout x:Name="trainingImageCollectorFlyout" Opened="OnImageSearchFlyoutOpened">
-                                <ctl:ImageSearchUserControl x:Name="bingSearchControl" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" ImageContentType="" EnableCameraCapture="True" RequireFaceInCameraCapture="False"/>
+                                <ctl:ImageSearchUserControl x:Name="bingSearchControl" ImageSelectionMode="Multiple" OnCameraFrameCaptured="OnCameraFrameCaptured" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" ImageContentType="" EnableCameraCapture="True" RequireFaceInCameraCapture="False"/>
                             </Flyout>
                         </Button.Flyout>
                     </Button>
@@ -156,8 +185,13 @@
                 <GridView Grid.Row="1" Margin="0,12,0,0" x:Name="selectedTagImagesGridView" IsMultiSelectCheckBoxEnabled="False" SelectionMode="Multiple" ItemsSource="{Binding SelectedTagImages}">
                     <GridView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Width="120" Height="90" Margin="6">
-                                <Image Source="{Binding ThumbnailUri}"/>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <local:ImageWithRegionEditorsControl HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="{Binding SupportsImageRegions, Converter={StaticResource booleanToVisibilityConverter}}" RegionsChanged="OnImageRegionsChangedByUser"/>
+                                <local:ThumbnailWithRegionsControl Grid.Row="1" DataContext="{Binding}"/>
                             </Grid>
                         </DataTemplate>
                     </GridView.ItemTemplate>

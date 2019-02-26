@@ -68,8 +68,18 @@ namespace IntelligentKioskSample.Controls
         SimilarFace GetLastSimilarPersistedFaceForFace(BitmapBounds faceBox);
     }
 
+    public interface ICameraFrameProcessor
+    {
+        Task ProcessFrame(VideoFrame frame, Canvas visualizationCanvas);
+    }
+
     public sealed partial class CameraControl : UserControl
     {
+        public bool PerformFaceTracking { get; set; } = true;
+        public bool ShowFaceTracking { get; set; } = true;
+
+        public ICameraFrameProcessor CameraFrameProcessor { get; set; }
+
         public event EventHandler<ImageAnalyzer> ImageCaptured;
         public event EventHandler<AutoCaptureState> AutoCaptureStateChanged;
         public event EventHandler CameraRestarted;
@@ -167,22 +177,24 @@ namespace IntelligentKioskSample.Controls
 
                 if (captureManager.CameraStreamState == CameraStreamState.NotStreaming)
                 {
-                    if (this.faceTracker == null)
+                    if (PerformFaceTracking || CameraFrameProcessor != null)
                     {
-                        this.faceTracker = await FaceTracker.CreateAsync();
+                        if (this.faceTracker == null)
+                        {
+                            this.faceTracker = await FaceTracker.CreateAsync();
+                        }
+
+                        if (this.frameProcessingTimer != null)
+                        {
+                            this.frameProcessingTimer.Cancel();
+                            frameProcessingSemaphore.Release();
+                        }
+                        TimeSpan timerInterval = TimeSpan.FromMilliseconds(66); //15fps
+                        this.frameProcessingTimer = ThreadPoolTimer.CreatePeriodicTimer(new TimerElapsedHandler(ProcessCurrentVideoFrame), timerInterval);
                     }
 
                     this.videoProperties = this.captureManager.VideoDeviceController.GetMediaStreamProperties(MediaStreamType.VideoPreview) as VideoEncodingProperties;
-
                     await captureManager.StartPreviewAsync();
-
-                    if (this.frameProcessingTimer != null)
-                    {
-                        this.frameProcessingTimer.Cancel();
-                        frameProcessingSemaphore.Release();
-                    }
-                    TimeSpan timerInterval = TimeSpan.FromMilliseconds(66); //15fps
-                    this.frameProcessingTimer = ThreadPoolTimer.CreatePeriodicTimer(new TimerElapsedHandler(ProcessCurrentVideoFrame), timerInterval);
 
                     this.cameraControlSymbol.Symbol = Symbol.Camera;
                     this.webCamCaptureElement.Visibility = Visibility.Visible;
@@ -267,12 +279,20 @@ namespace IntelligentKioskSample.Controls
                             this.UpdateAutoCaptureState(faces);
                         }
 
-                        // Create our visualization using the frame dimensions and face results but run it on the UI thread.
-                        var previewFrameSize = new Windows.Foundation.Size(previewFrame.SoftwareBitmap.PixelWidth, previewFrame.SoftwareBitmap.PixelHeight);
-                        var ignored = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                        if (this.ShowFaceTracking)
                         {
-                            this.ShowFaceTrackingVisualization(previewFrameSize, faces);
-                        });
+                            // Create our visualization using the frame dimensions and face results but run it on the UI thread.
+                            var previewFrameSize = new Windows.Foundation.Size(previewFrame.SoftwareBitmap.PixelWidth, previewFrame.SoftwareBitmap.PixelHeight);
+                            var ignored = this.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                            {
+                                this.ShowFaceTrackingVisualization(previewFrameSize, faces);
+                            });
+                        }
+
+                        if (CameraFrameProcessor != null)
+                        {
+                            await CameraFrameProcessor.ProcessFrame(previewFrame, this.FaceTrackingVisualizationCanvas);
+                        }
                     }
                 }
             }
@@ -488,10 +508,13 @@ namespace IntelligentKioskSample.Controls
 
                 if (captureManager != null && captureManager.CameraStreamState != Windows.Media.Devices.CameraStreamState.Shutdown)
                 {
-                    this.FaceTrackingVisualizationCanvas.Children.Clear();
                     await this.captureManager.StopPreviewAsync();
 
-                    this.FaceTrackingVisualizationCanvas.Children.Clear();
+                    if (PerformFaceTracking)
+                    {
+                        this.FaceTrackingVisualizationCanvas.Children.Clear();
+                    }
+                    
                     this.webCamCaptureElement.Visibility = Visibility.Collapsed;
                 }
             }

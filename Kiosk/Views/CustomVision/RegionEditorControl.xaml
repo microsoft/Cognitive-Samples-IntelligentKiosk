@@ -1,0 +1,37 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Views.CustomVision.RegionEditorControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.CustomVision"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Canvas HorizontalAlignment="Left" VerticalAlignment="Top" Height="35" Margin="0, -35, 0, 0" >
+            <Grid Background="#aa003300" Margin="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+
+                <ComboBox VerticalAlignment="Center" ItemsSource="{Binding AvailableTags}" SelectedValuePath="Id" SelectedValue="{Binding Region.TagId, Mode=TwoWay}" DisplayMemberPath="Name" SelectionChanged="OnTagComboBoxSelectionChanged"/>
+
+                <Button VerticalAlignment="Center" Click="DeleteRegionClicked" Background="Transparent" Grid.Column="1">
+                    <Viewbox Width="12" Height="12">
+                        <SymbolIcon Symbol="Delete" />
+                    </Viewbox>
+                </Button>
+            </Grid>
+        </Canvas>
+        <Grid>
+            <Rectangle StrokeThickness="2" Stroke="Lime"/>
+            <Thumb Width="10" Height="10" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-4" Background="Lime" DragDelta="OnTopLeftDragDelta" PointerReleased="OnThumbReleased"/>
+            <Thumb Width="10" Height="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="-4" Background="Lime" DragDelta="OnBottomLeftDragDelta" PointerReleased="OnThumbReleased"/>
+            <Thumb Width="10" Height="10" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="-4" Background="Lime" DragDelta="OnTopRightDragDelta" PointerReleased="OnThumbReleased"/>
+            <Thumb Width="10" Height="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="-4" Background="Lime" DragDelta="OnBottomRightDragDelta" PointerReleased="OnThumbReleased"/>
+        </Grid>
+    </Grid>
+</UserControl>
