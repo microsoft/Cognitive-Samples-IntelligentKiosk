@@ -4,6 +4,7 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
+using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -114,6 +115,18 @@ namespace IntelligentKioskSample
             {
                 throw new Exception("Response data is missing");
             }
+        }
+
+        public static async Task TestTranslatorTextApiKeyAsync(string key)
+        {
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("Invalid API Key");
+            }
+
+            string testQuery = "Hello world";
+            var service = new TranslatorTextService(key);
+            var result = await service.DetectLanguageAsync(testQuery);
         }
 
         private static async Task<HttpResponseMessage> RequestAndAutoRetryWhenThrottled(Func<Task<HttpResponseMessage>> action)

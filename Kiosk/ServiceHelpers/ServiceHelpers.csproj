@@ -109,11 +109,16 @@
     <Compile Include="BingSearchHelper.cs" />
     <Compile Include="CoreUtil.cs" />
     <Compile Include="ErrorTrackingHelper.cs" />
+    <Compile Include="Extensions\HttpExtensions.cs" />
     <Compile Include="FaceListManager.cs" />
     <Compile Include="FaceServiceHelper.cs" />
     <Compile Include="ImageAnalyzer.cs" />
+    <Compile Include="Models\TranslationTextResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceBase.cs" />
     <Compile Include="TextAnalyticsHelper.cs" />
+    <Compile Include="TranslatorTextService.cs" />
+    <Compile Include="Utilities\HttpClientUtility.cs" />
     <Compile Include="VisionServiceHelper.cs" />
     <EmbeddedResource Include="Properties\ServiceHelpers.rd.xml" />
   </ItemGroup>
@@ -131,6 +136,7 @@
       <Version>6.1.7</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

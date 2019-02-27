@@ -257,6 +257,12 @@ namespace IntelligentKioskSample
                 this.CustomTextAnalyticsEndpoint = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["TranslatorTextApiKey"];
+            if (value != null)
+            {
+                this.TranslatorTextApiKey = value.ToString();
+            }
+
             // load mall kiosk demo custom settings from file as the content is too big to be saved as a string-like setting
             try
             {
@@ -533,6 +539,17 @@ namespace IntelligentKioskSample
             {
                 this.customTextAnalyticsEndpoint = value;
                 this.OnSettingChanged("CustomTextAnalyticsEndpoint", value);
+            }
+        }
+
+        private string translatorTextApiKey = string.Empty;
+        public string TranslatorTextApiKey
+        {
+            get { return translatorTextApiKey; }
+            set
+            {
+                this.translatorTextApiKey = value;
+                this.OnSettingChanged("TranslatorTextApiKey", value);
             }
         }
 
