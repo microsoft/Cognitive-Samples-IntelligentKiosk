@@ -282,7 +282,7 @@ namespace IntelligentKioskSample
 
         public string GetRegionEndpoint(string region)
         {
-            if (!string.IsNullOrEmpty(region) && AvailableApiRegions.Any(x => string.Compare(x, region, StringComparison.OrdinalIgnoreCase) > 0))
+            if (!string.IsNullOrEmpty(region) && AvailableApiRegions.Any(x => string.Equals(x, region, StringComparison.OrdinalIgnoreCase)))
             {
                 return $"https://{region.ToLower()}.api.cognitive.microsoft.com";
             }
