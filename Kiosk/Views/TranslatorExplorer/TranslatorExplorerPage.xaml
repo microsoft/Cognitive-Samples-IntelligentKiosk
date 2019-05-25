@@ -52,12 +52,10 @@
                                 <ColumnDefinition Width="auto"/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
-                            <ComboBox PlaceholderText="Auto-Detect" 
-                                      x:Name="inputLanguageComboBox" Margin="0,10"
+                            <ComboBox PlaceholderText="Auto-Detect" Margin="0,10"
                                       VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                                      ItemsSource="{Binding ElementName=mainPage, Path=InputLanguageCollection}" 
-                                      DisplayMemberPath="Name" 
-                                      SelectionChanged="InputLanguageComboBoxSelectionChanged">
+                                      ItemsSource="{Binding InputLanguageCollection}" DisplayMemberPath="Name"
+                                      SelectedItem="{Binding InputLanguage, Mode=TwoWay}">
                             </ComboBox>
                             <Button Grid.Column="1" Margin="10,0,0,0" ToolTipService.ToolTip="Suggestions" HorizontalAlignment="Right">
                                 <SymbolIcon Symbol="Favorite"/>
@@ -141,13 +139,13 @@
                                 <RowDefinition Height="auto"/>
                             </Grid.RowDefinitions>
                             <Grid Grid.Row="0" x:Name="webCamHostGrid" Visibility="Collapsed">
-                                <ctl:ImageWithFaceBorderUserControl x:Name="imageFromCameraWithFaces" BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" 
+                                <ctl:ImageWithFaceBorderUserControl x:Name="imageFromCameraWithFaces" BalloonBackground="Transparent" BalloonForeground="Transparent" 
                                                                     PerformComputerVisionAnalysis="True" PerformOCRAnalysis="True" DetectFacesOnLoad="True" />
 
                                 <ctl:CameraControl x:Name="cameraControl" FlowDirection="LeftToRight"/>
                             </Grid>
                             <Grid Grid.Row="0" x:Name="imageHostGrid" MaxHeight="350">
-                                <ctl:ImageWithFaceBorderUserControl x:Name="imageWithFacesControl" BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" 
+                                <ctl:ImageWithFaceBorderUserControl x:Name="imageWithFacesControl" BalloonBackground="Transparent" BalloonForeground="Transparent" 
                                                                 PerformComputerVisionAnalysis="True" PerformOCRAnalysis="True" DetectFacesOnLoad="True" />
                             </Grid>
 
@@ -175,11 +173,9 @@
             <Pivot Grid.Column="1">
                 <PivotItem>
                     <StackPanel>
-                        <ComboBox x:Name="outputLanguageComboBox" Margin="0,10" 
-                                      VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
-                                      ItemsSource="{Binding ElementName=mainPage, Path=OutputLanguageCollection}" 
-                                      DisplayMemberPath="Name" 
-                                      SelectionChanged="OutputLanguageComboBoxSelectionChanged">
+                        <ComboBox Margin="0,10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                                  ItemsSource="{Binding OutputLanguageCollection}" DisplayMemberPath="Name" 
+                                  SelectedItem="{Binding OutputLanguage, Mode=TwoWay}">
                         </ComboBox>
                         <Grid>
                             <ProgressRing x:Name="processingRing" Foreground="#FFC1C1B2" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center"/>

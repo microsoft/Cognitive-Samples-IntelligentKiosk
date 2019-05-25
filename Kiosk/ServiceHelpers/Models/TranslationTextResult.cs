@@ -189,7 +189,7 @@ namespace ServiceHelpers.Models
     public class LanguageDictionary : Language
     {
         /// <summary>
-        /// List of languages with alterative translations and examples for the query expressed in the source language. 
+        /// List of languages with alternative translations and examples for the query expressed in the source language. 
         /// </summary>
         [DataMember(Name = "translations")]
         public List<Language> Translations { get; set; }
