@@ -48,21 +48,79 @@ using Windows.UI.Xaml.Navigation;
 namespace IntelligentKioskSample.Views.TranslatorExplorer
 {
     [KioskExperience(Title = "Translator API Explorer", ImagePath = "ms-appx:/Assets/TranslatorExplorer.png")]
-    public sealed partial class TranslatorExplorerPage : Page
+    public sealed partial class TranslatorExplorerPage : Page, INotifyPropertyChanged
     {
         private readonly int autoDetectTimeTickInSecond = 1;
         private readonly int maxCharactersForAlternativeTranslation = 100;
         private readonly int panelHeight = 350;
-        private readonly LanguageDictionary DefaultInputLanguage = new LanguageDictionary { Code = "en", Name = "English" };
+        private static readonly Language DefaultLanguage = new Language { Code = "en", Name = "English" };
 
         private TranslatorTextService translatorTextService;
-        private string outputLanguageName = "spanish";
         private string previousTranslatedText = string.Empty;
         private bool translateTextProcessing = false;
+        private Language customOutputLanguage;
         private DispatcherTimer timer;
-        private LanguageDictionary inputLanguage;
+        private Dictionary<string, List<Language>> alternativeTranslationDict = new Dictionary<string, List<Language>>();
 
-        public ObservableCollection<LanguageDictionary> InputLanguageCollection { get; } = new ObservableCollection<LanguageDictionary>();
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void NotifyPropertyChanged(string name)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
+        private Language inputLanguage;
+        public Language InputLanguage
+        {
+            get { return inputLanguage; }
+            set
+            {
+                if (inputLanguage != value)
+                {
+                    inputLanguage = value;
+                    NotifyPropertyChanged("InputLanguage");
+                    InputLanguageChanged();
+                }
+            }
+        }
+
+        private Language outputLanguage;
+        public Language OutputLanguage
+        {
+            get { return outputLanguage; }
+            set
+            {
+                if (outputLanguage != value)
+                {
+                    outputLanguage = value;
+                    NotifyPropertyChanged("OutputLanguage");
+                    OutputLanguageChanged();
+                }
+            }
+        }
+
+        private void InputLanguageChanged()
+        {
+            if (InputLanguage != null)
+            {
+                // update output language combobox
+                string outputLangCode = customOutputLanguage?.Code ?? OutputLanguage?.Code;
+                OutputLanguageCollection.Clear();
+                OutputLanguageCollection.AddRange(InputLanguageCollection.Where(x => x.Code != InputLanguage.Code));
+
+                OutputLanguage = OutputLanguageCollection.FirstOrDefault(l => l.Code.Equals(outputLangCode ?? DefaultLanguage.Code, StringComparison.OrdinalIgnoreCase)) ?? OutputLanguageCollection.FirstOrDefault();
+                customOutputLanguage = null;
+
+                // Pivot Image
+                this.detectedLanguageTextBox.Text = $"Detected Language: {InputLanguage.Name}";
+            }
+        }
+
+        private async void OutputLanguageChanged()
+        {
+            await TranslateTextAsync();
+        }
+
+        public ObservableCollection<Language> InputLanguageCollection { get; } = new ObservableCollection<Language>();
         public ObservableCollection<Language> OutputLanguageCollection { get; } = new ObservableCollection<Language>();
         public ObservableCollection<AlternativeTranslations> AlternativeTranslationCollection { get; } = new ObservableCollection<AlternativeTranslations>();
         public ObservableCollection<SamplePhraseViewModel> SamplePhraseCollection { get; set; } = new ObservableCollection<SamplePhraseViewModel>();
@@ -119,21 +177,20 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
         {
             try
             {
-                SupportedLanguages supportedLanguages = await this.translatorTextService?.GetSupportedLanguagesAsync();
-                if (supportedLanguages != null)
-                {
-                    List<LanguageDictionary> languageDictionaryList = supportedLanguages.Dictionary
+                SupportedLanguages supportedLanguages = await this.translatorTextService.GetSupportedLanguagesAsync();
+                this.alternativeTranslationDict = supportedLanguages.Dictionary.ToDictionary(l => l.Key, l => l.Value.Translations);
+                List<Language> translationLanguageList = supportedLanguages.Translation
                     .Select(v =>
                     {
-                        LanguageDictionary languageDict = v.Value;
-                        languageDict.Code = v.Key;
-                        return languageDict;
+                        Language translationLang = v.Value;
+                        translationLang.Code = v.Key;
+                        return translationLang;
                     })
-                    .OrderBy(v => v.Name)
-                    .ToList();
-                    InputLanguageCollection.Clear();
-                    InputLanguageCollection.AddRange(languageDictionaryList);
-                }
+                    .OrderBy(v => v.Name).ToList();
+
+                InputLanguageCollection.AddRange(translationLanguageList);
+                OutputLanguageCollection.AddRange(translationLanguageList);
+                OutputLanguage = OutputLanguageCollection.FirstOrDefault(l => l.Code.Equals(DefaultLanguage.Code, StringComparison.OrdinalIgnoreCase));
             }
             catch (Exception ex)
             {
@@ -150,7 +207,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
         private async void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ClearOutputData();
-            this.previousInputLanguage = null;
             switch (this.pivotControl.SelectedIndex)
             {
                 case 0: // Text Pivot
@@ -179,40 +235,17 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
         }
 
         #region Pivot Text
-        private LanguageDictionary previousInputLanguage = null;
-        private void InputLanguageComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            this.inputLanguage = this.inputLanguageComboBox.SelectedValue as LanguageDictionary;
-            if (this.inputLanguage == null)
-            {
-                return;
-            }
-            UpdateOutputLanguageCombobox(this.inputLanguage);
-        }
-
-        private async void OutputLanguageComboBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            await TranslateTextAsync();
-        }
 
         private void OnSwapLanguageButtonClicked(object sender, RoutedEventArgs e)
         {
-            var inputLanguage = this.inputLanguageComboBox.SelectedValue as LanguageDictionary;
-            var outputLanguage = this.outputLanguageComboBox.SelectedValue as Language;
-            if (inputLanguage == null || outputLanguage == null)
+            if (InputLanguage != null && OutputLanguage != null)
             {
-                return;
-            }
+                this.inputText.Text = this.outputText.Text;
+                this.previousTranslatedText = this.inputText.Text;
+                this.outputText.Text = string.Empty;
 
-            this.inputText.Text = this.outputText.Text;
-            this.previousTranslatedText = this.inputText.Text;
-            this.outputText.Text = string.Empty;
-            LanguageDictionary newInputLanguage = InputLanguageCollection.FirstOrDefault(l => l.Code.Equals(outputLanguage.Code, StringComparison.OrdinalIgnoreCase));
-            if (newInputLanguage != null)
-            {
-                Language newOutputLanguage = newInputLanguage.Translations?.FirstOrDefault(l => l.Code.Equals(inputLanguage.Code, StringComparison.OrdinalIgnoreCase));
-                this.outputLanguageName = newOutputLanguage?.Name ?? this.outputLanguageName;
-                this.inputLanguageComboBox.SelectedValue = newInputLanguage;
+                customOutputLanguage = InputLanguage;
+                InputLanguage = InputLanguageCollection.FirstOrDefault(l => l.Code.Equals(OutputLanguage.Code, StringComparison.OrdinalIgnoreCase));
             }
         }
 
@@ -240,8 +273,7 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
 
         private void SamplePhraseItemInvoked(TreeView sender, TreeViewItemInvokedEventArgs args)
         {
-            var node = args.InvokedItem as SamplePhraseViewModel;
-            if (node != null && !node.IsGroupHeader)
+            if (args.InvokedItem is SamplePhraseViewModel node && !node.IsGroupHeader)
             {
                 this.favoriteTextPickerFlyout.Hide();
                 this.inputText.Text = node.Text;
@@ -418,47 +450,16 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
         }
         #endregion
 
-        private void UpdateOutputLanguageCombobox(LanguageDictionary inputLanguage)
-        {
-            if (inputLanguage != null && previousInputLanguage != inputLanguage)
-            {
-                // update output language combobox
-                List<Language> outputLanguages = inputLanguage?.Translations?.OrderBy(v => v.Name).ToList() ?? new List<Language>();
-                OutputLanguageCollection.Clear();
-                OutputLanguageCollection.AddRange(outputLanguages);
-                this.outputLanguageComboBox.SelectedValue =
-                    OutputLanguageCollection.FirstOrDefault(v => v.Name.Equals(outputLanguageName, StringComparison.OrdinalIgnoreCase)) ??
-                    OutputLanguageCollection.FirstOrDefault();
-            }
-            previousInputLanguage = inputLanguage;
-        }
-
         private async Task DetectedLanguageAsync(string text)
         {
-            if (string.IsNullOrEmpty(text))
-            {
-                return;
-            }
-
             try
             {
-                DetectedLanguageResult detectedLanguageResult = await this.translatorTextService?.DetectLanguageAsync(text);
-                if (detectedLanguageResult != null)
+                if (!string.IsNullOrEmpty(text))
                 {
-                    this.inputLanguage = InputLanguageCollection
-                        .FirstOrDefault(l => l.Code.Equals(detectedLanguageResult.Language, StringComparison.OrdinalIgnoreCase));
-                    if (this.inputLanguage != null)
+                    DetectedLanguageResult detectedLanguageResult = await this.translatorTextService.DetectLanguageAsync(text);
+                    if (detectedLanguageResult != null)
                     {
-                        switch (this.pivotControl.SelectedIndex)
-                        {
-                            case 0: // Pivot Text
-                                this.inputLanguageComboBox.SelectedValue = this.inputLanguage;
-                                break;
-                            case 1: // Pivot Image
-                                this.detectedLanguageTextBox.Text = $"Detected Language: {this.inputLanguage.Name}";
-                                UpdateOutputLanguageCombobox(this.inputLanguage);
-                                break;
-                        }
+                        InputLanguage = InputLanguageCollection.FirstOrDefault(l => l.Code.Equals(detectedLanguageResult.Language, StringComparison.OrdinalIgnoreCase));
                     }
                 }
             }
@@ -481,7 +482,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
                 translateTextProcessing = true;
 
                 string inputText = string.Empty;
-                this.inputLanguage = this.inputLanguage ?? DefaultInputLanguage;
                 switch (this.pivotControl.SelectedIndex)
                 {
                     case 0:
@@ -492,20 +492,18 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
                         break;
                 }
 
-                var outputLanguage = this.outputLanguageComboBox.SelectedValue as Language;
-                List<string> languageCodeList = outputLanguage != null ? new List<string>() { outputLanguage.Code } : new List<string>();
-                if (!string.IsNullOrEmpty(inputText) && languageCodeList.Any())
+                if (!string.IsNullOrEmpty(inputText) && !string.IsNullOrEmpty(OutputLanguage?.Code))
                 {
-                    TranslationTextResult translationTextResult = await this.translatorTextService?.TranslateTextAsync(inputText, languageCodeList);
+                    TranslationTextResult translationTextResult = await this.translatorTextService.TranslateTextAsync(inputText, new List<string>() { OutputLanguage.Code });
                     if (translationTextResult != null)
                     {
-                        Translation translation = translationTextResult.Translations?.FirstOrDefault(t => t.To.Equals(outputLanguage.Code, StringComparison.OrdinalIgnoreCase));
+                        Translation translation = translationTextResult.Translations?.FirstOrDefault(t => t.To.Equals(OutputLanguage.Code, StringComparison.OrdinalIgnoreCase));
                         this.outputText.Text = translation?.Text ?? string.Empty;
                     }
                     this.previousTranslatedText = inputText;
 
                     // Provides alternative translations for a word and a small number of idiomatic phrases
-                    await UpdateAlternativeTranslationsAsync(inputText, this.inputLanguage.Code, outputLanguage.Code);
+                    await UpdateAlternativeTranslationsAsync(inputText, InputLanguage.Code, OutputLanguage.Code);
                 }
                 else
                 {
@@ -525,7 +523,7 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
 
         private async Task UpdateAlternativeTranslationsAsync(string inputText, string inputLanguageCode, string outputLanguageCode)
         {
-            if (inputText == null || inputText.Length > maxCharactersForAlternativeTranslation)
+            if (inputText?.Length > maxCharactersForAlternativeTranslation || string.IsNullOrEmpty(inputLanguageCode) || string.IsNullOrEmpty(outputLanguageCode))
             {
                 return;
             }
@@ -534,28 +532,32 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
             {
                 AlternativeTranslationCollection.Clear();
                 this.lookupLanguageTextBlock.Text = string.Empty;
-                LookupLanguage lookupLanguage = await this.translatorTextService?.GetDictionaryLookup(inputText, inputLanguageCode, outputLanguageCode);
-                if (lookupLanguage?.Translations != null && lookupLanguage.Translations.Any())
-                {
-                    var alternativeTranslations = new List<AlternativeTranslations>();
-                    Dictionary<string, List<LookupTranslations>> groupedTranslations =
-                        lookupLanguage.Translations.GroupBy(t => t.PosTag).ToDictionary(k => k.Key, v => v.ToList());
-                    foreach (var groupedTranslation in groupedTranslations)
-                    {
-                        alternativeTranslations.Add(new AlternativeTranslations()
-                        {
-                            Tag = groupedTranslation.Key,
-                            Translations = groupedTranslation.Value.Select(v => new CustomLookupTranslations
-                            {
-                                DisplayTarget = v.DisplayTarget,
-                                BackTranslations = string.Join(", ", v.BackTranslations?.Select(t => t.DisplayText).ToList())
-                            }).ToList()
-                        });
-                    }
 
-                    // Update alternative translations
-                    this.lookupLanguageTextBlock.Text = $"Translations of '{this.inputText.Text}'";
-                    AlternativeTranslationCollection.AddRange(alternativeTranslations);
+                if (alternativeTranslationDict.ContainsKey(inputLanguageCode) &&
+                    alternativeTranslationDict[inputLanguageCode].Any(t => t.Code.Equals(outputLanguageCode, StringComparison.OrdinalIgnoreCase)))
+                {
+                    LookupLanguage lookupLanguage = await this.translatorTextService.GetDictionaryLookup(inputText, inputLanguageCode, outputLanguageCode);
+                    if (lookupLanguage?.Translations != null && lookupLanguage.Translations.Any())
+                    {
+                        var alternativeTranslations = new List<AlternativeTranslations>();
+                        Dictionary<string, List<LookupTranslations>> groupedTranslations = lookupLanguage.Translations.GroupBy(t => t.PosTag).ToDictionary(k => k.Key, v => v.ToList());
+                        foreach (var groupedTranslation in groupedTranslations)
+                        {
+                            alternativeTranslations.Add(new AlternativeTranslations()
+                            {
+                                Tag = groupedTranslation.Key,
+                                Translations = groupedTranslation.Value.Select(v => new CustomLookupTranslations
+                                {
+                                    DisplayTarget = v.DisplayTarget,
+                                    BackTranslations = string.Join(", ", v.BackTranslations?.Select(t => t.DisplayText).ToList())
+                                }).ToList()
+                            });
+                        }
+
+                        // Update alternative translations
+                        this.lookupLanguageTextBlock.Text = $"Translations of '{this.inputText.Text}'";
+                        AlternativeTranslationCollection.AddRange(alternativeTranslations);
+                    }
                 }
             }
             catch (Exception ex)
