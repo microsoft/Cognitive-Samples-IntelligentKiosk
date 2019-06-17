@@ -468,11 +468,11 @@ namespace IntelligentKioskSample.Controls
                     {
                         foreach (var word in line.Words)
                         {
-                            int[] boundingBox = word?.BoundingBox?.ToArray() ?? new int[] { };
+                            double[] boundingBox = word?.BoundingBox?.ToArray() ?? new double[] { };
                             if (boundingBox.Length == 8)
                             {
-                                double minLeft = renderedImageXTransform * (new List<int>() { boundingBox[0], boundingBox[2], boundingBox[4], boundingBox[6] }).Min();
-                                double minTop = renderedImageYTransform * (new List<int>() { boundingBox[1], boundingBox[3], boundingBox[5], boundingBox[7] }).Min();
+                                double minLeft = renderedImageXTransform * (new List<double>() { boundingBox[0], boundingBox[2], boundingBox[4], boundingBox[6] }).Min();
+                                double minTop = renderedImageYTransform * (new List<double>() { boundingBox[1], boundingBox[3], boundingBox[5], boundingBox[7] }).Min();
                                 var points = new PointCollection()
                                 {
                                     new Windows.Foundation.Point(boundingBox[0] * renderedImageXTransform - minLeft, boundingBox[1] * renderedImageYTransform - minTop),

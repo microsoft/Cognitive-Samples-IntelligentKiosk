@@ -64,7 +64,7 @@ namespace IntelligentKioskSample
                     Endpoint = apiEndpoint
                 };
 
-                await client.SentimentAsync(
+                await client.SentimentAsync(multiLanguageBatchInput:
                         new MultiLanguageBatchInput(
                             new List<MultiLanguageInput>()
                             {
