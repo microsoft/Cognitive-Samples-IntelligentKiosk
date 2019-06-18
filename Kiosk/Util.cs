@@ -322,7 +322,7 @@ namespace IntelligentKioskSample
         private static async Task<Tuple<double, double>> ResizePhoto(Stream photo, int height, IRandomAccessStream resultStream)
         {
             WriteableBitmap wb = new WriteableBitmap(1, 1);
-            wb = await wb.FromStream(photo.AsRandomAccessStream());
+            wb = await BitmapFactory.FromStream(photo.AsRandomAccessStream());
 
             int originalWidth = wb.PixelWidth;
             int originalHeight = wb.PixelHeight;
