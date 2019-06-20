@@ -145,6 +145,14 @@ namespace IntelligentKioskSample.Controls
             new PropertyMetadata(false)
             );
 
+        public static readonly DependencyProperty ShowFaceLandmarksProperty =
+            DependencyProperty.Register(
+            "ShowFaceLandmarks",
+            typeof(bool),
+            typeof(ImageWithFaceBorderUserControl),
+            new PropertyMetadata(false)
+            );
+
         public static readonly DependencyProperty PerformComputerVisionAnalysisProperty =
             DependencyProperty.Register(
             "PerformComputerVisionAnalysis",
@@ -227,6 +235,12 @@ namespace IntelligentKioskSample.Controls
         {
             get { return (bool)GetValue(DetectFaceLandmarksProperty); }
             set { SetValue(DetectFaceLandmarksProperty, (bool)value); }
+        }
+
+        public bool ShowFaceLandmarks
+        {
+            get { return (bool)GetValue(ShowFaceLandmarksProperty); }
+            set { SetValue(ShowFaceLandmarksProperty, value); }
         }
 
         public bool PerformComputerVisionAnalysis
@@ -331,7 +345,7 @@ namespace IntelligentKioskSample.Controls
                     faceUI.BalloonForeground = this.BalloonForeground;
                     faceUI.ShowFaceRectangle(face.FaceRectangle.Width * renderedImageXTransform, face.FaceRectangle.Height * renderedImageYTransform);
 
-                    if (this.DetectFaceLandmarks)
+                    if (this.ShowFaceLandmarks)
                     {
                         faceUI.ShowFaceLandmarks(renderedImageXTransform, renderedImageYTransform, face);
                     }
