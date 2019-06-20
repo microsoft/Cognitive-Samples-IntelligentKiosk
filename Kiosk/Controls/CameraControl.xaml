@@ -9,17 +9,31 @@
     x:Name="cameraControl"
     d:DesignHeight="300"
     d:DesignWidth="400"
+    Unloaded="ControlUnloaded"
     FlowDirection="RightToLeft">
 
     <Grid FlowDirection="LeftToRight">
         <CaptureElement x:Name="webCamCaptureElement" FlowDirection="{Binding ElementName=cameraControl, Path=FlowDirection}" />
         <Canvas x:Name="FaceTrackingVisualizationCanvas" FlowDirection="{Binding ElementName=cameraControl, Path=FlowDirection}" />
 
-        <Grid x:Name="commandBar" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="2" >
-            <Button Opacity="0.8" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="#FF222222" BorderBrush="Transparent" Click="CameraControlButtonClick" >
-                <SymbolIcon x:Name="cameraControlSymbol" Margin="6" Symbol="Camera"></SymbolIcon>
+        <Grid x:Name="commandBar" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="8" Visibility="Collapsed">
+            <Button HorizontalAlignment="Right" Background="Transparent" Click="CameraControlButtonClick" CornerRadius="25" Padding="0">
+                <Grid>
+                    <Ellipse Width="48" Height="48" Fill="White"/>
+                    <Ellipse Width="45" Height="45" Stroke="Black"/>
+                    <FontIcon x:Name="cameraControlFontIcon" FontFamily="Segoe MDL2 Assets" Glyph="&#xE722;" Foreground="Black"/>
+                </Grid>
+            </Button>
+            <Button x:Name="cameraSwitchButton" HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Click="CameraSwitchtButtonClick" CornerRadius="20" Padding="0">
+                <Grid>
+                    <Ellipse Width="40" Height="40" Fill="#ff222222"/>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE89E;" />
+                </Grid>
             </Button>
         </Grid>
+        <Border x:Name="loadingOverlay">
+            <TextBlock Text="Starting camera..." HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+        </Border>
     </Grid>
 
 </UserControl>

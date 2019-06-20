@@ -216,7 +216,7 @@ namespace ServiceHelpers
             }
         }
 
-        public async Task AnalyzeImageAsync(bool detectCelebrities = false, IList<VisualFeatureTypes> visualFeatures = null)
+        public async Task AnalyzeImageAsync(IList<Details> details = null, IList<VisualFeatureTypes> visualFeatures = null)
         {
             try
             {
@@ -230,14 +230,14 @@ namespace ServiceHelpers
                     this.AnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(
                         this.ImageUrl,
                         visualFeatures,
-                        detectCelebrities ? new List<Details> { Details.Celebrities } : null);
+                        details);
                 }
                 else if (this.GetImageStreamCallback != null)
                 {
                     this.AnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(
                         this.GetImageStreamCallback,
                         visualFeatures,
-                        detectCelebrities ? new List<Details> { Details.Celebrities } : null);
+                        details);
                 }
             }
             catch (Exception e)

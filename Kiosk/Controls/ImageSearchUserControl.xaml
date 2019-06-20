@@ -41,7 +41,7 @@
                 <Button Background="Transparent" ToolTipService.ToolTip="Take photo from webcam" Visibility="{Binding ElementName=SearchControl, Path=EnableCameraCapture, Converter={StaticResource bolleanToVisibilityConverter}}" >
                     <Button.Flyout>
                         <Flyout x:Name="cameraCaptureFlyout" Opened="OnCameraFlyoutOpened" Closed="OnCameraFlyoutClosed" >
-                            <Grid Width="420" Height="400" >
+                            <Grid Width="400" MinHeight="380">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition/>

@@ -392,7 +392,7 @@ namespace IntelligentKioskSample.Controls
                 List<Task> tasks = new List<Task>();
                 if (img.AnalysisResult == null)
                 {
-                    tasks.Add(img.AnalyzeImageAsync(detectCelebrities: true));
+                    tasks.Add(img.AnalyzeImageAsync(new List<Details> { Details.Celebrities, Details.Landmarks }));
                 }
 
                 if (this.PerformOCRAnalysis && (img.TextOperationResult == null || img.TextRecognitionMode != this.TextRecognitionMode))
