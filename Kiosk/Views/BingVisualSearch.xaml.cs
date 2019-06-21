@@ -35,7 +35,6 @@ using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -52,28 +51,14 @@ namespace IntelligentKioskSample.Views
         {
             this.InitializeComponent();
 
-            this.cameraControl.ImageCaptured += CameraControl_ImageCaptured;
-            this.cameraControl.CameraRestarted += CameraControl_CameraRestarted;
-
-            this.favoritePhotosGridView.ItemsSource = new string[] 
-                {
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/1.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/3.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/4.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/11.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/12.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/13.jpg",
-                };
-        }
-
-        private async void CameraControl_CameraRestarted(object sender, EventArgs e)
-        {
-            // We induce a delay here to give the camera some time to start rendering before we hide the last captured photo.
-            // This avoids a black flash.
-            await Task.Delay(500);
-
-            this.imageFromCameraWithFaces.Visibility = Visibility.Collapsed;
-            this.resultsDetails.Visibility = Visibility.Collapsed;
+            this.imagePicker.SetSuggestedImageList(
+                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/1.jpg",
+                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/3.jpg",
+                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/4.jpg",
+                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/11.jpg",
+                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/12.jpg",
+                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/13.jpg"
+            );
         }
 
         private void DisplayProcessingUI()
@@ -134,35 +119,18 @@ namespace IntelligentKioskSample.Views
 
             if (result == null || !result.Any())
             {
-                this.searchErrorTextBlock.Visibility = Visibility.Visible;
+                ShowErrorResult();
             }
-        }
-
-        private async void CameraControl_ImageCaptured(object sender, ImageAnalyzer e)
-        {
-            this.UpdateActivePhoto(e);
-
-            this.imageFromCameraWithFaces.DataContext = e;
-            this.imageFromCameraWithFaces.Visibility = Visibility.Visible;
-
-            await this.cameraControl.StopStreamAsync();
         }
 
         private void UpdateActivePhoto(ImageAnalyzer img)
         {
             this.currentPhoto = img;
 
-            this.landingMessage.Visibility = Visibility.Collapsed;
             this.resultsDetails.Visibility = Visibility.Visible;
 
             this.DisplayProcessingUI();
             this.UpdateResults(img);
-        }
-
-        protected override async void OnNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            await this.cameraControl.StopStreamAsync();
-            base.OnNavigatingFrom(e);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -175,77 +143,16 @@ namespace IntelligentKioskSample.Views
             base.OnNavigatedTo(e);
         }
 
-        private async void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)
+        private void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)
         {
-            this.favoritePhotosGridView.SelectedItem = null;
-
-            this.imageSearchFlyout.Hide();
             ImageAnalyzer image = args.First();
             image.ShowDialogOnFaceApiErrors = true;
 
             this.imageWithFacesControl.Visibility = Visibility.Visible;
-            this.webCamHostGrid.Visibility = Visibility.Collapsed;
-            await this.cameraControl.StopStreamAsync();
 
             this.UpdateActivePhoto(image);
 
             this.imageWithFacesControl.DataContext = image;
-        }
-
-        private void OnImageSearchCanceled(object sender, EventArgs e)
-        {
-            this.imageSearchFlyout.Hide();
-        }
-
-        private async void OnWebCamButtonClicked(object sender, RoutedEventArgs e)
-        {
-            await StartWebCameraAsync();
-        }
-
-        private async Task StartWebCameraAsync()
-        {
-            this.favoritePhotosGridView.SelectedItem = null;
-            this.landingMessage.Visibility = Visibility.Collapsed;
-            this.webCamHostGrid.Visibility = Visibility.Visible;
-            this.imageWithFacesControl.Visibility = Visibility.Collapsed;
-            this.resultsDetails.Visibility = Visibility.Collapsed;
-
-            await this.cameraControl.StartStreamAsync();
-            await Task.Delay(250);
-            this.imageFromCameraWithFaces.Visibility = Visibility.Collapsed;
-
-            UpdateWebCamHostGridSize();
-        }
-
-        private void OnPageSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            UpdateWebCamHostGridSize();
-        }
-
-        private void UpdateWebCamHostGridSize()
-        {
-            this.webCamHostGrid.Height = this.webCamHostGrid.ActualWidth / (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
-        }
-
-        private async void OnFavoriteSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            this.favoriteImagePickerFlyout.Hide();
-
-            if (!string.IsNullOrEmpty((string)this.favoritePhotosGridView.SelectedValue))
-            {
-                this.landingMessage.Visibility = Visibility.Collapsed;
-
-                ImageAnalyzer image = new ImageAnalyzer((string)this.favoritePhotosGridView.SelectedValue);
-                image.ShowDialogOnFaceApiErrors = true;
-
-                this.imageWithFacesControl.Visibility = Visibility.Visible;
-                this.webCamHostGrid.Visibility = Visibility.Collapsed;
-                await this.cameraControl.StopStreamAsync();
-
-                this.UpdateActivePhoto(image);
-
-                this.imageWithFacesControl.DataContext = image;
-            }
         }
 
         private void OnResultTypeSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -254,6 +161,25 @@ namespace IntelligentKioskSample.Views
             {
                 this.UpdateActivePhoto(this.currentPhoto);
             }
+        }
+
+        private void ShowErrorResult()
+        {
+            string message = string.Empty;
+            if (this.similarImagesResultType.IsSelected)
+            {
+                message = "No similar images found.\r\nPlease try another image.";
+            }
+            else if (this.celebrityResultType.IsSelected)
+            {
+                message = "No similar celebrities found.\r\nPlease try an image with some faces in it.";
+            }
+            else if (this.similarProductsResultType.IsSelected)
+            {
+                message = "No similar products found.\r\nPlease try a close-up image of some product.";
+            }
+            this.searchErrorTextBlock.Text = message;
+            this.searchErrorTextBlock.Visibility = Visibility.Visible;
         }
     }
 

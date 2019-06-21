@@ -6,7 +6,6 @@
     xmlns:ctl="using:IntelligentKioskSample.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    SizeChanged="OnPageSizeChanged"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -78,39 +77,12 @@
         </Grid.RowDefinitions>
 
         <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
-           
-            <AppBarButton Icon="Favorite" Label="Suggestions">
-                <AppBarButton.Flyout>
-                    <Flyout x:Name="favoriteImagePickerFlyout">
-                        <GridView x:Name="favoritePhotosGridView" SelectionMode="Single" SelectionChanged="OnFavoriteSelectionChanged" Width="380">
-                            <GridView.ItemTemplate>
-                                <DataTemplate>
-                                    <Image Width="120" Height="120" Source="{Binding}"/>
-                                </DataTemplate>
-                            </GridView.ItemTemplate>
-                        </GridView>
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-
-            <AppBarButton Icon="Video" Label="WebCam"  Click="OnWebCamButtonClicked"/>
-            
-            <AppBarButton Icon="Globe" Label="Search" x:Name="PicturesAppBarButton" >
-                <AppBarButton.Flyout>
-                    <Flyout x:Name="imageSearchFlyout">
-                        <ctl:ImageSearchUserControl ImageContentType="" ClearStateWhenClosed="False" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" />
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-
             <CommandBar.Content>
                 <TextBlock Text="Bing Visual Search" Style="{ThemeResource PageTitleTextBlockStyle}"/>
             </CommandBar.Content>
         </CommandBar>
-
-        <TextBlock x:Name="landingMessage" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Select a photo to start" Style="{StaticResource HeaderTextBlockStyle}"/>
-
-        <Grid Grid.Row="1"  >
+        
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.15*"/>
                 <RowDefinition/>
@@ -119,19 +91,10 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.1*"/>
                 <ColumnDefinition/>
-                <ColumnDefinition Width="0.6*" />
+                <ColumnDefinition Width="0.6*"/>
             </Grid.ColumnDefinitions>
-            
-            <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Top">
 
-                <Grid x:Name="webCamHostGrid" Visibility="Collapsed" >
-                    <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" FlowDirection="RightToLeft" x:Name="imageFromCameraWithFaces" />
-                    <ctl:CameraControl x:Name="cameraControl"/>
-                </Grid>
-
-                <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" x:Name="imageWithFacesControl" />
-
-            </Grid>
+            <ctl:ImageWithFaceBorderUserControl Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" x:Name="imageWithFacesControl" />
 
             <StackPanel Orientation="Horizontal" Margin="6" HorizontalAlignment="Right" Grid.Column="2" VerticalAlignment="Top">
                 <TextBlock Text="Search type:" VerticalAlignment="Center" Margin="0,0,6,0" />
@@ -146,10 +109,13 @@
                 <Grid>
                     <GridView x:Name="resultsGridView" IsItemClickEnabled="False" SelectionMode="None" ItemTemplateSelector="{StaticResource SearchResultTemplateSelector}"/>
                     <ProgressRing x:Name="progressRing" Width="100" Height="100" Foreground="White"/>
-                    <TextBlock x:Name="searchErrorTextBlock" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" Text="Couldn't find any results.&#x0a;Try another photo or a different type of search." />
+                    <TextBlock x:Name="searchErrorTextBlock" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}"/>
                 </Grid>
             </ScrollViewer>
 
         </Grid>
+
+        <ctl:ImagePickerControl x:Name="imagePicker" SubheaderText="We will look for similar images, celebrities or products on the internet" ImageContentType="" Grid.Row="1" OnImageSearchCompleted="OnImageSearchCompleted" />
+
     </Grid>
 </Page>

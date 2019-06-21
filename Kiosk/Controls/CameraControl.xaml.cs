@@ -115,7 +115,21 @@ namespace IntelligentKioskSample.Controls
             set
             {
                 this.enableAutoCaptureMode = value;
-                this.commandBar.Visibility = this.enableAutoCaptureMode ? Visibility.Collapsed : Visibility.Visible;
+                this.EnableCameraControls = !enableAutoCaptureMode;
+            }
+        }
+
+        private bool enableCameraControls = true;
+        public bool EnableCameraControls
+        {
+            get
+            {
+                return enableCameraControls;
+            }
+            set
+            {
+                this.enableCameraControls = value;
+                this.commandBar.Visibility = this.enableCameraControls ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
@@ -136,17 +150,35 @@ namespace IntelligentKioskSample.Controls
         private IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> detectedFacesFromPreviousFrame;
         private DateTime timeSinceWaitingForStill;
         private DateTime lastTimeWhenAFaceWasDetected;
+        private bool isStreamingOnRealtimeResolution = false;
+        private DeviceInformation lastUsedCamera;
 
         private IRealTimeDataProvider realTimeDataProvider;
 
         public CameraControl()
         {
             this.InitializeComponent();
+
+            Window.Current.Activated += CurrentWindowActivationStateChanged;
+        }
+
+        private async void CurrentWindowActivationStateChanged(object sender, Windows.UI.Core.WindowActivatedEventArgs e)
+        {
+            if ((e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.CodeActivated ||
+                e.WindowActivationState == Windows.UI.Core.CoreWindowActivationState.PointerActivated) &&
+                captureManager?.CameraStreamState == CameraStreamState.Shutdown &&
+                webCamCaptureElement.Visibility == Visibility.Visible)
+            {
+                // When an app is running full screen and it loses focus due to user interaction, Windows will shut the camera down.
+                // We detect here when the window regains focus and trigger a restart of the camera, but only if detect the camera was supposed to 
+                // be visible and its state is actually Shutdown.
+                await StartStreamAsync(isForRealTimeProcessing: isStreamingOnRealtimeResolution, desiredCamera: lastUsedCamera);
+            }
         }
 
         #region Camera stream processing
 
-        public async Task StartStreamAsync(bool isForRealTimeProcessing = false)
+        public async Task StartStreamAsync(bool isForRealTimeProcessing = false, DeviceInformation desiredCamera = null)
         {
             try
             {
@@ -154,6 +186,9 @@ namespace IntelligentKioskSample.Controls
                     captureManager.CameraStreamState == CameraStreamState.Shutdown ||
                     captureManager.CameraStreamState == CameraStreamState.NotStreaming)
                 {
+                    loadingOverlay.Visibility = Visibility.Visible;
+                    this.commandBar.Visibility = Visibility.Collapsed;
+
                     if (captureManager != null)
                     {
                         captureManager.Dispose();
@@ -164,13 +199,27 @@ namespace IntelligentKioskSample.Controls
                     MediaCaptureInitializationSettings settings = new MediaCaptureInitializationSettings();
                     var allCameras = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
                     var selectedCamera = allCameras.FirstOrDefault(c => c.Name == SettingsHelper.Instance.CameraName);
+                    if (desiredCamera != null)
+                    {
+                        selectedCamera = desiredCamera;
+                    }
+                    else if (lastUsedCamera != null)
+                    {
+                        selectedCamera = lastUsedCamera;
+                    }
+
                     if (selectedCamera != null)
                     {
                         settings.VideoDeviceId = selectedCamera.Id;
+                        lastUsedCamera = selectedCamera;
                     }
 
+                    cameraSwitchButton.Visibility = allCameras.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
+
                     await captureManager.InitializeAsync(settings);
+
                     await SetVideoEncodingToHighestResolution(isForRealTimeProcessing);
+                    isStreamingOnRealtimeResolution = isForRealTimeProcessing;
 
                     this.webCamCaptureElement.Source = captureManager;
                 }
@@ -196,8 +245,10 @@ namespace IntelligentKioskSample.Controls
                     this.videoProperties = this.captureManager.VideoDeviceController.GetMediaStreamProperties(MediaStreamType.VideoPreview) as VideoEncodingProperties;
                     await captureManager.StartPreviewAsync();
 
-                    this.cameraControlSymbol.Symbol = Symbol.Camera;
                     this.webCamCaptureElement.Visibility = Visibility.Visible;
+
+                    loadingOverlay.Visibility = Visibility.Collapsed;
+                    commandBar.Visibility = enableCameraControls ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
             catch (Exception ex)
@@ -566,25 +617,19 @@ namespace IntelligentKioskSample.Controls
 
         private void OnImageCaptured(ImageAnalyzer imageWithFace)
         {
-            if (this.ImageCaptured != null)
-            {
-                this.ImageCaptured(this, imageWithFace);
-            }
+            this.ImageCaptured?.Invoke(this, imageWithFace);
         }
 
         private void OnAutoCaptureStateChanged(AutoCaptureState state)
         {
-            if (this.AutoCaptureStateChanged != null)
-            {
-                this.AutoCaptureStateChanged(this, state);
-            }
+            this.AutoCaptureStateChanged?.Invoke(this, state);
         }
 
         #endregion
 
         public void HideCameraControls()
         {
-            this.commandBar.Visibility = Visibility.Collapsed;
+            this.EnableCameraControls = false;
         }
 
         public void SetRealTimeDataProvider(IRealTimeDataProvider provider)
@@ -594,23 +639,46 @@ namespace IntelligentKioskSample.Controls
 
         private async void CameraControlButtonClick(object sender, RoutedEventArgs e)
         {
-            if (this.cameraControlSymbol.Symbol == Symbol.Camera)
+            if (this.captureManager.CameraStreamState == CameraStreamState.Streaming)
             {
                 var img = await CaptureFrameAsync();
                 if (img != null)
                 {
-                    this.cameraControlSymbol.Symbol = Symbol.Refresh;
                     this.OnImageCaptured(img);
                 }
             }
             else
             {
-                this.cameraControlSymbol.Symbol = Symbol.Camera;
-
-                await StartStreamAsync();
+                await StartStreamAsync(isStreamingOnRealtimeResolution, lastUsedCamera);
 
                 this.CameraRestarted?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        private async void CameraSwitchtButtonClick(object sender, RoutedEventArgs e)
+        {
+            // if we are not streaming just ignore the request
+            if (captureManager.CameraStreamState != CameraStreamState.Streaming)
+            {
+                return;
+            }
+
+            // capture current device id
+            string currentCameraId = captureManager.MediaCaptureSettings.VideoDeviceId;
+
+            // stop camera
+            await StopStreamAsync();
+
+            // start streaming with the camera whose index is the next one in the line
+            var allCameras = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
+            int currentCameraIndex = allCameras.ToList().FindIndex(d => string.Compare(d.Id, currentCameraId, ignoreCase: true) == 0);
+            await StartStreamAsync(isStreamingOnRealtimeResolution, allCameras.ElementAt((currentCameraIndex + 1) % allCameras.Count));
+        }
+
+        private async void ControlUnloaded(object sender, RoutedEventArgs e)
+        {
+            await StopStreamAsync();
+            Window.Current.Activated -= CurrentWindowActivationStateChanged;
         }
     }
 }

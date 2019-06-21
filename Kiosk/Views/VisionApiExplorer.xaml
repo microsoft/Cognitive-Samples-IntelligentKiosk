@@ -6,7 +6,6 @@
     xmlns:ctl="using:IntelligentKioskSample.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    SizeChanged="OnPageSizeChanged"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -21,39 +20,12 @@
         </Grid.RowDefinitions>
 
         <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
-           
-            <AppBarButton Icon="Favorite" Label="Suggestions">
-                <AppBarButton.Flyout>
-                    <Flyout x:Name="favoriteImagePickerFlyout">
-                        <GridView x:Name="favoritePhotosGridView" SelectionMode="Single" SelectionChanged="OnFavoriteSelectionChanged" Width="380">
-                            <GridView.ItemTemplate>
-                                <DataTemplate>
-                                    <Image Width="120" Height="120" Source="{Binding}"/>
-                                </DataTemplate>
-                            </GridView.ItemTemplate>
-                        </GridView>
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-
-            <AppBarButton Icon="Video" Label="WebCam"  Click="OnWebCamButtonClicked"/>
-            
-            <AppBarButton Icon="Globe" Label="Search" x:Name="PicturesAppBarButton" >
-                <AppBarButton.Flyout>
-                    <Flyout x:Name="imageSearchFlyout">
-                        <ctl:ImageSearchUserControl ImageContentType="" ClearStateWhenClosed="False" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled"/>
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
-
             <CommandBar.Content>
                 <TextBlock Text="Vision API Explorer" Style="{ThemeResource PageTitleTextBlockStyle}"/>
             </CommandBar.Content>
         </CommandBar>
 
-        <TextBlock x:Name="landingMessage" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Text="Select a photo to start" Style="{StaticResource HeaderTextBlockStyle}"/>
-
-        <Grid Grid.Row="1"  >
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.1*"/>
                 <RowDefinition/>
@@ -64,21 +36,8 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="0.5*"/>
             </Grid.ColumnDefinitions>
-            
-            <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Top">
 
-                <Grid x:Name="webCamHostGrid" Visibility="Collapsed" >
-                    <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" 
-                                                        BalloonForeground="#D86C2A" 
-                                                        FlowDirection="RightToLeft" 
-                                                        x:Name="imageFromCameraWithFaces" 
-                                                        PerformComputerVisionAnalysis="True" 
-                                                        PerformOCRAnalysis="{Binding ElementName=ocrToggle, Path=IsOn}" 
-                                                        DetectFacesOnLoad="True"
-                                                        PerformObjectDetection="{Binding ElementName=objectDetectionToggle, Path=IsOn}"/>
-                    <ctl:CameraControl x:Name="cameraControl"/>
-                </Grid>
-
+            <Grid Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" Margin="0,12,0,0">
                 <ctl:ImageWithFaceBorderUserControl BalloonBackground="#ECCF11" 
                                                     BalloonForeground="#D86C2A" 
                                                     x:Name="imageWithFacesControl" 
@@ -88,7 +47,7 @@
                                                     PerformObjectDetection="{Binding ElementName=objectDetectionToggle, Path=IsOn}"/>
             </Grid>
 
-            <ScrollViewer x:Name="resultsDetails" Visibility="Collapsed"  Grid.Row="1" Grid.Column="2" Margin="12,0,12,0" HorizontalScrollBarVisibility="Disabled">
+            <ScrollViewer x:Name="resultsDetails" Visibility="Collapsed" Grid.Row="1" Grid.Column="2" Margin="12" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Orientation="Vertical">
                     <GridView Header="Tags:" x:Name="tagsGridView" IsItemClickEnabled="False" SelectionMode="None">
                         <GridView.ItemTemplate>
@@ -133,6 +92,9 @@
                     <TextBlock Text="Celebrities:"/>
                     <TextBlock x:Name="celebritiesTextBlock" TextWrapping="Wrap" Foreground="LightGray" Style="{StaticResource CaptionTextBlockStyle}" />
 
+                    <TextBlock Text="Landmarks:" Margin="0,12,0,0"/>
+                    <TextBlock x:Name="landmarksTextBlock" TextWrapping="Wrap" Foreground="LightGray" Style="{StaticResource CaptionTextBlockStyle}" />
+
                     <ListView Grid.Column="1" Margin="0,12,0,12" Header="Colors:" x:Name="colorInfoListView" IsItemClickEnabled="False" SelectionMode="None">
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -168,7 +130,7 @@
                                 <Setter Property="BorderThickness" Value="0"/>
                             </Style>
                         </ListView.ItemContainerStyle>
-                        
+
                     </ListView>
 
                     <Grid Margin="0,0,24,0">
@@ -190,7 +152,8 @@
                     <ToggleSwitch Header="Object Detection:" Margin="0,8,0,0" x:Name="objectDetectionToggle" Toggled="OnObjectDetectionToggled"/>
                 </StackPanel>
             </ScrollViewer>
-
         </Grid>
+
+        <ctl:ImagePickerControl x:Name="imagePicker" Grid.Row="1" ImageContentType="" OnImageSearchCompleted="OnImageSearchCompleted" />
     </Grid>
 </Page>
