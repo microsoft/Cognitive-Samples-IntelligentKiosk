@@ -52,12 +52,11 @@ namespace IntelligentKioskSample.Views
             this.InitializeComponent();
 
             this.imagePicker.SetSuggestedImageList(
-                "https://intelligentkioskstore.blob.core.windows.net/million-faces/demo samples/satya2.jpg",
-                "https://intelligentkioskstore.blob.core.windows.net/million-faces/demo samples/Gates.jpg",
-                "https://intelligentkioskstore.blob.core.windows.net/million-faces/demo samples/Guthrie.jpg",
-                "https://intelligentkioskstore.blob.core.windows.net/million-faces/demo samples/pic5.jpg",
-                "https://intelligentkioskstore.blob.core.windows.net/million-faces/demo samples/pic12.jpg",
-                "https://intelligentkioskstore.blob.core.windows.net/million-faces/demo samples/pic9.jpg"
+                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/1.jpg",
+                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/2.jpg",
+                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/3.jpg",
+                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/4.jpg",
+                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/5.jpg"
             );
         }
 
