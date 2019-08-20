@@ -35,11 +35,7 @@ using ServiceHelpers.Models;
 using ServiceHelpers.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using Windows.Storage;
-using Windows.Storage.Streams;
 
 namespace ServiceHelpers
 {
@@ -51,47 +47,6 @@ namespace ServiceHelpers
             { AnomalyDetectorServiceType.Streaming, new Uri("https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/last/detect") },
             { AnomalyDetectorServiceType.Batch, new Uri("https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/entire/detect") }
         };
-
-        public static readonly IDictionary<UserStoryType, ADUserStory> AllUserStories = new Dictionary<UserStoryType, ADUserStory>
-        {
-            { UserStoryType.BikeRental, new ADUserStory
-                                            {
-                                                StoryType = UserStoryType.BikeRental,
-                                                FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Bike.csv",
-                                                Granuarity = GranType.hourly,
-                                                MaxAnomalyRatio = 0.1
-                                            }
-            },
-            { UserStoryType.Telcom, new ADUserStory
-                                            {
-                                                StoryType = UserStoryType.Telcom,
-                                                FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Telcom.csv",
-                                                Granuarity = GranType.daily,
-                                                MaxAnomalyRatio = 0.25
-                                            }
-            },
-            { UserStoryType.Manufacturing, new ADUserStory
-                                            {
-                                                StoryType = UserStoryType.Manufacturing,
-                                                FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Manufacture.csv",
-                                                Granuarity = GranType.minutely,
-                                                MaxAnomalyRatio = 0.25,
-                                                CustomInterval = 30,
-                                                Period = 336
-                                            }
-            },
-            { UserStoryType.Live, new ADUserStory
-                                            {
-                                                StoryType = UserStoryType.Live,
-                                                FilePath = string.Empty,
-                                                Granuarity = GranType.hourly,
-                                                MaxAnomalyRatio = 0.2,
-                                                CustomInterval = 1
-                                            }
-            },
-        };
-
-        public static readonly IDictionary<UserStoryType, AnomalyDetectorModelData> AllModelData = new Dictionary<UserStoryType, AnomalyDetectorModelData>();
 
         private static IDictionary<string, string> defaultRequestHeaders;
 
@@ -110,8 +65,6 @@ namespace ServiceHelpers
             }
         }
 
-        public const int DefaultDurationOfLiveDemoInSecond = 480;
-
         static AnomalyDetectorHelper()
         {
             InitializeService();
@@ -123,14 +76,6 @@ namespace ServiceHelpers
             {
                 {  HEADER_SUB_KEY, ApiKey }
             };
-        }
-
-        public static async Task InitUserStories()
-        {
-            foreach(KeyValuePair<UserStoryType, ADUserStory> aDUserStory in AllUserStories)
-            {
-                AllModelData.Add(aDUserStory.Key, await AnomalyDataLoader.LoadTimeSeriesData(aDUserStory.Value));
-            }
         }
 
         public static async Task<AnomalyLastDetectResult> GetStreamingDetectionResult(AnomalyDetectorModelData demoData, int dataPointIndex, int sensitivity)
@@ -159,9 +104,7 @@ namespace ServiceHelpers
             {
                 dataRequest.Series = demoData.AllData.GetRange(dataPointIndex - minStartIndex, minStartIndex + 1);
 
-                AnomalyLastDetectResult result = await HttpClientUtility.PostAsJsonAsync<AnomalyLastDetectResult>(Services_URL[AnomalyDetectorServiceType.Streaming], defaultRequestHeaders, dataRequest);
-
-                return result;
+                return await HttpClientUtility.PostAsJsonAsync<AnomalyLastDetectResult>(Services_URL[AnomalyDetectorServiceType.Streaming], defaultRequestHeaders, dataRequest);
             }
 
             return null;
@@ -175,38 +118,11 @@ namespace ServiceHelpers
                 MaxAnomalyRatio = demoData.UserStory.MaxAnomalyRatio,
                 Granularity = demoData.UserStory.Granuarity.ToString(),
                 CustomInterval = demoData.UserStory.CustomInterval,
-                Period = demoData.UserStory.Period
+                Period = demoData.UserStory.Period,
+                Series = demoData.AllData
             };
 
-            dataRequest.Series = demoData.AllData;
-
-            AnomalyEntireDetectResult result = await HttpClientUtility.PostAsJsonAsync<AnomalyEntireDetectResult>(Services_URL[AnomalyDetectorServiceType.Batch], defaultRequestHeaders, dataRequest);
-
-            return result;
-        }
-    }
-
-    public class AnomalyDataLoader
-    {
-        private static readonly StorageFolder StorageFolder = Package.Current.InstalledLocation;
-
-        public static async Task<AnomalyDetectorModelData> LoadTimeSeriesData(ADUserStory userStory)
-        {
-            AnomalyDetectorModelData result = new AnomalyDetectorModelData(userStory);
-
-            if (!string.IsNullOrEmpty(userStory.FilePath))
-            {
-                StorageFile sampleFile = await StorageFolder.GetFileAsync(userStory.FilePath);
-                IList<string> csvContents = await FileIO.ReadLinesAsync(sampleFile, UnicodeEncoding.Utf8);
-
-                foreach (string record in csvContents)
-                {
-                    string[] allValues = record.Split(",".ToArray(), StringSplitOptions.RemoveEmptyEntries);
-                    result.AllData.Add(new TimeSeriesData(allValues[0], allValues[1]));
-                }
-            }
-
-            return result;
+            return await HttpClientUtility.PostAsJsonAsync<AnomalyEntireDetectResult>(Services_URL[AnomalyDetectorServiceType.Batch], defaultRequestHeaders, dataRequest);
         }
     }
 }

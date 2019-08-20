@@ -32,7 +32,6 @@
 // 
 
 using IntelligentKioskSample.Models;
-using ServiceHelpers;
 using ServiceHelpers.Models;
 using System;
 using System.ComponentModel;
@@ -112,9 +111,9 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     this.pivot.IsEnabled = true;
                     await CheckMicrophoneAccessAsync();
 
-                    if (AnomalyDetectorHelper.AllModelData == null || !AnomalyDetectorHelper.AllModelData.Any())
+                    if (AnomalyDetectorScenarioLoader.AllModelData == null || !AnomalyDetectorScenarioLoader.AllModelData.Any())
                     {
-                        await AnomalyDetectorHelper.InitUserStories();
+                        await AnomalyDetectorScenarioLoader.InitUserStories();
                     }
 
                     // initialize default tab
@@ -145,7 +144,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
         private void TabChanged(PivotItem selectedPivot)
         {
-            bool isAnyData = AnomalyDetectorHelper.AllModelData != null && AnomalyDetectorHelper.AllModelData.Any();
+            bool isAnyData = AnomalyDetectorScenarioLoader.AllModelData != null && AnomalyDetectorScenarioLoader.AllModelData.Any();
             if (selectedPivot.Header is TabHeader selectedTab && isAnyData)
             {
                 if (selectedTab == BikeRentalTab)

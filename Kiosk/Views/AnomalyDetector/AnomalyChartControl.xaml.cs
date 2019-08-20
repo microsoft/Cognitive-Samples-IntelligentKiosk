@@ -91,9 +91,9 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
         public void InitializeChart(UserStoryType scenarioType, AnomalyDetectorServiceType detectionMode, double sensitivy)
         {
-            if (AnomalyDetectorHelper.AllModelData.ContainsKey(scenarioType))
+            if (AnomalyDetectorScenarioLoader.AllModelData.ContainsKey(scenarioType))
             {
-                selectedDemoData = AnomalyDetectorHelper.AllModelData[scenarioType];
+                selectedDemoData = AnomalyDetectorScenarioLoader.AllModelData[scenarioType];
 
                 // clear state
                 ResetState();
@@ -232,10 +232,10 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             try
             {
                 double yScale = (resultGrid.ActualHeight / (200 * 1.1));
-                double x_Offset = resultGrid.ActualWidth / AnomalyDetectorHelper.DefaultDurationOfLiveDemoInSecond;
+                double x_Offset = resultGrid.ActualWidth / AnomalyDetectorScenarioLoader.DefaultDurationOfLiveDemoInSecond;
 
                 DateTime currentTime = DateTime.Now;
-                DateTime startTime = currentTime.AddMinutes((double)AnomalyDetectorHelper.DefaultDurationOfLiveDemoInSecond * -1);
+                DateTime startTime = currentTime.AddMinutes((double)AnomalyDetectorScenarioLoader.DefaultDurationOfLiveDemoInSecond * -1);
 
                 progressLine.X1 = progressIndicator.CenterPoint.X;
                 progressLine.X2 = progressIndicator.CenterPoint.X;
@@ -264,7 +264,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     detectWindowPolyline.Points.Insert(endOfLower, newLowerPoint);
                 }
 
-                for (int i = startIndex; i < AnomalyDetectorHelper.DefaultDurationOfLiveDemoInSecond; i++)
+                for (int i = startIndex; i < AnomalyDetectorScenarioLoader.DefaultDurationOfLiveDemoInSecond; i++)
                 {
                     if (shouldStopCurrentRun)
                     {
