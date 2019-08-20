@@ -100,6 +100,7 @@ namespace IntelligentKioskSample
                     ImageAnalyzer.PeopleGroupsUserDataFilter = SettingsHelper.Instance.WorkspaceKey;
                     FaceListManager.FaceListsUserDataFilter = SettingsHelper.Instance.WorkspaceKey;
                     CoreUtil.MinDetectableFaceCoveragePercentage = SettingsHelper.Instance.MinDetectableFaceCoveragePercentage;
+                    AnomalyDetectorHelper.ApiKey = SettingsHelper.Instance.AnomalyDetectorApiKey;
                 };
 
                 // callbacks for core library
@@ -177,6 +178,10 @@ namespace IntelligentKioskSample
 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.TranslatorTextApiKey)
                 ? CognitiveServiceApiKeyTester.TestTranslatorTextApiKeyAsync(SettingsHelper.Instance.TranslatorTextApiKey)
+                : Task.CompletedTask,
+
+                !string.IsNullOrEmpty(SettingsHelper.Instance.AnomalyDetectorApiKey)
+                ? CognitiveServiceApiKeyTester.TestAnomalyDetectorApiKeyAsync(SettingsHelper.Instance.AnomalyDetectorApiKey)
                 : Task.CompletedTask
             };
 

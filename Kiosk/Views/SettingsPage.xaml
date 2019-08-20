@@ -47,7 +47,7 @@
                 <TextBlock Text="Settings" Style="{ThemeResource PageTitleTextBlockStyle}" Margin="14,10,12,0"/>
             </CommandBar.Content>
         </CommandBar>
-        
+
         <ScrollViewer Grid.Row="1">
 
             <StackPanel Orientation="Vertical" Margin="12,12" >
@@ -121,6 +121,8 @@
 
                     <PasswordBox Header="Translator Text API Key" Password="{Binding TranslatorTextApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
 
+                    <PasswordBox Header="Anomaly Detector API Key" Password="{Binding AnomalyDetectorApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
+
                     <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
                         <Button VerticalAlignment="Bottom" Content="Click here if you need keys" >
                             <Button.Flyout>
@@ -133,6 +135,7 @@
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingAutosuggest-v7" Content="Bing Autosuggest"/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextAnalytics" Content="Text Analytics"/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation" Content="Translator Text"/>
+                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesAnomalyDetector" Content="Anomaly Detector"/>
 
                                         <TextBlock TextWrapping="WrapWholeWords" Foreground="OrangeRed" Margin="0,10,0,0" Text="Important: The free-tier (F0) keys provided by Azure won't support the load from the real-time demos in the kiosk. For the best experience upgrade to a paid key if using those demos."/>
                                     </StackPanel>
@@ -170,12 +173,12 @@
 
                     <ComboBox Margin="0,6,0,0" x:Name="cameraSourceComboBox" Header="Camera Source"  SelectionChanged="OnCameraSourceSelectionChanged"/>
                     <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info:" Margin="0,6,0,0"/>
-                
+
                     <StackPanel Orientation="Horizontal">
                         <Slider x:Name="MinDetectableFaceSizeSlider" Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" SmallChange="1" LargeChange="5" Header="Minimum detectable face size (as % of image height):" HorizontalAlignment="Left" Margin="0,0,0,0" StepFrequency="1"/>
                         <TextBlock Text="{Binding ElementName=MinDetectableFaceSizeSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>
                     </StackPanel>
-                 </StackPanel>
+                </StackPanel>
 
                 <StackPanel Margin="0,25,0,0">
                     <TextBlock Text="Mall Kiosk" Style="{StaticResource SubheaderTextBlockStyle}"/>
@@ -184,7 +187,7 @@
                 </StackPanel>
 
             </StackPanel>
-            
+
         </ScrollViewer>
 
     </Grid>

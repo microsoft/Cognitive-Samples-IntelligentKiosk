@@ -1,0 +1,55 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Views.AnomalyDetector.AnomalyChartControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid RowSpacing="32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Chart -->
+        <StackPanel Grid.Row="0" x:Name="ResultPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <TextBlock Text="{x:Bind Title}" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Left" />
+
+            <Grid x:Name="resultGrid" Height="400" HorizontalAlignment="Stretch" SizeChanged="OnChartGridSizeChanged">
+                <Line Grid.ColumnSpan="2" Name="progressLine" X1="0" X2="0" Stroke="SlateGray" StrokeThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+                <Polyline Name="progressPolyline" Stroke="LightSlateGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>
+                <Polyline Name="dataPolyline" Stroke="White" StrokeThickness="2" />
+                <Polyline Name="detectWindowPolyline" Stroke="DarkGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>
+            </Grid>
+        </StackPanel>
+
+        <!-- Chart controls -->
+        <StackPanel Grid.Row="1" VerticalAlignment="Top" Orientation="Horizontal" Spacing="50">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Detection Mode" Style="{StaticResource CaptionTextBlockStyle}"/>
+                <RadioButton x:Name="streamingOption" Content="Streaming detection" Tag="Streaming" Checked="OnDetectionModeRadioButtonChecked"/>
+                <RadioButton x:Name="batchOption" Content="Batch detection" Tag="Batch" Checked="OnDetectionModeRadioButtonChecked"/>
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="Sensitivity" Style="{StaticResource BaseTextBlockStyle}" />
+                    <TextBlock Grid.Row="0" Text="{x:Bind sensitivitySlider.Value.ToString(), Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" HorizontalAlignment="Right" />
+                    <Slider Grid.Row="1" x:Name="sensitivitySlider" Width="300" Minimum="0" Maximum="100" StepFrequency="1" LargeChange="10" SmallChange="1" ValueChanged="OnSensitivitySliderChanged" />
+                </Grid>
+            </StackPanel>
+
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Button x:Name="detectingAnomalyBtn" Content="Detect Anomalies" Click="OnStartDetectionButtonClicked" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

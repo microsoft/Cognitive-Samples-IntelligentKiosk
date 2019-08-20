@@ -106,6 +106,7 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AnomalyDetectorHelper.cs" />
     <Compile Include="BingSearchHelper.cs" />
     <Compile Include="CoreUtil.cs" />
     <Compile Include="ErrorTrackingHelper.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="FaceListManager.cs" />
     <Compile Include="FaceServiceHelper.cs" />
     <Compile Include="ImageAnalyzer.cs" />
+    <Compile Include="Models\AnomalyDetectResult.cs" />
     <Compile Include="Models\TranslationTextResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServiceBase.cs" />
