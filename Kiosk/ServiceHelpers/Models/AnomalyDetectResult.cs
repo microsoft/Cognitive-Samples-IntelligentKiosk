@@ -84,16 +84,16 @@ namespace ServiceHelpers.Models
         public readonly List<TimeSeriesData> AllData;
         public readonly int IndexOfFirstValidPoint;
 
-        private int _maxValue = int.MaxValue;
-        public int MaxValue
+        private double _maxValue = double.MaxValue;
+        public double MaxValue
         {
             get
             {
-                if (_maxValue.CompareTo(int.MaxValue) == 0)
+                if (_maxValue.CompareTo(double.MaxValue) == 0)
                 {
                     if (AllData != null && AllData.Count > 0)
                     {
-                        _maxValue = (int)AllData.Max(data => data.Value);
+                        _maxValue = (double)AllData.Max(data => data.Value);
                     }
                 }
 
@@ -101,16 +101,16 @@ namespace ServiceHelpers.Models
             }
         }
 
-        private int _minValue = int.MinValue;
-        public int MinValue
+        private double _minValue = double.MinValue;
+        public double MinValue
         {
             get
             {
-                if (_minValue.CompareTo(int.MinValue) == 0)
+                if (_minValue.CompareTo(double.MinValue) == 0)
                 {
                     if (AllData != null && AllData.Count > 0)
                     {
-                        _minValue = (int)AllData.Min(data => data.Value);
+                        _minValue = (double)AllData.Min(data => data.Value);
                     }
                 }
 

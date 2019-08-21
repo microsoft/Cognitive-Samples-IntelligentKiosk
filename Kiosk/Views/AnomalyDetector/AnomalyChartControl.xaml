@@ -17,13 +17,127 @@
 
         <!-- Chart -->
         <StackPanel Grid.Row="0" x:Name="ResultPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-            <TextBlock Text="{x:Bind Title}" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Left" />
+            <TextBlock Text="{x:Bind Title}" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
 
-            <Grid x:Name="resultGrid" Height="400" HorizontalAlignment="Stretch" SizeChanged="OnChartGridSizeChanged">
-                <Line Grid.ColumnSpan="2" Name="progressLine" X1="0" X2="0" Stroke="SlateGray" StrokeThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
-                <Polyline Name="progressPolyline" Stroke="LightSlateGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>
-                <Polyline Name="dataPolyline" Stroke="White" StrokeThickness="2" />
-                <Polyline Name="detectWindowPolyline" Stroke="DarkGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,6,0">
+                    <Grid.Resources>
+                        <Style x:Key="TopTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+                            <Setter Property="Opacity" Value="0.5" />
+                            <Setter Property="Margin" Value="0,-8,0,0" />
+                            <Setter Property="VerticalAlignment" Value="Top" />
+                        </Style>
+                        <Style x:Key="BottomTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+                            <Setter Property="Opacity" Value="0.5" />
+                            <Setter Property="Margin" Value="0,0,0,-5" />
+                            <Setter Property="VerticalAlignment" Value="Bottom" />
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <!-- Y axis labels -->
+                    <TextBlock x:Name="y5_Lbl" Grid.Row="0" Style="{StaticResource TopTextStyle}"/>
+                    <TextBlock x:Name="y4_Lbl" Grid.Row="0" Style="{StaticResource BottomTextStyle}"/>
+                    <TextBlock x:Name="y3_Lbl" Grid.Row="1" Style="{StaticResource BottomTextStyle}"/>
+                    <TextBlock x:Name="y2_Lbl" Grid.Row="2" Style="{StaticResource BottomTextStyle}"/>
+                    <TextBlock x:Name="y1_Lbl" Grid.Row="3" Style="{StaticResource BottomTextStyle}"/>
+                </Grid>
+                
+                <Grid Grid.Row="0" Grid.Column="1" x:Name="resultGrid" Height="400" HorizontalAlignment="Stretch" SizeChanged="OnChartGridSizeChanged"
+                      BorderBrush="Transparent" BorderThickness="1">
+                    <Grid.Resources>
+                        <Style x:Key="YAxisLineStyle" TargetType="Line">
+                            <Setter Property="Stroke" Value="LightSlateGray" />
+                            <Setter Property="StrokeThickness" Value="1" />
+                            <Setter Property="Opacity" Value="0.7" />
+                            <Setter Property="Stretch" Value="Fill" />
+                            <Setter Property="HorizontalAlignment" Value="Stretch" />
+                            <Setter Property="VerticalAlignment" Value="Bottom" />
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <Line Grid.RowSpan="4" Name="progressLine" X1="0" X2="0" Stroke="SlateGray" StrokeThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+                    <Polyline Grid.RowSpan="4" Name="progressPolyline" Stroke="LightSlateGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>
+                    <Polyline Grid.RowSpan="4" Name="dataPolyline" Stroke="White" StrokeThickness="2" />
+                    <Polyline Grid.RowSpan="4" Name="detectWindowPolyline" Stroke="DarkGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>
+
+                    <!-- Y axis lines-->
+                    <Line Grid.Row="0" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}" VerticalAlignment="Top"/>
+                    <Line Grid.Row="0" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
+                    <Line Grid.Row="1" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
+                    <Line Grid.Row="2" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
+                    <Line Grid.Row="3" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
+                </Grid>
+
+                <Grid x:Name="xAxisGrid" Grid.Row="1" Grid.Column="1">
+                    <Grid.Resources>
+                        <Style x:Key="XAxisLineStyle" TargetType="Line">
+                            <Setter Property="Stroke" Value="LightSlateGray" />
+                            <Setter Property="StrokeThickness" Value="1" />
+                            <Setter Property="Stretch" Value="Fill" />
+                            <Setter Property="Opacity" Value="0.7" />
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                            <Setter Property="VerticalAlignment" Value="Stretch" />
+                        </Style>
+                        <Style x:Key="RightTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+                            <Setter Property="Opacity" Value="0.5" />
+                            <Setter Property="Margin" Value="0,8,6,0" />
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- X axis labels -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                        <TextBlock x:Name="x1_Lbl" Text="0" Style="{StaticResource RightTextStyle}" Margin="6,8,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock x:Name="x2_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
+                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock x:Name="x3_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
+                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock x:Name="x4_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
+                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <TextBlock x:Name="x5_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
+                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </StackPanel>
 
