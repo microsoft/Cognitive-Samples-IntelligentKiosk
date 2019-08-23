@@ -202,6 +202,7 @@
     <Compile Include="Views\AnomalyDetector\AnomalyChartControl.xaml.cs">
       <DependentUpon>AnomalyChartControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\AnomalyDetector\AnomalyDetectionScenarioData.cs" />
     <Compile Include="Views\AnomalyDetector\AnomalyDetectorDemo.xaml.cs">
       <DependentUpon>AnomalyDetectorDemo.xaml</DependentUpon>
     </Compile>

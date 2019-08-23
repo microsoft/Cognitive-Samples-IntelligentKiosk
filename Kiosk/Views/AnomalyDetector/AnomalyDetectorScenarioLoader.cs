@@ -45,58 +45,88 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
     public class AnomalyDetectorScenarioLoader
     {
         private static readonly StorageFolder StorageFolder = Package.Current.InstalledLocation;
-
-        public static readonly int DefaultDurationOfLiveDemoInSecond = 480;
-        public static readonly IDictionary<UserStoryType, AnomalyDetectorModelData> AllModelData = new Dictionary<UserStoryType, AnomalyDetectorModelData>();
+        public static readonly IDictionary<AnomalyDetectionScenarioType, AnomalyDetectionScenario> AllModelData = new Dictionary<AnomalyDetectionScenarioType, AnomalyDetectionScenario>();
 
         public static async Task InitUserStories()
         {
-            foreach (KeyValuePair<UserStoryType, ADUserStory> aDUserStory in AllUserStories)
+            foreach (KeyValuePair<AnomalyDetectionScenarioType, AnomalyDetectionScenario> scenario in AllScenarios)
             {
-                AllModelData.Add(aDUserStory.Key, await LoadTimeSeriesData(aDUserStory.Value));
+                AllModelData.Add(scenario.Key, await LoadTimeSeriesData(scenario.Value));
             }
         }
 
-        private static async Task<AnomalyDetectorModelData> LoadTimeSeriesData(ADUserStory userStory)
+        public static int GetIndexOfFirstPoint(GranType granType)
         {
-            AnomalyDetectorModelData result = new AnomalyDetectorModelData(userStory);
-
-            if (!string.IsNullOrEmpty(userStory.FilePath))
+            switch (granType)
             {
-                StorageFile sampleFile = await StorageFolder.GetFileAsync(userStory.FilePath);
+                case GranType.hourly:
+                    return 168;
+                case GranType.daily:
+                    return 28;
+                case GranType.weekly:
+                    return 23;
+                case GranType.monthly:
+                    return 24;
+                case GranType.yearly:
+                    return 23;
+                case GranType.minutely:
+                    return 168;
+                default:
+                    return 28;
+            }
+        }
+
+        public static int GetTimeOffsetInMinute(GranType granType)
+        {
+            switch (granType)
+            {
+                case GranType.hourly:
+                    return 60;
+                case GranType.minutely:
+                    return 1;
+                default:
+                    return 1;
+            }
+        }
+
+        private static async Task<AnomalyDetectionScenario> LoadTimeSeriesData(AnomalyDetectionScenario scenario)
+        {
+            if (!string.IsNullOrEmpty(scenario.FilePath))
+            {
+                StorageFile sampleFile = await StorageFolder.GetFileAsync(scenario.FilePath);
                 IList<string> csvContents = await FileIO.ReadLinesAsync(sampleFile, UnicodeEncoding.Utf8);
 
                 foreach (string record in csvContents)
                 {
                     string[] allValues = record.Split(",".ToArray(), StringSplitOptions.RemoveEmptyEntries);
-                    result.AllData.Add(new TimeSeriesData(allValues[0], allValues[1]));
+                    scenario.AllData.Add(new TimeSeriesData(allValues[0], allValues[1]));
                 }
             }
 
-            return result;
+            return scenario;
         }
 
-        public static readonly IDictionary<UserStoryType, ADUserStory> AllUserStories = new Dictionary<UserStoryType, ADUserStory>
+        public static readonly IDictionary<AnomalyDetectionScenarioType, AnomalyDetectionScenario> AllScenarios = new Dictionary<AnomalyDetectionScenarioType, AnomalyDetectionScenario>
         {
-            { UserStoryType.BikeRental, new ADUserStory
+            { AnomalyDetectionScenarioType.BikeRental, new AnomalyDetectionScenario
                                             {
-                                                StoryType = UserStoryType.BikeRental,
+                                                ScenarioType = AnomalyDetectionScenarioType.BikeRental,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Bike.csv",
                                                 Granuarity = GranType.hourly,
                                                 MaxAnomalyRatio = 0.1
                                             }
             },
-            { UserStoryType.Telcom, new ADUserStory
+            { AnomalyDetectionScenarioType.Telcom, new AnomalyDetectionScenario
                                             {
-                                                StoryType = UserStoryType.Telcom,
+                                                ScenarioType = AnomalyDetectionScenarioType.Telcom,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Telcom.csv",
                                                 Granuarity = GranType.daily,
                                                 MaxAnomalyRatio = 0.25
                                             }
             },
-            { UserStoryType.Manufacturing, new ADUserStory
+            { AnomalyDetectionScenarioType.Manufacturing, new AnomalyDetectionScenario
                                             {
-                                                StoryType = UserStoryType.Manufacturing,
+                                                ScenarioType = AnomalyDetectionScenarioType.Manufacturing,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Manufacture.csv",
                                                 Granuarity = GranType.minutely,
                                                 MaxAnomalyRatio = 0.25,
@@ -104,9 +134,9 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                                                 Period = 336
                                             }
             },
-            { UserStoryType.Live, new ADUserStory
+            { AnomalyDetectionScenarioType.Live, new AnomalyDetectionScenario
                                             {
-                                                StoryType = UserStoryType.Live,
+                                                ScenarioType = AnomalyDetectionScenarioType.Live,
                                                 FilePath = string.Empty,
                                                 Granuarity = GranType.hourly,
                                                 MaxAnomalyRatio = 0.2,

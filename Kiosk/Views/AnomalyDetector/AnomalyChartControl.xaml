@@ -9,6 +9,38 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
+    <UserControl.Resources>
+        <Style x:Key="AxisLineStyle" TargetType="Line">
+            <Setter Property="Stroke" Value="LightSlateGray" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="Stretch" Value="Fill" />
+        </Style>
+        <Style x:Key="XAxisLineStyle" TargetType="Line" BasedOn="{StaticResource AxisLineStyle}">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+        </Style>
+        <Style x:Key="YAxisLineStyle" TargetType="Line" BasedOn="{StaticResource AxisLineStyle}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+        </Style>
+        <Style x:Key="TopTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Margin" Value="0,-8,0,0" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+        </Style>
+        <Style x:Key="BottomTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Margin" Value="0,0,0,-5" />
+            <Setter Property="VerticalAlignment" Value="Bottom" />
+        </Style>
+        <Style x:Key="RightTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
+            <Setter Property="Opacity" Value="0.5" />
+            <Setter Property="Margin" Value="0,8,6,0" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+    </UserControl.Resources>
+
     <Grid RowSpacing="32">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -30,18 +62,6 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,6,0">
-                    <Grid.Resources>
-                        <Style x:Key="TopTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
-                            <Setter Property="Opacity" Value="0.5" />
-                            <Setter Property="Margin" Value="0,-8,0,0" />
-                            <Setter Property="VerticalAlignment" Value="Top" />
-                        </Style>
-                        <Style x:Key="BottomTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
-                            <Setter Property="Opacity" Value="0.5" />
-                            <Setter Property="Margin" Value="0,0,0,-5" />
-                            <Setter Property="VerticalAlignment" Value="Bottom" />
-                        </Style>
-                    </Grid.Resources>
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
@@ -56,19 +76,9 @@
                     <TextBlock x:Name="y2_Lbl" Grid.Row="2" Style="{StaticResource BottomTextStyle}"/>
                     <TextBlock x:Name="y1_Lbl" Grid.Row="3" Style="{StaticResource BottomTextStyle}"/>
                 </Grid>
-                
-                <Grid Grid.Row="0" Grid.Column="1" x:Name="resultGrid" Height="400" HorizontalAlignment="Stretch" SizeChanged="OnChartGridSizeChanged"
-                      BorderBrush="Transparent" BorderThickness="1">
-                    <Grid.Resources>
-                        <Style x:Key="YAxisLineStyle" TargetType="Line">
-                            <Setter Property="Stroke" Value="LightSlateGray" />
-                            <Setter Property="StrokeThickness" Value="1" />
-                            <Setter Property="Opacity" Value="0.7" />
-                            <Setter Property="Stretch" Value="Fill" />
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="VerticalAlignment" Value="Bottom" />
-                        </Style>
-                    </Grid.Resources>
+
+                <Grid Grid.Row="0" Grid.Column="1" x:Name="resultGrid" Height="400" BorderBrush="Transparent" BorderThickness="1"
+                      Background="Transparent" HorizontalAlignment="Stretch" SizeChanged="OnChartGridSizeChanged">
                     <Grid.RowDefinitions>
                         <RowDefinition />
                         <RowDefinition />
@@ -90,21 +100,6 @@
                 </Grid>
 
                 <Grid x:Name="xAxisGrid" Grid.Row="1" Grid.Column="1">
-                    <Grid.Resources>
-                        <Style x:Key="XAxisLineStyle" TargetType="Line">
-                            <Setter Property="Stroke" Value="LightSlateGray" />
-                            <Setter Property="StrokeThickness" Value="1" />
-                            <Setter Property="Stretch" Value="Fill" />
-                            <Setter Property="Opacity" Value="0.7" />
-                            <Setter Property="HorizontalAlignment" Value="Right" />
-                            <Setter Property="VerticalAlignment" Value="Stretch" />
-                        </Style>
-                        <Style x:Key="RightTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
-                            <Setter Property="Opacity" Value="0.5" />
-                            <Setter Property="Margin" Value="0,8,6,0" />
-                            <Setter Property="HorizontalAlignment" Value="Right" />
-                        </Style>
-                    </Grid.Resources>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
@@ -138,6 +133,34 @@
                         <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
                     </StackPanel>
                 </Grid>
+
+                <!-- Tooltip -->
+                <Popup Grid.Row="0" Grid.Column="1" Width="150" Height="100"
+                       x:Name="tooltipPopup" IsOpen="False" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Grid Background="#2C2C2C" BorderBrush="DarkGray" BorderThickness="1" Padding="8" 
+                          Width="{Binding ElementName=tooltipPopup, Path=ActualWidth}" 
+                          Height="{Binding ElementName=tooltipPopup, Path=ActualHeight}">
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}"/>
+                        </Grid.Resources>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="timestampTextBlock" Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold"/>
+
+                        <TextBlock Text="Value" Grid.Row="1" Grid.Column="0"/>
+                        <TextBlock x:Name="delayValueTextBlock" Grid.Row="1" Grid.Column="1" FontWeight="Bold"/>
+
+                        <TextBlock Text="Expected value" Grid.Row="2" Grid.Column="0"/>
+                        <TextBlock x:Name="expectedTextBlock" Grid.Row="2" Grid.Column="1" FontWeight="Bold"/>
+                    </Grid>
+                </Popup>
             </Grid>
         </StackPanel>
 

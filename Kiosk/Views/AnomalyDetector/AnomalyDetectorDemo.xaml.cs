@@ -32,7 +32,6 @@
 // 
 
 using IntelligentKioskSample.Models;
-using ServiceHelpers.Models;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -117,7 +116,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     }
 
                     // initialize default tab
-                    this.bikerentalChart.InitializeChart(UserStoryType.BikeRental, AnomalyDetectorServiceType.Batch, sensitivy: 75);
+                    this.bikerentalChart.InitializeChart(AnomalyDetectionScenarioType.BikeRental, AnomalyDetectorServiceType.Batch, sensitivy: 75);
                 }
             }
             catch (Exception ex)
@@ -149,22 +148,22 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 if (selectedTab == BikeRentalTab)
                 {
-                    this.bikerentalChart.InitializeChart(UserStoryType.BikeRental, AnomalyDetectorServiceType.Batch, sensitivy: 75);
+                    this.bikerentalChart.InitializeChart(AnomalyDetectionScenarioType.BikeRental, AnomalyDetectorServiceType.Batch, sensitivy: 75);
                 }
 
                 else if (selectedTab == TelcomTab)
                 {
-                    this.telcomChart.InitializeChart(UserStoryType.Telcom, AnomalyDetectorServiceType.Streaming, sensitivy: 90);
+                    this.telcomChart.InitializeChart(AnomalyDetectionScenarioType.Telcom, AnomalyDetectorServiceType.Streaming, sensitivy: 90);
                 }
 
                 else if (selectedTab == ManufacturingTab)
                 {
-                    this.manufacturingChart.InitializeChart(UserStoryType.Manufacturing, AnomalyDetectorServiceType.Batch, sensitivy: 90);
+                    this.manufacturingChart.InitializeChart(AnomalyDetectionScenarioType.Manufacturing, AnomalyDetectorServiceType.Batch, sensitivy: 90);
                 }
 
                 else if (selectedTab == LiveTab)
                 {
-                    this.liveChart.InitializeChart(UserStoryType.Live, AnomalyDetectorServiceType.Streaming, sensitivy: 80);
+                    this.liveChart.InitializeChart(AnomalyDetectionScenarioType.Live, AnomalyDetectorServiceType.Streaming, sensitivy: 80);
                 }
             }
         }

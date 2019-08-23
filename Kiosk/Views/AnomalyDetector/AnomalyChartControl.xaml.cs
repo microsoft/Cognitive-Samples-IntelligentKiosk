@@ -44,15 +44,37 @@ using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Hosting;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
 namespace IntelligentKioskSample.Views.AnomalyDetector
 {
     public sealed partial class AnomalyChartControl : UserControl
     {
-        private static readonly int MaxVolumeValue = 200;
+        private static readonly int MaxVolumeValue = 100;
+        private static readonly int TooltipBottomMargin = 15;
+        private static readonly int DefaultMinimumStartIndex = 12;
+        private static readonly int DefaultDurationOfLiveDemoInSecond = 480;
+
         private static readonly string StopDetectButton = "Stop Detect";
         private static readonly string StartDetectButton = "Detect Anomalies";
+        private static readonly string ShortDateFormat = "MM/dd";
+        private static readonly string ShortDateWithTimeFormat = "MM/dd HH:mm";
+
+        private Visual xamlRoot;
+        private Compositor compositor;
+        private ContainerVisual containerRoot;
+        private SpriteVisual progressIndicator;
+
+        private bool isProcessing = false;
+        private bool shouldStopCurrentRun = false;
+        private float maxVolumeInSampleBuffer = 0;
+        private int selectedDetectionSensitivity = 90;
+
+        private AnomalyDetectionScenario curScenario;
+        private AnomalyEntireDetectResult anomalyEntireDetectResult;
+        private List<Tuple<SpriteVisual, AnomalyInfo>> allAnomalyIndicators = new List<Tuple<SpriteVisual, AnomalyInfo>>();
+        private AnomalyDetectorServiceType selectedDetectionMode = AnomalyDetectorServiceType.Streaming;
 
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register("Title",
@@ -66,21 +88,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             set { SetValue(TitleProperty, value); }
         }
 
-        private Visual xamlRoot;
-        private Compositor compositor;
-        private ContainerVisual containerRoot;
-        private SpriteVisual progressIndicator;
-
-        private bool isProcessing = false;
-        private bool shouldStopCurrentRun = false;
-        private float maxVolumeInSampleBuffer = 0;
-        private int selectedDetectionSensitivity = 90;
-
-        private AnomalyDetectorModelData selectedDemoData;
-        private AnomalyEntireDetectResult anomalyEntireDetectResult;
-        private List<SpriteVisual> allAnomalyIndicators = new List<SpriteVisual>();
-        private AnomalyDetectorServiceType selectedDetectionMode = AnomalyDetectorServiceType.Streaming;
-
         public event EventHandler StartLiveAudio;
         public event EventHandler StopLiveAudio;
 
@@ -90,11 +97,15 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             PrepareUIElements();
         }
 
-        public void InitializeChart(UserStoryType scenarioType, AnomalyDetectorServiceType detectionMode, double sensitivy)
+        public void InitializeChart(AnomalyDetectionScenarioType scenarioType, AnomalyDetectorServiceType detectionMode, double sensitivy)
         {
             if (AnomalyDetectorScenarioLoader.AllModelData.ContainsKey(scenarioType))
             {
-                selectedDemoData = AnomalyDetectorScenarioLoader.AllModelData[scenarioType];
+                curScenario = AnomalyDetectorScenarioLoader.AllModelData[scenarioType];
+                if (scenarioType == AnomalyDetectionScenarioType.Live)
+                {
+                    curScenario.AllData.Clear();
+                }
 
                 // clear state
                 ResetState();
@@ -115,25 +126,12 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
         private async void OnChartGridSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (selectedDemoData == null)
+            if (curScenario == null)
             {
                 return;
             }
 
-            dataPolyline.Points?.Clear();
-
-            // update data points
-            SetXAxisLabels(selectedDemoData);
-
-            if (selectedDemoData.UserStory.StoryType != UserStoryType.Live)
-            {
-                SetYAxisLabels(selectedDemoData.MaxValue, selectedDemoData.MinValue, selectedDemoData.UserStory.StoryType);
-                dataPolyline.Points = GetPointCollectionByUserStoryData(selectedDemoData);
-            }
-            else
-            {
-                SetYAxisLabels(MaxVolumeValue, 0, UserStoryType.Live);
-            }
+            DisplayBasicData(curScenario);
 
             // update anomaly data
             switch (selectedDetectionMode)
@@ -144,6 +142,10 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     break;
 
                 case AnomalyDetectorServiceType.Streaming:
+                    if (curScenario.ScenarioType == AnomalyDetectionScenarioType.Live)
+                    {
+                        CleanAndRestoreUI();
+                    }
                     shouldStopCurrentRun = true;
                     break;
             }
@@ -169,6 +171,48 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             progressLine.X2 = progressIndicator.CenterPoint.X;
             progressLine.Y1 = 0;
             progressLine.Y2 = resultGrid.ActualHeight;
+
+            // pointer moved event for tooltip
+            resultGrid.PointerMoved += OnChartPointer;
+            detectWindowPolyline.PointerMoved += OnChartPointer;
+        }
+
+        private void OnChartPointer(object sender, PointerRoutedEventArgs e)
+        {
+            Point point = e.GetCurrentPoint(resultGrid).Position;
+            var anomaly = allAnomalyIndicators.FirstOrDefault(x => Util.IsPointInsideVisualElement(x.Item1, point) &&
+                (e.Pointer.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse || e.Pointer.IsInContact)); // test for touch exit event);
+            if (anomaly != null)
+            {
+                Visual visualElement = anomaly.Item1;
+                AnomalyInfo anomalyInfo = anomaly.Item2;
+
+                double popupWidth = this.tooltipPopup.ActualWidth;
+                double popupHeight = this.tooltipPopup.ActualHeight;
+
+                Point absolutePoint = e.GetCurrentPoint(Window.Current.Content).Position;
+                double pageWidth = ((AppShell)Window.Current.Content)?.ActualWidth ?? 0;
+
+                double xOffset = absolutePoint.X + popupWidth / 2.0 >= pageWidth ? visualElement.Offset.X - popupWidth : visualElement.Offset.X - popupWidth / 2.0;
+                double yOffset = visualElement.Offset.Y - popupHeight - TooltipBottomMargin;
+
+                // set tooltip offset
+                this.tooltipPopup.HorizontalOffset = xOffset;
+                this.tooltipPopup.VerticalOffset = yOffset;
+
+                // set tooltip data
+                this.timestampTextBlock.Text = anomalyInfo.Text;
+                this.delayValueTextBlock.Text = anomalyInfo.Value;
+                this.expectedTextBlock.Text = anomalyInfo.ExpectedValue;
+
+                // show tooltip
+                this.tooltipPopup.IsOpen = true;
+            }
+            else
+            {
+                // hide tooltip
+                this.tooltipPopup.IsOpen = false;
+            }
         }
 
         private void OnSensitivitySliderChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
@@ -181,7 +225,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
         private async void OnStartDetectionButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (selectedDemoData == null)
+            if (curScenario == null)
             {
                 return;
             }
@@ -200,9 +244,9 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     shouldStopCurrentRun = false;
 
                     detectingAnomalyBtn.Content = StopDetectButton;
-                    switch (selectedDemoData.UserStory.StoryType)
+                    switch (curScenario.ScenarioType)
                     {
-                        case UserStoryType.Live:
+                        case AnomalyDetectionScenarioType.Live:
                             this.StartLiveAudio?.Invoke(this, EventArgs.Empty);
                             await StartLiveDemoProcessAsync();
                             break;
@@ -211,7 +255,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                             switch (selectedDetectionMode)
                             {
                                 case AnomalyDetectorServiceType.Batch:
-                                    this.anomalyEntireDetectResult = await AnomalyDetectorHelper.GetBatchDetectionResult(selectedDemoData, (int)sensitivitySlider.Value);
+                                    this.anomalyEntireDetectResult = await GetBatchAnomalyDetectionResultAsync();
                                     await StartBatchModeProcessAsync();
                                     break;
 
@@ -239,44 +283,42 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         {
             try
             {
-                double yZeroLine = -1 * GetYZeroLine();
                 double yScale = resultGrid.ActualHeight / MaxVolumeValue;
-                double x_Offset = resultGrid.ActualWidth / AnomalyDetectorScenarioLoader.DefaultDurationOfLiveDemoInSecond;
+                double xOffset = resultGrid.ActualWidth / DefaultDurationOfLiveDemoInSecond;
 
                 DateTime currentTime = DateTime.Now;
-                DateTime startTime = currentTime.AddMinutes((double)AnomalyDetectorScenarioLoader.DefaultDurationOfLiveDemoInSecond * -1);
+                DateTime startTime = currentTime.AddMinutes((double)DefaultDurationOfLiveDemoInSecond * -1);
 
                 progressLine.X1 = progressIndicator.CenterPoint.X;
                 progressLine.X2 = progressIndicator.CenterPoint.X;
                 progressLine.Y1 = 0;
                 progressLine.Y2 = resultGrid.ActualHeight;
 
-                int startIndex = 14;
-
                 dataPolyline.Points.Clear();
 
+                int startIndex = 14;
                 for (int i = 0; i < startIndex; i++)
                 {
                     float volume = GetCurrentVolumeValue();
 
-                    selectedDemoData.AllData.Insert(i, new TimeSeriesData(startTime.ToString(), volume));
-                    startTime = startTime.AddMinutes(GetTimeOffsetInMinute(selectedDemoData.UserStory.Granuarity));
+                    curScenario.AllData.Insert(i, new TimeSeriesData(startTime.ToString(), volume));
+                    startTime = startTime.AddMinutes(AnomalyDetectorScenarioLoader.GetTimeOffsetInMinute(curScenario.Granuarity));
 
-                    double yOffset = yScale * selectedDemoData.AllData[i].Value;
-                    Point point = new Point((x_Offset * i), yZeroLine + resultGrid.ActualHeight - yOffset);
+                    double yOffset = yScale * curScenario.AllData[i].Value;
+                    Point point = new Point(xOffset * i, resultGrid.ActualHeight - yOffset);
                     dataPolyline.Points.Add(point);
 
                     Point newUpperPoint = new Point(dataPolyline.Points[i].X, 0);
                     Point newLowerPoint = new Point(dataPolyline.Points[i].X, resultGrid.ActualHeight);
 
-                    int endOfUpper = (detectWindowPolyline.Points.Count / 2);
-                    int endOfLower = (detectWindowPolyline.Points.Count / 2 + 1);
+                    int endOfUpper = detectWindowPolyline.Points.Count / 2;
+                    int endOfLower = detectWindowPolyline.Points.Count / 2 + 1;
 
                     detectWindowPolyline.Points.Insert(endOfUpper, newUpperPoint);
                     detectWindowPolyline.Points.Insert(endOfLower, newLowerPoint);
                 }
 
-                for (int i = startIndex; i < AnomalyDetectorScenarioLoader.DefaultDurationOfLiveDemoInSecond; i++)
+                for (int i = startIndex; i < DefaultDurationOfLiveDemoInSecond; i++)
                 {
                     if (shouldStopCurrentRun)
                     {
@@ -285,18 +327,23 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
                     float volume = GetCurrentVolumeValue();
 
-                    selectedDemoData.AllData.Insert(i, new TimeSeriesData(startTime.ToString(), volume));
-                    startTime = startTime.AddMinutes(GetTimeOffsetInMinute(selectedDemoData.UserStory.Granuarity));
+                    curScenario.AllData.Insert(i, new TimeSeriesData(startTime.ToString(), volume));
+                    startTime = startTime.AddMinutes(AnomalyDetectorScenarioLoader.GetTimeOffsetInMinute(curScenario.Granuarity));
 
-                    AnomalyLastDetectResult result = await AnomalyDetectorHelper.GetStreamingDetectionResult(selectedDemoData, i, (int)sensitivitySlider.Value);
-
-                    double yOffset = yScale * selectedDemoData.AllData[i].Value;
-                    Point point = new Point((x_Offset * i), yZeroLine + resultGrid.ActualHeight - yOffset);
+                    double yOffset = yScale * curScenario.AllData[i].Value;
+                    Point point = new Point(xOffset * i, resultGrid.ActualHeight - yOffset);
                     dataPolyline.Points.Add(point);
 
+                    AnomalyLastDetectResult result = await GetStreamingAnomalyDetectionResultAsync(i);
                     if (result != null)
                     {
-                        DrawProgressByDetectionResult(dataPolyline.Points[i], result, yScale, yZeroLine);
+                        AnomalyInfo anomalyInfo = new AnomalyInfo
+                        {
+                            Text = i.ToString(),
+                            Value = volume.ToString("F2"),
+                            ExpectedValue = result.ExpectedValue.ToString("F2")
+                        };
+                        DrawProgressByDetectionResult(dataPolyline.Points[i], result, anomalyInfo, yScale);
                     }
                 }
 
@@ -314,9 +361,10 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 detectingAnomalyBtn.IsEnabled = false;
 
-                double dataRange = (selectedDemoData.MaxValue - selectedDemoData.MinValue);
+                string timestampFormat = curScenario.ScenarioType == AnomalyDetectionScenarioType.Telcom ? ShortDateFormat : ShortDateWithTimeFormat;
+                double dataRange = curScenario.MaxValue - curScenario.MinValue;
                 double yScale = (resultGrid.ActualHeight / dataRange);
-                double yZeroLine = yScale * selectedDemoData.MinValue;
+                double yZeroLine = yScale * curScenario.MinValue;
 
                 for (int i = 0; i < dataPolyline.Points.Count; i++)
                 {
@@ -333,14 +381,20 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                         if (anomalyEntireDetectResult.IsAnomaly[i])
                         {
                             SpriteVisual anomalyIndicator = GetNewAnomalyIndicator(dataPolyline.Points[i]);
+                            TimeSeriesData timeSeriesData = curScenario.AllData[i];
+                            AnomalyInfo anomalyInfo = new AnomalyInfo
+                            {
+                                Text = Util.StringToDateFormat(timeSeriesData.Timestamp, timestampFormat),
+                                Value = timeSeriesData.Value.ToString("F2"),
+                                ExpectedValue = anomalyEntireDetectResult.ExpectedValues[i].ToString("F2")
+                            };
 
                             containerRoot.Children.InsertAtTop(anomalyIndicator);
-
-                            allAnomalyIndicators.Add(anomalyIndicator);
+                            allAnomalyIndicators.Add(new Tuple<SpriteVisual, AnomalyInfo>(anomalyIndicator, anomalyInfo));
                         }
 
-                        int endOfUpper = (progressPolyline.Points.Count / 2);
-                        int endOfLower = (progressPolyline.Points.Count / 2 + 1);
+                        int endOfUpper = progressPolyline.Points.Count / 2;
+                        int endOfLower = progressPolyline.Points.Count / 2 + 1;
 
                         progressPolyline.Points.Insert(endOfUpper, newUpperPoint);
                         progressPolyline.Points.Insert(endOfLower, newLowerPoint);
@@ -361,19 +415,21 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         {
             try
             {
-                double dataRange = (selectedDemoData.MaxValue - selectedDemoData.MinValue);
-                double yScale = (resultGrid.ActualHeight / dataRange);
-                double yZeroLine = yScale * selectedDemoData.MinValue;
+                double dataRange = curScenario.MaxValue - curScenario.MinValue;
+                double yScale = resultGrid.ActualHeight / dataRange;
+                double yZeroLine = yScale * curScenario.MinValue;
 
-                int startIndex = AnomalyDetectorModelData.DefaultMinimumStartIndex < selectedDemoData.IndexOfFirstValidPoint ? AnomalyDetectorModelData.DefaultMinimumStartIndex : selectedDemoData.IndexOfFirstValidPoint;
+                string timestampFormat = curScenario.ScenarioType == AnomalyDetectionScenarioType.Telcom ? ShortDateFormat : ShortDateWithTimeFormat;
+                int indexOfFirstValidPoint = AnomalyDetectorScenarioLoader.GetIndexOfFirstPoint(curScenario.Granuarity);
+                int startIndex = DefaultMinimumStartIndex < indexOfFirstValidPoint ? DefaultMinimumStartIndex : indexOfFirstValidPoint;
 
                 for (int i = 0; i < startIndex; i++)
                 {
                     Point newUpperPoint = new Point(dataPolyline.Points[i].X, 0);
                     Point newLowerPoint = new Point(dataPolyline.Points[i].X, resultGrid.ActualHeight);
 
-                    int endOfUpper = (detectWindowPolyline.Points.Count / 2);
-                    int endOfLower = (detectWindowPolyline.Points.Count / 2 + 1);
+                    int endOfUpper = detectWindowPolyline.Points.Count / 2;
+                    int endOfLower = detectWindowPolyline.Points.Count / 2 + 1;
 
                     detectWindowPolyline.Points.Insert(endOfUpper, newUpperPoint);
                     detectWindowPolyline.Points.Insert(endOfLower, newLowerPoint);
@@ -386,11 +442,18 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                         break;
                     }
 
-                    AnomalyLastDetectResult result = await AnomalyDetectorHelper.GetStreamingDetectionResult(selectedDemoData, i, (int)sensitivitySlider.Value);
-
+                    AnomalyLastDetectResult result = await GetStreamingAnomalyDetectionResultAsync(i);
                     if (result != null)
                     {
-                        DrawProgressByDetectionResult(dataPolyline.Points[i], result, yScale, yZeroLine);
+                        TimeSeriesData timeSeriesData = curScenario.AllData[i];
+                        AnomalyInfo anomalyInfo = new AnomalyInfo
+                        {
+                            Text = Util.StringToDateFormat(timeSeriesData.Timestamp, timestampFormat),
+                            Value = timeSeriesData.Value.ToString("F2"),
+                            ExpectedValue = result.ExpectedValue.ToString("F2")
+                        };
+
+                        DrawProgressByDetectionResult(dataPolyline.Points[i], result, anomalyInfo, yScale, yZeroLine);
                     }
                 }
             }
@@ -398,6 +461,52 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 await Util.GenericApiCallExceptionHandler(ex, "Failure during streaming detection.");
             }
+        }
+
+        private async Task<AnomalyLastDetectResult> GetStreamingAnomalyDetectionResultAsync(int dataPointIndex)
+        {
+            int minStartIndex = -1;
+            int indexOfFirstValidPoint = AnomalyDetectorScenarioLoader.GetIndexOfFirstPoint(curScenario.Granuarity);
+
+            if (dataPointIndex >= indexOfFirstValidPoint)
+            {
+                minStartIndex = indexOfFirstValidPoint;
+            }
+            else if (dataPointIndex < indexOfFirstValidPoint && dataPointIndex >= 11)
+            {
+                minStartIndex = dataPointIndex;
+            }
+
+            if (minStartIndex > -1)
+            {
+                AnomalyDetectionRequest dataRequest = new AnomalyDetectionRequest
+                {
+                    Sensitivity = (int)sensitivitySlider.Value,
+                    MaxAnomalyRatio = curScenario.MaxAnomalyRatio,
+                    Granularity = curScenario.Granuarity.ToString(),
+                    CustomInterval = curScenario.CustomInterval,
+                    Period = curScenario.Period,
+                    Series = curScenario.AllData.GetRange(dataPointIndex - minStartIndex, minStartIndex + 1)
+                };
+
+                return await AnomalyDetectorHelper.GetStreamingDetectionResult(dataRequest);
+            }
+
+            return null;
+        }
+
+        private async Task<AnomalyEntireDetectResult> GetBatchAnomalyDetectionResultAsync()
+        {
+            AnomalyDetectionRequest dataRequest = new AnomalyDetectionRequest
+            {
+                Sensitivity = (int)sensitivitySlider.Value,
+                MaxAnomalyRatio = curScenario.MaxAnomalyRatio,
+                Granularity = curScenario.Granuarity.ToString(),
+                CustomInterval = curScenario.CustomInterval,
+                Period = curScenario.Period,
+                Series = curScenario.AllData
+            };
+            return await AnomalyDetectorHelper.GetBatchDetectionResult(dataRequest);
         }
 
         private void OnDetectionModeRadioButtonChecked(object sender, RoutedEventArgs e)
@@ -420,90 +529,66 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             return anomaly;
         }
 
-        private PointCollection GetPointCollectionByUserStoryData(AnomalyDetectorModelData userStoryData)
+        private void SetYAxisLabels(double max, double min, AnomalyDetectionScenarioType scenarioType)
         {
-            PointCollection dataPoints = new PointCollection();
-
-            if (userStoryData.AllData != null && userStoryData.AllData.Any())
+            string format = "F2";
+            if (scenarioType == AnomalyDetectionScenarioType.Live)
             {
-                double dataRange = (userStoryData.MaxValue - userStoryData.MinValue);
-                double yScale = (resultGrid.ActualHeight / dataRange);
-                double x_Offset = resultGrid.ActualWidth / userStoryData.AllData.Count;
-                double yZeroLine = yScale * userStoryData.MinValue;
-
-                for (int i = 0; i < userStoryData.AllData.Count; i++)
-                {
-                    Point point = new Point((x_Offset * i), yZeroLine + resultGrid.ActualHeight - (yScale * userStoryData.AllData[i].Value));
-                    dataPoints.Add(point);
-                }
+                min = 0;
+                max = MaxVolumeValue;
+                format = "F0";
             }
 
-            return dataPoints;
+            double step = (max - min) / 4;
+            this.y1_Lbl.Text = min.ToString(format);
+            this.y2_Lbl.Text = (min + step).ToString(format);
+            this.y3_Lbl.Text = (min + 2 * step).ToString(format);
+            this.y4_Lbl.Text = (min + 3 * step).ToString(format);
+            this.y5_Lbl.Text = max.ToString(format);
         }
 
-        private void SetYAxisLabels(double max, double min, UserStoryType storyType)
+        private void SetXAxisLabels(AnomalyDetectionScenario scenario)
         {
-            string format = storyType != UserStoryType.Live ? "F2" : "F0";
-            if (storyType != UserStoryType.Live)
+            if (scenario != null)
             {
-                double step = (max - min) / 4;
-                this.y1_Lbl.Text = min.ToString(format);
-                this.y2_Lbl.Text = (min + step).ToString(format);
-                this.y3_Lbl.Text = (min + 2 * step).ToString(format);
-                this.y4_Lbl.Text = (min + 3 * step).ToString(format);
-                this.y5_Lbl.Text = max.ToString(format);
-            }
-            else
-            {
-                double step = (max - min) / 3;
-                this.y1_Lbl.Text = string.Empty;
-                this.y2_Lbl.Text = min.ToString(format);
-                this.y3_Lbl.Text = (min + step).ToString(format);
-                this.y4_Lbl.Text = (min + 2 * step).ToString(format);
-                this.y5_Lbl.Text = max.ToString(format);
-            }
-        }
+                int step = 0;
+                List<TimeSeriesData> data = scenario.AllData;
 
-        private void SetXAxisLabels(AnomalyDetectorModelData selectedDemoData)
-        {
-            if (selectedDemoData != null)
-            {
-                string format = "MMMM dd";
-                var data = selectedDemoData.AllData;
-                int step = selectedDemoData.UserStory.StoryType != UserStoryType.Live 
-                    ? data.Count / 4 - 1 : AnomalyDetectorScenarioLoader.DefaultDurationOfLiveDemoInSecond / 4;
-
-                switch (selectedDemoData.UserStory.StoryType)
+                switch (scenario.ScenarioType)
                 {
-                    case UserStoryType.BikeRental:
-                    case UserStoryType.Telcom:
-                    case UserStoryType.Manufacturing:
-                        if (data.Any())
-                        {
-                            this.x1_Lbl.Text = StringToDateFormat(data[0 * step].Timestamp, format);
-                            this.x2_Lbl.Text = StringToDateFormat(data[1 * step].Timestamp, format);
-                            this.x3_Lbl.Text = StringToDateFormat(data[2 * step].Timestamp, format);
-                            this.x4_Lbl.Text = StringToDateFormat(data[3 * step].Timestamp, format);
-                            this.x5_Lbl.Text = StringToDateFormat(data[4 * step].Timestamp, format);
-                        }
-                        break;
-                    case UserStoryType.Live:
+                    case AnomalyDetectionScenarioType.Live:
+                        step = DefaultDurationOfLiveDemoInSecond / 4;
+
                         this.x1_Lbl.Text = $"{0 * step}";
                         this.x2_Lbl.Text = $"{1 * step}";
                         this.x3_Lbl.Text = $"{2 * step}";
                         this.x4_Lbl.Text = $"{3 * step}";
                         this.x5_Lbl.Text = $"{4 * step}";
                         break;
+
+                    default:
+                        if (data.Any())
+                        {
+                            step = data.Count % 4 != 0 ? (int)Math.Floor(data.Count / 4.0) : data.Count / 4;
+
+                            this.x1_Lbl.Text = Util.StringToDateFormat(data[0 * step].Timestamp, ShortDateFormat);
+                            this.x2_Lbl.Text = Util.StringToDateFormat(data[1 * step].Timestamp, ShortDateFormat);
+                            this.x3_Lbl.Text = Util.StringToDateFormat(data[2 * step].Timestamp, ShortDateFormat);
+                            this.x4_Lbl.Text = Util.StringToDateFormat(data[3 * step].Timestamp, ShortDateFormat);
+                            this.x5_Lbl.Text = Util.StringToDateFormat(data[data.Count - 1].Timestamp, ShortDateFormat);
+                        }
+                        break;
                 }
             }
         }
 
-        private void DrawProgressByDetectionResult(Point detectionPoint, AnomalyLastDetectResult detectionResult, double yScale, double yZeroLine = 0)
+        private void DrawProgressByDetectionResult(Point detectionPoint, AnomalyLastDetectResult detectionResult, AnomalyInfo anomalyInfo, double yScale, double yZeroLine = 0)
         {
             double upperMarginOnUI = detectionResult.ExpectedValue + detectionResult.UpperMargin;
             double lowerMarginOnUI = detectionResult.ExpectedValue - detectionResult.LowerMargin;
             double offsetY1 = yScale * upperMarginOnUI < resultGrid.ActualHeight ? yScale * upperMarginOnUI : resultGrid.ActualHeight;
             double offsetY2 = lowerMarginOnUI > 0 ? yScale * lowerMarginOnUI : 0;
+            int indexOfFirstValidPoint = AnomalyDetectorScenarioLoader.GetIndexOfFirstPoint(curScenario.Granuarity);
 
             Point newUpperPoint = new Point(detectionPoint.X, yZeroLine + resultGrid.ActualHeight - offsetY1);
             Point newLowerPoint = new Point(detectionPoint.X, yZeroLine + resultGrid.ActualHeight - offsetY2);
@@ -512,19 +597,18 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 SpriteVisual anomalyIndicator = GetNewAnomalyIndicator(detectionPoint);
                 containerRoot.Children.InsertAtTop(anomalyIndicator);
-
-                allAnomalyIndicators.Add(anomalyIndicator);
+                allAnomalyIndicators.Add(new Tuple<SpriteVisual, AnomalyInfo>(anomalyIndicator, anomalyInfo));
             }
 
-            int endOfUpper = (progressPolyline.Points.Count / 2);
-            int endOfLower = (progressPolyline.Points.Count / 2 + 1);
+            int endOfUpper = progressPolyline.Points.Count / 2;
+            int endOfLower = progressPolyline.Points.Count / 2 + 1;
 
             progressPolyline.Points.Insert(endOfUpper, newUpperPoint);
             progressPolyline.Points.Insert(endOfLower, newLowerPoint);
 
             detectWindowPolyline.Points.Insert((detectWindowPolyline.Points.Count / 2), new Point(detectionPoint.X, 0));
             detectWindowPolyline.Points.Insert((detectWindowPolyline.Points.Count / 2 + 1), new Point(detectionPoint.X, resultGrid.ActualHeight));
-            if ((detectWindowPolyline.Points.Count / 2) >= selectedDemoData.IndexOfFirstValidPoint)
+            if ((detectWindowPolyline.Points.Count / 2) >= indexOfFirstValidPoint)
             {
                 detectWindowPolyline.Points.RemoveAt(0);
                 detectWindowPolyline.Points.RemoveAt(detectWindowPolyline.Points.Count - 1);
@@ -543,57 +627,57 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             return maxVolumeInSampleBuffer * 100;
         }
 
-        private int GetTimeOffsetInMinute(GranType granType)
-        {
-            switch (granType)
-            {
-                case GranType.hourly:
-                    return 60;
-                case GranType.minutely:
-                    return 1;
-                default:
-                    return 1;
-            }
-        }
-
         private void ResetState()
         {
             anomalyEntireDetectResult = null;
             CleanAndRestoreUI();
-            DisplayBasicData(selectedDemoData);
+            DisplayBasicData(curScenario);
 
-            if (ChangeDetectModeIsNotAllowed(selectedDemoData))
+            if (ChangeDetectModeIsNotAllowed(curScenario))
             {
                 streamingOption.IsEnabled = false;
                 batchOption.IsEnabled = false;
             }
 
-            if (selectedDemoData.UserStory.StoryType == UserStoryType.Live)
+            if (curScenario.ScenarioType == AnomalyDetectionScenarioType.Live)
             {
                 this.StopLiveAudio?.Invoke(this, EventArgs.Empty);
             }
         }
 
-        private void DisplayBasicData(AnomalyDetectorModelData demoData)
+        private void DisplayBasicData(AnomalyDetectionScenario scenario)
         {
-            if (demoData == null)
-            {
-                return;
-            }
-
-            dataPolyline.Points?.Clear();
+            // update axis lines
+            SetXAxisLabels(scenario);
+            SetYAxisLabels(scenario.MaxValue, scenario.MinValue, scenario.ScenarioType);
 
             // update data points
-            SetXAxisLabels(demoData);
-            if (demoData.UserStory.StoryType != UserStoryType.Live)
+            dataPolyline.Points?.Clear();
+            if (scenario.ScenarioType != AnomalyDetectionScenarioType.Live)
             {
-                SetYAxisLabels(demoData.MaxValue, demoData.MinValue, demoData.UserStory.StoryType);
-                dataPolyline.Points = GetPointCollectionByUserStoryData(demoData);
+                dataPolyline.Points = GetPointCollectionByScenarioData(scenario);
             }
-            else
+        }
+
+        private PointCollection GetPointCollectionByScenarioData(AnomalyDetectionScenario scenario)
+        {
+            PointCollection dataPoints = new PointCollection();
+
+            if (scenario.AllData != null && scenario.AllData.Any())
             {
-                SetYAxisLabels(MaxVolumeValue, 0, UserStoryType.Live);
+                double dataRange = scenario.MaxValue - scenario.MinValue;
+                double yScale = (resultGrid.ActualHeight / dataRange);
+                double xOffset = resultGrid.ActualWidth / (scenario.AllData.Count - 1);
+                double yZeroLine = yScale * scenario.MinValue;
+
+                for (int i = 0; i < scenario.AllData.Count; i++)
+                {
+                    Point point = new Point(xOffset * i, yZeroLine + resultGrid.ActualHeight - (yScale * scenario.AllData[i].Value));
+                    dataPoints.Add(point);
+                }
             }
+
+            return dataPoints;
         }
 
         private void CleanAndRestoreUI()
@@ -612,7 +696,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
                 if (allAnomalyIndicators != null && allAnomalyIndicators.Count > 0)
                 {
-                    foreach (SpriteVisual anomaly in allAnomalyIndicators)
+                    foreach (SpriteVisual anomaly in allAnomalyIndicators.Select(x => x.Item1))
                     {
                         if (containerRoot.Children.Contains(anomaly))
                         {
@@ -625,24 +709,9 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             }
         }
 
-        private bool ChangeDetectModeIsNotAllowed(AnomalyDetectorModelData data)
+        private bool ChangeDetectModeIsNotAllowed(AnomalyDetectionScenario scenario)
         {
-            return (data.UserStory.StoryType == UserStoryType.Live || data.UserStory.StoryType == UserStoryType.Manufacturing);
-        }
-
-        private double GetYZeroLine()
-        {
-            return resultGrid.ActualHeight / 4;
-        }
-
-        private string StringToDateFormat(string date, string format = "")
-        {
-            bool converted = DateTime.TryParse(date, out DateTime datetime);
-            if (converted)
-            {
-                return datetime.ToString(format);
-            }
-            return string.Empty;
+            return scenario.ScenarioType == AnomalyDetectionScenarioType.Live || scenario.ScenarioType == AnomalyDetectionScenarioType.Manufacturing;
         }
     }
 }

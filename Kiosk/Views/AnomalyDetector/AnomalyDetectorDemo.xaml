@@ -20,7 +20,7 @@
         </DataTemplate>
     </Page.Resources>
 
-    <Grid EntranceNavigationTransitionInfo.IsTargetElement="True" Background="#FF262626">
+    <Grid EntranceNavigationTransitionInfo.IsTargetElement="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />

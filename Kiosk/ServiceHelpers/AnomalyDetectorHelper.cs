@@ -42,11 +42,8 @@ namespace ServiceHelpers
     public class AnomalyDetectorHelper : ServiceBase
     {
         private static readonly string HEADER_SUB_KEY = "Ocp-Apim-Subscription-Key";
-        private static readonly Dictionary<AnomalyDetectorServiceType, Uri> Services_URL = new Dictionary<AnomalyDetectorServiceType, Uri>
-        {
-            { AnomalyDetectorServiceType.Streaming, new Uri("https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/last/detect") },
-            { AnomalyDetectorServiceType.Batch, new Uri("https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/entire/detect") }
-        };
+        private static readonly Uri BATCH_SERVICE_URL = new Uri("https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/entire/detect");
+        private static readonly Uri STREAMING_SERVICE_URL = new Uri("https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/last/detect");
 
         private static IDictionary<string, string> defaultRequestHeaders;
 
@@ -78,51 +75,14 @@ namespace ServiceHelpers
             };
         }
 
-        public static async Task<AnomalyLastDetectResult> GetStreamingDetectionResult(AnomalyDetectorModelData demoData, int dataPointIndex, int sensitivity)
+        public static async Task<AnomalyLastDetectResult> GetStreamingDetectionResult(AnomalyDetectionRequest dataRequest)
         {
-            AnomalyLastDetectRequest dataRequest = new AnomalyLastDetectRequest
-            {
-                Sensitivity = sensitivity,
-                MaxAnomalyRatio = demoData.UserStory.MaxAnomalyRatio,
-                Granularity = demoData.UserStory.Granuarity.ToString(),
-                CustomInterval = demoData.UserStory.CustomInterval,
-                Period = demoData.UserStory.Period
-            };
-
-            int minStartIndex = -1;
-
-            if (dataPointIndex >= demoData.IndexOfFirstValidPoint)
-            {
-                minStartIndex = demoData.IndexOfFirstValidPoint;
-            }
-            else if (dataPointIndex < demoData.IndexOfFirstValidPoint && dataPointIndex >= 11)
-            {
-                minStartIndex = dataPointIndex;
-            }
-
-            if (minStartIndex > -1)
-            {
-                dataRequest.Series = demoData.AllData.GetRange(dataPointIndex - minStartIndex, minStartIndex + 1);
-
-                return await HttpClientUtility.PostAsJsonAsync<AnomalyLastDetectResult>(Services_URL[AnomalyDetectorServiceType.Streaming], defaultRequestHeaders, dataRequest);
-            }
-
-            return null;
+            return await HttpClientUtility.PostAsJsonAsync<AnomalyLastDetectResult>(STREAMING_SERVICE_URL, defaultRequestHeaders, dataRequest);
         }
 
-        public static async Task<AnomalyEntireDetectResult> GetBatchDetectionResult(AnomalyDetectorModelData demoData, int sensitivity)
+        public static async Task<AnomalyEntireDetectResult> GetBatchDetectionResult(AnomalyDetectionRequest dataRequest)
         {
-            AnomalyEntireDetectRequest dataRequest = new AnomalyEntireDetectRequest
-            {
-                Sensitivity = sensitivity,
-                MaxAnomalyRatio = demoData.UserStory.MaxAnomalyRatio,
-                Granularity = demoData.UserStory.Granuarity.ToString(),
-                CustomInterval = demoData.UserStory.CustomInterval,
-                Period = demoData.UserStory.Period,
-                Series = demoData.AllData
-            };
-
-            return await HttpClientUtility.PostAsJsonAsync<AnomalyEntireDetectResult>(Services_URL[AnomalyDetectorServiceType.Batch], defaultRequestHeaders, dataRequest);
+            return await HttpClientUtility.PostAsJsonAsync<AnomalyEntireDetectResult>(BATCH_SERVICE_URL, defaultRequestHeaders, dataRequest);
         }
     }
 }
