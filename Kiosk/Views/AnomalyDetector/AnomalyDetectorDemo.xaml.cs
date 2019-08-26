@@ -59,9 +59,9 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         private MediaFrameReader mediaFrameReader;
         private float maxVolumeInSampleBuffer = 0;
 
-        public TabHeader BikeRentalTab = new TabHeader() { Name = "Bike sharing" };
-        public TabHeader TelcomTab = new TabHeader() { Name = "Telcom" };
-        public TabHeader ManufacturingTab = new TabHeader() { Name = "Infrastructure" };
+        public TabHeader BikeRentalTab = new TabHeader() { Name = "Bike rental" };
+        public TabHeader TelecomTab = new TabHeader() { Name = "Telecom" };
+        public TabHeader ManufacturingTab = new TabHeader() { Name = "Manufacturing" };
         public TabHeader LiveTab = new TabHeader() { Name = "Live sound" };
 
         private PivotItem selectedTab;
@@ -116,6 +116,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     }
 
                     // initialize default tab
+                    this.bikerentalChart.ResetState();
                     this.bikerentalChart.InitializeChart(AnomalyDetectionScenarioType.BikeRental, AnomalyDetectorServiceType.Batch, sensitivy: 75);
                 }
             }
@@ -146,14 +147,21 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             bool isAnyData = AnomalyDetectorScenarioLoader.AllModelData != null && AnomalyDetectorScenarioLoader.AllModelData.Any();
             if (selectedPivot.Header is TabHeader selectedTab && isAnyData)
             {
+                // clear chart
+                this.bikerentalChart.ResetState();
+                this.telecomChart.ResetState();
+                this.manufacturingChart.ResetState();
+                this.liveChart.ResetState();
+
+                // initialize new chart
                 if (selectedTab == BikeRentalTab)
                 {
                     this.bikerentalChart.InitializeChart(AnomalyDetectionScenarioType.BikeRental, AnomalyDetectorServiceType.Batch, sensitivy: 75);
                 }
 
-                else if (selectedTab == TelcomTab)
+                else if (selectedTab == TelecomTab)
                 {
-                    this.telcomChart.InitializeChart(AnomalyDetectionScenarioType.Telcom, AnomalyDetectorServiceType.Streaming, sensitivy: 90);
+                    this.telecomChart.InitializeChart(AnomalyDetectionScenarioType.Telecom, AnomalyDetectorServiceType.Streaming, sensitivy: 90);
                 }
 
                 else if (selectedTab == ManufacturingTab)

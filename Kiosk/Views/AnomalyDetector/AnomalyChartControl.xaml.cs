@@ -51,7 +51,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 {
     public sealed partial class AnomalyChartControl : UserControl
     {
-        private static readonly int MaxVolumeValue = 100;
+        private static readonly int MaxVolumeValue = 200;
         private static readonly int TooltipBottomMargin = 15;
         private static readonly int DefaultMinimumStartIndex = 12;
         private static readonly int DefaultDurationOfLiveDemoInSecond = 480;
@@ -107,8 +107,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     curScenario.AllData.Clear();
                 }
 
-                // clear state
-                ResetState();
+                DisplayBasicData(curScenario);
 
                 // set default value: slider and radio buttons
                 this.sensitivitySlider.Value = sensitivy;
@@ -134,20 +133,23 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             DisplayBasicData(curScenario);
 
             // update anomaly data
-            switch (selectedDetectionMode)
+            if (allAnomalyIndicators != null && allAnomalyIndicators.Count > 0)
             {
-                case AnomalyDetectorServiceType.Batch:
-                    CleanAndRestoreUI();
-                    await StartBatchModeProcessAsync();
-                    break;
+                switch (selectedDetectionMode)
+                {
+                    case AnomalyDetectorServiceType.Batch:
+                        ClearAnomalyPoints();
+                        await StartBatchModeProcessAsync();
+                        break;
 
-                case AnomalyDetectorServiceType.Streaming:
-                    if (curScenario.ScenarioType == AnomalyDetectionScenarioType.Live)
-                    {
-                        CleanAndRestoreUI();
-                    }
-                    shouldStopCurrentRun = true;
-                    break;
+                    case AnomalyDetectorServiceType.Streaming:
+                        if (curScenario.ScenarioType == AnomalyDetectionScenarioType.Live)
+                        {
+                            ClearAnomalyPoints();
+                        }
+                        shouldStopCurrentRun = true;
+                        break;
+                }
             }
         }
 
@@ -165,12 +167,10 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             progressIndicator.Brush = compositor.CreateColorBrush(Colors.SlateGray);
 
             containerRoot.Children.InsertAtTop(progressIndicator);
-            progressIndicator.Offset = new Vector3(0, (int)resultGrid.ActualHeight, resultGrid.CenterPoint.Z);
+            progressIndicator.Offset = new Vector3(0, (float)resultGrid.ActualHeight, resultGrid.CenterPoint.Z);
 
             progressLine.X1 = progressIndicator.CenterPoint.X;
             progressLine.X2 = progressIndicator.CenterPoint.X;
-            progressLine.Y1 = 0;
-            progressLine.Y2 = resultGrid.ActualHeight;
 
             // pointer moved event for tooltip
             resultGrid.PointerMoved += OnChartPointer;
@@ -291,8 +291,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
                 progressLine.X1 = progressIndicator.CenterPoint.X;
                 progressLine.X2 = progressIndicator.CenterPoint.X;
-                progressLine.Y1 = 0;
-                progressLine.Y2 = resultGrid.ActualHeight;
 
                 dataPolyline.Points.Clear();
 
@@ -361,7 +359,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 detectingAnomalyBtn.IsEnabled = false;
 
-                string timestampFormat = curScenario.ScenarioType == AnomalyDetectionScenarioType.Telcom ? ShortDateFormat : ShortDateWithTimeFormat;
+                string timestampFormat = curScenario.ScenarioType == AnomalyDetectionScenarioType.Telecom ? ShortDateFormat : ShortDateWithTimeFormat;
                 double dataRange = curScenario.MaxValue - curScenario.MinValue;
                 double yScale = (resultGrid.ActualHeight / dataRange);
                 double yZeroLine = yScale * curScenario.MinValue;
@@ -419,7 +417,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                 double yScale = resultGrid.ActualHeight / dataRange;
                 double yZeroLine = yScale * curScenario.MinValue;
 
-                string timestampFormat = curScenario.ScenarioType == AnomalyDetectionScenarioType.Telcom ? ShortDateFormat : ShortDateWithTimeFormat;
+                string timestampFormat = curScenario.ScenarioType == AnomalyDetectionScenarioType.Telecom ? ShortDateFormat : ShortDateWithTimeFormat;
                 int indexOfFirstValidPoint = AnomalyDetectorScenarioLoader.GetIndexOfFirstPoint(curScenario.Granuarity);
                 int startIndex = DefaultMinimumStartIndex < indexOfFirstValidPoint ? DefaultMinimumStartIndex : indexOfFirstValidPoint;
 
@@ -618,31 +616,20 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
             progressLine.X1 = detectionPoint.X;
             progressLine.X2 = detectionPoint.X;
-            progressLine.Y1 = 0;
-            progressLine.Y2 = resultGrid.ActualHeight;
         }
 
         private float GetCurrentVolumeValue()
         {
-            return maxVolumeInSampleBuffer * 100;
+            return maxVolumeInSampleBuffer * 100 + 50;
         }
 
-        private void ResetState()
+        public void ResetState()
         {
+            shouldStopCurrentRun = true;
             anomalyEntireDetectResult = null;
-            CleanAndRestoreUI();
-            DisplayBasicData(curScenario);
+            this.StopLiveAudio?.Invoke(this, EventArgs.Empty);
 
-            if (ChangeDetectModeIsNotAllowed(curScenario))
-            {
-                streamingOption.IsEnabled = false;
-                batchOption.IsEnabled = false;
-            }
-
-            if (curScenario.ScenarioType == AnomalyDetectionScenarioType.Live)
-            {
-                this.StopLiveAudio?.Invoke(this, EventArgs.Empty);
-            }
+            ClearAnomalyPoints();
         }
 
         private void DisplayBasicData(AnomalyDetectionScenario scenario)
@@ -651,11 +638,27 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             SetXAxisLabels(scenario);
             SetYAxisLabels(scenario.MaxValue, scenario.MinValue, scenario.ScenarioType);
 
+            // update progress line
+            if (progressIndicator != null)
+            {
+                progressIndicator.Offset = new Vector3(0, (int)resultGrid.ActualHeight, resultGrid.CenterPoint.Z);
+                progressLine.X1 = progressIndicator.CenterPoint.X;
+                progressLine.X2 = progressIndicator.CenterPoint.X;
+                progressLine.Y1 = 0;
+                progressLine.Y2 = resultGrid.ActualHeight;
+            }
+
             // update data points
             dataPolyline.Points?.Clear();
             if (scenario.ScenarioType != AnomalyDetectionScenarioType.Live)
             {
                 dataPolyline.Points = GetPointCollectionByScenarioData(scenario);
+            }
+
+            if (ChangeDetectModeIsNotAllowed(curScenario))
+            {
+                streamingOption.IsEnabled = false;
+                batchOption.IsEnabled = false;
             }
         }
 
@@ -680,32 +683,22 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             return dataPoints;
         }
 
-        private void CleanAndRestoreUI()
+        private void ClearAnomalyPoints()
         {
-            if (progressIndicator != null)
+            progressPolyline.Points?.Clear();
+            detectWindowPolyline.Points?.Clear();
+
+            if (allAnomalyIndicators != null && allAnomalyIndicators.Count > 0)
             {
-                progressIndicator.Offset = new Vector3(0, (int)resultGrid.ActualHeight, resultGrid.CenterPoint.Z);
-
-                progressLine.X1 = progressIndicator.CenterPoint.X;
-                progressLine.X2 = progressIndicator.CenterPoint.X;
-                progressLine.Y1 = 0;
-                progressLine.Y2 = resultGrid.ActualHeight;
-
-                progressPolyline.Points?.Clear();
-                detectWindowPolyline.Points?.Clear();
-
-                if (allAnomalyIndicators != null && allAnomalyIndicators.Count > 0)
+                foreach (SpriteVisual anomaly in allAnomalyIndicators.Select(x => x.Item1))
                 {
-                    foreach (SpriteVisual anomaly in allAnomalyIndicators.Select(x => x.Item1))
+                    if (containerRoot.Children.Contains(anomaly))
                     {
-                        if (containerRoot.Children.Contains(anomaly))
-                        {
-                            containerRoot.Children.Remove(anomaly);
-                        }
+                        containerRoot.Children.Remove(anomaly);
                     }
-
-                    allAnomalyIndicators.Clear();
                 }
+
+                allAnomalyIndicators.Clear();
             }
         }
 

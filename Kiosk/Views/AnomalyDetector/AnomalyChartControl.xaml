@@ -86,7 +86,7 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
 
-                    <Line Grid.RowSpan="4" Name="progressLine" X1="0" X2="0" Stroke="SlateGray" StrokeThickness="2" HorizontalAlignment="Stretch" VerticalAlignment="Bottom"/>
+                    <Line Grid.RowSpan="4" Name="progressLine" X1="0" X2="0" Stroke="SlateGray" StrokeThickness="2" />
                     <Polyline Grid.RowSpan="4" Name="progressPolyline" Stroke="LightSlateGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>
                     <Polyline Grid.RowSpan="4" Name="dataPolyline" Stroke="White" StrokeThickness="2" />
                     <Polyline Grid.RowSpan="4" Name="detectWindowPolyline" Stroke="DarkGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>

@@ -40,7 +40,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
     public enum AnomalyDetectionScenarioType
     {
         BikeRental,
-        Telcom,
+        Telecom,
         Manufacturing,
         Live
     }
