@@ -51,8 +51,9 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 {
     public sealed partial class AnomalyChartControl : UserControl
     {
-        private static readonly int MaxVolumeValue = 200;
+        private static readonly int MaxVolumeValue = 120;
         private static readonly int TooltipBottomMargin = 15;
+        private static readonly int BaseVolume = 50;
         private static readonly int DefaultMinimumStartIndex = 12;
         private static readonly int DefaultDurationOfLiveDemoInSecond = 480;
 
@@ -302,7 +303,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     curScenario.AllData.Insert(i, new TimeSeriesData(startTime.ToString(), volume));
                     startTime = startTime.AddMinutes(AnomalyDetectorScenarioLoader.GetTimeOffsetInMinute(curScenario.Granuarity));
 
-                    double yOffset = yScale * curScenario.AllData[i].Value;
+                    double yOffset = yScale * (curScenario.AllData[i].Value - BaseVolume);
                     Point point = new Point(xOffset * i, resultGrid.ActualHeight - yOffset);
                     dataPolyline.Points.Add(point);
 
@@ -328,18 +329,19 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     curScenario.AllData.Insert(i, new TimeSeriesData(startTime.ToString(), volume));
                     startTime = startTime.AddMinutes(AnomalyDetectorScenarioLoader.GetTimeOffsetInMinute(curScenario.Granuarity));
 
-                    double yOffset = yScale * curScenario.AllData[i].Value;
+                    double yOffset = yScale * (curScenario.AllData[i].Value - BaseVolume);
                     Point point = new Point(xOffset * i, resultGrid.ActualHeight - yOffset);
                     dataPolyline.Points.Add(point);
 
                     AnomalyLastDetectResult result = await GetStreamingAnomalyDetectionResultAsync(i);
                     if (result != null)
                     {
+                        result.ExpectedValue -= BaseVolume;
                         AnomalyInfo anomalyInfo = new AnomalyInfo
                         {
                             Text = i.ToString(),
-                            Value = volume.ToString("F2"),
-                            ExpectedValue = result.ExpectedValue.ToString("F2")
+                            Value = (volume - BaseVolume).ToString("F2"),
+                            ExpectedValue = (result.ExpectedValue - BaseVolume).ToString("F2")
                         };
                         DrawProgressByDetectionResult(dataPolyline.Points[i], result, anomalyInfo, yScale);
                     }
@@ -620,7 +622,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
         private float GetCurrentVolumeValue()
         {
-            return maxVolumeInSampleBuffer * 100 + 50;
+            return maxVolumeInSampleBuffer * 100 + BaseVolume;
         }
 
         public void ResetState()
