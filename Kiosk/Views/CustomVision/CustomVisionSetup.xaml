@@ -48,17 +48,6 @@
             <AppBarButton x:Name="exportButton" Icon="Download" Label="Export Project" IsEnabled="False" AllowFocusOnInteraction="True"
                           Click="OnExportModelClicked" FlyoutBase.AttachedFlyout="{StaticResource ProjectSharingFlyout}"/>
             <AppBarButton Icon="Play" Label="Train Project" Click="OnStartTrainingClicked" x:Name="trainButton"/>
-            <AppBarButton Icon="Setting" Label="Settings" x:Name="settingsButton" AllowFocusOnInteraction="True">
-                <AppBarButton.Flyout>
-                    <Flyout Closed="OnSettingsFlyoutClosed">
-                        <StackPanel Width="400">
-                            <TextBox Header="Training Key" Text="{Binding CustomVisionTrainingApiKey, Mode=TwoWay}"/>
-                            <TextBox Margin="0,12,0,0" Header="Prediction Key" Text="{Binding CustomVisionPredictionApiKey, Mode=TwoWay}"/>
-                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Margin="0,12,0,0" Text="You can get API Keys by visiting http://CustomVision.ai. Once you can create your first project through the website (you don't need to populate the project, just create an empty one) you will be able to find the keys in the project's Settings panel." TextWrapping="Wrap"/>
-                        </StackPanel>
-                    </Flyout>
-                </AppBarButton.Flyout>
-            </AppBarButton>
 
             <CommandBar.Content>
                 <TextBlock Text="Custom Vision Setup" Style="{ThemeResource PageTitleTextBlockStyle}" Margin="14,10,12,0"/>

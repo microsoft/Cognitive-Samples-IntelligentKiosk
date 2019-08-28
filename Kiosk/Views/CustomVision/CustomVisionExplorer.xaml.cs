@@ -56,8 +56,6 @@ namespace IntelligentKioskSample.Views
     [KioskExperience(Title = "Custom Vision Explorer", ImagePath = "ms-appx:/Assets/CustomVisionExplorer.png")]
     public sealed partial class CustomVisionExplorer : Page
     {
-        private const string SouthCentralUsEndpoint = "https://southcentralus.api.cognitive.microsoft.com";
-
         private ImageAnalyzer currentPhoto;
         private CustomVisionTrainingClient userProvidedTrainingApi;
         private CustomVisionPredictionClient userProvidedPredictionApi;
@@ -256,8 +254,8 @@ namespace IntelligentKioskSample.Views
             if (!string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) && 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey))
             {
-                userProvidedTrainingApi = new CustomVisionTrainingClient { Endpoint = SouthCentralUsEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
-                userProvidedPredictionApi = new CustomVisionPredictionClient { Endpoint = SouthCentralUsEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionPredictionApiKey };
+                userProvidedTrainingApi = new CustomVisionTrainingClient { Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
+                userProvidedPredictionApi = new CustomVisionPredictionClient { Endpoint = SettingsHelper.Instance.CustomVisionPredictionApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionPredictionApiKey };
             }
 
             this.DataContext = this;
