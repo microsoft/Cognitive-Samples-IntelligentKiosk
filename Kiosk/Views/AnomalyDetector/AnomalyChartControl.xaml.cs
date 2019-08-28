@@ -341,7 +341,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                         {
                             Text = i.ToString(),
                             Value = (volume - BaseVolume).ToString("F2"),
-                            ExpectedValue = (result.ExpectedValue - BaseVolume).ToString("F2")
+                            ExpectedValue = result.ExpectedValue.ToString("F2")
                         };
                         DrawProgressByDetectionResult(dataPolyline.Points[i], result, anomalyInfo, yScale);
                     }
