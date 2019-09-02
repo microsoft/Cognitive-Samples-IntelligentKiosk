@@ -161,7 +161,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
                 else if (selectedTab == TelecomTab)
                 {
-                    this.telecomChart.InitializeChart(AnomalyDetectionScenarioType.Telecom, AnomalyDetectorServiceType.Streaming, sensitivy: 90);
+                    this.telecomChart.InitializeChart(AnomalyDetectionScenarioType.Telecom, AnomalyDetectorServiceType.Streaming, sensitivy: 85);
                 }
 
                 else if (selectedTab == ManufacturingTab)

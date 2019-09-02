@@ -420,8 +420,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                 double yZeroLine = yScale * curScenario.MinValue;
 
                 string timestampFormat = curScenario.ScenarioType == AnomalyDetectionScenarioType.Telecom ? ShortDateFormat : ShortDateWithTimeFormat;
-                int indexOfFirstValidPoint = AnomalyDetectorScenarioLoader.GetIndexOfFirstPoint(curScenario.Granuarity);
-                int startIndex = DefaultMinimumStartIndex < indexOfFirstValidPoint ? DefaultMinimumStartIndex : indexOfFirstValidPoint;
+                int startIndex = AnomalyDetectorScenarioLoader.GetIndexOfFirstPoint(curScenario.Granuarity);
 
                 for (int i = 0; i < startIndex; i++)
                 {
@@ -657,11 +656,8 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                 dataPolyline.Points = GetPointCollectionByScenarioData(scenario);
             }
 
-            if (ChangeDetectModeIsNotAllowed(curScenario))
-            {
-                streamingOption.IsEnabled = false;
-                batchOption.IsEnabled = false;
-            }
+            streamingOption.IsEnabled = false;
+            batchOption.IsEnabled = false;
         }
 
         private PointCollection GetPointCollectionByScenarioData(AnomalyDetectionScenario scenario)

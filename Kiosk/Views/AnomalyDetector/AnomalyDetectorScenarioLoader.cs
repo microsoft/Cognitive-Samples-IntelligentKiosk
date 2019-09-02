@@ -121,7 +121,8 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                                                 ScenarioType = AnomalyDetectionScenarioType.Telecom,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Telcom.csv",
                                                 Granuarity = GranType.daily,
-                                                MaxAnomalyRatio = 0.25
+                                                MaxAnomalyRatio = 0.15,
+                                                Period = 7
                                             }
             },
             { AnomalyDetectionScenarioType.Manufacturing, new AnomalyDetectionScenario

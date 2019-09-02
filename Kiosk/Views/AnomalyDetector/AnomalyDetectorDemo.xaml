@@ -58,8 +58,8 @@
                         </Grid.ColumnDefinitions>
 
                         <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/Telcom.png" 
-                                                   Title="The Phone Company" Description="The Phone Company offers telecommunications services in west Europe serving 72 million users. Anomaly Detector monitors thousands of performance metrics to track the underlying network quality and to avoid unexpected outages."/>
-                        <local:AnomalyChartControl Grid.Column="1" x:Name="telecomChart" Title="Delay at saarouter" />
+                                                   Title="The Phone Company" Description="The Phone Company offers telecommunications services in west Europe serving 72 million users. Anomaly Detector monitors thousands of business metrics to track business health."/>
+                        <local:AnomalyChartControl Grid.Column="1" x:Name="telecomChart" Title="Daily active users" />
                     </Grid>
                 </PivotItem>
 
