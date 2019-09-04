@@ -54,7 +54,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         private static readonly int MaxVolumeValue = 120;
         private static readonly int TooltipBottomMargin = 15;
         private static readonly int BaseVolume = 50;
-        private static readonly int DefaultMinimumStartIndex = 12;
         private static readonly int DefaultDurationOfLiveDemoInSecond = 480;
 
         private static readonly string StopDetectButton = "Stop Detect";
@@ -70,7 +69,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         private bool isProcessing = false;
         private bool shouldStopCurrentRun = false;
         private float maxVolumeInSampleBuffer = 0;
-        private int selectedDetectionSensitivity = 90;
 
         private AnomalyDetectionScenario curScenario;
         private AnomalyEntireDetectResult anomalyEntireDetectResult;
@@ -113,9 +111,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                 // set default value: slider and radio buttons
                 this.sensitivitySlider.Value = sensitivy;
                 selectedDetectionMode = detectionMode;
-                
-                batchOption.IsChecked = selectedDetectionMode == AnomalyDetectorServiceType.Batch;
-                streamingOption.IsChecked = selectedDetectionMode == AnomalyDetectorServiceType.Streaming;
             }
         }
 
@@ -213,14 +208,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 // hide tooltip
                 this.tooltipPopup.IsOpen = false;
-            }
-        }
-
-        private void OnSensitivitySliderChanged(object sender, Windows.UI.Xaml.Controls.Primitives.RangeBaseValueChangedEventArgs e)
-        {
-            if (sender is Slider slider)
-            {
-                selectedDetectionSensitivity = (int)slider.Value;
             }
         }
 
@@ -508,15 +495,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             return await AnomalyDetectorHelper.GetBatchDetectionResult(dataRequest);
         }
 
-        private void OnDetectionModeRadioButtonChecked(object sender, RoutedEventArgs e)
-        {
-            if (sender is RadioButton rb)
-            {
-                Enum.TryParse(rb.Tag.ToString(), out AnomalyDetectorServiceType detectionMode);
-                selectedDetectionMode = detectionMode;
-            }
-        }
-
         private SpriteVisual GetNewAnomalyIndicator(Point anomalyPoint)
         {
             SpriteVisual anomaly;
@@ -655,9 +633,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 dataPolyline.Points = GetPointCollectionByScenarioData(scenario);
             }
-
-            streamingOption.IsEnabled = false;
-            batchOption.IsEnabled = false;
         }
 
         private PointCollection GetPointCollectionByScenarioData(AnomalyDetectionScenario scenario)

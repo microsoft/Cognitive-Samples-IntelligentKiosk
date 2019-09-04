@@ -167,12 +167,6 @@
         <!-- Chart controls -->
         <StackPanel Grid.Row="1" VerticalAlignment="Top" Orientation="Horizontal" Spacing="50">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Text="Detection Mode" Style="{StaticResource CaptionTextBlockStyle}"/>
-                <RadioButton x:Name="streamingOption" Content="Streaming detection" Tag="Streaming" Checked="OnDetectionModeRadioButtonChecked"/>
-                <RadioButton x:Name="batchOption" Content="Batch detection" Tag="Batch" Checked="OnDetectionModeRadioButtonChecked"/>
-            </StackPanel>
-
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
@@ -180,7 +174,7 @@
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="Sensitivity" Style="{StaticResource BaseTextBlockStyle}" />
                     <TextBlock Grid.Row="0" Text="{x:Bind sensitivitySlider.Value.ToString(), Mode=OneWay}" Style="{StaticResource BaseTextBlockStyle}" HorizontalAlignment="Right" />
-                    <Slider Grid.Row="1" x:Name="sensitivitySlider" Width="300" Minimum="0" Maximum="100" StepFrequency="1" LargeChange="10" SmallChange="1" ValueChanged="OnSensitivitySliderChanged" />
+                    <Slider Grid.Row="1" x:Name="sensitivitySlider" Width="300" Minimum="0" Maximum="100" StepFrequency="1" LargeChange="10" SmallChange="1" />
                 </Grid>
             </StackPanel>
 
