@@ -134,11 +134,10 @@ namespace IntelligentKioskSample.Views
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             this.DataContext = this;
-            this.settingsButton.DataContext = SettingsHelper.Instance;
 
             if (string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) || string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey))
             {
-                await new MessageDialog("Please enter keys under the Settings button in this page.", "Missing API Keys").ShowAsync();
+                await new MessageDialog("Please enter Custom Vision API Keys in the Settings Page.", "Missing API Keys").ShowAsync();
                 this.addProjectButton.IsEnabled = false;
                 this.trainButton.IsEnabled = false;
                 this.exportButton.IsEnabled = false;
@@ -153,7 +152,7 @@ namespace IntelligentKioskSample.Views
 
         private async Task InitializeTrainingApi()
         {
-            trainingApi = new CustomVisionTrainingClient { Endpoint = "https://southcentralus.api.cognitive.microsoft.com", ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
+            trainingApi = new CustomVisionTrainingClient { Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
             this.addProjectButton.IsEnabled = true;
             this.trainButton.IsEnabled = true;
             this.exportButton.IsEnabled = true;
@@ -584,14 +583,6 @@ namespace IntelligentKioskSample.Views
         }
 
         #endregion
-
-        private async void OnSettingsFlyoutClosed(object sender, object e)
-        {
-            if (!string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey))
-            {
-                await InitializeTrainingApi();
-            }
-        }
 
         private async void OnImageRegionsChangedByUser(object sender, ImageViewModel imageViewModel)
         {
