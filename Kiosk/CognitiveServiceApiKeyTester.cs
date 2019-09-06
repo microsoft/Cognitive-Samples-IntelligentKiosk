@@ -34,6 +34,7 @@
 using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
 using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
+using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
@@ -81,6 +82,20 @@ namespace IntelligentKioskSample
                     Endpoint = apiEndpoint
                 };
                 await client.ListModelsAsync();
+            }
+        }
+
+        public static async Task TestCustomVisionTrainingApiKeyAsync(string key, string apiEndpoint)
+        {
+            bool isUri = !string.IsNullOrEmpty(apiEndpoint) ? Uri.IsWellFormedUriString(apiEndpoint, UriKind.Absolute) : false;
+            if (!isUri)
+            {
+                throw new ArgumentException("Invalid URI");
+            }
+            else
+            {
+                CustomVisionTrainingClient client = new CustomVisionTrainingClient { Endpoint = apiEndpoint, ApiKey = key };
+                await client.GetDomainsAsync();
             }
         }
 

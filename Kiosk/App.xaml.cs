@@ -164,6 +164,10 @@ namespace IntelligentKioskSample
                 ? CognitiveServiceApiKeyTester.TestComputerVisionApiKeyAsync(SettingsHelper.Instance.VisionApiKey, SettingsHelper.Instance.VisionApiKeyEndpoint)
                 : Task.CompletedTask,
 
+                !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey)
+                ? CognitiveServiceApiKeyTester.TestCustomVisionTrainingApiKeyAsync(SettingsHelper.Instance.CustomVisionTrainingApiKey, SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint)
+                : Task.CompletedTask,
+
                 !string.IsNullOrEmpty(SettingsHelper.Instance.BingSearchApiKey)
                 ? CognitiveServiceApiKeyTester.TestBingSearchApiKeyAsync(SettingsHelper.Instance.BingSearchApiKey)
                 : Task.CompletedTask,

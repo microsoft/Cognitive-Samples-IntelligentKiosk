@@ -102,6 +102,11 @@ namespace IntelligentKioskSample.Views
                     SettingsHelper.Instance.VisionApiKey, SettingsHelper.Instance.VisionApiKeyEndpoint))
                 : Task.CompletedTask);
 
+            await (!string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey)
+                ? CallApiAndReportResult("Custom Vision Training API Test: ", async () => await CognitiveServiceApiKeyTester.TestCustomVisionTrainingApiKeyAsync(
+                    SettingsHelper.Instance.CustomVisionTrainingApiKey, SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint))
+                : Task.CompletedTask);
+
             await (!string.IsNullOrEmpty(SettingsHelper.Instance.BingSearchApiKey)
                 ? CallApiAndReportResult("Bing Search API Test: ", async () => await CognitiveServiceApiKeyTester.TestBingSearchApiKeyAsync(SettingsHelper.Instance.BingSearchApiKey))
                 : Task.CompletedTask);

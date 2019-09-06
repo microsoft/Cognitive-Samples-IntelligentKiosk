@@ -90,9 +90,31 @@
                                     Visibility="{Binding ElementName=visionApiEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
                             <TextBox Header="Custom Computer Vision API Endpoint" MaxWidth="450" x:Name="computerVisionApiEndpointTextBox"
                                  PlaceholderText="Custom endpoint (e.g. https://virginia.api.cognitive.microsoft.us)" 
-                                 Text="{Binding CustomVisionApiEndpoint, Mode=TwoWay}" />
+                                 Text="{Binding CustomComputerVisionApiEndpoint, Mode=TwoWay}" />
                             <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=computerVisionApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
                         </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <PasswordBox Header="Custom Vision Training Key" Password="{Binding CustomVisionTrainingApiKey, Mode=TwoWay}" />
+                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
+                                  ItemsSource="{Binding AvailableCustomVisionApiEndpoints}" 
+                                  SelectedItem="{Binding CustomVisionTrainingApiKeyEndpoint, Mode=TwoWay}"/>
+                    </Grid>
+
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <PasswordBox Header="Custom Vision Prediction Key" Password="{Binding CustomVisionPredictionApiKey, Mode=TwoWay}" />
+                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
+                                  ItemsSource="{Binding AvailableCustomVisionApiEndpoints}" 
+                                  SelectedItem="{Binding CustomVisionPredictionApiKeyEndpoint, Mode=TwoWay}"/>
                     </Grid>
 
                     <PasswordBox Header="Bing Search API Key" Password="{Binding BingSearchApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
@@ -127,10 +149,11 @@
                         <Button VerticalAlignment="Bottom" Content="Click here if you need keys" >
                             <Button.Flyout>
                                 <Flyout>
-                                    <StackPanel Width="400"  >
+                                    <StackPanel Width="400">
                                         <TextBlock TextWrapping="Wrap" Text="We recommend getting S0 level keys from your Azure Subscription. Below are some handy deep links for creating the keys depending on your needs. For keys that support multiple regions, make sure to set the corresponding region when entering your keys in the kiosk settings."/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesFace" Content="Face"/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesComputerVision" Content="Computer Vision"/>
+                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesCustomVision" Content="Custom Vision"/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingSearch-v7" Content="Bing Search"/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingAutosuggest-v7" Content="Bing Autosuggest"/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextAnalytics" Content="Text Analytics"/>
