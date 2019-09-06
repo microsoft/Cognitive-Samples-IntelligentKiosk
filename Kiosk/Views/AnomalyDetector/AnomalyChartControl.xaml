@@ -166,21 +166,13 @@
 
         <!-- Chart controls -->
         <StackPanel Grid.Row="1" VerticalAlignment="Top" Orientation="Horizontal" Spacing="50">
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                <Button Background="Transparent">
-                    <Button.Content>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE946;"/>
-                    </Button.Content>
-                    <Button.Flyout>
-                        <Flyout>
-                            <TextBlock Width="300" TextWrapping="WrapWholeWords" Text="Represents how the data is processed by the Anomaly Detection service.&#x0a; - In Batch mode, the entire data series is submitted at once.&#x0a; - In Streaming mode, the data in submitted in small chunks at a time."/>
-                        </Flyout>
-                    </Button.Flyout>
-                </Button>
-                <TextBlock VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8"
+                        ToolTipService.ToolTip="Represents how the data is processed by the Anomaly Detection service.&#x0a; - In Batch mode, the entire data series is submitted at once.&#x0a; - In Streaming mode, the data in submitted in small chunks at a time.">
+                <TextBlock VerticalAlignment="Top">
                     <Run Text="Detection Mode: "/>
                     <Run Text="{x:Bind SelectedDetectionMode}"/>
                 </TextBlock>
+                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE946;" VerticalAlignment="Center"/>
             </StackPanel>
             
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
