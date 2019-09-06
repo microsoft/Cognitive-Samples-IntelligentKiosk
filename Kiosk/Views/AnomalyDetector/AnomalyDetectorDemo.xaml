@@ -49,20 +49,6 @@
                     </Grid>
                 </PivotItem>
 
-                <!-- Telecom tab -->
-                <PivotItem Header="{x:Bind TelecomTab}">
-                    <Grid Style="{StaticResource PivotItemContent}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/Telcom.png" 
-                                                   Title="The Phone Company" Description="The Phone Company offers telecommunications services in west Europe serving 72 million users. Anomaly Detector monitors thousands of business metrics to track business health."/>
-                        <local:AnomalyChartControl Grid.Column="1" x:Name="telecomChart" Title="Daily active users" />
-                    </Grid>
-                </PivotItem>
-
                 <!-- Manufacturing tab -->
                 <PivotItem Header="{x:Bind ManufacturingTab}">
                     <Grid Style="{StaticResource PivotItemContent}">
@@ -74,6 +60,20 @@
                         <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/Manufacturing.jpg" 
                                                    Title="Nod Machinery" Description="Nod runs five production lines in Florida to build fine electronic components for heavy machineries. Anomaly Detector monitors key measures from sensors deployed on the production line and detects indications of malfunctions to trigger maintenance and prevent financial losses."/>
                         <local:AnomalyChartControl Grid.Column="1" x:Name="manufacturingChart" Title="Temperature of coolant B2" />
+                    </Grid>
+                </PivotItem>
+
+                <!-- Telecom tab -->
+                <PivotItem Header="{x:Bind TelecomTab}">
+                    <Grid Style="{StaticResource PivotItemContent}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/Telcom.png" 
+                                                   Title="The Phone Company" Description="The Phone Company offers telecommunications services in west Europe serving 72 million users. Anomaly Detector monitors thousands of business metrics to track business health."/>
+                        <local:AnomalyChartControl Grid.Column="1" x:Name="telecomChart" Title="Daily active users" />
                     </Grid>
                 </PivotItem>
 

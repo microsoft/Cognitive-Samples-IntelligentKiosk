@@ -73,7 +73,8 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         private AnomalyDetectionScenario curScenario;
         private AnomalyEntireDetectResult anomalyEntireDetectResult;
         private List<Tuple<SpriteVisual, AnomalyInfo>> allAnomalyIndicators = new List<Tuple<SpriteVisual, AnomalyInfo>>();
-        private AnomalyDetectorServiceType selectedDetectionMode = AnomalyDetectorServiceType.Streaming;
+
+        public AnomalyDetectorServiceType SelectedDetectionMode { get; private set; }
 
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register("Title",
@@ -110,7 +111,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
                 // set default value: slider and radio buttons
                 this.sensitivitySlider.Value = sensitivy;
-                selectedDetectionMode = detectionMode;
+                SelectedDetectionMode = detectionMode;
             }
         }
 
@@ -131,7 +132,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             // update anomaly data
             if (allAnomalyIndicators != null && allAnomalyIndicators.Count > 0)
             {
-                switch (selectedDetectionMode)
+                switch (SelectedDetectionMode)
                 {
                     case AnomalyDetectorServiceType.Batch:
                         ClearAnomalyPoints();
@@ -160,7 +161,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             progressIndicator = compositor.CreateSpriteVisual();
             progressIndicator.Size = new Vector2(10, 10);
             progressIndicator.AnchorPoint = new Vector2(0.5f, 0.5f);
-            progressIndicator.Brush = compositor.CreateColorBrush(Colors.SlateGray);
+            progressIndicator.Brush = compositor.CreateColorBrush(Color.FromArgb(179, 0, 120, 215));
 
             containerRoot.Children.InsertAtTop(progressIndicator);
             progressIndicator.Offset = new Vector3(0, (float)resultGrid.ActualHeight, resultGrid.CenterPoint.Z);
@@ -240,7 +241,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                             break;
 
                         default:
-                            switch (selectedDetectionMode)
+                            switch (SelectedDetectionMode)
                             {
                                 case AnomalyDetectorServiceType.Batch:
                                     this.anomalyEntireDetectResult = await GetBatchAnomalyDetectionResultAsync();

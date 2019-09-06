@@ -86,10 +86,10 @@
                         <RowDefinition />
                     </Grid.RowDefinitions>
 
-                    <Line Grid.RowSpan="4" Name="progressLine" X1="0" X2="0" Stroke="SlateGray" StrokeThickness="2" />
-                    <Polyline Grid.RowSpan="4" Name="progressPolyline" Stroke="LightSlateGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>
+                    <Line Grid.RowSpan="4" Name="progressLine" X1="0" X2="0" Stroke="#0078D7" Opacity="0.7" StrokeThickness="2" />
+                    <Polyline Grid.RowSpan="4" Name="progressPolyline" Stroke="LightSlateGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.6"/>
                     <Polyline Grid.RowSpan="4" Name="dataPolyline" Stroke="White" StrokeThickness="2" />
-                    <Polyline Grid.RowSpan="4" Name="detectWindowPolyline" Stroke="DarkGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.4"/>
+                    <Polyline Grid.RowSpan="4" Name="detectWindowPolyline" Stroke="DarkGray" StrokeThickness="0" Fill="#FFFFFF" Opacity="0.2"/>
 
                     <!-- Y axis lines-->
                     <Line Grid.Row="0" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}" VerticalAlignment="Top"/>
@@ -166,6 +166,23 @@
 
         <!-- Chart controls -->
         <StackPanel Grid.Row="1" VerticalAlignment="Top" Orientation="Horizontal" Spacing="50">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Background="Transparent">
+                    <Button.Content>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE946;"/>
+                    </Button.Content>
+                    <Button.Flyout>
+                        <Flyout>
+                            <TextBlock Width="300" TextWrapping="WrapWholeWords" Text="Represents how the data is processed by the Anomaly Detection service.&#x0a; - In Batch mode, the entire data series is submitted at once.&#x0a; - In Streaming mode, the data in submitted in small chunks at a time."/>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+                <TextBlock VerticalAlignment="Center">
+                    <Run Text="Detection Mode: "/>
+                    <Run Text="{x:Bind SelectedDetectionMode}"/>
+                </TextBlock>
+            </StackPanel>
+            
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid>
                     <Grid.RowDefinitions>

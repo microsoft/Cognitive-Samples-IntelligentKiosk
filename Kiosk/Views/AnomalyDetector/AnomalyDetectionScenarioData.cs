@@ -47,8 +47,8 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
     public enum AnomalyDetectorServiceType
     {
-        Streaming,
-        Batch
+        Batch,
+        Streaming
     }
 
     public enum GranType
