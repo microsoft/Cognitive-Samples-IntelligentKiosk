@@ -106,6 +106,20 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             }
         }
 
+        private int _minIndexOfRequiredPoints = -1;
+        public int MinIndexOfRequiredPoints
+        {
+            get
+            {
+                if (_minIndexOfRequiredPoints == -1)
+                {
+                    _minIndexOfRequiredPoints = (Period == null ? 12 : Period.Value * 4) - 1;
+                }
+
+                return _minIndexOfRequiredPoints;
+            }
+        }
+
         public AnomalyDetectionScenario()
         {
             AllData = new List<TimeSeriesData>();

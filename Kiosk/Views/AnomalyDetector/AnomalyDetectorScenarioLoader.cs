@@ -55,27 +55,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             }
         }
 
-        public static int GetIndexOfFirstPoint(GranType granType)
-        {
-            switch (granType)
-            {
-                case GranType.hourly:
-                    return 168;
-                case GranType.daily:
-                    return 28;
-                case GranType.weekly:
-                    return 23;
-                case GranType.monthly:
-                    return 24;
-                case GranType.yearly:
-                    return 23;
-                case GranType.minutely:
-                    return 168;
-                default:
-                    return 28;
-            }
-        }
-
         public static int GetTimeOffsetInMinute(GranType granType)
         {
             switch (granType)
@@ -113,7 +92,9 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                                                 ScenarioType = AnomalyDetectionScenarioType.BikeRental,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Bike.csv",
                                                 Granuarity = GranType.hourly,
-                                                MaxAnomalyRatio = 0.1
+                                                MaxAnomalyRatio = 0.1,
+                                                CustomInterval = 8,
+                                                Period = 21
                                             }
             },
             { AnomalyDetectionScenarioType.Telecom, new AnomalyDetectionScenario
@@ -130,7 +111,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                                                 ScenarioType = AnomalyDetectionScenarioType.Manufacturing,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Manufacture.csv",
                                                 Granuarity = GranType.minutely,
-                                                MaxAnomalyRatio = 0.25,
+                                                MaxAnomalyRatio = 0.10,
                                                 CustomInterval = 30,
                                                 Period = 336
                                             }

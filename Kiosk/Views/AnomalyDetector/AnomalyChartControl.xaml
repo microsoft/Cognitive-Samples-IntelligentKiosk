@@ -167,7 +167,7 @@
         <!-- Chart controls -->
         <StackPanel Grid.Row="1" VerticalAlignment="Top" Orientation="Horizontal" Spacing="50">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8"
-                        ToolTipService.ToolTip="Represents how the data is processed by the Anomaly Detection service.&#x0a; - In Batch mode, the entire data series is submitted at once.&#x0a; - In Streaming mode, the data in submitted in small chunks at a time.">
+                        ToolTipService.ToolTip="Represents how the data is processed by the Anomaly Detection service.&#x0a;In Streaming mode, the data is submitted in one small chunk at a time, as shown in the grey area of moving windows, which defines how many history data points are required to detect latest point anomaly. The range of the window varies according to different granularity.">
                 <TextBlock VerticalAlignment="Top">
                     <Run Text="Detection Mode: "/>
                     <Run Text="{x:Bind SelectedDetectionMode}"/>

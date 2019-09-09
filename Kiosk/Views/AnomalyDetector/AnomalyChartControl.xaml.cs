@@ -120,32 +120,23 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             maxVolumeInSampleBuffer = value;
         }
 
-        private async void OnChartGridSizeChanged(object sender, SizeChangedEventArgs e)
+        private void OnChartGridSizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (curScenario == null)
             {
                 return;
             }
 
+            ResetState();
             DisplayBasicData(curScenario);
+            shouldStopCurrentRun = true;
 
             // update anomaly data
             if (allAnomalyIndicators != null && allAnomalyIndicators.Count > 0)
             {
-                switch (SelectedDetectionMode)
+                if (curScenario.ScenarioType == AnomalyDetectionScenarioType.Live)
                 {
-                    case AnomalyDetectorServiceType.Batch:
-                        ClearAnomalyPoints();
-                        await StartBatchModeProcessAsync();
-                        break;
-
-                    case AnomalyDetectorServiceType.Streaming:
-                        if (curScenario.ScenarioType == AnomalyDetectionScenarioType.Live)
-                        {
-                            ClearAnomalyPoints();
-                        }
-                        shouldStopCurrentRun = true;
-                        break;
+                    ClearAnomalyPoints();
                 }
             }
         }
@@ -241,18 +232,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                             break;
 
                         default:
-                            switch (SelectedDetectionMode)
-                            {
-                                case AnomalyDetectorServiceType.Batch:
-                                    this.anomalyEntireDetectResult = await GetBatchAnomalyDetectionResultAsync();
-                                    await StartBatchModeProcessAsync();
-                                    break;
-
-                                case AnomalyDetectorServiceType.Streaming:
-                                default:
-                                    await StartStreamingModeProcessAsync();
-                                    break;
-                            }
+                            await StartStreamingModeProcessAsync();
                             break;
                     }
                 }
@@ -403,15 +383,28 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         {
             try
             {
+                if (dataPolyline.Points != null)
+                {
+                    dataPolyline.Points.Clear();
+                }
+                else
+                {
+                    dataPolyline.Points = new PointCollection();
+                }
+
                 double dataRange = curScenario.MaxValue - curScenario.MinValue;
                 double yScale = resultGrid.ActualHeight / dataRange;
+                double xOffset = resultGrid.ActualWidth / (curScenario.AllData.Count - 1);
                 double yZeroLine = yScale * curScenario.MinValue;
 
                 string timestampFormat = curScenario.ScenarioType == AnomalyDetectionScenarioType.Telecom ? ShortDateFormat : ShortDateWithTimeFormat;
-                int startIndex = AnomalyDetectorScenarioLoader.GetIndexOfFirstPoint(curScenario.Granuarity);
+                int startIndex = curScenario.MinIndexOfRequiredPoints;
 
                 for (int i = 0; i < startIndex; i++)
                 {
+                    Point point = new Point(xOffset * i, yZeroLine + resultGrid.ActualHeight - (yScale * curScenario.AllData[i].Value));
+                    dataPolyline.Points.Add(point);
+
                     Point newUpperPoint = new Point(dataPolyline.Points[i].X, 0);
                     Point newLowerPoint = new Point(dataPolyline.Points[i].X, resultGrid.ActualHeight);
 
@@ -422,7 +415,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     detectWindowPolyline.Points.Insert(endOfLower, newLowerPoint);
                 }
 
-                for (int i = startIndex; i < dataPolyline.Points.Count; i++)
+                for (int i = startIndex; i < curScenario.AllData.Count; i++)
                 {
                     if (shouldStopCurrentRun)
                     {
@@ -430,6 +423,10 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     }
 
                     AnomalyLastDetectResult result = await GetStreamingAnomalyDetectionResultAsync(i);
+
+                    Point point = new Point(xOffset * i, yZeroLine + resultGrid.ActualHeight - (yScale * curScenario.AllData[i].Value));
+                    dataPolyline.Points.Add(point);
+
                     if (result != null)
                     {
                         TimeSeriesData timeSeriesData = curScenario.AllData[i];
@@ -452,19 +449,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
         private async Task<AnomalyLastDetectResult> GetStreamingAnomalyDetectionResultAsync(int dataPointIndex)
         {
-            int minStartIndex = -1;
-            int indexOfFirstValidPoint = AnomalyDetectorScenarioLoader.GetIndexOfFirstPoint(curScenario.Granuarity);
-
-            if (dataPointIndex >= indexOfFirstValidPoint)
-            {
-                minStartIndex = indexOfFirstValidPoint;
-            }
-            else if (dataPointIndex < indexOfFirstValidPoint && dataPointIndex >= 11)
-            {
-                minStartIndex = dataPointIndex;
-            }
-
-            if (minStartIndex > -1)
+            if (dataPointIndex >= curScenario.MinIndexOfRequiredPoints)
             {
                 AnomalyDetectionRequest dataRequest = new AnomalyDetectionRequest
                 {
@@ -473,7 +458,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     Granularity = curScenario.Granuarity.ToString(),
                     CustomInterval = curScenario.CustomInterval,
                     Period = curScenario.Period,
-                    Series = curScenario.AllData.GetRange(dataPointIndex - minStartIndex, minStartIndex + 1)
+                    Series = curScenario.AllData.GetRange(dataPointIndex - curScenario.MinIndexOfRequiredPoints, (curScenario.MinIndexOfRequiredPoints + 1))
                 };
 
                 return await AnomalyDetectorHelper.GetStreamingDetectionResult(dataRequest);
@@ -566,7 +551,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             double lowerMarginOnUI = detectionResult.ExpectedValue - detectionResult.LowerMargin;
             double offsetY1 = yScale * upperMarginOnUI < resultGrid.ActualHeight ? yScale * upperMarginOnUI : resultGrid.ActualHeight;
             double offsetY2 = lowerMarginOnUI > 0 ? yScale * lowerMarginOnUI : 0;
-            int indexOfFirstValidPoint = AnomalyDetectorScenarioLoader.GetIndexOfFirstPoint(curScenario.Granuarity);
+            int indexOfFirstValidPoint = curScenario.MinIndexOfRequiredPoints;
 
             Point newUpperPoint = new Point(detectionPoint.X, yZeroLine + resultGrid.ActualHeight - offsetY1);
             Point newLowerPoint = new Point(detectionPoint.X, yZeroLine + resultGrid.ActualHeight - offsetY2);
@@ -630,10 +615,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
             // update data points
             dataPolyline.Points?.Clear();
-            if (scenario.ScenarioType != AnomalyDetectionScenarioType.Live)
-            {
-                dataPolyline.Points = GetPointCollectionByScenarioData(scenario);
-            }
         }
 
         private PointCollection GetPointCollectionByScenarioData(AnomalyDetectionScenario scenario)
@@ -674,11 +655,6 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
                 allAnomalyIndicators.Clear();
             }
-        }
-
-        private bool ChangeDetectModeIsNotAllowed(AnomalyDetectionScenario scenario)
-        {
-            return scenario.ScenarioType == AnomalyDetectionScenarioType.Live || scenario.ScenarioType == AnomalyDetectionScenarioType.Manufacturing;
         }
     }
 }

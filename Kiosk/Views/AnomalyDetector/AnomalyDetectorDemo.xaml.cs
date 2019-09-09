@@ -117,7 +117,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
                     // initialize default tab
                     this.bikerentalChart.ResetState();
-                    this.bikerentalChart.InitializeChart(AnomalyDetectionScenarioType.BikeRental, AnomalyDetectorServiceType.Batch, sensitivy: 75);
+                    this.bikerentalChart.InitializeChart(AnomalyDetectionScenarioType.BikeRental, AnomalyDetectorServiceType.Streaming, sensitivy: 80);
                 }
             }
             catch (Exception ex)
@@ -156,7 +156,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                 // initialize new chart
                 if (selectedTab == BikeRentalTab)
                 {
-                    this.bikerentalChart.InitializeChart(AnomalyDetectionScenarioType.BikeRental, AnomalyDetectorServiceType.Batch, sensitivy: 75);
+                    this.bikerentalChart.InitializeChart(AnomalyDetectionScenarioType.BikeRental, AnomalyDetectorServiceType.Streaming, sensitivy: 80);
                 }
 
                 else if (selectedTab == TelecomTab)
@@ -166,7 +166,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
                 else if (selectedTab == ManufacturingTab)
                 {
-                    this.manufacturingChart.InitializeChart(AnomalyDetectionScenarioType.Manufacturing, AnomalyDetectorServiceType.Batch, sensitivy: 90);
+                    this.manufacturingChart.InitializeChart(AnomalyDetectionScenarioType.Manufacturing, AnomalyDetectorServiceType.Streaming, sensitivy: 80);
                 }
 
                 else if (selectedTab == LiveTab)
