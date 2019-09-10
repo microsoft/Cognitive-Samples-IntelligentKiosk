@@ -549,11 +549,11 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         {
             double upperMarginOnUI = detectionResult.ExpectedValue + detectionResult.UpperMargin;
             double lowerMarginOnUI = detectionResult.ExpectedValue - detectionResult.LowerMargin;
-            double offsetY1 = yScale * upperMarginOnUI < resultGrid.ActualHeight ? yScale * upperMarginOnUI : resultGrid.ActualHeight;
+            double offsetY1 = yScale * upperMarginOnUI;
             double offsetY2 = lowerMarginOnUI > 0 ? yScale * lowerMarginOnUI : 0;
             int indexOfFirstValidPoint = curScenario.MinIndexOfRequiredPoints;
 
-            Point newUpperPoint = new Point(detectionPoint.X, yZeroLine + resultGrid.ActualHeight - offsetY1);
+            Point newUpperPoint = new Point(detectionPoint.X, (yZeroLine + resultGrid.ActualHeight - offsetY1) > 0 ? (yZeroLine + resultGrid.ActualHeight - offsetY1) : 0);
             Point newLowerPoint = new Point(detectionPoint.X, yZeroLine + resultGrid.ActualHeight - offsetY2);
 
             if (detectionResult.IsAnomaly)

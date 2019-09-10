@@ -110,10 +110,10 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                                             {
                                                 ScenarioType = AnomalyDetectionScenarioType.Manufacturing,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Manufacture.csv",
-                                                Granuarity = GranType.minutely,
+                                                Granuarity = GranType.hourly,
                                                 MaxAnomalyRatio = 0.10,
-                                                CustomInterval = 30,
-                                                Period = 336
+                                                CustomInterval = 2,
+                                                Period = 84
                                             }
             },
             { AnomalyDetectionScenarioType.Live, new AnomalyDetectionScenario
