@@ -56,7 +56,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         private static readonly int BaseVolume = 50;
         private static readonly int DefaultDurationOfLiveDemoInSecond = 480;
 
-        private static readonly string StopDetectButton = "Stop Detect";
+        private static readonly string StopDetectButton = "Stop Processing";
         private static readonly string StartDetectButton = "Detect Anomalies";
         private static readonly string ShortDateFormat = "MM/dd";
         private static readonly string ShortDateWithTimeFormat = "MM/dd HH:mm";
