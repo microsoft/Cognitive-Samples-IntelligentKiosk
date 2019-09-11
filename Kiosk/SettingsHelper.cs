@@ -276,6 +276,12 @@ namespace IntelligentKioskSample
                 this.TranslatorTextApiKey = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["AnomalyDetectorApiKey"];
+            if (value != null)
+            {
+                this.AnomalyDetectorApiKey = value.ToString();
+            }
+
             // load mall kiosk demo custom settings from file as the content is too big to be saved as a string-like setting
             try
             {
@@ -585,6 +591,17 @@ namespace IntelligentKioskSample
             {
                 this.translatorTextApiKey = value;
                 this.OnSettingChanged("TranslatorTextApiKey", value);
+            }
+        }
+
+        private string anomalyDetectorApiKey = string.Empty;
+        public string AnomalyDetectorApiKey
+        {
+            get { return anomalyDetectorApiKey; }
+            set
+            {
+                this.anomalyDetectorApiKey = value;
+                this.OnSettingChanged("AnomalyDetectorApiKey", value);
             }
         }
 

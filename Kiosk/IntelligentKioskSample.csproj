@@ -84,6 +84,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -98,9 +99,17 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Assets\AnomalyDetector.png" />
+    <Content Include="Assets\AnomalyDetector\BikeSharing.png" />
+    <Content Include="Assets\AnomalyDetector\LiveSound.png" />
+    <Content Include="Assets\AnomalyDetector\Manufacturing.jpg" />
+    <Content Include="Assets\AnomalyDetector\Telcom.png" />
     <Content Include="Assets\RealtimeObjectDetection.png" />
     <Content Include="Assets\simple_fruits.onnx" />
     <Content Include="Assets\mixed_items.onnx" />
+    <Content Include="Assets\AnomalyDetector\AnomalyDetector-Bike.csv" />
+    <Content Include="Assets\AnomalyDetector\AnomalyDetector-Manufacture.csv" />
+    <Content Include="Assets\AnomalyDetector\AnomalyDetector-Telcom.csv" />
     <None Include="IntelligentKioskSample_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <Content Include="Views\CustomVision\BuiltInClassificationModels.json">
@@ -183,11 +192,24 @@
     <Compile Include="Controls\ImageWithFaceBorderUserControl.xaml.cs">
       <DependentUpon>ImageWithFaceBorderUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Models\BaseViewModel.cs" />
     <Compile Include="Models\CustomVisionModelData.cs" />
     <Compile Include="Models\Platform.cs" />
+    <Compile Include="Models\TabHeader.cs" />
     <Compile Include="NavMenuItem.cs" />
     <Compile Include="SettingsHelper.cs" />
     <Compile Include="Util.cs" />
+    <Compile Include="Views\AnomalyDetector\AnomalyChartControl.xaml.cs">
+      <DependentUpon>AnomalyChartControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AnomalyDetector\AnomalyDetectionScenarioData.cs" />
+    <Compile Include="Views\AnomalyDetector\AnomalyDetectorDemo.xaml.cs">
+      <DependentUpon>AnomalyDetectorDemo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AnomalyDetector\AnomalyDetectorScenarioLoader.cs" />
+    <Compile Include="Views\AnomalyDetector\ScenarioInfoControl.xaml.cs">
+      <DependentUpon>ScenarioInfoControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\BingNewsAnalytics.xaml.cs">
       <DependentUpon>BingNewsAnalytics.xaml</DependentUpon>
     </Compile>
@@ -413,6 +435,18 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Views\AnomalyDetector\AnomalyChartControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AnomalyDetector\AnomalyDetectorDemo.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\AnomalyDetector\ScenarioInfoControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\BingNewsAnalytics.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -39,15 +39,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
+using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
 using Windows.Storage.Streams;
+using Windows.UI.Composition;
 using Windows.UI.Popups;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -301,6 +304,30 @@ namespace IntelligentKioskSample
             {
                 list.Add(item);
             }
+        }
+
+        public static bool IsPointInsideVisualElement(Visual visual, Point point)
+        {
+            Vector3 offset = visual.Offset;
+            Vector2 size = visual.Size;
+            Vector2 anchor = visual.AnchorPoint;
+
+            double xMargin = size.X * anchor.X;
+            double yMargin = size.Y * anchor.Y;
+
+            double visualX1 = offset.X - xMargin;
+            double visualX2 = offset.X - xMargin + size.X;
+            double visualY1 = offset.Y - yMargin;
+            double visualY2 = offset.Y - yMargin + size.Y;
+
+            return point.X >= visualX1 && point.X <= visualX2 &&
+                   point.Y >= visualY1 && point.Y <= visualY2;
+        }
+
+        public static string StringToDateFormat(string date, string format = "")
+        {
+            bool isDate = DateTime.TryParse(date, out DateTime datetime);
+            return isDate ? datetime.ToString(format) : string.Empty;
         }
 
         internal static async Task<Stream> ResizePhoto(Stream photo, int height)

@@ -1,0 +1,97 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.AnomalyDetector.AnomalyDetectorDemo"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.AnomalyDetector"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Style x:Key="PivotItemContent" TargetType="Grid">
+            <Setter Property="Margin" Value="0,18,0,0" />
+            <Setter Property="ColumnSpacing" Value="32" />
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
+        </Style>
+
+        <DataTemplate x:Key="PivotHeaderTemplate">
+            <TextBlock Text="{Binding Name}" FontSize="18" />
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid EntranceNavigationTransitionInfo.IsTargetElement="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
+            <CommandBar.Content>
+                <TextBlock Text="Anomaly Detector" Style="{ThemeResource PageTitleTextBlockStyle}"/>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Auto">
+            <Pivot x:Name="pivot" Margin="18,0,18,36" SelectedItem="{x:Bind SelectedTab, Mode=TwoWay}" HeaderTemplate="{StaticResource PivotHeaderTemplate}">
+
+                <!-- Bike rental tab -->
+                <PivotItem Header="{x:Bind BikeRentalTab}">
+                    <Grid Style="{StaticResource PivotItemContent}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/BikeSharing.png" 
+                                                   Title="Adventure Works bike rentals" Description="Adventure Works runs bike rental business in more than 60 cities which are divided into about 6,000 subareas. Hourly number of rides in each subarea forms a time series. Anomaly Detector monitors those thousands of metrics to help the company make critical operational decisions timely: for example, transporting hundreds of bikes to an area with demand spikes."/>
+                        <local:AnomalyChartControl Grid.Column="1" x:Name="bikerentalChart" Title="Hourly number of rides in area A76" />
+                    </Grid>
+                </PivotItem>
+
+                <!-- Manufacturing tab -->
+                <PivotItem Header="{x:Bind ManufacturingTab}">
+                    <Grid Style="{StaticResource PivotItemContent}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/Manufacturing.jpg" 
+                                                   Title="Nod Machinery" Description="Nod runs five production lines in Florida to build fine electronic components for heavy machineries. Anomaly Detector monitors key measures from sensors deployed on the production line and detects indications of malfunctions to trigger maintenance and prevent financial losses."/>
+                        <local:AnomalyChartControl Grid.Column="1" x:Name="manufacturingChart" Title="Temperature of coolant B2" />
+                    </Grid>
+                </PivotItem>
+
+                <!-- Telecom tab -->
+                <PivotItem Header="{x:Bind TelecomTab}">
+                    <Grid Style="{StaticResource PivotItemContent}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/Telcom.png" 
+                                                   Title="The Phone Company" Description="The Phone Company offers telecommunications services in west Europe serving 72 million users. Anomaly Detector monitors thousands of business metrics to track business health."/>
+                        <local:AnomalyChartControl Grid.Column="1" x:Name="telecomChart" Title="Daily active users" />
+                    </Grid>
+                </PivotItem>
+
+                <!-- Live sound tab -->
+                <PivotItem x:Name="livePivotItem" Header="{x:Bind LiveTab}">
+                    <Grid Style="{StaticResource PivotItemContent}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/LiveSound.png" 
+                                                   Title="Microphone Sound Volume" Description="Click the 'Detect Anomalies' button on the right to start detecting sound volume anomalies from your microphone.&#x0a;Privacy statement: only the numerical numbers of sound volume will be sent over to Anomaly Detector APIs which will be discarded after scoring."/>
+                        <local:AnomalyChartControl Grid.Column="1" x:Name="liveChart" Title="Sound Volume" StartLiveAudio="OnStartLiveAudio" StopLiveAudio="OnStopLiveAudio" />
+                    </Grid>
+                </PivotItem>
+            </Pivot>
+        </ScrollViewer>
+
+    </Grid>
+</Page>

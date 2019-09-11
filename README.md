@@ -20,6 +20,7 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 
 | Scenario                     | Overview | Features Covered  |
 | ---------------------------- | -------- | ----------------  |
+| [Anomaly Detector](Documentation/AnomalyDetectorDemo.md)      | Showcases anomaly detection with three pre-selected data streams, as well as a Live Sound scenario that samples the audio level of your microphone as the input data stream. | Anomaly Detector API |
 | [Automatic Photo Capture](Documentation/AutomaticPhotoCapture.md)      | An autonomous workflow for capturing photos when people approach a web camera and pose for a photo | Windows 10 Face Tracking; Age and gender prediction; Face identification |
 | [Bing News Analytics](Documentation/BingNewsAnalytics.md)      | Connecting the Bing News APIs with the Text Analytics APIs to create a visualization of the news based on their sentiment and most common topics | Bing News API, Bing AutoSuggestion API, Text Sentiment and Text KeyPhrase Extraction |
 | [Bing Visual Search](Documentation/BingVisualSearch.md)      | Shows how to use the power of Bing Image Insights to perform visual search and find visually similar images, products or celebrities. | Bing Search API;  Bing AutoSuggestion API |
