@@ -63,6 +63,8 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
     public class AnomalyDetectionScenario
     {
+        public const int DefaultRequiredPoints = 13;
+
         public AnomalyDetectionScenarioType ScenarioType { get; set; }
         public string FilePath { get; set; }
         public GranType Granuarity { get; set; }
@@ -113,7 +115,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 if (_minIndexOfRequiredPoints == -1)
                 {
-                    _minIndexOfRequiredPoints = (Period == null ? 12 : Period.Value * 4) - 1;
+                    _minIndexOfRequiredPoints = (Period == null ? GetRequiredPointsPerGran(Granuarity) : Period.Value * 4) - 1;
                 }
 
                 return _minIndexOfRequiredPoints;
@@ -123,6 +125,19 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         public AnomalyDetectionScenario()
         {
             AllData = new List<TimeSeriesData>();
+        }
+
+        private int GetRequiredPointsPerGran(GranType gran)
+        {
+            switch (gran)
+            {
+                case GranType.hourly:
+                    return 168;
+                case GranType.daily:
+                    return 28;
+                default:
+                    return DefaultRequiredPoints;
+            }
         }
     }
 

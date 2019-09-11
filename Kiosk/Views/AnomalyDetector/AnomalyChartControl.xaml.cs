@@ -263,7 +263,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
                 dataPolyline.Points.Clear();
 
-                int startIndex = 14;
+                int startIndex = AnomalyDetectionScenario.DefaultRequiredPoints;
                 for (int i = 0; i < startIndex; i++)
                 {
                     float volume = GetCurrentVolumeValue();
@@ -301,7 +301,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     Point point = new Point(xOffset * i, resultGrid.ActualHeight - yOffset);
                     dataPolyline.Points.Add(point);
 
-                    AnomalyLastDetectResult result = await GetStreamingAnomalyDetectionResultAsync(i);
+                    AnomalyLastDetectResult result = await GetLiveDemoAnomalyDetectionResultAsync(i);
                     if (result != null)
                     {
                         result.ExpectedValue -= BaseVolume;
@@ -445,6 +445,28 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 await Util.GenericApiCallExceptionHandler(ex, "Failure during streaming detection.");
             }
+        }
+
+        private async Task<AnomalyLastDetectResult> GetLiveDemoAnomalyDetectionResultAsync(int dataPointIndex)
+        {
+            int requiredPoints = Math.Min(AnomalyDetectionScenario.DefaultRequiredPoints, curScenario.MinIndexOfRequiredPoints);
+
+            if (dataPointIndex >= requiredPoints)
+            {
+                AnomalyDetectionRequest dataRequest = new AnomalyDetectionRequest
+                {
+                    Sensitivity = (int)sensitivitySlider.Value,
+                    MaxAnomalyRatio = curScenario.MaxAnomalyRatio,
+                    Granularity = curScenario.Granuarity.ToString(),
+                    CustomInterval = curScenario.CustomInterval,
+                    Period = curScenario.Period,
+                    Series = curScenario.AllData.GetRange(dataPointIndex - requiredPoints, (requiredPoints + 1))
+                };
+
+                return await AnomalyDetectorHelper.GetStreamingDetectionResult(dataRequest);
+            }
+
+            return null;
         }
 
         private async Task<AnomalyLastDetectResult> GetStreamingAnomalyDetectionResultAsync(int dataPointIndex)
