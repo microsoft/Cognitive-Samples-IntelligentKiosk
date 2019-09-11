@@ -67,7 +67,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
 
         public AnomalyDetectionScenarioType ScenarioType { get; set; }
         public string FilePath { get; set; }
-        public GranType Granuarity { get; set; }
+        public GranType Granularity { get; set; }
         public double MaxAnomalyRatio { get; set; }
         public int CustomInterval { get; set; } = 1;
         public int? Period { get; set; }
@@ -115,7 +115,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 if (_minIndexOfRequiredPoints == -1)
                 {
-                    _minIndexOfRequiredPoints = (Period == null ? GetRequiredPointsPerGran(Granuarity) : Period.Value * 4) - 1;
+                    _minIndexOfRequiredPoints = (Period == null ? GetRequiredPointsPerGran(Granularity) : Period.Value * 4) - 1;
                 }
 
                 return _minIndexOfRequiredPoints;

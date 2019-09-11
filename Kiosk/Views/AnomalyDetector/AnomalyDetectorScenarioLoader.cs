@@ -91,7 +91,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                                             {
                                                 ScenarioType = AnomalyDetectionScenarioType.BikeRental,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Bike.csv",
-                                                Granuarity = GranType.hourly,
+                                                Granularity = GranType.hourly,
                                                 MaxAnomalyRatio = 0.1,
                                                 CustomInterval = 8,
                                                 Period = 21
@@ -101,7 +101,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                                             {
                                                 ScenarioType = AnomalyDetectionScenarioType.Telecom,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Telcom.csv",
-                                                Granuarity = GranType.daily,
+                                                Granularity = GranType.daily,
                                                 MaxAnomalyRatio = 0.15,
                                                 Period = 7
                                             }
@@ -110,7 +110,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                                             {
                                                 ScenarioType = AnomalyDetectionScenarioType.Manufacturing,
                                                 FilePath = "Assets\\AnomalyDetector\\AnomalyDetector-Manufacture.csv",
-                                                Granuarity = GranType.hourly,
+                                                Granularity = GranType.hourly,
                                                 MaxAnomalyRatio = 0.10,
                                                 CustomInterval = 2,
                                                 Period = 84
@@ -120,7 +120,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                                             {
                                                 ScenarioType = AnomalyDetectionScenarioType.Live,
                                                 FilePath = string.Empty,
-                                                Granuarity = GranType.hourly,
+                                                Granularity = GranType.hourly,
                                                 MaxAnomalyRatio = 0.2,
                                                 CustomInterval = 1
                                             }

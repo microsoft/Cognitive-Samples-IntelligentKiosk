@@ -269,7 +269,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     float volume = GetCurrentVolumeValue();
 
                     curScenario.AllData.Insert(i, new TimeSeriesData(startTime.ToString(), volume));
-                    startTime = startTime.AddMinutes(AnomalyDetectorScenarioLoader.GetTimeOffsetInMinute(curScenario.Granuarity));
+                    startTime = startTime.AddMinutes(AnomalyDetectorScenarioLoader.GetTimeOffsetInMinute(curScenario.Granularity));
 
                     double yOffset = yScale * (curScenario.AllData[i].Value - BaseVolume);
                     Point point = new Point(xOffset * i, resultGrid.ActualHeight - yOffset);
@@ -295,7 +295,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                     float volume = GetCurrentVolumeValue();
 
                     curScenario.AllData.Insert(i, new TimeSeriesData(startTime.ToString(), volume));
-                    startTime = startTime.AddMinutes(AnomalyDetectorScenarioLoader.GetTimeOffsetInMinute(curScenario.Granuarity));
+                    startTime = startTime.AddMinutes(AnomalyDetectorScenarioLoader.GetTimeOffsetInMinute(curScenario.Granularity));
 
                     double yOffset = yScale * (curScenario.AllData[i].Value - BaseVolume);
                     Point point = new Point(xOffset * i, resultGrid.ActualHeight - yOffset);
@@ -457,7 +457,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                 {
                     Sensitivity = (int)sensitivitySlider.Value,
                     MaxAnomalyRatio = curScenario.MaxAnomalyRatio,
-                    Granularity = curScenario.Granuarity.ToString(),
+                    Granularity = curScenario.Granularity.ToString(),
                     CustomInterval = curScenario.CustomInterval,
                     Period = curScenario.Period,
                     Series = curScenario.AllData.GetRange(dataPointIndex - requiredPoints, (requiredPoints + 1))
@@ -477,7 +477,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
                 {
                     Sensitivity = (int)sensitivitySlider.Value,
                     MaxAnomalyRatio = curScenario.MaxAnomalyRatio,
-                    Granularity = curScenario.Granuarity.ToString(),
+                    Granularity = curScenario.Granularity.ToString(),
                     CustomInterval = curScenario.CustomInterval,
                     Period = curScenario.Period,
                     Series = curScenario.AllData.GetRange(dataPointIndex - curScenario.MinIndexOfRequiredPoints, (curScenario.MinIndexOfRequiredPoints + 1))
@@ -495,7 +495,7 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
             {
                 Sensitivity = (int)sensitivitySlider.Value,
                 MaxAnomalyRatio = curScenario.MaxAnomalyRatio,
-                Granularity = curScenario.Granuarity.ToString(),
+                Granularity = curScenario.Granularity.ToString(),
                 CustomInterval = curScenario.CustomInterval,
                 Period = curScenario.Period,
                 Series = curScenario.AllData
