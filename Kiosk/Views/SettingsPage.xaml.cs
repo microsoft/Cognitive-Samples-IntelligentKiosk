@@ -124,6 +124,11 @@ namespace IntelligentKioskSample.Views
                 ? CallApiAndReportResult("Translator Text API Test: ", async () => await CognitiveServiceApiKeyTester.TestTranslatorTextApiKeyAsync(SettingsHelper.Instance.TranslatorTextApiKey))
                 : Task.CompletedTask);
 
+            await (!string.IsNullOrEmpty(SettingsHelper.Instance.InkRecognizerApiKey)
+                ? CallApiAndReportResult("Ink Recognizer API Test: ", async () => await CognitiveServiceApiKeyTester.TestInkRecognizerApiKeyAsync(
+                    SettingsHelper.Instance.InkRecognizerApiKey, SettingsHelper.Instance.InkRecognizerApiKeyEndpoint))
+                : Task.CompletedTask);
+
             await (!string.IsNullOrEmpty(SettingsHelper.Instance.AnomalyDetectorApiKey)
                 ? CallApiAndReportResult("Anomaly Detector API Test: ", async () => await CognitiveServiceApiKeyTester.TestAnomalyDetectorApiKeyAsync(SettingsHelper.Instance.AnomalyDetectorApiKey))
                 : Task.CompletedTask);

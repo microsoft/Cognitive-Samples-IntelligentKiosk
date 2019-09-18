@@ -1,0 +1,33 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.InkRecognizerExplorer.InkRecognizerExplorer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="Black">
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <CommandBar Grid.Row="0" Style="{StaticResource PageTitleCommandBarStyle}">
+            <CommandBar.Content>
+                <TextBlock Text="Ink Recognizer Explorer" Style="{ThemeResource PageTitleTextBlockStyle}"/>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <NavigationView Grid.Row="1" x:Name="navView" Background="{Binding NavigationViewBackground}" PaneDisplayMode="Top" IsSettingsVisible="False" IsBackButtonVisible="Collapsed" Loaded="NavView_Loaded" ItemInvoked="NavView_ItemInvoked" Margin="12,10,12,0">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Name="dualMode" Content="Ink Mirror" FontSize="24"/>
+                <NavigationViewItem Name="formMode" Content="Form Filler" FontSize="24"/>
+            </NavigationView.MenuItems>
+        </NavigationView>
+
+        <Frame Grid.Row="2" x:Name="frame"/>
+    </Grid>
+</Page>

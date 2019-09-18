@@ -44,6 +44,7 @@ namespace IntelligentKioskSample
         public static readonly string CustomEndpointName = "Custom";
         public static readonly string DefaultApiEndpoint = "https://westus.api.cognitive.microsoft.com";
         public static readonly string DefaultCustomVisionApiEndpoint = "https://southcentralus.api.cognitive.microsoft.com";
+        public static readonly string DefaultInkRecognizerApiEndpoint = "https://api.cognitive.microsoft.com";
 
         public static readonly string[] AvailableApiRegions = new string[]
         {
@@ -274,6 +275,29 @@ namespace IntelligentKioskSample
             if (value != null)
             {
                 this.TranslatorTextApiKey = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["InkRecognizerApiKey"];
+            if (value != null)
+            {
+                this.InkRecognizerApiKey = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["InkRecognizerApiKeyEndpoint"];
+            if (value == null && ApplicationData.Current.RoamingSettings.Values["InkRecognizerApiKeyRegion"] != null)
+            {
+                var inkRecognizerApiRegion = ApplicationData.Current.RoamingSettings.Values["InkRecognizerApiKeyRegion"].ToString();
+                value = GetRegionEndpoint(inkRecognizerApiRegion);
+            }
+            if (value != null)
+            {
+                this.InkRecognizerApiKeyEndpoint = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["CustomInkRecognizerEndpoint"];
+            if (value != null)
+            {
+                this.CustomInkRecognizerEndpoint = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["AnomalyDetectorApiKey"];
@@ -594,6 +618,54 @@ namespace IntelligentKioskSample
             }
         }
 
+        private string inkRecognizerApiKey = string.Empty;
+        public string InkRecognizerApiKey
+        {
+            get { return inkRecognizerApiKey; }
+            set
+            {
+                this.inkRecognizerApiKey = value;
+                this.OnSettingChanged("InkRecognizerApiKey", value);
+            }
+        }
+
+        private string inkRecognizerApiKeyEndpoint = DefaultInkRecognizerApiEndpoint;
+        public string InkRecognizerApiKeyEndpoint
+        {
+            get
+            {
+                return string.Equals(this.inkRecognizerApiKeyEndpoint, SettingsHelper.CustomEndpointName, StringComparison.OrdinalIgnoreCase)
+                    ? this.customInkRecognizerEndpoint
+                    : this.inkRecognizerApiKeyEndpoint;
+            }
+            set
+            {
+                this.inkRecognizerApiKeyEndpoint = value;
+                this.OnSettingChanged("InkRecognizerApiKeyEndpoint", value);
+            }
+        }
+
+        public string BindingInkRecognizerApiKeyEndpoint
+        {
+            get { return this.inkRecognizerApiKeyEndpoint; }
+            set
+            {
+                this.inkRecognizerApiKeyEndpoint = value;
+                this.OnSettingChanged("InkRecognizerApiKeyEndpoint", value);
+            }
+        }
+
+        private string customInkRecognizerEndpoint = string.Empty;
+        public string CustomInkRecognizerEndpoint
+        {
+            get { return this.customInkRecognizerEndpoint; }
+            set
+            {
+                this.customInkRecognizerEndpoint = value;
+                this.OnSettingChanged("CustomInkRecognizerEndpoint", value);
+            }
+        }
+
         private string anomalyDetectorApiKey = string.Empty;
         public string AnomalyDetectorApiKey
         {
@@ -611,6 +683,8 @@ namespace IntelligentKioskSample
             {
                 return new string[]
                 {
+                    CustomEndpointName,
+                    "https://api.cognitive.microsoft.com",
                     "https://eastus.api.cognitive.microsoft.com",
                     "https://eastus2.api.cognitive.microsoft.com",
                     "https://southcentralus.api.cognitive.microsoft.com",
@@ -623,6 +697,18 @@ namespace IntelligentKioskSample
                     "https://northeurope.api.cognitive.microsoft.com",
                     "https://uksouth.api.cognitive.microsoft.com",
                     "https://westeurope.api.cognitive.microsoft.com"
+                };
+            }
+        }
+
+        public string[] InkRecognizerEndpoints
+        {
+            get
+            {
+                return new string[]
+                {
+                    CustomEndpointName,
+                    "https://api.cognitive.microsoft.com"
                 };
             }
         }
