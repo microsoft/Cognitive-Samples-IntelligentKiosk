@@ -45,6 +45,8 @@ namespace IntelligentKioskSample.Views.VisualAlert
 {
     public class CustomVisionServiceWrapper
     {
+        public const string NegativeTag = "Negative";
+
         private readonly CustomVisionTrainingClient trainingApi;
         private readonly ProjectDomainViewModel projectDomain = new ProjectDomainViewModel
         {
@@ -61,16 +63,23 @@ namespace IntelligentKioskSample.Views.VisualAlert
             };
         }
 
-        public async Task<Project> CreateVisualAlertProjectAsync(string name, IEnumerable<ImageAnalyzer> posImages, IEnumerable<ImageAnalyzer> negImages)
+        public async Task<Project> CreateVisualAlertProjectAsync(string name, List<ImageAnalyzer> posImages, List<ImageAnalyzer> negImages)
         {
             Project project = null;
             try
             {
+                // project
                 project = await trainingApi.CreateProjectAsync(name, name, projectDomain.DomainId);
-                Tag tag = await trainingApi.CreateTagAsync(project.Id, name);
 
-                await AddTrainingImagesAsync(posImages, project.Id, tag);
-                await AddTrainingImagesAsync(negImages, project.Id);
+                // tag: regular and negative
+                Task<Tag> tagTask = trainingApi.CreateTagAsync(project.Id, name);
+                Task<Tag> negativeTagTask = trainingApi.CreateTagAsync(project.Id, NegativeTag, type: NegativeTag);
+                await Task.WhenAll(tagTask, negativeTagTask);
+
+                // images: with and w/o subject
+                Task addPosImagesTask = AddTrainingImagesAsync(posImages, project.Id, tagTask.Result);
+                Task addNegImagesTask = AddTrainingImagesAsync(negImages, project.Id, negativeTagTask.Result);
+                await Task.WhenAll(addPosImagesTask, addNegImagesTask);
             }
             catch (Exception ex)
             {

@@ -190,8 +190,8 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 new VisualAlertModelData()
                 {
                     Name = SubjectName,
-                    PositiveImages = SelectedPositiveSubjectImageCollection.Select(x => x.Item2),
-                    NegativeImages = SelectedNegativeSubjectImageCollection.Select(x => x.Item2)
+                    PositiveImages = SelectedPositiveSubjectImageCollection.Select(x => x.Item2).ToList(),
+                    NegativeImages = SelectedNegativeSubjectImageCollection.Select(x => x.Item2).ToList()
                 }));
         }
 
@@ -224,8 +224,8 @@ namespace IntelligentKioskSample.Views.VisualAlert
                     this.WizardCompleted?.Invoke(this, new VisualAlertModelData()
                     {
                         Name = SubjectName,
-                        PositiveImages = SelectedPositiveSubjectImageCollection.Select(x => x.Item2),
-                        NegativeImages = SelectedNegativeSubjectImageCollection.Select(x => x.Item2)
+                        PositiveImages = SelectedPositiveSubjectImageCollection.Select(x => x.Item2).ToList(),
+                        NegativeImages = SelectedNegativeSubjectImageCollection.Select(x => x.Item2).ToList()
                     });
                     break;
             }

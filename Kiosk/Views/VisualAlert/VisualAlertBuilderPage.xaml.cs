@@ -423,7 +423,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             Tuple<string, float> topMatch = result?.Where(x => x.Item2 > MinProbabilityValue)?.OrderByDescending(x => x.Item2).FirstOrDefault();
 
             // Update tags in the result panel
-            if (topMatch != null && topMatch.Item1 != "Negative")
+            if (topMatch != null && topMatch.Item1 != CustomVisionServiceWrapper.NegativeTag)
             {
                 await UpdateStatus(topMatch.Item1, Math.Round(topMatch.Item2 * 100), fpsValue);
             }

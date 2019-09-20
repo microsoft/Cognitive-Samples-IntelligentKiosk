@@ -57,7 +57,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
     public class VisualAlertModelData
     {
         public string Name { get; set; }
-        public IEnumerable<ImageAnalyzer> PositiveImages { get; set; }
-        public IEnumerable<ImageAnalyzer> NegativeImages { get; set; }
+        public List<ImageAnalyzer> PositiveImages { get; set; }
+        public List<ImageAnalyzer> NegativeImages { get; set; }
     }
 }
