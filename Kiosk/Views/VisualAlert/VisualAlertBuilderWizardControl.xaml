@@ -1,0 +1,150 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Views.VisualAlert.VisualAlertBuilderWizardControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="BackgroundColor" Color="Black" Opacity="0.6" />
+
+        <ctl:EnumMatchToVisibilityConverter x:Key="enumMatchToVisibilityConverter"/>
+        <ctl:ReverseEnumMatchToVisibilityConverter x:Key="reverseEnumMatchToVisibilityConverter"/>
+        <ctl:CollectionCountToVisibilityConverter x:Key="collectionCountToVisibilityConverter"/>
+        <ctl:ReverseCollectionCountToVisibilityConverter x:Key="reverseCollectionCountToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource BackgroundColor}" Padding="12,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Style="{StaticResource CaptionTextBlockStyle}" Margin="0,0,0,8">
+            <Run Text="Step "/>
+            <Run x:Name="stepNumber" Text="1"/>
+            <Run Text=" of 3"/>
+        </TextBlock>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" x:Name="titleTextBlock" Text="Add images with subject" Style="{StaticResource SubheaderTextBlockStyle}"/>
+
+            <TextBlock Grid.Column="1" x:Name="imageCountTextBlock" Visibility="Collapsed">
+                <Run x:Name="imageCount" Text="0"/>
+                <Run Text=" / "/>
+                <Run Text="{Binding MinPositiveImageCount}"/>
+                <Run Text=" captured"/>
+            </TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0,24,0,0">
+
+            <!-- New Subject -->
+            <StackPanel Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='NewSubject'}">
+                <TextBlock TextWrapping="WrapWholeWords" Margin="0,0,0,12" Style="{StaticResource SubtitleTextBlockStyle}"
+                       Text="In this demo, you'll train the camera to recognize something, and alert you when it sees that thing. The alert subject can be anything you can see on camera."/>
+                <TextBlock Text="Choose a name for your alert below." Margin="0,0,0,24" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                <TextBox Header="Subject name" Text="{Binding SubjectName, Mode=TwoWay}" PlaceholderText="Try something like 'human' or 'lights off'" HorizontalAlignment="Left" Width="300" TextChanged="OnSubjectNameTextBoxTextChanged"/>
+            </StackPanel>
+
+            <!-- Add images with subject -->
+            <Grid Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='AddPositiveImages'}">
+                <TextBlock TextWrapping="WrapWholeWords" Style="{StaticResource SubtitleTextBlockStyle}" 
+                           Visibility="{Binding PositiveSubjectImageCollection.Count, Converter={StaticResource reverseCollectionCountToVisibilityConverter}}">
+                        <Run Text="Use the camera to capture at least 5 images with"/>
+                        <Run Text="{Binding SubjectName}" FontWeight="Bold"/>
+                </TextBlock>
+
+                <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Visible">
+                    <GridView x:Name="positiveImagesGrid" SelectionMode="Multiple" ItemsSource="{Binding PositiveSubjectImageCollection}"
+                          SelectionChanged="OnPositiveImagesGridSelectionChanged"
+                          Visibility="{Binding PositiveSubjectImageCollection.Count, Converter={StaticResource collectionCountToVisibilityConverter}}">
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="190" Height="115" Margin="2">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{Binding Item1}" Stretch="UniformToFill" />
+                                    </Border.Background>
+                                </Border>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Add images without subject -->
+            <Grid Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='AddNegativeImages'}">
+                <TextBlock TextWrapping="WrapWholeWords" Style="{StaticResource SubtitleTextBlockStyle}" 
+                           Visibility="{Binding NegativeSubjectImageCollection.Count, Converter={StaticResource reverseCollectionCountToVisibilityConverter}}">
+                        <Run Text="Use the camera to capture at least 5 images without the alert subject"/>
+                        <Run Text="{Binding SubjectName}" FontWeight="Bold"/>
+                </TextBlock>
+
+                <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollMode="Enabled" VerticalScrollBarVisibility="Visible">
+                    <GridView x:Name="negativeImagesGrid" SelectionMode="Multiple" ItemsSource="{Binding NegativeSubjectImageCollection}"
+                          SelectionChanged="OnNegativeImagesGridSelectionChanged"
+                          Visibility="{Binding NegativeSubjectImageCollection.Count, Converter={StaticResource collectionCountToVisibilityConverter}}">
+                        <GridView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="190" Height="115" Margin="2">
+                                    <Border.Background>
+                                        <ImageBrush ImageSource="{Binding Item1}" Stretch="UniformToFill" />
+                                    </Border.Background>
+                                </Border>
+                            </DataTemplate>
+                        </GridView.ItemTemplate>
+                    </GridView>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- Train model -->
+            <StackPanel Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='TrainModel'}">
+                <TextBlock TextWrapping="WrapWholeWords" Style="{StaticResource SubtitleTextBlockStyle}"
+                           Text="Review the information below to make sure it's complete and correct. When you're done, use Train model to finish creating your alert." />
+
+                <StackPanel Margin="0,24">
+                    <TextBlock Text="Alert subject"/>
+                    <TextBlock Foreground="#0078D7">
+                        <Run Text="{Binding SubjectName}"/>
+                        <Run Text=" - "/>
+                        <Run Text="{Binding SelectedPositiveSubjectImageCollection.Count}"/>
+                        <Run Text=" images"/>
+                    </TextBlock>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="Neutral images"/>
+                    <TextBlock Foreground="#0078D7">
+                        <Run Text="{Binding SelectedNegativeSubjectImageCollection.Count}"/>
+                        <Run Text=" images"/>
+                    </TextBlock>
+                </StackPanel>
+            </StackPanel>
+
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <Button x:Name="backStepButton" Content="Back" Click="OnBackStepButtonClicked" Width="120" Visibility="{Binding BuilderStepType, Converter={StaticResource reverseEnumMatchToVisibilityConverter}, ConverterParameter='NewSubject'}"/>
+                <Button x:Name="nextStepButton" Content="Next" Background="#0078D7" Click="OnNextStepButtonClicked" Width="120" IsEnabled="False"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</UserControl>

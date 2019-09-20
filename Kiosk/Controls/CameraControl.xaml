@@ -5,6 +5,7 @@
     xmlns:local="using:IntelligentKioskSample.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
     x:Name="cameraControl"
     d:DesignHeight="300"
@@ -12,18 +13,52 @@
     Unloaded="ControlUnloaded"
     FlowDirection="RightToLeft">
 
-    <Grid FlowDirection="LeftToRight">
+    <UserControl.Resources>
+        <local:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
+        <local:ReverseBooleanToVisibilityConverter x:Key="reverseBooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid x:Name="mainGrid" FlowDirection="LeftToRight">
         <CaptureElement x:Name="webCamCaptureElement" FlowDirection="{Binding ElementName=cameraControl, Path=FlowDirection}" />
         <Canvas x:Name="FaceTrackingVisualizationCanvas" FlowDirection="{Binding ElementName=cameraControl, Path=FlowDirection}" />
 
         <Grid x:Name="commandBar" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="8" Visibility="Collapsed">
-            <Button HorizontalAlignment="Right" Background="Transparent" Click="CameraControlButtonClick" CornerRadius="25" Padding="0">
-                <Grid>
-                    <Ellipse Width="48" Height="48" Fill="White"/>
-                    <Ellipse Width="45" Height="45" Stroke="Black"/>
-                    <FontIcon x:Name="cameraControlFontIcon" FontFamily="Segoe MDL2 Assets" Glyph="&#xE722;" Foreground="Black"/>
+            <StackPanel Spacing="12">
+                <Button x:Name="capturePhotoButton" HorizontalAlignment="Right" Background="Transparent" Click="CameraControlButtonClick" CornerRadius="25" Padding="0">
+                    <Grid>
+                        <Grid Visibility="{Binding ElementName=capturePhotoButton, Path=IsEnabled, Converter={StaticResource booleanToVisibilityConverter}}">
+                            <Ellipse Width="48" Height="48" Fill="White"/>
+                            <Ellipse Width="45" Height="45" Stroke="Black"/>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE722;" Foreground="Black"/>
+                        </Grid>
+                        <Grid Visibility="{Binding ElementName=capturePhotoButton, Path=IsEnabled, Converter={StaticResource reverseBooleanToVisibilityConverter}}">
+                            <Ellipse Width="40" Height="40" Fill="Black" Opacity="0.4"/>
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE722;" Foreground="White" Opacity="0.6"/>
+                        </Grid>
+                    </Grid>
+                </Button>
+
+                <Grid x:Name="continuousModeGrid" HorizontalAlignment="Right">
+                    <controls:RadialProgressBar x:Name="radialProgressBarControl" Thickness="4" Outline="White" Foreground="#0078D7" Width="45" Height="45"
+                                                Minimum="0" Maximum="{Binding ElementName=cameraControl, Path=ContinuousModeTimerInSecond}">
+                    </controls:RadialProgressBar>
+                    <Button x:Name="continuousCapturePhotoButton" Background="Transparent" CornerRadius="25" Padding="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                            Click="CameraControlContinuousModeClick" ToolTipService.ToolTip="Continuous mode">
+                        <Grid>
+                            <Grid Visibility="{Binding ElementName=continuousCapturePhotoButton, Path=IsEnabled, Converter={StaticResource booleanToVisibilityConverter}}">
+                                <Ellipse Width="45" Height="45" Fill="Black" />
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE916;" Foreground="White"/>
+                            </Grid>
+
+                            <Grid Visibility="{Binding ElementName=continuousCapturePhotoButton, Path=IsEnabled, Converter={StaticResource reverseBooleanToVisibilityConverter}}">
+                                <Ellipse Width="37" Height="37" Fill="Black" Opacity="0.4"/>
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE916;" Foreground="White" Opacity="0.6"/>
+                            </Grid>
+                        </Grid>
+                    </Button>
                 </Grid>
-            </Button>
+            </StackPanel>
+
             <Button x:Name="cameraSwitchButton" HorizontalAlignment="Left" Background="Transparent" BorderBrush="Transparent" Click="CameraSwitchtButtonClick" CornerRadius="20" Padding="0">
                 <Grid>
                     <Ellipse Width="40" Height="40" Fill="#ff222222"/>

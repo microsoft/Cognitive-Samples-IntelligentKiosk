@@ -1,0 +1,163 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.VisualAlert.VisualAlertBuilderPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.VisualAlert"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    SizeChanged="OnPageSizeChanged"
+    x:Name="mainPage"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <SolidColorBrush x:Key="GrayColor" Color="White" Opacity="0.6" />
+
+        <ctl:ReverseVisibilityConverter x:Key="reverseVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid EntranceNavigationTransitionInfo.IsTargetElement="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
+            <CommandBar.Content>
+                <TextBlock Text="Visual Alert Builder" Style="{ThemeResource PageTitleTextBlockStyle}"/>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1" ColumnSpacing="12" Margin="24,30,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left panel: models -->
+            <Grid Grid.Column="0" VerticalAlignment="Stretch">
+
+                <!-- New alert wizard steps -->
+                <Grid x:Name="newAlertGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Spacing="14">
+                        <TextBlock Text="New Alert" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                        <ctl:LifecycleControl x:Name="lifecycleControl" StepCollection="{Binding LifecycleStepCollection}"/>
+                    </StackPanel>
+
+                    <Button Grid.Row="1" VerticalAlignment="Bottom" Background="Transparent" Margin="0,0,0,40" Click="OnCancelNewAlert">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <SymbolIcon Symbol="Cancel"/>
+                            <TextBlock Text="Cancel new alert"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <!-- Alert list -->
+                <StackPanel x:Name="scenarioListPanel" Spacing="6">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Alerts" Style="{StaticResource SubtitleTextBlockStyle}"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="6">
+                            <Button x:Name="deleteButton" Background="Transparent" HorizontalAlignment="Right" Click="OnDeleteScenariosButtonClicked" Visibility="Collapsed">
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE74D;"/>
+                            </Button>
+                            <Button Background="Transparent" HorizontalAlignment="Right" Click="OnEditScenarioListButtonClicked">
+                                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE762;"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <ListView x:Name="scenarioListView" SelectionMode="Single" Margin="12,22,0,0" 
+                              ItemsSource="{Binding ScenarioCollection}" SelectionChanged="OnScenarioListViewSelectionChanged">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <Grid x:Name="newAlertStatusGrid" Visibility="Collapsed" RowSpacing="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" Spacing="6" Margin="24,6,0,0">
+                            <TextBlock x:Name="alertNameTextBlock" Foreground="{StaticResource GrayColor}" />
+                            <TextBlock x:Name="alertStatusTextBlock" Foreground="{StaticResource GrayColor}" />
+                        </StackPanel>
+                        <ProgressBar Grid.Row="1" x:Name="newAlertProgressBar" Background="#0078D7" HorizontalAlignment="Stretch" ShowPaused="False" ShowError="False"/>
+                    </Grid>
+
+                    <Button x:Name="newAlertButton" Foreground="#0078D7" Background="Transparent" Margin="12,20,0,0" Click="OnNewAlertButtonClicked">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <SymbolIcon Symbol="Add"/>
+                            <TextBlock Text="New alert"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Camera control, builder wizard and result grid -->
+            <Grid x:Name="centralGrid" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="200"/>
+                    <RowDefinition Height="190"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Grid.RowSpan="2" x:Name="webCamHostGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ctl:CameraControl x:Name="cameraControl" FlowDirection="LeftToRight"
+                                       ImageCaptured="OnCameraPhotoCaptured" ContinuousCaptured="OnCameraContinuousPhotoCaptured"/>
+                </Grid>
+
+                <Grid Grid.Row="0" Grid.RowSpan="2" Name="cameraGuideCountdownHost" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.05*"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="0.2*"/>
+                    </Grid.RowDefinitions>
+
+                    <Viewbox Grid.Row="1">
+                        <TextBlock Name="countDownTextBlock" Foreground="#ECCF11" FontWeight="Bold" Opacity="0.9"  />
+                    </Viewbox>
+                </Grid>
+
+                <local:VisualAlertBuilderWizardControl Grid.Row="1" Grid.RowSpan="2" x:Name="visualAlertBuilderWizardControl"
+                                                       WizardStepChanged="OnBuilderWizardControlStepChanged"
+                                                       WizardCompleted="OnBuilderWizardControlCompleted"/>
+
+                <Grid x:Name="resultGrid" Grid.Row="2" Grid.RowSpan="1" Margin="0,26,0,0" BorderBrush="Red" BorderThickness="0" VerticalAlignment="Top"
+                      Visibility="{Binding ElementName=visualAlertBuilderWizardControl, Path=Visibility, Converter={StaticResource reverseVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Spacing="18" VerticalAlignment="Top" BorderBrush="Green" BorderThickness="0">
+                        <FontIcon x:Name="alertIcon" FontFamily="Segoe MDL2 Assets" Glyph="&#xE946;" FontSize="46" Visibility="Collapsed"/>
+                        <TextBlock x:Name="alertTextBlock" Style="{StaticResource HeaderTextBlockStyle}" Foreground="White" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="1" x:Name="alertProbability" Style="{StaticResource SubheaderTextBlockStyle}" Margin="12,6,0,0" 
+                                   VerticalAlignment="Center" Foreground="{StaticResource GrayColor}" Visibility="Collapsed"/>
+
+                    <TextBlock Grid.Column="2" x:Name="fpsTextBlock" Style="{StaticResource SubheaderTextBlockStyle}" 
+                               HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource GrayColor}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <ProgressRing x:Name="progressRing" Grid.Row="1" Width="100" Height="100" Foreground="White"/>
+
+    </Grid>
+</Page>
