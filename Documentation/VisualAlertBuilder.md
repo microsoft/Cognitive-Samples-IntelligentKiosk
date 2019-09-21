@@ -14,4 +14,4 @@ Once you have it configured and at least one alert created, just select a target
 
 * [VisualAlertBuilderWizardControl](../Kiosk/Views/VisualAlert/VisualAlertBuilderWizardControl.xaml.cs): A custom wizard control used for creating visual alerts.
 
-* [VisualAlertBuilderWizardControl](../Kiosk/Controls/LifecycleControl.xaml.cs): A control used to display the current step in the alert creation.
+* [LifecycleControl](../Kiosk/Controls/LifecycleControl.xaml.cs): A control used to display the current step in the alert creation.
