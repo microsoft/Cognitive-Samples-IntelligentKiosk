@@ -234,22 +234,18 @@ namespace IntelligentKioskSample
             return response;
         }
 
-        public static async Task TestInkRecognizerApiKeyAsync(string key, string apiEndpoint)
+        public static async Task TestInkRecognizerApiKeyAsync(string key)
         {
-            bool isUri = !string.IsNullOrEmpty(apiEndpoint) ? Uri.IsWellFormedUriString(apiEndpoint, UriKind.Absolute) : false;
-            if (!isUri)
+            if (string.IsNullOrEmpty(key))
             {
-                throw new ArgumentException("Invalid URI");
+                throw new ArgumentException("Invalid API Key");
             }
-            else
-            {
-                string inkRecognitionUrl = "/inkrecognizer/v1.0-preview/recognize";
-                var inkRecognizer = new ServiceHelpers.InkRecognizer(key, apiEndpoint, inkRecognitionUrl);
 
-                var json = inkRecognizer.ConvertInkToJson();
-                var response = await inkRecognizer.RecognizeAsync(json);
-                response.EnsureSuccessStatusCode();
-            }
+            var inkRecognizer = new ServiceHelpers.InkRecognizer(key);
+
+            JObject json = inkRecognizer.ConvertInkToJson();
+            var response = await inkRecognizer.RecognizeAsync(json);
+            response.EnsureSuccessStatusCode();
         }
     }
 

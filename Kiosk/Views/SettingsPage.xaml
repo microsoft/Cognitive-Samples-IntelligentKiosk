@@ -143,26 +143,7 @@
 
                     <PasswordBox Header="Translator Text API Key" Password="{Binding TranslatorTextApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
 
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Ink Recognizer API Key" Password="{Binding InkRecognizerApiKey, Mode=TwoWay}" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
-                                  x:Name="inkRecognizerEndpointCombobox"
-                                  ItemsSource="{Binding InkRecognizerEndpoints}"
-                                  SelectedItem="{Binding BindingInkRecognizerApiKeyEndpoint, Mode=TwoWay}">
-                        </ComboBox>
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" 
-                                    Visibility="{Binding ElementName=inkRecognizerEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
-                            <TextBox Header="Custom Text Analytics Endpoint" MaxWidth="450" x:Name="inkRecognizerApiEndpointTextBox"
-                                     PlaceholderText="Custom endpoint (e.g. https://inkrecognizerexplorer.cognitiveservices.azure.com)"
-                                     Text="{Binding CustomInkRecognizerEndpoint, Mode=TwoWay}" />
-                            <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=inkRecognizerApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
-                        </StackPanel>
-                    </Grid>
+                    <PasswordBox Header="Ink Recognizer API Key" Password="{Binding InkRecognizerApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
 
                     <PasswordBox Header="Anomaly Detector API Key" Password="{Binding AnomalyDetectorApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
 

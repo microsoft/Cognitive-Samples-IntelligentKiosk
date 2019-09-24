@@ -32,8 +32,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using System;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.InkRecognizerExplorer
 {
@@ -45,10 +48,20 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
             this.InitializeComponent();
         }
 
-        private void NavView_Loaded(object sender, RoutedEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            frame.SourcePageType = typeof(DualCanvas);
-            navView.SelectedItem = navView.MenuItems[0];
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.InkRecognizerApiKey))
+            {
+                navView.IsEnabled = false;
+                await new MessageDialog("Missing Ink Recognizer API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();
+            }
+            else
+            {
+                frame.SourcePageType = typeof(InkMirror);
+                navView.SelectedItem = navView.MenuItems[0];
+            }
+
+            base.OnNavigatedTo(e);
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -57,10 +70,10 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
 
             switch (item.Name)
             {
-                case "dualMode":
-                    frame.Navigate(typeof(DualCanvas));
+                case "inkMirror":
+                    frame.Navigate(typeof(InkMirror));
                     break;
-                case "formMode":
+                case "formFiller":
                     frame.Navigate(typeof(FormFiller));
                     break;
             }

@@ -31,6 +31,9 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using ServiceHelpers.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -43,20 +46,21 @@ using Windows.UI.Input.Inking;
 
 namespace ServiceHelpers
 {
-    public class InkRecognizer
+    public class InkRecognizer : ServiceBase
     {
-        private string inkRecognitionUrl;
-        private HttpClient httpClient;
+        private const string endpoint = "https://api.cognitive.microsoft.com";
+        private const string inkRecognitionUrl = "/inkrecognizer/v1.0-preview/recognize";
 
         private IDictionary<uint, InkStroke> StrokeMap { get; set; }
         private string LanguageCode;
 
-        public InkRecognizer(string subscriptionKey, string endpoint, string inkRecognitionUrl)
+        public InkRecognizer(string subscriptionKey)
         {
-            this.httpClient = new HttpClient() { BaseAddress = new Uri(endpoint) };
-            this.httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
-
-            this.inkRecognitionUrl = inkRecognitionUrl;
+            this.BaseServiceUrl = endpoint;
+            this.RequestHeaders = new Dictionary<string, string>()
+            {
+                {  "Ocp-Apim-Subscription-Key", subscriptionKey }
+            };
 
             this.StrokeMap = new Dictionary<uint, InkStroke>();
             this.LanguageCode = "en-US";
@@ -87,7 +91,7 @@ namespace ServiceHelpers
             return dipsPerMm;
         }
 
-        public JsonObject ConvertInkToJson()
+        public JObject ConvertInkToJson()
         {
             // For demo purposes and keeping the initially loaded ink consistent a value of 96 for DPI was used
             // For production, it is most likely better to use the device's DPI when generating the request JSON and an example of that is below
@@ -97,16 +101,16 @@ namespace ServiceHelpers
 
             float dipsPerMm = GetDipsPerMm(96);
 
-            var payload = new JsonObject();
-            var strokesArray = new JsonArray();
+            var payload = new JObject();
+            var strokesArray = new JArray();
 
             foreach (InkStroke stroke in StrokeMap.Values)
             {
-                var jStroke = new JsonObject();
+                var jStroke = new JObject();
                 IReadOnlyList<InkPoint> pointsCollection = stroke.GetInkPoints();
                 Matrix3x2 transform = stroke.PointTransform;
 
-                jStroke["id"] = JsonValue.CreateNumberValue(stroke.Id);
+                jStroke["id"] = stroke.Id;
 
                 if (pointsCollection.Count >= 2)
                 {
@@ -123,30 +127,24 @@ namespace ServiceHelpers
                         }
                     }
 
-                    jStroke["points"] = JsonValue.CreateStringValue(points.ToString());
+                    jStroke["points"] = points.ToString();
                     strokesArray.Add(jStroke);
                 }
             }
 
-            payload["version"] = JsonValue.CreateNumberValue(1.0);
-            payload["language"] = JsonValue.CreateStringValue(this.LanguageCode);
+            payload["version"] = 1.0;
+            payload["language"] = this.LanguageCode;
             payload["strokes"] = strokesArray;
 
             return payload;
         }
 
-        public async Task<HttpResponseMessage> RecognizeAsync(JsonObject json)
+        public async Task<HttpResponseMessage> RecognizeAsync(JObject json)
         {
-            string payload = json.Stringify();
-            var httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponse = await httpClient.PutAsync(inkRecognitionUrl, httpContent);
+            Uri requestUri = new Uri($"{this.BaseServiceUrl}{inkRecognitionUrl}");
+            HttpResponseMessage httpResponse = await HttpClientUtility.PutAsJsonAsync(requestUri, this.RequestHeaders, json);
 
             return httpResponse;
-        }
-
-        public void Dispose()
-        {
-            httpClient.Dispose();
         }
     }
 }

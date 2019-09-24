@@ -300,8 +300,8 @@
     <Compile Include="Controls\ImageSearchUserControl.xaml.cs">
       <DependentUpon>ImageSearchUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\InkRecognizerExplorer\DualCanvas.xaml.cs">
-      <DependentUpon>DualCanvas.xaml</DependentUpon>
+    <Compile Include="Views\InkRecognizerExplorer\InkMirror.xaml.cs">
+      <DependentUpon>InkMirror.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TranslatorExplorer\AlternativeTranslationsControl.xaml.cs">
       <DependentUpon>AlternativeTranslationsControl.xaml</DependentUpon>
@@ -559,7 +559,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\InkRecognizerExplorer\DualCanvas.xaml">
+    <Page Include="Views\InkRecognizerExplorer\InkMirror.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

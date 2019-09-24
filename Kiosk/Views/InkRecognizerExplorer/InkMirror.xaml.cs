@@ -37,6 +37,7 @@ using Microsoft.Graphics.Canvas.Geometry;
 using Microsoft.Graphics.Canvas.Text;
 using Microsoft.Graphics.Canvas.UI.Xaml;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -56,15 +57,11 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.InkRecognizerExplorer
 {
-    public sealed partial class DualCanvas : Page
+    public sealed partial class InkMirror : Page
     {
         private bool previouslyLoaded = false;
 
-        // API key and endpoint information for ink recognition request
         private string subscriptionKey = SettingsHelper.Instance.InkRecognizerApiKey;
-        private string endpoint = SettingsHelper.Instance.InkRecognizerApiKeyEndpoint;
-        private const string inkRecognitionUrl = "/inkrecognizer/v1.0-preview/recognize";
-
         private ServiceHelpers.InkRecognizer inkRecognizer;
         private InkResponse inkResponse;
 
@@ -84,10 +81,12 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
         private Symbol Redo = (Symbol)0xE7A6;
         private Symbol ClearAll = (Symbol)0xE74D;
 
-        public DualCanvas()
+        public InkMirror()
         {
             this.InitializeComponent();
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
+
+            inkRecognizer = new ServiceHelpers.InkRecognizer(subscriptionKey);
 
             recoTreeNodes = new Dictionary<int, InkRecognitionUnit>();
             recoTreeParentNodes = new List<InkRecognitionUnit>();
@@ -121,31 +120,22 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
         #region Event Handlers - Page
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.InkRecognizerApiKey))
+            if (!previouslyLoaded)
             {
-                await new MessageDialog("Missing Ink Recognizer API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();
-            }
-            else
-            {
-                if (!previouslyLoaded)
+                var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/InkRecognitionSampleInstructions.gif"));
+                if (file != null)
                 {
-                    var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/InkRecognitionSampleInstructions.gif"));
-                    if (file != null)
+                    using (var stream = await file.OpenSequentialReadAsync())
                     {
-                        using (var stream = await file.OpenSequentialReadAsync())
-                        {
-                            await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(stream);
-                        }
+                        await inkCanvas.InkPresenter.StrokeContainer.LoadAsync(stream);
                     }
-
-                    previouslyLoaded = true;
                 }
+
+                previouslyLoaded = true;
             }
 
-            // When the page is Unloaded, InkRecognizer and the Win2D CanvasControl are disposed. To preserve the state of the page we need to re-instantiate these objects.
+            // When the page is Unloaded, the Win2D CanvasControl is disposed. To preserve the state of the page we need to re-instantiate this object.
             // In the case of the Win2D CanvasControl, a new UI Element needs to be created/appended to the page as well
-            inkRecognizer = new ServiceHelpers.InkRecognizer(subscriptionKey, endpoint, inkRecognitionUrl);
-
             var resultCanvas = new CanvasControl();
             resultCanvas.Name = "resultCanvas";
             resultCanvas.Draw += ResultCanvas_Draw;
@@ -160,9 +150,6 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
 
         void Page_Unloaded(object sender, RoutedEventArgs e)
         {
-            // Calling Dispose() on InkRecognizer to dispose of resources being used by HttpClient
-            inkRecognizer.Dispose();
-
             // Dispose Win2D resources to avoid memory leak
             // Reference: https://microsoft.github.io/Win2D/html/RefCycles.htm
             var resultCanvas = this.FindName("resultCanvas") as CanvasControl;
@@ -289,8 +276,8 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
 
                 inkRecognizer.ClearStrokes();
                 inkRecognizer.AddStrokes(strokes);
-                JsonObject json = inkRecognizer.ConvertInkToJson();
-                requestJson.Text = FormatJson(json.Stringify());
+                JObject json = inkRecognizer.ConvertInkToJson();
+                requestJson.Text = FormatJson(json.ToString());
 
                 try
                 {

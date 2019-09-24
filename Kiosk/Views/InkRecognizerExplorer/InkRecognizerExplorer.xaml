@@ -21,10 +21,10 @@
             </CommandBar.Content>
         </CommandBar>
 
-        <NavigationView Grid.Row="1" x:Name="navView" Background="{Binding NavigationViewBackground}" PaneDisplayMode="Top" IsSettingsVisible="False" IsBackButtonVisible="Collapsed" Loaded="NavView_Loaded" ItemInvoked="NavView_ItemInvoked" Margin="12,10,12,0">
+        <NavigationView Grid.Row="1" x:Name="navView" Background="{Binding NavigationViewBackground}" PaneDisplayMode="Top" IsSettingsVisible="False" IsBackButtonVisible="Collapsed" ItemInvoked="NavView_ItemInvoked" Margin="12,10,12,0">
             <NavigationView.MenuItems>
-                <NavigationViewItem Name="dualMode" Content="Ink Mirror" FontSize="24"/>
-                <NavigationViewItem Name="formMode" Content="Form Filler" FontSize="24"/>
+                <NavigationViewItem Name="inkMirror" Content="Ink Mirror" FontSize="24"/>
+                <NavigationViewItem Name="formFiller" Content="Form Filler" FontSize="24"/>
             </NavigationView.MenuItems>
         </NavigationView>
 

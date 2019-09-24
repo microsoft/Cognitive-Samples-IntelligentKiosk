@@ -125,8 +125,7 @@ namespace IntelligentKioskSample.Views
                 : Task.CompletedTask);
 
             await (!string.IsNullOrEmpty(SettingsHelper.Instance.InkRecognizerApiKey)
-                ? CallApiAndReportResult("Ink Recognizer API Test: ", async () => await CognitiveServiceApiKeyTester.TestInkRecognizerApiKeyAsync(
-                    SettingsHelper.Instance.InkRecognizerApiKey, SettingsHelper.Instance.InkRecognizerApiKeyEndpoint))
+                ? CallApiAndReportResult("Ink Recognizer API Test: ", async () => await CognitiveServiceApiKeyTester.TestInkRecognizerApiKeyAsync(SettingsHelper.Instance.InkRecognizerApiKey))
                 : Task.CompletedTask);
 
             await (!string.IsNullOrEmpty(SettingsHelper.Instance.AnomalyDetectorApiKey)
