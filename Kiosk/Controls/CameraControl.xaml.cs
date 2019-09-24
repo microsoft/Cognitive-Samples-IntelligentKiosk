@@ -35,6 +35,7 @@ using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,11 +85,13 @@ namespace IntelligentKioskSample.Controls
     {
         public ContinuousCaptureState State { get; set; }
         public ImageAnalyzer Image { get; set; }
-        public int Count { get; set; }
+        public int CountdownValue { get; set; }
     }
 
-    public sealed partial class CameraControl : UserControl
+    public sealed partial class CameraControl : UserControl, INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public bool PerformFaceTracking { get; set; } = true;
         public bool ShowFaceTracking { get; set; } = true;
 
@@ -134,7 +137,7 @@ namespace IntelligentKioskSample.Controls
             set
             {
                 this.enableContinuousMode = value;
-                this.continuousModeGrid.Visibility = this.enableContinuousMode ? Visibility.Visible : Visibility.Collapsed;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EnableContinuousMode"));
             }
         }
 
@@ -145,7 +148,7 @@ namespace IntelligentKioskSample.Controls
             set
             {
                 this.enableCameraControls = value;
-                this.commandBar.Visibility = this.enableCameraControls ? Visibility.Visible : Visibility.Collapsed;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EnableCameraControls"));
             }
         }
 
@@ -204,7 +207,6 @@ namespace IntelligentKioskSample.Controls
                     captureManager.CameraStreamState == CameraStreamState.NotStreaming)
                 {
                     loadingOverlay.Visibility = Visibility.Visible;
-                    this.commandBar.Visibility = Visibility.Collapsed;
 
                     if (captureManager != null)
                     {
@@ -265,7 +267,6 @@ namespace IntelligentKioskSample.Controls
                     this.webCamCaptureElement.Visibility = Visibility.Visible;
 
                     loadingOverlay.Visibility = Visibility.Collapsed;
-                    commandBar.Visibility = enableCameraControls ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
             catch (Exception ex)
@@ -685,7 +686,7 @@ namespace IntelligentKioskSample.Controls
                 // few sec to get ready
                 for (int count = 1; count <= IntervalBeforeStartCapturing; count++)
                 {
-                    this.ContinuousCaptured?.Invoke(this, new ContinuousCaptureData { State = ContinuousCaptureState.ShowingCountdownForCapture, Count = count });
+                    this.ContinuousCaptured?.Invoke(this, new ContinuousCaptureData { State = ContinuousCaptureState.ShowingCountdownForCapture, CountdownValue = count });
                     await Task.Delay(750);
                 }
 

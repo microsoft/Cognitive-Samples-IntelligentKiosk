@@ -89,6 +89,6 @@ namespace IntelligentKioskSample.Controls
         public string Title { get => title; set => Set(ref title, value); }
         public string Subtitle { get => subtitle; set => Set(ref subtitle, value); }
         public LifecycleStepState State { get => state; set => Set(ref state, value); }
-        public bool IsLatest { get; set; } = false;
+        public bool IsLast { get; set; } = false;
     }
 }

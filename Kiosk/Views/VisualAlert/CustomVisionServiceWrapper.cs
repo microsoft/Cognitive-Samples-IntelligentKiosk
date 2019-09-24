@@ -92,7 +92,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             return project;
         }
 
-        public async Task AddTrainingImagesAsync(IEnumerable<ImageAnalyzer> images, Guid modelId, Tag tag = null)
+        public async Task AddTrainingImagesAsync(IEnumerable<ImageAnalyzer> images, Guid projectId, Tag tag = null)
         {
             foreach (var item in images)
             {
@@ -100,13 +100,13 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 if (item.GetImageStreamCallback != null)
                 {
                     addResult = await trainingApi.CreateImagesFromDataAsync(
-                        modelId,
+                        projectId,
                         await item.GetImageStreamCallback(), tag != null ? new string[] { tag.Id.ToString() } : null);
                 }
                 else
                 {
                     addResult = await trainingApi.CreateImagesFromUrlsAsync(
-                        modelId,
+                        projectId,
                         new ImageUrlCreateBatch(new ImageUrlCreateEntry[] { new ImageUrlCreateEntry(item.ImageUrl) }, tag != null ? new Guid[] { tag.Id } : null));
                 }
             }

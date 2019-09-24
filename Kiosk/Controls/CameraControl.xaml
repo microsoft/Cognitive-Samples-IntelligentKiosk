@@ -22,7 +22,7 @@
         <CaptureElement x:Name="webCamCaptureElement" FlowDirection="{Binding ElementName=cameraControl, Path=FlowDirection}" />
         <Canvas x:Name="FaceTrackingVisualizationCanvas" FlowDirection="{Binding ElementName=cameraControl, Path=FlowDirection}" />
 
-        <Grid x:Name="commandBar" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="8" Visibility="Collapsed">
+        <Grid x:Name="commandBar" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="8" Visibility="{Binding ElementName=cameraControl, Path=EnableCameraControls, Converter={StaticResource booleanToVisibilityConverter}}">
             <StackPanel Spacing="12">
                 <Button x:Name="capturePhotoButton" HorizontalAlignment="Right" Background="Transparent" Click="CameraControlButtonClick" CornerRadius="25" Padding="0">
                     <Grid>
@@ -38,7 +38,7 @@
                     </Grid>
                 </Button>
 
-                <Grid x:Name="continuousModeGrid" HorizontalAlignment="Right">
+                <Grid x:Name="continuousModeGrid" HorizontalAlignment="Right" Visibility="{Binding ElementName=cameraControl, Path=EnableContinuousMode, Converter={StaticResource booleanToVisibilityConverter}}">
                     <controls:RadialProgressBar x:Name="radialProgressBarControl" Thickness="4" Outline="White" Foreground="#0078D7" Width="45" Height="45"
                                                 Minimum="0" Maximum="{Binding ElementName=cameraControl, Path=ContinuousModeTimerInSecond}">
                     </controls:RadialProgressBar>

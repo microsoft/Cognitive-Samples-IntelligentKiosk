@@ -47,7 +47,7 @@
                             <!-- Completed icon -->
                             <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEC61;" Foreground="#0078D7" Visibility="{Binding State, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Completed'}"/>
 
-                            <StackPanel Visibility="{Binding IsLatest, Converter={StaticResource reverseBooleanToVisibilityConverter}}" HorizontalAlignment="Center" Margin="0,8">
+                            <StackPanel Visibility="{Binding IsLast, Converter={StaticResource reverseBooleanToVisibilityConverter}}" HorizontalAlignment="Center" Margin="0,8">
                                 <Line X1="0" X2="0" Y1="0" Y2="50" StrokeThickness="2" Stroke="DarkGray" Visibility="{Binding State, Converter={StaticResource reverseEnumMatchToVisibilityConverter}, ConverterParameter='Completed'}"/>
 
                                 <Line X1="0" X2="0" Y1="0" Y2="50" StrokeThickness="2" Stroke="#0078D7" Visibility="{Binding State, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Completed'}"/>

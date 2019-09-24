@@ -83,7 +83,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 Id = VisualAlertBuilderStepType.TrainModel.ToString(),
                 Title = "Train model",
                 State = LifecycleStepState.Mute,
-                IsLatest = true
+                IsLast = true
             }
         });
 
@@ -133,7 +133,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 await LoadScenariosAsync();
             }
 
-            UpdateLeftPanel();
+            UpdateScenarioListPanel();
             await this.cameraControl.StartStreamAsync(isForRealTimeProcessing: true);
 
             base.OnNavigatedTo(e);
@@ -162,7 +162,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             }
         }
 
-        private void UpdateLeftPanel(BuilderMode mode = BuilderMode.ScenarioList)
+        private void UpdateScenarioListPanel(BuilderMode mode = BuilderMode.ScenarioList)
         {
             bool isAnyScenario = this.scenarioListView.Items.Any();
             switch (mode)
@@ -242,7 +242,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             {
                 case ContinuousCaptureState.ShowingCountdownForCapture:
                     this.cameraGuideCountdownHost.Visibility = Visibility.Visible;
-                    this.countDownTextBlock.Text = $"{data.Count}";
+                    this.countDownTextBlock.Text = $"{data.CountdownValue}";
                     break;
 
                 case ContinuousCaptureState.Processing:
@@ -306,7 +306,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             try
             {
                 this.newAlertProgressBar.IsIndeterminate = true;
-                UpdateLeftPanel(BuilderMode.Processing);
+                UpdateScenarioListPanel(BuilderMode.Processing);
 
                 // create new custom vision project
                 UpdateProcessingStatus(data.Name, AlertCreateProcessingStatus.Creating);
@@ -338,7 +338,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 }
 
                 this.newAlertProgressBar.IsIndeterminate = false;
-                UpdateLeftPanel();
+                UpdateScenarioListPanel();
             }
         }
 
@@ -505,12 +505,10 @@ namespace IntelligentKioskSample.Views.VisualAlert
             var selectedScenarios = this.scenarioListView.SelectedItems.Cast<VisualAlertScenarioData>().ToList();
             if (selectedScenarios != null && selectedScenarios.Any())
             {
-                bool isSingleScenario = selectedScenarios.Count == 1;
                 ContentDialog dialog = new ContentDialog
                 {
-                    Title = isSingleScenario ? "Delete alert permanently?" : "Delete alerts permanently?",
-                    Content = isSingleScenario ? "If you delete this alert, you won’t be able to\nrecover it. Do you want to delete it?"
-                                            : "If you delete these alerts, you won’t be able to\nrecover them. Do you want to delete them?",
+                    Title = "Delete selected alert(s) permanently?",
+                    Content = "This operation will delete the selected alert(s) permanently.\nAre you sure you want to continue?",
                     PrimaryButtonText = "Delete",
                     SecondaryButtonText = "Cancel",
                     DefaultButton = ContentDialogButton.Secondary
@@ -535,7 +533,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
                 // update scenario collection
                 await LoadScenariosAsync();
-                UpdateLeftPanel();
+                UpdateScenarioListPanel();
             }
             catch (Exception ex)
             {
@@ -549,12 +547,13 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
         private void OnCancelNewAlert(object sender, RoutedEventArgs e)
         {
-            UpdateLeftPanel(BuilderMode.ScenarioList);
+            ToggleCameraControls(enable: false);
+            UpdateScenarioListPanel(BuilderMode.ScenarioList);
         }
 
         private void OnNewAlertButtonClicked(object sender, RoutedEventArgs e)
         {
-            UpdateLeftPanel(BuilderMode.NewAlert);
+            UpdateScenarioListPanel(BuilderMode.NewAlert);
         }
     }
 
