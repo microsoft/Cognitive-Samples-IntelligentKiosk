@@ -628,8 +628,6 @@ namespace IntelligentKioskSample
             {
                 return new string[]
                 {
-                    CustomEndpointName,
-                    "https://api.cognitive.microsoft.com",
                     "https://eastus.api.cognitive.microsoft.com",
                     "https://eastus2.api.cognitive.microsoft.com",
                     "https://southcentralus.api.cognitive.microsoft.com",
