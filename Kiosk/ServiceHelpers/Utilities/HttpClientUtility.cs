@@ -187,6 +187,28 @@ namespace ServiceHelpers.Utilities
             return response;
         }
 
+        public static async Task<HttpResponseMessage> PutAsJsonAsync(Uri requestUri, IDictionary<string, string> headers, object content)
+        {
+            // Create new request function
+            Func<HttpRequestMessage> createRequestMessage = () =>
+            {
+                // Create new request
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, requestUri);
+
+                // Add headers to request
+                request.AddHeaders(headers);
+
+                // Add content as Json
+                request.AddContentAsJson(content);
+
+                return request;
+            };
+
+            // Put request
+            HttpResponseMessage response = await ExecuteActionkWithAutoRetry(() => Client.SendAsync(createRequestMessage()));
+            return response;
+        }
+
         /// <summary>
         /// Send Http Delete to request uri and get HttpResponseMessage
         /// </summary>

@@ -143,6 +143,8 @@
 
                     <PasswordBox Header="Translator Text API Key" Password="{Binding TranslatorTextApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
 
+                    <PasswordBox Header="Ink Recognizer API Key" Password="{Binding InkRecognizerApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
+
                     <PasswordBox Header="Anomaly Detector API Key" Password="{Binding AnomalyDetectorApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
 
                     <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
@@ -158,6 +160,7 @@
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingAutosuggest-v7" Content="Bing Autosuggest"/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextAnalytics" Content="Text Analytics"/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation" Content="Translator Text"/>
+                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesInkRecognizer" Content="Ink Recognizer"/>
                                         <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesAnomalyDetector" Content="Anomaly Detector"/>
 
                                         <TextBlock TextWrapping="WrapWholeWords" Foreground="OrangeRed" Margin="0,10,0,0" Text="Important: The free-tier (F0) keys provided by Azure won't support the load from the real-time demos in the kiosk. For the best experience upgrade to a paid key if using those demos."/>

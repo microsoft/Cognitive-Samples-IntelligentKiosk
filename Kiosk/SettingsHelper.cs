@@ -276,6 +276,12 @@ namespace IntelligentKioskSample
                 this.TranslatorTextApiKey = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["InkRecognizerApiKey"];
+            if (value != null)
+            {
+                this.InkRecognizerApiKey = value.ToString();
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["AnomalyDetectorApiKey"];
             if (value != null)
             {
@@ -591,6 +597,17 @@ namespace IntelligentKioskSample
             {
                 this.translatorTextApiKey = value;
                 this.OnSettingChanged("TranslatorTextApiKey", value);
+            }
+        }
+
+        private string inkRecognizerApiKey = string.Empty;
+        public string InkRecognizerApiKey
+        {
+            get { return inkRecognizerApiKey; }
+            set
+            {
+                this.inkRecognizerApiKey = value;
+                this.OnSettingChanged("InkRecognizerApiKey", value);
             }
         }
 
