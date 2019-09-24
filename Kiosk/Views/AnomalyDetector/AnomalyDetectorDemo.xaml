@@ -9,8 +9,8 @@
 
     <Page.Resources>
         <Style x:Key="PivotItemContent" TargetType="Grid">
-            <Setter Property="Margin" Value="0,18,0,0" />
-            <Setter Property="ColumnSpacing" Value="32" />
+            <Setter Property="Margin" Value="0,36,0,0" />
+            <Setter Property="ColumnSpacing" Value="36" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
             <Setter Property="ScrollViewer.VerticalScrollMode" Value="Auto" />
         </Style>
@@ -39,11 +39,11 @@
                 <PivotItem Header="{x:Bind BikeRentalTab}">
                     <Grid Style="{StaticResource PivotItemContent}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="6*"/>
                         </Grid.ColumnDefinitions>
 
-                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/BikeSharing.png" 
+                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/BikeSharing.png"
                                                    Title="Adventure Works bike rentals" Description="Adventure Works runs bike rental business in more than 60 cities which are divided into about 6,000 subareas. Hourly number of rides in each subarea forms a time series. Anomaly Detector monitors those thousands of metrics to help the company make critical operational decisions timely: for example, transporting hundreds of bikes to an area with demand spikes."/>
                         <local:AnomalyChartControl Grid.Column="1" x:Name="bikerentalChart" Title="Hourly number of rides in area A76" />
                     </Grid>
@@ -53,8 +53,8 @@
                 <PivotItem Header="{x:Bind ManufacturingTab}">
                     <Grid Style="{StaticResource PivotItemContent}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="6*"/>
                         </Grid.ColumnDefinitions>
 
                         <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/Manufacturing.jpg" 
@@ -67,11 +67,11 @@
                 <PivotItem Header="{x:Bind TelecomTab}">
                     <Grid Style="{StaticResource PivotItemContent}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="6*"/>
                         </Grid.ColumnDefinitions>
 
-                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/Telcom.png" 
+                        <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/Telcom.png"
                                                    Title="The Phone Company" Description="The Phone Company offers telecommunications services in west Europe serving 72 million users. Anomaly Detector monitors thousands of business metrics to track business health."/>
                         <local:AnomalyChartControl Grid.Column="1" x:Name="telecomChart" Title="Daily active users" />
                     </Grid>
@@ -81,8 +81,8 @@
                 <PivotItem x:Name="livePivotItem" Header="{x:Bind LiveTab}">
                     <Grid Style="{StaticResource PivotItemContent}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="6*"/>
                         </Grid.ColumnDefinitions>
 
                         <local:ScenarioInfoControl Grid.Column="0" ImageSource="ms-appx:///Assets/AnomalyDetector/LiveSound.png" 

@@ -41,131 +41,130 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid RowSpacing="32">
+    <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Chart -->
-        <StackPanel Grid.Row="0" x:Name="ResultPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-            <TextBlock Text="{x:Bind Title}" Style="{StaticResource TitleTextBlockStyle}" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+        <TextBlock Grid.Row="0" Text="{x:Bind Title}" Style="{StaticResource SubheaderTextBlockStyle}" Opacity="0.8" Margin="0,0,0,24"/>
 
-            <Grid>
+        <!-- Chart -->
+        <Grid Grid.Row="1" x:Name="ResultPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,6,0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
+
+                <!-- Y axis labels -->
+                <TextBlock x:Name="y5_Lbl" Grid.Row="0" Style="{StaticResource TopTextStyle}"/>
+                <TextBlock x:Name="y4_Lbl" Grid.Row="0" Style="{StaticResource BottomTextStyle}"/>
+                <TextBlock x:Name="y3_Lbl" Grid.Row="1" Style="{StaticResource BottomTextStyle}"/>
+                <TextBlock x:Name="y2_Lbl" Grid.Row="2" Style="{StaticResource BottomTextStyle}"/>
+                <TextBlock x:Name="y1_Lbl" Grid.Row="3" Style="{StaticResource BottomTextStyle}"/>
+            </Grid>
+
+            <Grid Grid.Row="0" Grid.Column="1" x:Name="resultGrid" Height="400" BorderBrush="Transparent" BorderThickness="1"
+                      Background="Transparent" HorizontalAlignment="Stretch" SizeChanged="OnChartGridSizeChanged">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <Line Grid.RowSpan="4" Name="progressLine" X1="0" X2="0" Stroke="#0078D7" Opacity="0.7" StrokeThickness="2" />
+                <Polyline Grid.RowSpan="4" Name="progressPolyline" Stroke="LightSlateGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.6"/>
+                <Polyline Grid.RowSpan="4" Name="dataPolyline" Stroke="White" StrokeThickness="2" />
+                <Polyline Grid.RowSpan="4" Name="detectWindowPolyline" Stroke="DarkGray" StrokeThickness="0" Fill="#FFFFFF" Opacity="0.2"/>
+
+                <!-- Y axis lines-->
+                <Line Grid.Row="0" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}" VerticalAlignment="Top"/>
+                <Line Grid.Row="0" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
+                <Line Grid.Row="1" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
+                <Line Grid.Row="2" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
+                <Line Grid.Row="3" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
+            </Grid>
+
+            <Grid x:Name="xAxisGrid" Grid.Row="1" Grid.Column="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,6,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                <!-- X axis labels -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                    <TextBlock x:Name="x1_Lbl" Text="0" Style="{StaticResource RightTextStyle}" Margin="6,8,0,0"/>
+                </StackPanel>
 
-                    <!-- Y axis labels -->
-                    <TextBlock x:Name="y5_Lbl" Grid.Row="0" Style="{StaticResource TopTextStyle}"/>
-                    <TextBlock x:Name="y4_Lbl" Grid.Row="0" Style="{StaticResource BottomTextStyle}"/>
-                    <TextBlock x:Name="y3_Lbl" Grid.Row="1" Style="{StaticResource BottomTextStyle}"/>
-                    <TextBlock x:Name="y2_Lbl" Grid.Row="2" Style="{StaticResource BottomTextStyle}"/>
-                    <TextBlock x:Name="y1_Lbl" Grid.Row="3" Style="{StaticResource BottomTextStyle}"/>
-                </Grid>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock x:Name="x2_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
+                    <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                </StackPanel>
 
-                <Grid Grid.Row="0" Grid.Column="1" x:Name="resultGrid" Height="400" BorderBrush="Transparent" BorderThickness="1"
-                      Background="Transparent" HorizontalAlignment="Stretch" SizeChanged="OnChartGridSizeChanged">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock x:Name="x3_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
+                    <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                </StackPanel>
 
-                    <Line Grid.RowSpan="4" Name="progressLine" X1="0" X2="0" Stroke="#0078D7" Opacity="0.7" StrokeThickness="2" />
-                    <Polyline Grid.RowSpan="4" Name="progressPolyline" Stroke="LightSlateGray" StrokeThickness="0" Fill="#0078D7" Opacity="0.6"/>
-                    <Polyline Grid.RowSpan="4" Name="dataPolyline" Stroke="White" StrokeThickness="2" />
-                    <Polyline Grid.RowSpan="4" Name="detectWindowPolyline" Stroke="DarkGray" StrokeThickness="0" Fill="#FFFFFF" Opacity="0.2"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock x:Name="x4_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
+                    <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                </StackPanel>
 
-                    <!-- Y axis lines-->
-                    <Line Grid.Row="0" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}" VerticalAlignment="Top"/>
-                    <Line Grid.Row="0" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
-                    <Line Grid.Row="1" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
-                    <Line Grid.Row="2" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
-                    <Line Grid.Row="3" X1="0" X2="{Binding ElementName=resultGrid, Path=ActualWidth, Mode=TwoWay}" Style="{StaticResource YAxisLineStyle}"/>
-                </Grid>
+                <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock x:Name="x5_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
+                    <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
+                </StackPanel>
+            </Grid>
 
-                <Grid x:Name="xAxisGrid" Grid.Row="1" Grid.Column="1">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- X axis labels -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
-                        <TextBlock x:Name="x1_Lbl" Text="0" Style="{StaticResource RightTextStyle}" Margin="6,8,0,0"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <TextBlock x:Name="x2_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
-                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <TextBlock x:Name="x3_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
-                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <TextBlock x:Name="x4_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
-                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <TextBlock x:Name="x5_Lbl" Text="0" Style="{StaticResource RightTextStyle}"/>
-                        <Line Y1="0" Y2="{Binding ElementName=xAxisGrid, Path=ActualHeight, Mode=TwoWay}" Style="{StaticResource XAxisLineStyle}"/>
-                    </StackPanel>
-                </Grid>
-
-                <!-- Tooltip -->
-                <Popup Grid.Row="0" Grid.Column="1" Width="150" Height="100"
+            <!-- Tooltip -->
+            <Popup Grid.Row="0" Grid.Column="1" Width="150" Height="100"
                        x:Name="tooltipPopup" IsOpen="False" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Grid Background="#2C2C2C" BorderBrush="DarkGray" BorderThickness="1" Padding="8" 
+                <Grid Background="#2C2C2C" BorderBrush="DarkGray" BorderThickness="1" Padding="8" 
                           Width="{Binding ElementName=tooltipPopup, Path=ActualWidth}" 
                           Height="{Binding ElementName=tooltipPopup, Path=ActualHeight}">
-                        <Grid.Resources>
-                            <Style TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}"/>
-                        </Grid.Resources>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="timestampTextBlock" Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold"/>
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}"/>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="timestampTextBlock" Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold"/>
 
-                        <TextBlock Text="Value" Grid.Row="1" Grid.Column="0"/>
-                        <TextBlock x:Name="delayValueTextBlock" Grid.Row="1" Grid.Column="1" FontWeight="Bold"/>
+                    <TextBlock Text="Value" Grid.Row="1" Grid.Column="0"/>
+                    <TextBlock x:Name="delayValueTextBlock" Grid.Row="1" Grid.Column="1" FontWeight="Bold"/>
 
-                        <TextBlock Text="Expected value" Grid.Row="2" Grid.Column="0"/>
-                        <TextBlock x:Name="expectedTextBlock" Grid.Row="2" Grid.Column="1" FontWeight="Bold"/>
-                    </Grid>
-                </Popup>
-            </Grid>
-        </StackPanel>
+                    <TextBlock Text="Expected value" Grid.Row="2" Grid.Column="0"/>
+                    <TextBlock x:Name="expectedTextBlock" Grid.Row="2" Grid.Column="1" FontWeight="Bold"/>
+                </Grid>
+            </Popup>
+        </Grid>
 
         <!-- Chart controls -->
-        <StackPanel Grid.Row="1" VerticalAlignment="Top" Orientation="Horizontal" Spacing="50">
+        <StackPanel Grid.Row="2" VerticalAlignment="Top" Orientation="Horizontal" Spacing="50" Margin="0,32,0,0">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8"
                         ToolTipService.ToolTip="Represents how the data is processed by the Anomaly Detection service.&#x0a;In Streaming mode, the data is submitted in one small chunk at a time, as shown in the grey area of moving windows, which defines how many history data points are required to detect latest point anomaly. The range of the window varies according to different granularity.">
                 <TextBlock VerticalAlignment="Top">
