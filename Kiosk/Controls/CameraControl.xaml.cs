@@ -35,6 +35,7 @@ using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,6 +62,13 @@ namespace IntelligentKioskSample.Controls
         ShowingCapturedPhoto
     }
 
+    public enum ContinuousCaptureState
+    {
+        ShowingCountdownForCapture,
+        Processing,
+        Completed
+    }
+
     public interface IRealTimeDataProvider
     {
         Microsoft.Azure.CognitiveServices.Vision.Face.Models.DetectedFace GetLastFaceAttributesForFace(BitmapBounds faceBox);
@@ -73,8 +81,17 @@ namespace IntelligentKioskSample.Controls
         Task ProcessFrame(VideoFrame frame, Canvas visualizationCanvas);
     }
 
-    public sealed partial class CameraControl : UserControl
+    public class ContinuousCaptureData
     {
+        public ContinuousCaptureState State { get; set; }
+        public ImageAnalyzer Image { get; set; }
+        public int CountdownValue { get; set; }
+    }
+
+    public sealed partial class CameraControl : UserControl, INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public bool PerformFaceTracking { get; set; } = true;
         public bool ShowFaceTracking { get; set; } = true;
 
@@ -82,6 +99,7 @@ namespace IntelligentKioskSample.Controls
 
         public event EventHandler<ImageAnalyzer> ImageCaptured;
         public event EventHandler<AutoCaptureState> AutoCaptureStateChanged;
+        public event EventHandler<ContinuousCaptureData> ContinuousCaptured;
         public event EventHandler CameraRestarted;
         public event EventHandler CameraAspectRatioChanged;
 
@@ -96,22 +114,15 @@ namespace IntelligentKioskSample.Controls
         public bool ShowDialogOnApiErrors
         {
             get { return (bool)GetValue(ShowDialogOnApiErrorsProperty); }
-            set { SetValue(ShowDialogOnApiErrorsProperty, (bool)value); }
+            set { SetValue(ShowDialogOnApiErrorsProperty, value); }
         }
 
-        public bool FilterOutSmallFaces
-        {
-            get;
-            set;
-        }
+        public bool FilterOutSmallFaces { get; set; }
 
         private bool enableAutoCaptureMode;
         public bool EnableAutoCaptureMode
         {
-            get
-            {
-                return enableAutoCaptureMode;
-            }
+            get { return enableAutoCaptureMode; }
             set
             {
                 this.enableAutoCaptureMode = value;
@@ -119,17 +130,25 @@ namespace IntelligentKioskSample.Controls
             }
         }
 
+        private bool enableContinuousMode = false;
+        public bool EnableContinuousMode
+        {
+            get { return enableContinuousMode; }
+            set
+            {
+                this.enableContinuousMode = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EnableContinuousMode"));
+            }
+        }
+
         private bool enableCameraControls = true;
         public bool EnableCameraControls
         {
-            get
-            {
-                return enableCameraControls;
-            }
+            get { return enableCameraControls; }
             set
             {
                 this.enableCameraControls = value;
-                this.commandBar.Visibility = this.enableCameraControls ? Visibility.Visible : Visibility.Collapsed;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EnableCameraControls"));
             }
         }
 
@@ -138,6 +157,7 @@ namespace IntelligentKioskSample.Controls
         public int CameraResolutionHeight { get; private set; }
 
         public int NumFacesOnLastFrame { get; set; }
+        public int ContinuousModeTimerInSecond { get; set; } = 5;
 
         public CameraStreamState CameraStreamState { get { return captureManager != null ? captureManager.CameraStreamState : CameraStreamState.NotStreaming; } }
 
@@ -187,7 +207,6 @@ namespace IntelligentKioskSample.Controls
                     captureManager.CameraStreamState == CameraStreamState.NotStreaming)
                 {
                     loadingOverlay.Visibility = Visibility.Visible;
-                    this.commandBar.Visibility = Visibility.Collapsed;
 
                     if (captureManager != null)
                     {
@@ -248,7 +267,6 @@ namespace IntelligentKioskSample.Controls
                     this.webCamCaptureElement.Visibility = Visibility.Visible;
 
                     loadingOverlay.Visibility = Visibility.Collapsed;
-                    commandBar.Visibility = enableCameraControls ? Visibility.Visible : Visibility.Collapsed;
                 }
             }
             catch (Exception ex)
@@ -393,13 +411,13 @@ namespace IntelligentKioskSample.Controls
                             if (identifiedPerson != null && identifiedPerson.Person != null)
                             {
                                 // age, gender and id available
-                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age.GetValueOrDefault(), 
+                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age.GetValueOrDefault(),
                                     detectedFace.FaceAttributes.Gender?.ToString(), (uint)Math.Round(identifiedPerson.Confidence * 100), identifiedPerson.Person.Name, uniqueId: uniqueId);
                             }
                             else
                             {
                                 // only age and gender available
-                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age.GetValueOrDefault(), 
+                                faceBorder.ShowIdentificationData(detectedFace.FaceAttributes.Age.GetValueOrDefault(),
                                     detectedFace.FaceAttributes.Gender?.ToString(), 0, null, uniqueId: uniqueId);
                             }
 
@@ -513,7 +531,7 @@ namespace IntelligentKioskSample.Controls
             this.OnAutoCaptureStateChanged(this.autoCaptureState);
         }
 
-        private bool AreFacesStill(IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> detectedFacesFromPreviousFrame, 
+        private bool AreFacesStill(IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> detectedFacesFromPreviousFrame,
             IEnumerable<Windows.Media.FaceAnalysis.DetectedFace> detectedFacesFromCurrentFrame)
         {
             int horizontalMovementThreshold = (int)(videoProperties.Width * 0.02);
@@ -565,7 +583,7 @@ namespace IntelligentKioskSample.Controls
                     {
                         this.FaceTrackingVisualizationCanvas.Children.Clear();
                     }
-                    
+
                     this.webCamCaptureElement.Visibility = Visibility.Collapsed;
                 }
             }
@@ -655,6 +673,43 @@ namespace IntelligentKioskSample.Controls
             }
         }
 
+        private async void CameraControlContinuousModeClick(object sender, RoutedEventArgs e)
+        {
+            const int IntervalCapturing = 500;
+            const int IntervalBeforeStartCapturing = 3;
+
+            if (this.captureManager.CameraStreamState == CameraStreamState.Streaming)
+            {
+                this.radialProgressBarControl.Value = 0;
+                ToggleCameraControlButtons(enable: false);
+
+                // few sec to get ready
+                for (int count = 1; count <= IntervalBeforeStartCapturing; count++)
+                {
+                    this.ContinuousCaptured?.Invoke(this, new ContinuousCaptureData { State = ContinuousCaptureState.ShowingCountdownForCapture, CountdownValue = count });
+                    await Task.Delay(750);
+                }
+
+                // start continuous capturing mode
+                for (int sec = 1; sec <= ContinuousModeTimerInSecond; sec++)
+                {
+                    var img = await CaptureFrameAsync();
+                    this.ContinuousCaptured?.Invoke(this, new ContinuousCaptureData { State = ContinuousCaptureState.Processing, Image = img });
+                    this.radialProgressBarControl.Value = sec;
+                    await Task.Delay(IntervalCapturing);
+                }
+
+                this.ContinuousCaptured?.Invoke(this, new ContinuousCaptureData { State = ContinuousCaptureState.Completed });
+                ToggleCameraControlButtons(enable: true);
+            }
+            else
+            {
+                await StartStreamAsync(isStreamingOnRealtimeResolution, lastUsedCamera);
+
+                this.CameraRestarted?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
         private async void CameraSwitchtButtonClick(object sender, RoutedEventArgs e)
         {
             // if we are not streaming just ignore the request
@@ -679,6 +734,18 @@ namespace IntelligentKioskSample.Controls
         {
             await StopStreamAsync();
             Window.Current.Activated -= CurrentWindowActivationStateChanged;
+        }
+
+        private void ToggleCameraControlButtons(bool enable)
+        {
+            this.capturePhotoButton.IsEnabled = enable;
+            this.continuousCapturePhotoButton.IsEnabled = enable;
+        }
+
+        public void UpdateCameraControlGrid(double width)
+        {
+            double offset = this.commandBar.Margin.Left + this.commandBar.Margin.Right;
+            this.commandBar.Width = (width < this.mainGrid.ActualWidth ? width : this.mainGrid.ActualWidth) - offset;
         }
     }
 }

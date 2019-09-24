@@ -272,7 +272,7 @@ namespace IntelligentKioskSample
             return pix.DetachPixelData();
         }
 
-        internal static async Task DownloadFileASync(string link, StorageFile destination, IProgress<DownloadOperation> progress, CancellationToken cancellationToken)
+        internal static async Task DownloadFileASync(string link, StorageFile destination, IProgress<DownloadOperation> progress, CancellationToken cancellationToken = default)
         {
             BackgroundDownloader downloader = new BackgroundDownloader();
             DownloadOperation download = downloader.CreateDownload(new Uri(link), destination);

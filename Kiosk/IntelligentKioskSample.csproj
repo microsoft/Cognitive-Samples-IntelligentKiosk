@@ -112,6 +112,7 @@
     <Content Include="Assets\AnomalyDetector\AnomalyDetector-Telcom.csv" />
     <None Include="IntelligentKioskSample_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <Content Include="Assets\VisualAlertBuilder.jpg" />
     <Content Include="Views\CustomVision\BuiltInClassificationModels.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -133,6 +134,9 @@
     </Compile>
     <Compile Include="Controls\ImagePickerControl.xaml.cs">
       <DependentUpon>ImagePickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LifecycleControl.xaml.cs">
+      <DependentUpon>LifecycleControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\TagScoreControl.xaml.cs">
       <DependentUpon>TagScoreControl.xaml</DependentUpon>
@@ -301,6 +305,15 @@
     <Compile Include="Views\VisionApiExplorer.xaml.cs">
       <DependentUpon>VisionApiExplorer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\VisualAlert\CustomVisionServiceWrapper.cs" />
+    <Compile Include="Views\VisualAlert\VisualAlertBuilderPage.xaml.cs">
+      <DependentUpon>VisualAlertBuilderPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VisualAlert\VisualAlertBuilderWizardControl.xaml.cs">
+      <DependentUpon>VisualAlertBuilderWizardControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\VisualAlert\VisualAlertDataLoader.cs" />
+    <Compile Include="Views\VisualAlert\VisualAlertScenarioData.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -352,6 +365,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\ImagePickerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\LifecycleControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -556,6 +573,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\VisualAlert\VisualAlertBuilderPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\VisualAlert\VisualAlertBuilderWizardControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="KioskRuntimeComponent\KioskRuntimeComponent.csproj">
@@ -585,6 +610,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Rest.ClientRuntime">
       <Version>2.3.20</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.UI.Controls">
+      <Version>5.1.1</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.2</Version>

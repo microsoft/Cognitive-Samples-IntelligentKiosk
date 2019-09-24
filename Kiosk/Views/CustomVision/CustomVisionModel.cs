@@ -33,6 +33,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.AI.MachineLearning;
 using Windows.Media;
@@ -55,12 +56,28 @@ namespace IntelligentKioskSample.Views.CustomVision
 
         // The loss returned by the model
         public IList<IDictionary<string, float>> loss = new List<IDictionary<string, float>>();
+
+        public List<Tuple<string, float>> GetPredictionResult()
+        {
+            List<Tuple<string, float>> result = new List<Tuple<string, float>>();
+            foreach (IDictionary<string, float> dict in loss)
+            {
+                foreach (var item in dict)
+                {
+                    result.Add(new Tuple<string, float>(item.Key, item.Value));
+                }
+            }
+            return result;
+        }
     }
 
     public sealed class CustomVisionModel
     {
         private LearningModel _learningModel = null;
         private LearningModelSession _session;
+        public int InputImageWidth { get; private set; }
+        public int InputImageHeight { get; private set; }
+
 
         // Create a model from an ONNX 1.2 file
         public static async Task<CustomVisionModel> CreateONNXModel(StorageFile file)
@@ -74,10 +91,22 @@ namespace IntelligentKioskSample.Views.CustomVision
             {
                 throw ex;
             }
+
+            var inputFeatures = learningModel.InputFeatures;
+            ImageFeatureDescriptor inputImageDescription = inputFeatures?.FirstOrDefault(feature => feature.Kind == LearningModelFeatureKind.Image) as ImageFeatureDescriptor;
+            uint inputImageWidth = 0, inputImageHeight = 0;
+            if (inputImageDescription != null)
+            {
+                inputImageHeight = inputImageDescription.Height;
+                inputImageWidth = inputImageDescription.Width;
+            }
+
             return new CustomVisionModel()
             {
                 _learningModel = learningModel,
-                _session = new LearningModelSession(learningModel)
+                _session = new LearningModelSession(learningModel),
+                InputImageWidth = (int)inputImageWidth,
+                InputImageHeight = (int)inputImageHeight
             };
         }
 
