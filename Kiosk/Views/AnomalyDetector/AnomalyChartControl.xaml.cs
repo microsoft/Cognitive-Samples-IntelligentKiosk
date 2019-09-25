@@ -507,10 +507,17 @@ namespace IntelligentKioskSample.Views.AnomalyDetector
         {
             SpriteVisual anomaly;
             anomaly = compositor.CreateSpriteVisual();
-            anomaly.Size = new Vector2(10, 10);
-            anomaly.AnchorPoint = new Vector2(0.5f, 0.5f);
             anomaly.Brush = compositor.CreateColorBrush(Colors.Yellow);
+            anomaly.Size = new Vector2(10, 10);
             anomaly.Offset = new Vector3((float)(anomalyPoint.X), (float)(anomalyPoint.Y), resultGrid.CenterPoint.Z);
+
+            anomaly.AnchorPoint = new Vector2()
+            {
+                X = 0.5f,
+                Y = anomaly.Offset.Y + anomaly.Size.Y > resultGrid.ActualHeight ? 1f :
+                    anomaly.Offset.Y - anomaly.Size.Y < 0 ? 0f : 0.5f
+            };
+            
             return anomaly;
         }
 
