@@ -45,13 +45,13 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="{x:Bind Title}" Style="{StaticResource SubheaderTextBlockStyle}" Opacity="0.8" Margin="0,0,0,24"/>
 
         <!-- Chart -->
-        <Grid Grid.Row="1" x:Name="ResultPanel" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+        <Grid Grid.Row="1" x:Name="ResultPanel" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
@@ -77,7 +77,7 @@
                 <TextBlock x:Name="y1_Lbl" Grid.Row="3" Style="{StaticResource BottomTextStyle}"/>
             </Grid>
 
-            <Grid Grid.Row="0" Grid.Column="1" x:Name="resultGrid" Height="400" BorderBrush="Transparent" BorderThickness="1"
+            <Grid Grid.Row="0" Grid.Column="1" x:Name="resultGrid" BorderBrush="Transparent" BorderThickness="1"
                       Background="Transparent" HorizontalAlignment="Stretch" SizeChanged="OnChartGridSizeChanged">
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -135,9 +135,9 @@
             </Grid>
 
             <!-- Tooltip -->
-            <Popup Grid.Row="0" Grid.Column="1" Width="150" Height="100"
+            <Popup Grid.Row="0" Grid.Column="1" Width="160" Height="100"
                        x:Name="tooltipPopup" IsOpen="False" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Grid Background="#2C2C2C" BorderBrush="DarkGray" BorderThickness="1" Padding="8" 
+                <Grid Background="#2C2C2C" BorderBrush="DarkGray" BorderThickness="1" Padding="8"
                           Width="{Binding ElementName=tooltipPopup, Path=ActualWidth}" 
                           Height="{Binding ElementName=tooltipPopup, Path=ActualHeight}">
                     <Grid.Resources>

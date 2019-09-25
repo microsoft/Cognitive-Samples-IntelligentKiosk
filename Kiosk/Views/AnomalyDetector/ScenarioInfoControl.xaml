@@ -8,14 +8,16 @@
     d:DesignHeight="300"
     d:DesignWidth="400">
 
-    <Grid RowSpacing="12" VerticalAlignment="Top">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Image Source="{x:Bind ImageSource}" Width="Auto"/>
-        <TextBlock Grid.Row="1" Text="{x:Bind Title}" Style="{StaticResource TitleTextBlockStyle}" Opacity="0.8"/>
-        <TextBlock Grid.Row="2" Text="{x:Bind Description}" Style="{StaticResource BodyTextBlockStyle}" Opacity="0.8"/>
-    </Grid>
+    <ScrollViewer HorizontalScrollMode="Disabled">
+        <Grid RowSpacing="12" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Image Source="{x:Bind ImageSource}" Width="Auto"/>
+            <TextBlock Grid.Row="1" Text="{x:Bind Title}" Style="{StaticResource TitleTextBlockStyle}" Opacity="0.8"/>
+            <TextBlock Grid.Row="2" Text="{x:Bind Description}" Style="{StaticResource BodyTextBlockStyle}" Opacity="0.8"/>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
