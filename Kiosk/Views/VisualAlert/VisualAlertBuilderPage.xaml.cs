@@ -133,7 +133,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 await LoadScenariosAsync();
             }
 
-            UpdateScenarioListPanel();
+            UpdateScenarioListPanel(BuilderMode.ScenarioList);
             await this.cameraControl.StartStreamAsync(isForRealTimeProcessing: true);
 
             base.OnNavigatedTo(e);
@@ -162,7 +162,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             }
         }
 
-        private void UpdateScenarioListPanel(BuilderMode mode = BuilderMode.ScenarioList)
+        private void UpdateScenarioListPanel(BuilderMode mode, VisualAlertScenarioData defaultScenario = null)
         {
             bool isAnyScenario = this.scenarioListView.Items.Any();
             switch (mode)
@@ -171,7 +171,15 @@ namespace IntelligentKioskSample.Views.VisualAlert
                     this.scenarioListView.SelectionMode = ListViewSelectionMode.Single;
                     if (isAnyScenario)
                     {
-                        this.scenarioListView.SelectedIndex = 0;
+                        var selectedScenario = ScenarioCollection.FirstOrDefault(x => x.Id == defaultScenario?.Id);
+                        if (selectedScenario != null)
+                        {
+                            this.scenarioListView.SelectedItem = selectedScenario;
+                        }
+                        else
+                        {
+                            this.scenarioListView.SelectedIndex = 0;
+                        }
                     }
 
                     this.newAlertGrid.Visibility = isAnyScenario ? Visibility.Collapsed : Visibility.Visible;
@@ -303,10 +311,12 @@ namespace IntelligentKioskSample.Views.VisualAlert
         private async Task TrainAndSaveNewScenarioAsync(VisualAlertModelData data)
         {
             Project project = null;
+            VisualAlertScenarioData scenario = null;
             try
             {
                 this.newAlertProgressBar.IsIndeterminate = true;
                 UpdateScenarioListPanel(BuilderMode.Processing);
+                await UpdateStatus(string.Empty);
 
                 // create new custom vision project
                 UpdateProcessingStatus(data.Name, AlertCreateProcessingStatus.Creating);
@@ -318,7 +328,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
                 // export project
                 UpdateProcessingStatus(data.Name, AlertCreateProcessingStatus.Exporting);
-                VisualAlertScenarioData scenario = await customVisionServiceWrapper.ExportOnnxProject(project);
+                scenario = await customVisionServiceWrapper.ExportOnnxProject(project);
 
                 // store project
                 await VisualAlertDataLoader.StoreScenarioAsync(scenario);
@@ -338,7 +348,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 }
 
                 this.newAlertProgressBar.IsIndeterminate = false;
-                UpdateScenarioListPanel();
+                UpdateScenarioListPanel(BuilderMode.ScenarioList, scenario);
             }
         }
 
@@ -429,7 +439,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             }
             else
             {
-                await UpdateStatus(string.Empty, details: fpsValue);
+                await UpdateStatus("Nothing detected", details: fpsValue);
             }
         }
 
@@ -440,23 +450,12 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 var highlightColor = new SolidColorBrush(Colors.White);
                 var normalColor = new SolidColorBrush(Color.FromArgb(153, 255, 255, 255));
 
-                if (!string.IsNullOrEmpty(status))
-                {
-                    this.alertTextBlock.Text = status;
-                    this.alertTextBlock.Foreground = highlightColor;
-                    this.alertProbability.Text = probability > 0 ? $"({probability}%)" : string.Empty;
+                this.alertTextBlock.Text = status;
+                this.alertTextBlock.Foreground = probability > 0 ? highlightColor : normalColor;
+                this.alertProbability.Text = probability > 0 ? $"({probability}%)" : string.Empty;
 
-                    this.alertIcon.Visibility = Visibility.Visible;
-                    this.alertProbability.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    this.alertTextBlock.Text = "Nothing detected";
-                    this.alertTextBlock.Foreground = normalColor;
-
-                    this.alertIcon.Visibility = Visibility.Collapsed;
-                    this.alertProbability.Visibility = Visibility.Collapsed;
-                }
+                this.alertIcon.Visibility = probability > 0 ? Visibility.Visible : Visibility.Collapsed;
+                this.alertProbability.Visibility = probability > 0 ? Visibility.Visible : Visibility.Collapsed;
 
                 this.fpsTextBlock.Text = details;
             });
@@ -479,6 +478,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             switch (this.scenarioListView.SelectionMode)
             {
                 case ListViewSelectionMode.Single:
+                    this.customVisionONNXModel = null;
                     prevScenario = this.scenarioListView.SelectedItem as VisualAlertScenarioData;
                     this.deleteButton.Visibility = Visibility.Visible;
                     this.scenarioListView.SelectionMode = ListViewSelectionMode.Multiple;
@@ -533,7 +533,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
                 // update scenario collection
                 await LoadScenariosAsync();
-                UpdateScenarioListPanel();
+                UpdateScenarioListPanel(BuilderMode.ScenarioList);
             }
             catch (Exception ex)
             {
