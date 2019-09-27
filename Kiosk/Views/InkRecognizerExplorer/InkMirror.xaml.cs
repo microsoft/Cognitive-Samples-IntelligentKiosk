@@ -176,7 +176,7 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
             }
             else if (activeTool is InkToolbarEraserButton)
             {
-                RedoButton_Click(null, null);
+                RedoButton_Click(sender, null);
             }
             else
             {
@@ -335,6 +335,7 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
                 //dipsPerMm = inkRecognizer.GetDipsPerMm(dpi);
 
                 dipsPerMm = inkRecognizer.GetDipsPerMm(96);
+                args.DrawingSession.Clear(Colors.White);
 
                 foreach (var recoUnit in inkResponse.RecognitionUnits)
                 {
