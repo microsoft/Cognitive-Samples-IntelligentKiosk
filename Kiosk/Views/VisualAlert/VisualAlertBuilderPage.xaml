@@ -107,17 +107,18 @@
             </Grid>
 
             <!-- Camera control, builder wizard and result grid -->
-            <Grid x:Name="centralGrid" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Grid x:Name="centralGrid" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="200"/>
                     <RowDefinition Height="190"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Grid.RowSpan="2" x:Name="webCamHostGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <ctl:CameraControl x:Name="cameraControl" FlowDirection="LeftToRight"
-                                       ImageCaptured="OnCameraPhotoCaptured" ContinuousCaptured="OnCameraContinuousPhotoCaptured"/>
-                </Grid>
+                <Border x:Name="webCamHostGridParent" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid x:Name="webCamHostGrid">
+                        <ctl:CameraControl x:Name="cameraControl" FlowDirection="LeftToRight" ImageCaptured="OnCameraPhotoCaptured" ContinuousCaptured="OnCameraContinuousPhotoCaptured"/>
+                    </Grid>
+                </Border>
 
                 <Grid Grid.Row="0" Grid.RowSpan="2" Name="cameraGuideCountdownHost" Visibility="Collapsed">
                     <Grid.RowDefinitions>
@@ -127,7 +128,7 @@
                     </Grid.RowDefinitions>
 
                     <Viewbox Grid.Row="1">
-                        <TextBlock Name="countDownTextBlock" Foreground="#ECCF11" FontWeight="Bold" Opacity="0.9"  />
+                        <TextBlock Name="countDownTextBlock" Foreground="White" FontWeight="Bold" Opacity="0.9"/>
                     </Viewbox>
                 </Grid>
 

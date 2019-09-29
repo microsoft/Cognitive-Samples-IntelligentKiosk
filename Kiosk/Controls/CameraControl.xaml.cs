@@ -741,11 +741,5 @@ namespace IntelligentKioskSample.Controls
             this.capturePhotoButton.IsEnabled = enable;
             this.continuousCapturePhotoButton.IsEnabled = enable;
         }
-
-        public void UpdateCameraControlGrid(double width)
-        {
-            double offset = this.commandBar.Margin.Left + this.commandBar.Margin.Right;
-            this.commandBar.Width = (width < this.mainGrid.ActualWidth ? width : this.mainGrid.ActualWidth) - offset;
-        }
     }
 }

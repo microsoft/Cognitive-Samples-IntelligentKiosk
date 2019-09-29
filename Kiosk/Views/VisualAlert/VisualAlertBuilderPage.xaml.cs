@@ -224,18 +224,28 @@ namespace IntelligentKioskSample.Views.VisualAlert
             UpdateCameraHostSize();
         }
 
-        private async void UpdateCameraHostSize()
+        private void UpdateCameraHostSize()
         {
-            this.webCamHostGrid.Width = this.webCamHostGrid.ActualHeight * (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
+            double aspectRatio = (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
+
+            double desiredHeight = this.webCamHostGridParent.ActualWidth / aspectRatio;
+
+            if (desiredHeight > this.webCamHostGridParent.ActualHeight)
+            {
+                // optimize for height
+                this.webCamHostGrid.Height = this.webCamHostGridParent.ActualHeight;
+                this.webCamHostGrid.Width = this.webCamHostGridParent.ActualHeight * aspectRatio;
+            }
+            else
+            {
+                // optimize for width
+                this.webCamHostGrid.Height = desiredHeight;
+                this.webCamHostGrid.Width = this.webCamHostGridParent.ActualWidth;
+            }
 
             // update wizard / result-grid width
-            double cameraWidth = this.webCamHostGrid.Width <= this.centralGrid.ActualWidth ? this.webCamHostGrid.Width : this.centralGrid.ActualWidth;
-            this.resultGrid.Width = cameraWidth;
-            this.visualAlertBuilderWizardControl.Width = cameraWidth;
-
-            // update camera control width
-            await Task.Delay(300);
-            this.cameraControl.UpdateCameraControlGrid(this.centralGrid.ActualWidth);
+            this.resultGrid.Width = this.webCamHostGrid.Width;
+            this.visualAlertBuilderWizardControl.Width = this.webCamHostGrid.Width;
         }
 
         private void OnCameraPhotoCaptured(object sender, ImageAnalyzer img)
