@@ -48,15 +48,17 @@
             </TextBlock>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,24,0,0">
+        <Grid Grid.Row="2" Margin="0,24,0,12">
 
             <!-- New Subject -->
-            <StackPanel Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='NewSubject'}">
-                <TextBlock TextWrapping="WrapWholeWords" Margin="0,0,0,12" Style="{StaticResource SubtitleTextBlockStyle}"
-                       Text="In this demo, you'll train the camera to recognize something, and alert you when it sees that thing. The alert subject can be anything you can see on camera."/>
-                <TextBlock Text="Choose a name for your alert below." Margin="0,0,0,24" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                <TextBox Header="Subject name" Text="{Binding SubjectName, Mode=TwoWay}" PlaceholderText="Try something like 'human' or 'lights off'" HorizontalAlignment="Left" Width="300" TextChanged="OnSubjectNameTextBoxTextChanged"/>
-            </StackPanel>
+            <ScrollViewer Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='NewSubject'}">
+                <StackPanel>
+                    <TextBlock TextWrapping="WrapWholeWords" Margin="0,0,0,12" Style="{StaticResource SubtitleTextBlockStyle}"
+                           Text="In this demo, you'll train the camera to recognize something, and alert you when it sees that thing. The alert subject can be anything you can see on camera."/>
+                    <TextBlock Text="Choose a name for your alert below." Margin="0,0,0,24" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                    <TextBox Header="Subject name" Text="{Binding SubjectName, Mode=TwoWay}" PlaceholderText="Try something like 'human' or 'lights off'" HorizontalAlignment="Left" Width="300" TextChanged="OnSubjectNameTextBoxTextChanged"/>
+                </StackPanel>
+            </ScrollViewer>
 
             <!-- Add images with subject -->
             <Grid Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='AddPositiveImages'}">
@@ -109,29 +111,30 @@
             </Grid>
 
             <!-- Train model -->
-            <StackPanel Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='TrainModel'}">
-                <TextBlock TextWrapping="WrapWholeWords" Style="{StaticResource SubtitleTextBlockStyle}"
-                           Text="Review the information below to make sure it's complete and correct. When you're done, use Train model to finish creating your alert." />
-
-                <StackPanel Margin="0,24">
-                    <TextBlock Text="Alert subject"/>
-                    <TextBlock Foreground="#0078D7">
-                        <Run Text="{Binding SubjectName}"/>
-                        <Run Text=" - "/>
-                        <Run Text="{Binding SelectedPositiveSubjectImageCollection.Count}"/>
-                        <Run Text=" images"/>
-                    </TextBlock>
-                </StackPanel>
-
+            <ScrollViewer Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='TrainModel'}">
                 <StackPanel>
-                    <TextBlock Text="Neutral images"/>
-                    <TextBlock Foreground="#0078D7">
-                        <Run Text="{Binding SelectedNegativeSubjectImageCollection.Count}"/>
-                        <Run Text=" images"/>
-                    </TextBlock>
-                </StackPanel>
-            </StackPanel>
+                    <TextBlock TextWrapping="WrapWholeWords" Style="{StaticResource SubtitleTextBlockStyle}"
+                               Text="Review the information below to make sure it's complete and correct. When you're done, use Train model to finish creating your alert." />
 
+                    <StackPanel Margin="0,24">
+                        <TextBlock Text="Alert subject"/>
+                        <TextBlock Foreground="#0078D7">
+                            <Run Text="{Binding SubjectName}"/>
+                            <Run Text=" - "/>
+                            <Run Text="{Binding SelectedPositiveSubjectImageCollection.Count}"/>
+                            <Run Text=" images"/>
+                        </TextBlock>
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="Neutral images"/>
+                        <TextBlock Foreground="#0078D7">
+                            <Run Text="{Binding SelectedNegativeSubjectImageCollection.Count}"/>
+                            <Run Text=" images"/>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
 
         <Grid Grid.Row="3">

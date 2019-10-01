@@ -39,19 +39,19 @@
                 </Button>
 
                 <Grid x:Name="continuousModeGrid" HorizontalAlignment="Right" Visibility="{Binding ElementName=cameraControl, Path=EnableContinuousMode, Converter={StaticResource booleanToVisibilityConverter}}">
-                    <controls:RadialProgressBar x:Name="radialProgressBarControl" Thickness="4" Outline="White" Foreground="#0078D7" Width="45" Height="45"
-                                                Minimum="0" Maximum="{Binding ElementName=cameraControl, Path=ContinuousModeTimerInSecond}">
+                    <controls:RadialProgressBar x:Name="radialProgressBarControl" Thickness="4" Outline="White" Foreground="#0078D7" Width="56" Height="56"
+                                                Minimum="0" Maximum="{Binding ElementName=cameraControl, Path=ContinuousModeTimerInSecond}"
+                                                Visibility="{Binding ElementName=continuousCapturePhotoButton, Path=IsEnabled, Converter={StaticResource reverseBooleanToVisibilityConverter}}">
                     </controls:RadialProgressBar>
                     <Button x:Name="continuousCapturePhotoButton" Background="Transparent" CornerRadius="25" Padding="0" HorizontalAlignment="Center" VerticalAlignment="Center" 
                             Click="CameraControlContinuousModeClick" ToolTipService.ToolTip="Continuous mode">
                         <Grid>
                             <Grid Visibility="{Binding ElementName=continuousCapturePhotoButton, Path=IsEnabled, Converter={StaticResource booleanToVisibilityConverter}}">
-                                <Ellipse Width="45" Height="45" Fill="Black" />
+                                <Ellipse Width="40" Height="40" Fill="Black" />
                                 <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE916;" Foreground="White"/>
                             </Grid>
-
                             <Grid Visibility="{Binding ElementName=continuousCapturePhotoButton, Path=IsEnabled, Converter={StaticResource reverseBooleanToVisibilityConverter}}">
-                                <Ellipse Width="37" Height="37" Fill="Black" Opacity="0.4"/>
+                                <Ellipse Width="48" Height="48" Fill="Black" Opacity="0.4"/>
                                 <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE916;" Foreground="White" Opacity="0.6"/>
                             </Grid>
                         </Grid>

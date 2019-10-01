@@ -31,7 +31,7 @@
 
         <Grid Grid.Row="1" ColumnSpacing="12" Margin="24,30,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.3*"/>
+                <ColumnDefinition Width="0.3*" MinWidth="220"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -107,17 +107,18 @@
             </Grid>
 
             <!-- Camera control, builder wizard and result grid -->
-            <Grid x:Name="centralGrid" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+            <Grid x:Name="centralGrid" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="7*" MinHeight="250"/>
+                    <RowDefinition Height="3*"/>
                     <RowDefinition Height="200"/>
-                    <RowDefinition Height="190"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Grid.RowSpan="2" x:Name="webCamHostGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <ctl:CameraControl x:Name="cameraControl" FlowDirection="LeftToRight"
-                                       ImageCaptured="OnCameraPhotoCaptured" ContinuousCaptured="OnCameraContinuousPhotoCaptured"/>
-                </Grid>
+                <Border x:Name="webCamHostGridParent" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid x:Name="webCamHostGrid">
+                        <ctl:CameraControl x:Name="cameraControl" FlowDirection="LeftToRight" ImageCaptured="OnCameraPhotoCaptured" ContinuousCaptured="OnCameraContinuousPhotoCaptured"/>
+                    </Grid>
+                </Border>
 
                 <Grid Grid.Row="0" Grid.RowSpan="2" Name="cameraGuideCountdownHost" Visibility="Collapsed">
                     <Grid.RowDefinitions>
@@ -127,15 +128,15 @@
                     </Grid.RowDefinitions>
 
                     <Viewbox Grid.Row="1">
-                        <TextBlock Name="countDownTextBlock" Foreground="#ECCF11" FontWeight="Bold" Opacity="0.9"  />
+                        <TextBlock Name="countDownTextBlock" Foreground="White" FontWeight="Bold" Opacity="0.9"/>
                     </Viewbox>
                 </Grid>
 
-                <local:VisualAlertBuilderWizardControl Grid.Row="1" Grid.RowSpan="2" x:Name="visualAlertBuilderWizardControl"
+                <local:VisualAlertBuilderWizardControl Grid.Row="1" Grid.RowSpan="2" x:Name="visualAlertBuilderWizardControl" MinWidth="500"
                                                        WizardStepChanged="OnBuilderWizardControlStepChanged"
                                                        WizardCompleted="OnBuilderWizardControlCompleted"/>
 
-                <Grid x:Name="resultGrid" Grid.Row="2" Grid.RowSpan="1" Margin="0,26,0,0" BorderBrush="Red" BorderThickness="0" VerticalAlignment="Top"
+                <Grid x:Name="resultGrid" Grid.Row="2" Grid.RowSpan="1" Margin="0,26,0,0" MinWidth="500" VerticalAlignment="Top"
                       Visibility="{Binding ElementName=visualAlertBuilderWizardControl, Path=Visibility, Converter={StaticResource reverseVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -143,7 +144,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Orientation="Horizontal" Spacing="18" VerticalAlignment="Top" BorderBrush="Green" BorderThickness="0">
+                    <StackPanel Orientation="Horizontal" Spacing="18" VerticalAlignment="Top">
                         <FontIcon x:Name="alertIcon" FontFamily="Segoe MDL2 Assets" Glyph="&#xE946;" FontSize="46" Visibility="Collapsed"/>
                         <TextBlock x:Name="alertTextBlock" Style="{StaticResource HeaderTextBlockStyle}" Foreground="White" VerticalAlignment="Center"/>
                     </StackPanel>
