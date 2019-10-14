@@ -99,7 +99,7 @@ namespace ServiceHelpers
             TrainingModels::Export exportIteration = null;
             try
             {
-                exportIteration = exportIteration = await trainingApi.ExportIterationAsync(projectId, iterationId, platform);
+                exportIteration = await trainingApi.ExportIterationAsync(projectId, iterationId, platform);
             }
             catch (HttpOperationException ex)
             {
