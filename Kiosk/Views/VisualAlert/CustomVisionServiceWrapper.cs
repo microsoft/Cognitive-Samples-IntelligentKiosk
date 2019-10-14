@@ -155,8 +155,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             Export exportProject = null;
             if (latestTrainedIteration != null && latestTrainedIteration.Exportable)
             {
-                // get project's download Url for the particular platform
-                // Windows (ONNX) model: export latest version of the ONNX model (1.2)
+                // get project's download Url for the particular platform Windows (ONNX) model
                 exportProject = await CustomVisionServiceHelper.ExportIteration(trainingApi, project.Id, latestTrainedIteration.Id);
             }
 
