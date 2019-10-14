@@ -92,17 +92,14 @@ namespace ServiceHelpers
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError<ImagePrediction>(async () => await predictionApi.PredictImageAsync(projectId, await imageStreamCallback(), iterationId));
         }
 
-        public static async Task<TrainingModels::Export> ExportIteration(
-                    this ICustomVisionTrainingClient trainingApi, Guid projectId, Guid iterationId, string flavor = "onnx12", int timeoutInSecond = 30)
+        public static async Task<TrainingModels::Export> ExportIteration(this ICustomVisionTrainingClient trainingApi, Guid projectId, Guid iterationId, int timeoutInSecond = 30)
         {
             TimeSpan timeout = TimeSpan.FromSeconds(timeoutInSecond);
 
             TrainingModels::Export exportIteration = null;
             try
             {
-                exportIteration = exportIteration = string.IsNullOrEmpty(flavor)
-                    ? await trainingApi.ExportIterationAsync(projectId, iterationId, platform)
-                    : await trainingApi.ExportIterationAsync(projectId, iterationId, platform, flavor);
+                exportIteration = exportIteration = await trainingApi.ExportIterationAsync(projectId, iterationId, platform);
             }
             catch (HttpOperationException ex)
             {
@@ -117,10 +114,7 @@ namespace ServiceHelpers
             while (true)
             {
                 IList<TrainingModels::Export> exports = await trainingApi.GetExportsAsync(projectId, iterationId);
-                exportIteration = string.IsNullOrEmpty(flavor)
-                    ? exports?.FirstOrDefault(x => string.Equals(x.Platform, platform, StringComparison.OrdinalIgnoreCase))
-                    : exports?.FirstOrDefault(x => string.Equals(x.Platform, platform, StringComparison.OrdinalIgnoreCase) &&
-                                                   string.Equals(x.Flavor, flavor, StringComparison.OrdinalIgnoreCase));
+                exportIteration = exports?.FirstOrDefault(x => string.Equals(x.Platform, platform, StringComparison.OrdinalIgnoreCase));
 
                 if (exportIteration?.Status == "Exporting")
                 {
