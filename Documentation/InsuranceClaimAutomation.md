@@ -9,12 +9,12 @@ An example of Robotic Process Automation (RPA), leveraging Custom Vision and For
 To enable this demo you should provide the following keys:
 
 Settings page:
-- Custom Vision API Training/Prediction Keys
+- Custom Vision API Training/Prediction Keys.
 
 Code behind - [InsuranceClaimAutomation](../Kiosk/Views/InsuranceClaimAutomation/InsuranceClaimAutomation.xaml.cs):
-- Custom Vision Object Detection and Classification Model ID for your particular business scenario
-- Form Recognizer API key and endpoint
-- Form Recognizer Model ID. See how to create your own Form Recognizer Model [here](https://docs.microsoft.com/en-us/azure/cognitive-services/form-recognizer/quickstarts/dotnet-sdk) 
+- Custom Vision Object Detection and Classification Model ID for your particular business scenario.
+- Form Recognizer API key and endpoint.
+- Form Recognizer Model ID. See how to create your own Form Recognizer Model [here](https://docs.microsoft.com/en-us/azure/cognitive-services/form-recognizer/quickstarts/dotnet-sdk).
 
 
 # Key Source Code
