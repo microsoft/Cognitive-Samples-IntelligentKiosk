@@ -113,6 +113,7 @@
     <Compile Include="Extensions\HttpExtensions.cs" />
     <Compile Include="FaceListManager.cs" />
     <Compile Include="FaceServiceHelper.cs" />
+    <Compile Include="FormRecognizerService.cs" />
     <Compile Include="ImageAnalyzer.cs" />
     <Compile Include="InkRecognizer.cs" />
     <Compile Include="Models\AnomalyDetectResult.cs" />
@@ -126,6 +127,9 @@
     <EmbeddedResource Include="Properties\ServiceHelpers.rd.xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.CognitiveServices.FormRecognizer">
+      <Version>0.8.0-preview</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.TextAnalytics">
       <Version>3.0.0</Version>
     </PackageReference>

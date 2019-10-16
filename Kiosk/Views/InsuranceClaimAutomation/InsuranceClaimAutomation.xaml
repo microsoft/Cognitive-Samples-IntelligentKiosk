@@ -1,0 +1,265 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.InsuranceClaimAutomation.InsuranceClaimAutomation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.InsuranceClaimAutomation"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Name="mainPage"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <SolidColorBrush x:Key="BlackColor" Color="Black" Opacity="0.2" />
+        <SolidColorBrush x:Key="ButtonBackgroundColor" Color="Black" Opacity="0.4" />
+
+        <SolidColorBrush x:Key="ValidBackgroundColor" Color="#008376" Opacity="0.6" />
+        <SolidColorBrush x:Key="InvalidBackgroundColor" Color="#fc2e00" Opacity="0.6" />
+
+        <Style x:Key="StatusFontIcon" TargetType="FontIcon">
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Opacity" Value="0.8"/>
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="Margin" Value="8"/>
+        </Style>
+
+        <ctl:EnumMatchToVisibilityConverter x:Key="enumMatchToVisibilityConverter"/>
+        <ctl:ReverseEnumMatchToVisibilityConverter x:Key="reverseEnumMatchToVisibilityConverter"/>
+
+        <ctl:ReverseVisibilityConverter x:Key="reverseVisibilityConverter"/>
+        <ctl:BooleanToVisibilityConverter x:Key="booleanToVisibilityConverter"/>
+        <ctl:ReverseBooleanToVisibilityConverter x:Key="reverseBooleanToVisibilityConverter"/>
+        <ctl:ReverseCollectionCountToVisibilityConverter x:Key="reverseCollectionCountToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid EntranceNavigationTransitionInfo.IsTargetElement="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
+            <CommandBar.Content>
+                <TextBlock Text="Insurance Claim Automation" Style="{ThemeResource PageTitleTextBlockStyle}"/>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1" Margin="24,24,24,36" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0" RowSpacing="18">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Text="Customer portal" Opacity="0.6"/>
+
+                <Grid Grid.Row="1" Background="#1F1F1F" Padding="24" RowSpacing="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Claim your windshield warranty" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="WrapWholeWords"/>
+
+                    <Grid x:Name="inputPickerGrid" Grid.Row="1" RowSpacing="24" Visibility="{Binding ElementName=inputSubmittedGrid, Path=Visibility, Converter={StaticResource reverseVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="All you need is a photo of the windshield and an invoice for the service. It's that easy!" TextWrapping="WrapWholeWords" Foreground="#E5E5E5"/>
+
+                        <!-- Product Image Picker -->
+                        <Grid Grid.Row="1" RowSpacing="6" Margin="0,0,0,12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Windshield image" Foreground="#E5E5E5"/>
+
+                            <Grid Grid.Row="1" Background="{StaticResource BlackColor}">
+                                <Button Background="Transparent" Click="AddImageButtonClicked" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="12"
+                                        Visibility="{Binding InputImageViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='NotSelected'}">
+                                    <StackPanel Spacing="24">
+                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEB9F;" Opacity="0.8" FontSize="48" />
+                                        <TextBlock Text="Tap to add windshield image" Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.8"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <local:InputPickerControl x:Name="inputImagePicker" 
+                                                          InputType="Image" 
+                                                          SampleCollection="{Binding ImageSampleCollection}" 
+                                                          OnItemSearchCompleted="OnInputImageSearchCompleted" 
+                                                          Visibility="{Binding InputImageViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selection'}"/>
+
+                                <Grid VerticalAlignment="Top" Visibility="{Binding InputImageViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selected'}">
+                                    <ctl:ImageWithFaceBorderUserControl x:Name="imageControl" />
+                                    <Button Click="OnCancelInputButtonClicked" Tag="image" Width="40" Height="40" Background="{StaticResource ButtonBackgroundColor}" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                        <SymbolIcon Symbol="Cancel"/>
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                        <!-- Form Image/PDF Picker -->
+                        <Grid Grid.Row="2" RowSpacing="6">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Service invoice" Foreground="#E5E5E5"/>
+
+                            <Grid Grid.Row="1" Background="{StaticResource BlackColor}">
+                                <Button Background="Transparent" Click="AddFormFileButtonClicked" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="12" 
+                                        Visibility="{Binding InputFormViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='NotSelected'}">
+                                    <StackPanel Spacing="24">
+                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9F9;" Opacity="0.8" FontSize="48"/>
+                                        <TextBlock Text="Tap to add service invoice" Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.8"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <local:InputPickerControl x:Name="inputFormPicker" 
+                                                          InputType="Form" 
+                                                          SampleCollection="{Binding FormSampleCollection}" 
+                                                          OnItemSearchCompleted="OnInputFormImageSearchCompleted" 
+                                                          OnFileSearchCompleted="OnInputFormFileSearchCompleted"
+                                                          Visibility="{Binding InputFormViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selection'}"/>
+
+                                <Grid VerticalAlignment="Top" Visibility="{Binding InputFormViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selected'}">
+                                    <ctl:ImageWithFaceBorderUserControl x:Name="formImageControl" Visibility="{Binding IsFormImageSource, Converter={StaticResource booleanToVisibilityConverter}}"/>
+                                    <ctl:PdfViewerControl x:Name="pdfViewerControl" Visibility="{Binding IsFormImageSource, Converter={StaticResource reverseBooleanToVisibilityConverter}}"/>
+                                    <Button Click="OnCancelInputButtonClicked" Tag="form" Width="40" Height="40" Background="{StaticResource ButtonBackgroundColor}" VerticalAlignment="Top" HorizontalAlignment="Right">
+                                        <SymbolIcon Symbol="Cancel"/>
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                        <Button x:Name="submitClaimButton" Grid.Row="3" Content="Submit claim" Click="OnSubmitClaimButtonClicked" Padding="10,6" HorizontalAlignment="Right" IsEnabled="false"/>
+                    </Grid>
+
+                    <Grid x:Name="inputSubmittedGrid" Grid.Row="1" Visibility="Collapsed">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE804;" Opacity="0.8" FontSize="72" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Thanks for your submission" Style="{StaticResource SubtitleTextBlockStyle}" Opacity="0.8" Margin="0,96,0,8" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Your claim is being reviewed." Opacity="0.8" HorizontalAlignment="Center"/>
+                            <Button Margin="0,50,0,0" Background="Transparent" HorizontalAlignment="Center" Click="AddAnotherClaimButtonClicked">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE777;" Opacity="0.8" FontSize="16"/>
+                                    <TextBlock Text="Add another claim" FontSize="18"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Column="1" RowSpacing="18">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock Text="Claims administrator portal" Opacity="0.6"/>
+
+                <!-- DataGrid Control -->
+                <Grid Grid.Row="1" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.ColumnSpan="2" Background="#171717" Padding="24">
+                        <controls:DataGrid x:Name="dataGrid"
+                                           IsReadOnly="True"
+                                           AutoGenerateColumns="False"
+                                           SelectionMode="Single"
+                                           ItemsSource="{Binding DataGridCollection}"
+                                           SelectionChanged="DataGridSelectionChanged">
+                            <controls:DataGrid.Columns>
+                                <controls:DataGridTextColumn Header="Claim Id" Binding="{Binding ClaimId}"/>
+
+                                <controls:DataGridTemplateColumn Header="Product Image">
+                                    <controls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Image Source="{Binding ProductImage}" Width="100" Height="70" Stretch="Uniform"/>
+
+                                                <Grid Visibility="{Binding ProductImageValidStatus, Converter={StaticResource reverseEnumMatchToVisibilityConverter}, ConverterParameter='Unknown'}">
+                                                    <Grid Background="{StaticResource ValidBackgroundColor}" Visibility="{Binding ProductImageValidStatus, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Valid'}">
+                                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE930;" Style="{StaticResource StatusFontIcon}" />
+                                                    </Grid>
+                                                    <Grid Background="{StaticResource InvalidBackgroundColor}" Visibility="{Binding ProductImageValidStatus, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Invalid'}">
+                                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7BA;" Style="{StaticResource StatusFontIcon}" />
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </controls:DataGridTemplateColumn.CellTemplate>
+                                </controls:DataGridTemplateColumn>
+
+                                <controls:DataGridTemplateColumn Header="Form Image">
+                                    <controls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid Width="100" Height="70">
+                                                <Image Source="{Binding FormImage}" Width="100" Height="70" Stretch="Uniform" Visibility="{Binding IsFormImage, Converter={StaticResource booleanToVisibilityConverter}}"/>
+                                                <ctl:PdfViewerControl Source="{Binding FormFile}" EnableScrollControls="False" Visibility="{Binding IsFormImage, Converter={StaticResource reverseBooleanToVisibilityConverter}}"/>
+
+                                                <Grid Visibility="{Binding FormValidStatus, Converter={StaticResource reverseEnumMatchToVisibilityConverter}, ConverterParameter='Unknown'}">
+                                                    <Grid Background="{StaticResource ValidBackgroundColor}" Visibility="{Binding FormValidStatus, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Valid'}">
+                                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE930;" Style="{StaticResource StatusFontIcon}" />
+                                                    </Grid>
+                                                    <Grid Background="{StaticResource InvalidBackgroundColor}" Visibility="{Binding FormValidStatus, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Invalid'}">
+                                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE7BA;" Style="{StaticResource StatusFontIcon}" />
+                                                    </Grid>
+                                                </Grid>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </controls:DataGridTemplateColumn.CellTemplate>
+                                </controls:DataGridTemplateColumn>
+
+                                <controls:DataGridTextColumn Header="Customer name" Binding="{Binding CustomName.Text}"/>
+                                <controls:DataGridTextColumn Header="Date" Binding="{Binding Date.Text}"/>
+                                <controls:DataGridTextColumn Header="Warranty ID" Binding="{Binding WarrantyId.Text}"/>
+                                <controls:DataGridTextColumn Header="Warranty" Binding="{Binding Warranty.Text}"/>
+                                <controls:DataGridTextColumn Header="Invoice total" Binding="{Binding InvoiceTotal.Text}"/>
+
+                                <controls:DataGridTemplateColumn Header="Actions">
+                                    <controls:DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Background="Transparent" Click="OnDeleteDataGridRowButtonClicked">
+                                                <SymbolIcon Symbol="Delete"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </controls:DataGridTemplateColumn.CellTemplate>
+                                </controls:DataGridTemplateColumn>
+                            </controls:DataGrid.Columns>
+                        </controls:DataGrid>
+
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{Binding DataGridCollection.Count, Converter={StaticResource reverseCollectionCountToVisibilityConverter}}">
+                            <Image Source="ms-appx:///Assets/InsuranceClaimAutomation/icon-F780-64.jpg" Height="77" Width="80"/>
+                            <TextBlock Text="No claims received yet" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center" Margin="0,38,0,8"/>
+                            <TextBlock Text="Use the Customer portal to submit a&#x0a;claim for review" Opacity="0.8" HorizontalAlignment="Center" TextAlignment="Center"/>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <local:DetailsViewControl Grid.Column="1" x:Name="detailsViewControl" Visibility="Collapsed"/>
+                </Grid>
+
+                <ProgressRing x:Name="progressRing" Grid.Row="1" Width="100" Height="100" Foreground="White"/>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</Page>

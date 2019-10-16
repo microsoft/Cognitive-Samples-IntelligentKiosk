@@ -49,6 +49,7 @@ using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Composition;
 using Windows.UI.Popups;
@@ -205,6 +206,58 @@ namespace IntelligentKioskSample
             }
         }
 
+        private static async Task<Tuple<byte[], BitmapTransform>> GetPixelsAsync(IRandomAccessStream stream)
+        {
+            // Create a decoder from the stream. With the decoder, we can get the properties of the image.
+            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+
+            // Create BitmapTransform and define the bounds.
+            BitmapTransform transform = new BitmapTransform
+            {
+                ScaledHeight = decoder.PixelHeight,
+                ScaledWidth = decoder.PixelWidth
+            };
+
+            // Get the cropped pixels within the bounds of transform. 
+            PixelDataProvider pix = await decoder.GetPixelDataAsync(
+                BitmapPixelFormat.Bgra8,
+                BitmapAlphaMode.Straight,
+                transform,
+                ExifOrientationMode.IgnoreExifOrientation,
+                ColorManagementMode.ColorManageToSRgb);
+
+            return new Tuple<byte[], BitmapTransform>(pix.DetachPixelData(), transform);
+        }
+
+        public static async Task DownloadAndSaveBitmapAsync(string imageUrl, StorageFile resultFile)
+        {
+            byte[] imgBytes = await new System.Net.Http.HttpClient().GetByteArrayAsync(imageUrl);
+            using (Stream stream = new MemoryStream(imgBytes))
+            {
+                await SaveBitmapToStorageFileAsync(stream, resultFile);
+            }
+        }
+
+        public static async Task SaveBitmapToStorageFileAsync(Stream localFileStream, StorageFile resultFile)
+        {
+            // Get pixels
+            var pixels = await GetPixelsAsync(localFileStream.AsRandomAccessStream());
+
+            // Save result to new image
+            using (Stream resultStream = await resultFile.OpenStreamForWriteAsync())
+            {
+                IRandomAccessStream randomAccessStream = resultStream.AsRandomAccessStream();
+                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, randomAccessStream);
+
+                encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                                        BitmapAlphaMode.Ignore,
+                                        pixels.Item2.ScaledWidth, pixels.Item2.ScaledHeight,
+                                        DisplayInformation.GetForCurrentView().LogicalDpi, DisplayInformation.GetForCurrentView().LogicalDpi, pixels.Item1);
+
+                await encoder.FlushAsync();
+            }
+        }
+
         async public static Task<ImageSource> DownloadAndCropBitmapAsync(string imageUrl, FaceRectangle rectangle)
         {
             byte[] imgBytes = await new System.Net.Http.HttpClient().GetByteArrayAsync(imageUrl);
@@ -328,6 +381,13 @@ namespace IntelligentKioskSample
         {
             bool isDate = DateTime.TryParse(date, out DateTime datetime);
             return isDate ? datetime.ToString(format) : string.Empty;
+        }
+
+        public static async Task<StorageFile> PickSingleFileAsync(string[] fileTypeFilter = null)
+        {
+            FileOpenPicker fileOpenPicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.PicturesLibrary, ViewMode = PickerViewMode.Thumbnail };
+            fileTypeFilter?.ToList().ForEach(f => fileOpenPicker.FileTypeFilter.Add(f));
+            return await fileOpenPicker.PickSingleFileAsync();
         }
 
         internal static async Task<Stream> ResizePhoto(Stream photo, int height)
