@@ -61,7 +61,7 @@
                             <Grid HorizontalAlignment="Stretch">
                                 <Border Width="96" Height="96" Margin="4" Visibility="{Binding Type, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Image'}">
                                     <Border.Background>
-                                        <ImageBrush ImageSource="{Binding ImageUrl}" Stretch="UniformToFill" />
+                                        <ImageBrush ImageSource="{Binding InputUrl}" Stretch="UniformToFill" />
                                     </Border.Background>
                                 </Border>
 

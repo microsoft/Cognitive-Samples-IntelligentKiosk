@@ -131,7 +131,8 @@
                                 <local:InputPickerControl x:Name="inputFormPicker" 
                                                           InputType="Form" 
                                                           SampleCollection="{Binding FormSampleCollection}" 
-                                                          OnItemSearchCompleted="OnInputFormSearchCompleted" 
+                                                          OnItemSearchCompleted="OnInputFormImageSearchCompleted" 
+                                                          OnFileSearchCompleted="OnInputFormFileSearchCompleted"
                                                           Visibility="{Binding InputFormViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selection'}"/>
 
                                 <Grid VerticalAlignment="Top" Visibility="{Binding InputFormViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selected'}">
@@ -192,7 +193,7 @@
                                     <controls:DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid>
-                                                <ctl:ImageWithFaceBorderUserControl Width="100" Height="70" DataContext="{Binding ProductImage}"/>
+                                                <Image Source="{Binding ProductImage}" Width="100" Height="70" Stretch="Uniform"/>
 
                                                 <Grid Visibility="{Binding ProductImageValidStatus, Converter={StaticResource reverseEnumMatchToVisibilityConverter}, ConverterParameter='Unknown'}">
                                                     <Grid Background="{StaticResource ValidBackgroundColor}" Visibility="{Binding ProductImageValidStatus, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Valid'}">
@@ -211,7 +212,7 @@
                                     <controls:DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Grid Width="100" Height="70">
-                                                <ctl:ImageWithFaceBorderUserControl DataContext="{Binding FormImage}" Visibility="{Binding IsFormImage, Converter={StaticResource booleanToVisibilityConverter}}"/>
+                                                <Image Source="{Binding FormImage}" Width="100" Height="70" Stretch="Uniform" Visibility="{Binding IsFormImage, Converter={StaticResource booleanToVisibilityConverter}}"/>
                                                 <ctl:PdfViewerControl Source="{Binding FormFile}" EnableScrollControls="False" Visibility="{Binding IsFormImage, Converter={StaticResource reverseBooleanToVisibilityConverter}}"/>
 
                                                 <Grid Visibility="{Binding FormValidStatus, Converter={StaticResource reverseEnumMatchToVisibilityConverter}, ConverterParameter='Unknown'}">

@@ -214,6 +214,7 @@
     <Compile Include="Models\InkRecognizerExplorer\InkResponse.cs" />
     <Compile Include="Models\InkRecognizerExplorer\InkRecognitionUnit.cs" />
     <Compile Include="Models\InkRecognizerExplorer\Language.cs" />
+    <Compile Include="Models\InsuranceClaimAutomation\DataModel.cs" />
     <Compile Include="Models\Platform.cs" />
     <Compile Include="Models\TabHeader.cs" />
     <Compile Include="NavMenuItem.cs" />
@@ -288,8 +289,8 @@
     <Compile Include="Views\InsuranceClaimAutomation\InsuranceClaimAutomation.xaml.cs">
       <DependentUpon>InsuranceClaimAutomation.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\InsuranceClaimAutomation\InsuranceClaimData.cs" />
-    <Compile Include="Views\InsuranceClaimAutomation\InsuranceClaimDataLoader.cs" />
+    <Compile Include="Models\InsuranceClaimAutomation\TokenOverlayInfo.cs" />
+    <Compile Include="Models\InsuranceClaimAutomation\InsuranceClaimDataLoader.cs" />
     <Compile Include="Views\MallKioskPage.xaml.cs">
       <DependentUpon>MallKioskPage.xaml</DependentUpon>
     </Compile>

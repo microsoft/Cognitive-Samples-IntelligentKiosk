@@ -84,7 +84,7 @@
 
                     <Grid Background="{StaticResource PivotItemBackgroundColor}">
                         <Grid HorizontalAlignment="Center">
-                            <ctl:ImageWithFaceBorderUserControl x:Name="productImageControl" />
+                            <Image x:Name="productImage" Stretch="Uniform" />
                             <Canvas x:Name="objectDetectionVisualizationCanvas" SizeChanged="OnObjectDetectionVisualizationCanvasSizeChanged"/>
                         </Grid>
                     </Grid>
@@ -98,7 +98,7 @@
                     <Grid Background="{StaticResource PivotItemBackgroundColor}">
                         <ScrollViewer>
                             <Grid HorizontalAlignment="Stretch">
-                                <ctl:ImageWithFaceBorderUserControl x:Name="formImageControl" HorizontalAlignment="Stretch"/>
+                                <Image x:Name="formImage" Stretch="Uniform" HorizontalAlignment="Stretch"/>
                                 <ctl:PdfViewerControl x:Name="pdfViewer" Visibility="{Binding ElementName=formImageControl, Path=Visibility, Converter={StaticResource reverseVisibilityConverter}}"/>
                                 <Canvas x:Name="formVisualizationCanvas" SizeChanged="OnFormVisualizationCanvasSizeChanged" />
                             </Grid>

@@ -39,7 +39,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
+namespace IntelligentKioskSample.Models.InsuranceClaimAutomation
 {
     public class InsuranceClaimDataLoader
     {
@@ -76,8 +76,8 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                 bool modelEntryRemovedFromFile = scenarioList.Remove(itemToRemove);
                 if (modelEntryRemovedFromFile)
                 {
-                    StorageFolder storageFolder = await ApplicationData.Current.LocalFolder.GetFolderAsync($"{FolderName}\\{item.Id.ToString()}");
-                    if (storageFolder != null)
+                    string folderName = $"{FolderName}\\{item.Id.ToString()}";
+                    if ((await ApplicationData.Current.LocalFolder.TryGetItemAsync(folderName)) is StorageFolder storageFolder)
                     {
                         await storageFolder.DeleteAsync();
                     }

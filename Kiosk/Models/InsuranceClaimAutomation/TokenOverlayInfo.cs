@@ -36,7 +36,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
 
-namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
+namespace IntelligentKioskSample.Models.InsuranceClaimAutomation
 {
     public class TokenOverlayInfo
     {

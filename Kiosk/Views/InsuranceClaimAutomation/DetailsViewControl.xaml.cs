@@ -31,6 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using IntelligentKioskSample.Models.InsuranceClaimAutomation;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using System;
 using System.Collections.Generic;
@@ -67,11 +68,11 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                 this.warrantyAmountTextBlock.Text = data.Warranty.Text;
                 this.totalTextBlock.Text = data.InvoiceTotal.Text;
 
-                this.productImageControl.DataContext = data.ProductImage;
+                this.productImage.Source = data.ProductImage;
 
                 if (data.IsFormImage)
                 {
-                    this.formImageControl.DataContext = data.FormImage;
+                    this.formImage.Source = data.FormImage;
                     ShowFormFieldDetectionBoxes(data);
                 }
                 else if (data.FormFile != null)
@@ -79,7 +80,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                     this.formVisualizationCanvas.Children.Clear();
                     this.pdfViewer.Source = data.FormFile;
                 }
-                this.formImageControl.Visibility = data.IsFormImage ? Visibility.Visible : Visibility.Collapsed;
+                this.formImage.Visibility = data.IsFormImage ? Visibility.Visible : Visibility.Collapsed;
 
                 ShowObjectDetectionBoxes(data.ObjectDetectionMatches);
             }

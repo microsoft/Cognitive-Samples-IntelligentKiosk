@@ -229,6 +229,15 @@ namespace IntelligentKioskSample
             return new Tuple<byte[], BitmapTransform>(pix.DetachPixelData(), transform);
         }
 
+        public static async Task DownloadAndSaveBitmapAsync(string imageUrl, StorageFile resultFile)
+        {
+            byte[] imgBytes = await new System.Net.Http.HttpClient().GetByteArrayAsync(imageUrl);
+            using (Stream stream = new MemoryStream(imgBytes))
+            {
+                await SaveBitmapToStorageFileAsync(stream, resultFile);
+            }
+        }
+
         public static async Task SaveBitmapToStorageFileAsync(Stream localFileStream, StorageFile resultFile)
         {
             // Get pixels

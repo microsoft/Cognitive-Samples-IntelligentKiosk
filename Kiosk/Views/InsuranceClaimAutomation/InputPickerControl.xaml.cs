@@ -132,7 +132,8 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
             }
         }
 
-        public event EventHandler<InputResult> OnItemSearchCompleted;
+        public event EventHandler<ImageAnalyzer> OnItemSearchCompleted;
+        public event EventHandler<StorageFile> OnFileSearchCompleted;
 
         public InputPickerControl()
         {
@@ -172,40 +173,16 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
         private async void OnCameraPhotoCaptured(object sender, ImageAnalyzer img)
         {
-            var inputResult = new InputResult { Image = img };
-
-            StorageFile formFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync("FormImage.jpg", CreationCollisionOption.ReplaceExisting);
-            if (img?.GetImageStreamCallback != null)
-            {
-                await Util.SaveBitmapToStorageFileAsync(await img.GetImageStreamCallback(), formFile);
-            }
-
-            inputResult.File = formFile;
-
-            this.OnItemSearchCompleted?.Invoke(this, inputResult);
+            this.OnItemSearchCompleted?.Invoke(this, img);
 
             await this.cameraControl.StopStreamAsync();
         }
 
-        private async void OnSampleItemClicked(object sender, ItemClickEventArgs e)
+        private void OnSampleItemClicked(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is InputSampleViewModel sampleImage)
             {
-                InputResult inputResult = new InputResult();
-                switch (InputType)
-                {
-                    case InputType.Image:
-                        inputResult.Image = new ImageAnalyzer(sampleImage.ImageUrl);
-                        break;
-
-                    case InputType.Form:
-                        StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(sampleImage.FileUri);
-                        inputResult.Image = new ImageAnalyzer(file.OpenStreamForReadAsync, file.Path);
-                        inputResult.File = file;
-                        break;
-                }
-
-                this.OnItemSearchCompleted?.Invoke(this, inputResult);
+                this.OnItemSearchCompleted?.Invoke(this, new ImageAnalyzer(sampleImage.InputUrl));
             }
         }
 
@@ -216,7 +193,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
         private void OnImageItemClicked(object sender, ItemClickEventArgs e)
         {
-            this.OnItemSearchCompleted?.Invoke(this, new InputResult { Image = e.ClickedItem as ImageAnalyzer });
+            this.OnItemSearchCompleted?.Invoke(this, e.ClickedItem as ImageAnalyzer);
         }
 
         private async void onTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
@@ -273,11 +250,14 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
             StorageFile file = await Util.PickSingleFileAsync(fileTypeFilter);
             if (file != null)
             {
-                this.OnItemSearchCompleted?.Invoke(this, new InputResult
+                if (ImageExtensions.Contains(file.FileType))
                 {
-                    Image = new ImageAnalyzer(file.OpenStreamForReadAsync, file.Path),
-                    File = InputType == InputType.Form ? file : null
-                });
+                    this.OnItemSearchCompleted?.Invoke(this, new ImageAnalyzer(file.OpenStreamForReadAsync, file.Path));
+                }
+                else
+                {
+                    this.OnFileSearchCompleted?.Invoke(this, file);
+                }
             }
         }
 
@@ -310,21 +290,20 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
     public class InputSampleViewModel
     {
-        public string ImageUrl { get; private set; }
+        public string InputUrl { get; private set; }
         public string FileName { get; private set; }
-        public Uri FileUri { get; private set; }
         public InputType Type { get; private set; }
 
         public InputSampleViewModel(string imageUrl)
         {
-            ImageUrl = imageUrl;
+            InputUrl = imageUrl;
             Type = InputType.Image;
         }
 
-        public InputSampleViewModel(string fileName, string filePath)
+        public InputSampleViewModel(string fileName, string fileUrl)
         {
             FileName = fileName;
-            FileUri = new Uri(filePath);
+            InputUrl = fileUrl;
             Type = InputType.Form;
         }
     }

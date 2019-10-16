@@ -31,12 +31,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using IntelligentKioskSample.Models;
+using IntelligentKioskSample.Models.InsuranceClaimAutomation;
 using Microsoft.Azure.CognitiveServices.FormRecognizer.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
-using Newtonsoft.Json;
 using ServiceHelpers;
 using System;
 using System.Collections.Generic;
@@ -49,13 +48,11 @@ using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     [KioskExperience(Title = "Insurance Claim Automation", ImagePath = "ms-appx:/Assets/InsuranceClaimAutomation.jpg", ExperienceType = ExperienceType.Kiosk)]
     public sealed partial class InsuranceClaimAutomation : Page, INotifyPropertyChanged
     {
@@ -81,8 +78,8 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
         private int claimId = 0;
         private StorageFolder TempStorageFolder;
-        private InputResult CurrentInputFormResult;
-        private InputResult CurrentInputProductResult;
+        private StorageFile CurrentInputFormFile;
+        private ImageAnalyzer CurrentInputProductImage;
 
         private CustomVisionTrainingClient trainingApi;
         private CustomVisionPredictionClient predictionApi;
@@ -138,11 +135,11 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
         public ObservableCollection<InputSampleViewModel> FormSampleCollection { get; set; } = new ObservableCollection<InputSampleViewModel>()
         {
-            new InputSampleViewModel("Form1.jpg", "ms-appx:///Assets/InsuranceClaimAutomation/Form1.jpg"),
-            new InputSampleViewModel("Form2.jpg", "ms-appx:///Assets/InsuranceClaimAutomation/Form2.jpg"),
-            new InputSampleViewModel("Form3.jpg", "ms-appx:///Assets/InsuranceClaimAutomation/Form3.jpg"),
-            new InputSampleViewModel("Form4.jpg", "ms-appx:///Assets/InsuranceClaimAutomation/Form4.jpg"),
-            new InputSampleViewModel("Form5.jpg", "ms-appx:///Assets/InsuranceClaimAutomation/Form5.jpg")
+            new InputSampleViewModel("Form1.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form1.jpg"),
+            new InputSampleViewModel("Form2.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form2.jpg"),
+            new InputSampleViewModel("Form3.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form3.jpg"),
+            new InputSampleViewModel("Form4.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form4.jpg"),
+            new InputSampleViewModel("Form5.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form5.jpg")
         };
 
         public ObservableCollection<DataGridViewModel> DataGridCollection { get; set; } = new ObservableCollection<DataGridViewModel>();
@@ -208,11 +205,11 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                 {
                     if (!string.IsNullOrEmpty(item.ProductImageUri))
                     {
-                        item.ProductImage = new ImageAnalyzer(item.ProductImageUri);
+                        item.ProductImage = new BitmapImage(new Uri(item.ProductImageUri));
                     }
                     if (!string.IsNullOrEmpty(item.FormImageUri))
                     {
-                        item.FormImage = new ImageAnalyzer(item.FormImageUri);
+                        item.FormImage = new BitmapImage(new Uri(item.FormImageUri));
                     }
                 }
                 DataGridCollection.Clear();
@@ -241,41 +238,52 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
             InputFormViewState = InputViewState.Selection;
         }
 
-        private void OnInputImageSearchCompleted(object sender, InputResult args)
+        private void OnInputImageSearchCompleted(object sender, ImageAnalyzer img)
         {
-            if (args.Image != null)
+            if (img != null)
             {
-                CurrentInputProductResult = args;
+                CurrentInputProductImage = img;
 
-                this.imageControl.DataContext = args.Image;
+                this.imageControl.DataContext = img;
 
                 InputImageViewState = InputViewState.Selected;
             }
         }
 
-        private async void OnInputFormSearchCompleted(object sender, InputResult args)
+        private async void OnInputFormImageSearchCompleted(object sender, ImageAnalyzer img)
         {
-            if (args.File != null)
+            if (img != null)
             {
-                // update PDF viewer
-                CurrentInputFormResult = args;
-                StorageFile file = await args.File?.CopyAsync(TempStorageFolder, $"{Guid.NewGuid().ToString()}{args.File.FileType}");
-                if (file != null)
+                IsFormImageSource = true;
+                this.formImageControl.DataContext = img;
+
+                StorageFile file = await TempStorageFolder.CreateFileAsync($"{Guid.NewGuid().ToString()}.jpg", CreationCollisionOption.ReplaceExisting);
+                if (img.ImageUrl != null)
                 {
-                    CurrentInputFormResult.File = file;
-                    IsFormImageSource = InputPickerControl.ImageExtensions.Contains(file.FileType.ToLower());
-                    if (IsFormImageSource && args.Image != null)
-                    {
-                        this.formImageControl.DataContext = args.Image;
-                    }
-                    else
-                    {
-                        this.pdfViewerControl.Source = new Uri(file.Path);
-                    }
+                    await Util.DownloadAndSaveBitmapAsync(img.ImageUrl, file);
+                }
+                else if (img.GetImageStreamCallback != null)
+                {
+                    await Util.SaveBitmapToStorageFileAsync(await img.GetImageStreamCallback(), file);
                 }
 
-                InputFormViewState = InputViewState.Selected;
+                CurrentInputFormFile = file;
             }
+
+            InputFormViewState = InputViewState.Selected;
+        }
+
+        private async void OnInputFormFileSearchCompleted(object sender, StorageFile file)
+        {
+            if (file != null)
+            {
+                IsFormImageSource = false;
+                StorageFile localFile = await file.CopyAsync(TempStorageFolder, $"{Guid.NewGuid().ToString()}{file.FileType}");
+                this.pdfViewerControl.Source = new Uri(localFile.Path);
+                CurrentInputFormFile = localFile;
+            }
+
+            InputFormViewState = InputViewState.Selected;
         }
 
         private void ValidateInputParams()
@@ -332,7 +340,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                     if (productImage.ImageUrl != null)
                     {
                         claim.ProductImageUri = productImage.ImageUrl;
-                        claim.ProductImage = new ImageAnalyzer(productImage.ImageUrl);
+                        claim.ProductImage = new BitmapImage(new Uri(productImage.ImageUrl));
                     }
                     else if (productImage.GetImageStreamCallback != null)
                     {
@@ -340,7 +348,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                         await Util.SaveBitmapToStorageFileAsync(await productImage.GetImageStreamCallback(), imageFile);
 
                         claim.ProductImageUri = imageFile.Path;
-                        claim.ProductImage = new ImageAnalyzer(productImage.ImageUrl);
+                        claim.ProductImage = new BitmapImage(new Uri(imageFile.Path));
                     }
 
                     // store form file to local folder
@@ -349,7 +357,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                         if (formImage?.ImageUrl != null)
                         {
                             claim.FormImageUri = formImage.ImageUrl;
-                            claim.FormImage = new ImageAnalyzer(formImage.ImageUrl);
+                            claim.FormImage = new BitmapImage(new Uri(formImage.ImageUrl));
                         }
                         else if (formImage?.GetImageStreamCallback != null)
                         {
@@ -357,12 +365,12 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                             await Util.SaveBitmapToStorageFileAsync(await formImage.GetImageStreamCallback(), imageFile);
 
                             claim.FormImageUri = imageFile.Path;
-                            claim.FormImage = new ImageAnalyzer(formImage.ImageUrl);
+                            claim.FormImage = new BitmapImage(new Uri(imageFile.Path));
                         }
                     }
-                    else if (CurrentInputFormResult.File != null)
+                    else if (CurrentInputFormFile != null)
                     {
-                        StorageFile file = await InsuranceClaimDataLoader.CopyFileToLocalFolderAsync(CurrentInputFormResult.File, $"FormFile{CurrentInputFormResult.File.FileType}", claim.Id);
+                        StorageFile file = await InsuranceClaimDataLoader.CopyFileToLocalFolderAsync(CurrentInputFormFile, $"FormFile{CurrentInputFormFile.FileType}", claim.Id);
                         claim.FormFile = new Uri(file.Path);
                     }
 
@@ -393,9 +401,9 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
         private async Task ProcessClaimAsync(DataGridViewModel claim)
         {
-            var extractedFieldsTask = AnalyzeFormFromFileAsync(CurrentInputFormResult.File);
-            var detectProductImageTask = AnalyzeObjectAsync(ObjectDetectionModelId);        // Custom Vision Object Detection
-            var classifyProductImageTask = AnalyzeObjectAsync(ObjectClassificationModelId); // Custom Vision Object Classification
+            var extractedFieldsTask = AnalyzeFormFromFileAsync(CurrentInputFormFile);
+            var detectProductImageTask = AnalyzeProductImageAsync(ObjectDetectionModelId);        // Custom Vision Object Detection
+            var classifyProductImageTask = AnalyzeProductImageAsync(ObjectClassificationModelId); // Custom Vision Object Classification
             await Task.WhenAll(detectProductImageTask, classifyProductImageTask, extractedFieldsTask);
 
             // Product validation
@@ -471,7 +479,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
             return null;
         }
 
-        private async Task<ImagePrediction> AnalyzeObjectAsync(Guid modelId)
+        private async Task<ImagePrediction> AnalyzeProductImageAsync(Guid modelId)
         {
             ImagePrediction result = null;
 
@@ -486,19 +494,18 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                     throw new Exception("This project doesn't have any trained models yet.");
                 }
 
-                ImageAnalyzer img = CurrentInputProductResult?.Image;
-                if (img?.ImageUrl != null)
+                if (CurrentInputProductImage?.ImageUrl != null)
                 {
-                    result = await CustomVisionServiceHelper.PredictImageUrlWithRetryAsync(predictionApi, modelId, new ImageUrl(img.ImageUrl), latestTrainedIteraction.Id);
+                    result = await CustomVisionServiceHelper.PredictImageUrlWithRetryAsync(predictionApi, modelId, new ImageUrl(CurrentInputProductImage.ImageUrl), latestTrainedIteraction.Id);
                 }
-                else if (img?.GetImageStreamCallback != null)
+                else if (CurrentInputProductImage?.GetImageStreamCallback != null)
                 {
-                    result = await CustomVisionServiceHelper.PredictImageWithRetryAsync(predictionApi, modelId, img.GetImageStreamCallback, latestTrainedIteraction.Id);
+                    result = await CustomVisionServiceHelper.PredictImageWithRetryAsync(predictionApi, modelId, CurrentInputProductImage.GetImageStreamCallback, latestTrainedIteraction.Id);
                 }
             }
             catch (Exception ex)
             {
-                await Util.GenericApiCallExceptionHandler(ex, "Failure detecting object");
+                await Util.GenericApiCallExceptionHandler(ex, "Custom Vision error analyzing product image");
             }
             return result;
         }
@@ -573,71 +580,5 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                 this.dataGrid.SelectedItem = null;
             }
         }
-    }
-
-    public enum InputViewState
-    {
-        NotSelected,
-        Selection,
-        Selected
-    }
-
-    public enum InputValidationStatus
-    {
-        Unknown,
-        Valid,
-        Invalid
-    }
-
-    public enum CustomFormFieldType
-    {
-        CustomName,
-        Date,
-        WarrantyId,
-        WarrantyAmount,
-        Total
-    }
-
-    public class DataGridViewModel : BaseViewModel
-    {
-        private TokenOverlayInfo customName;
-        private TokenOverlayInfo date;
-        private TokenOverlayInfo warrantyId;
-        private TokenOverlayInfo warranty;
-        private TokenOverlayInfo invoiceTotal;
-
-        private InputValidationStatus formValidStatus = InputValidationStatus.Unknown;
-        private InputValidationStatus productImageValidStatus = InputValidationStatus.Unknown;
-
-        public Guid Id { get; private set; }
-        public int ClaimId { get; set; }
-
-        [JsonIgnore]
-        public ImageAnalyzer ProductImage { get; set; }
-        public string ProductImageUri { get; set; }
-
-        [JsonIgnore]
-        public ImageAnalyzer FormImage { get; set; }
-        public Uri FormFile { get; set; }
-        public string FormImageUri { get; set; }
-
-        public bool IsFormImage { get; set; }
-
-        public List<PredictionModel> ObjectDetectionMatches { get; set; }
-
-        public List<PredictionModel> ObjectClassificationMatches { get; set; }
-
-        public DataGridViewModel(Guid id)
-        {
-            Id = id;
-        }
-
-        public TokenOverlayInfo CustomName { get => customName; set => Set(ref customName, value); }
-        public TokenOverlayInfo Date { get => date; set => Set(ref date, value); }
-        public TokenOverlayInfo WarrantyId { get => warrantyId; set => Set(ref warrantyId, value); }
-        public TokenOverlayInfo Warranty { get => warranty; set => Set(ref warranty, value); }
-        public TokenOverlayInfo InvoiceTotal { get => invoiceTotal; set => Set(ref invoiceTotal, value); }
-        public InputValidationStatus ProductImageValidStatus { get => productImageValidStatus; set => Set(ref productImageValidStatus, value); }
-        public InputValidationStatus FormValidStatus { get => formValidStatus; set => Set(ref formValidStatus, value); }
     }
 }
