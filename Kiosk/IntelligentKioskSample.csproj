@@ -108,11 +108,6 @@
     <Content Include="Assets\AnomalyDetector\Manufacturing.jpg" />
     <Content Include="Assets\AnomalyDetector\Telcom.png" />
     <Content Include="Assets\InsuranceClaimAutomation.jpg" />
-    <Content Include="Assets\InsuranceClaimAutomation\Form1.jpg" />
-    <Content Include="Assets\InsuranceClaimAutomation\Form2.jpg" />
-    <Content Include="Assets\InsuranceClaimAutomation\Form3.jpg" />
-    <Content Include="Assets\InsuranceClaimAutomation\Form4.jpg" />
-    <Content Include="Assets\InsuranceClaimAutomation\Form5.jpg" />
     <Content Include="Assets\InsuranceClaimAutomation\icon-F780-64.jpg" />
     <Content Include="Assets\RealtimeObjectDetection.png" />
     <Content Include="Assets\simple_fruits.onnx" />
