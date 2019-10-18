@@ -79,6 +79,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
         private int claimId = 0;
         private StorageFolder TempStorageFolder;
         private StorageFile CurrentInputFormFile;
+        private ImageAnalyzer CurrentInputFormImage;
         private ImageAnalyzer CurrentInputProductImage;
 
         private CustomVisionTrainingClient trainingApi;
@@ -227,24 +228,33 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
         private void AddImageButtonClicked(object sender, RoutedEventArgs e)
         {
-            this.imageControl.DataContext = null;
+            this.productImage.Source = null;
             InputImageViewState = InputViewState.Selection;
         }
 
         private void AddFormFileButtonClicked(object sender, RoutedEventArgs e)
         {
-            this.formImageControl.DataContext = null;
+            this.formImage.Source = null;
             this.pdfViewerControl.Source = null;
             InputFormViewState = InputViewState.Selection;
         }
 
-        private void OnInputImageSearchCompleted(object sender, ImageAnalyzer img)
+        private async void OnInputImageSearchCompleted(object sender, ImageAnalyzer img)
         {
             if (img != null)
             {
                 CurrentInputProductImage = img;
 
-                this.imageControl.DataContext = img;
+                if (img.ImageUrl != null)
+                {
+                    this.productImage.Source = new BitmapImage(new Uri(img.ImageUrl));
+                }
+                else if (img.GetImageStreamCallback != null)
+                {
+                    BitmapImage bitmapImage = new BitmapImage();
+                    await bitmapImage.SetSourceAsync((await img.GetImageStreamCallback()).AsRandomAccessStream());
+                    this.productImage.Source = bitmapImage;
+                }
 
                 InputImageViewState = InputViewState.Selected;
             }
@@ -255,19 +265,18 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
             if (img != null)
             {
                 IsFormImageSource = true;
-                this.formImageControl.DataContext = img;
+                CurrentInputFormImage = img;
 
-                StorageFile file = await TempStorageFolder.CreateFileAsync($"{Guid.NewGuid().ToString()}.jpg", CreationCollisionOption.ReplaceExisting);
                 if (img.ImageUrl != null)
                 {
-                    await Util.DownloadAndSaveBitmapAsync(img.ImageUrl, file);
+                    this.formImage.Source = new BitmapImage(new Uri(img.ImageUrl));
                 }
                 else if (img.GetImageStreamCallback != null)
                 {
-                    await Util.SaveBitmapToStorageFileAsync(await img.GetImageStreamCallback(), file);
+                    BitmapImage bitmapImage = new BitmapImage();
+                    await bitmapImage.SetSourceAsync((await img.GetImageStreamCallback()).AsRandomAccessStream());
+                    this.formImage.Source = bitmapImage;
                 }
-
-                CurrentInputFormFile = file;
             }
 
             InputFormViewState = InputViewState.Selected;
@@ -297,13 +306,13 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
             {
                 if (button.Tag.ToString() == "image")
                 {
-                    this.imageControl.DataContext = null;
+                    this.productImage.Source = null;
                     InputImageViewState = InputViewState.Selection;
                     this.inputImagePicker.RestartPicker();
                 }
                 else
                 {
-                    this.formImageControl.DataContext = null;
+                    this.formImage.Source = null;
                     this.pdfViewerControl.Source = null;
                     InputFormViewState = InputViewState.Selection;
                     this.inputFormPicker.RestartPicker();
@@ -319,11 +328,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
                 CloseDetailsView();
 
-                var productImage = this.imageControl.DataContext as ImageAnalyzer;
-                var formImage = this.formImageControl.DataContext as ImageAnalyzer;
-                var formFile = this.pdfViewerControl.Source as Uri;
-
-                if (productImage != null && (formImage != null || formFile != null))
+                if (CurrentInputProductImage != null && (CurrentInputFormImage != null || CurrentInputFormFile != null))
                 {
                     var claim = new DataGridViewModel(Guid.NewGuid())
                     {
@@ -337,15 +342,15 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                     };
 
                     // store image file to local folder
-                    if (productImage.ImageUrl != null)
+                    if (CurrentInputProductImage.ImageUrl != null)
                     {
-                        claim.ProductImageUri = productImage.ImageUrl;
-                        claim.ProductImage = new BitmapImage(new Uri(productImage.ImageUrl));
+                        claim.ProductImageUri = CurrentInputProductImage.ImageUrl;
+                        claim.ProductImage = new BitmapImage(new Uri(CurrentInputProductImage.ImageUrl));
                     }
-                    else if (productImage.GetImageStreamCallback != null)
+                    else if (CurrentInputProductImage.GetImageStreamCallback != null)
                     {
                         StorageFile imageFile = await InsuranceClaimDataLoader.CreateFileInLocalFolderAsync(claim.Id, "ProductImage.jpg");
-                        await Util.SaveBitmapToStorageFileAsync(await productImage.GetImageStreamCallback(), imageFile);
+                        await Util.SaveBitmapToStorageFileAsync(await CurrentInputProductImage.GetImageStreamCallback(), imageFile);
 
                         claim.ProductImageUri = imageFile.Path;
                         claim.ProductImage = new BitmapImage(new Uri(imageFile.Path));
@@ -354,18 +359,21 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                     // store form file to local folder
                     if (isFormImageSource)
                     {
-                        if (formImage?.ImageUrl != null)
-                        {
-                            claim.FormImageUri = formImage.ImageUrl;
-                            claim.FormImage = new BitmapImage(new Uri(formImage.ImageUrl));
-                        }
-                        else if (formImage?.GetImageStreamCallback != null)
-                        {
-                            StorageFile imageFile = await InsuranceClaimDataLoader.CreateFileInLocalFolderAsync(claim.Id, "FormImage.jpg");
-                            await Util.SaveBitmapToStorageFileAsync(await formImage.GetImageStreamCallback(), imageFile);
+                        CurrentInputFormFile = await InsuranceClaimDataLoader.CreateFileInLocalFolderAsync(claim.Id, "FormImage.jpg");
 
-                            claim.FormImageUri = imageFile.Path;
-                            claim.FormImage = new BitmapImage(new Uri(imageFile.Path));
+                        if (CurrentInputFormImage?.ImageUrl != null)
+                        {
+                            claim.FormImageUri = CurrentInputFormImage.ImageUrl;
+                            claim.FormImage = new BitmapImage(new Uri(CurrentInputFormImage.ImageUrl));
+
+                            await Util.DownloadAndSaveBitmapAsync(CurrentInputFormImage.ImageUrl, CurrentInputFormFile);
+                        }
+                        else if (CurrentInputFormImage?.GetImageStreamCallback != null)
+                        {
+                            await Util.SaveBitmapToStorageFileAsync(await CurrentInputFormImage.GetImageStreamCallback(), CurrentInputFormFile);
+
+                            claim.FormImageUri = CurrentInputFormFile.Path;
+                            claim.FormImage = new BitmapImage(new Uri(CurrentInputFormFile.Path));
                         }
                     }
                     else if (CurrentInputFormFile != null)

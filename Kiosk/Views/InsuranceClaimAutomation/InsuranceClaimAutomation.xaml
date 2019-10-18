@@ -102,7 +102,7 @@
                                                           Visibility="{Binding InputImageViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selection'}"/>
 
                                 <Grid VerticalAlignment="Top" Visibility="{Binding InputImageViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selected'}">
-                                    <ctl:ImageWithFaceBorderUserControl x:Name="imageControl" />
+                                    <Image x:Name="productImage" Stretch="Uniform"/>
                                     <Button Click="OnCancelInputButtonClicked" Tag="image" Width="40" Height="40" Background="{StaticResource ButtonBackgroundColor}" VerticalAlignment="Top" HorizontalAlignment="Right">
                                         <SymbolIcon Symbol="Cancel"/>
                                     </Button>
@@ -136,7 +136,7 @@
                                                           Visibility="{Binding InputFormViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selection'}"/>
 
                                 <Grid VerticalAlignment="Top" Visibility="{Binding InputFormViewState, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='Selected'}">
-                                    <ctl:ImageWithFaceBorderUserControl x:Name="formImageControl" Visibility="{Binding IsFormImageSource, Converter={StaticResource booleanToVisibilityConverter}}"/>
+                                    <Image x:Name="formImage" Stretch="Uniform" Visibility="{Binding IsFormImageSource, Converter={StaticResource booleanToVisibilityConverter}}"/>
                                     <ctl:PdfViewerControl x:Name="pdfViewerControl" Visibility="{Binding IsFormImageSource, Converter={StaticResource reverseBooleanToVisibilityConverter}}"/>
                                     <Button Click="OnCancelInputButtonClicked" Tag="form" Width="40" Height="40" Background="{StaticResource ButtonBackgroundColor}" VerticalAlignment="Top" HorizontalAlignment="Right">
                                         <SymbolIcon Symbol="Cancel"/>
