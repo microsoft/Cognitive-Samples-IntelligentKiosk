@@ -99,7 +99,7 @@
                         <ScrollViewer>
                             <Grid HorizontalAlignment="Stretch">
                                 <Image x:Name="formImage" Stretch="Uniform" HorizontalAlignment="Stretch"/>
-                                <ctl:PdfViewerControl x:Name="pdfViewer" Visibility="{Binding ElementName=formImageControl, Path=Visibility, Converter={StaticResource reverseVisibilityConverter}}"/>
+                                <ctl:PdfViewerControl x:Name="pdfViewer" Visibility="{Binding ElementName=formImage, Path=Visibility, Converter={StaticResource reverseVisibilityConverter}}"/>
                                 <Canvas x:Name="formVisualizationCanvas" SizeChanged="OnFormVisualizationCanvasSizeChanged" />
                             </Grid>
                         </ScrollViewer>
