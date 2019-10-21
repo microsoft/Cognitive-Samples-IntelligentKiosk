@@ -6,155 +6,163 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
     xmlns:controls="using:Windows.UI.Xaml.Controls"
+    xmlns:toolkit="using:Microsoft.Toolkit.Uwp.UI.Controls"
     mc:Ignorable="d"
     Unloaded="Page_Unloaded"
+    RequestedTheme="Dark"
     Background="Black">
 
     <Grid>
-        <Grid Margin="12,10,12,50">
+        <Grid Margin="12,12,12,24">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="5*"/>
-                    <ColumnDefinition Width="0.1*"/>
-                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="4"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Grid Name="inkCanvasGrid" Background="White">
+                <Grid Grid.Column="0" Name="inkCanvasGrid" Background="#2B2B2B">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*" MinHeight="45"/>
                         <RowDefinition Height="18*"/>
+                        <RowDefinition Height="1.6*" MinHeight="45"/>
                     </Grid.RowDefinitions>
 
-                    <InkCanvas Grid.ColumnSpan="2" Grid.Row="1" x:Name="inkCanvas" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,10,0,0"/>
+                    <InkCanvas Grid.ColumnSpan="3" Grid.Row="0" x:Name="inkCanvas"/>
 
-                    <Viewbox Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="10,5,0,0">
-                        <StackPanel Orientation="Horizontal" Background="LightGray">
-                            <InkToolbar x:Name="inkToolbar" InitialControls="None" TargetInkCanvas="{x:Bind Path=inkCanvas}" RequestedTheme="Light" >
-                                <InkToolbarBallpointPenButton x:Name="ballpointPen"/>
-                                <InkToolbarPencilButton x:Name="pencil"/>
-                                <InkToolbarEraserButton x:Name="eraser" IsClearAllVisible="False"/>
-                                <InkToolbarCustomToggleButton x:Name="touchButton" Click="TouchButton_Click" ToolTipService.ToolTip="Touch Writing">
-                                    <SymbolIcon Symbol="{x:Bind Path=TouchWriting}"/>
-                                </InkToolbarCustomToggleButton>
-                            </InkToolbar>
+                    <Viewbox Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,5,0,12">
+                        <toolkit:DropShadowPanel OffsetX="0" OffsetY="3" Color="Black" BlurRadius="12" ShadowOpacity="0.6">
+                            <StackPanel Orientation="Horizontal" Background="#2D2D2D" BorderBrush="#44000000" BorderThickness="1">
+                                <InkToolbar x:Name="inkToolbar" InitialControls="None" TargetInkCanvas="{x:Bind Path=inkCanvas}">
+                                    <InkToolbarBallpointPenButton x:Name="ballpointPen"/>
+                                    <InkToolbarPencilButton x:Name="pencil"/>
+                                    <InkToolbarEraserButton x:Name="eraser" IsClearAllVisible="False"/>
 
-                            <Rectangle Height="24" Width="1" Fill="Gray" />
-                            
-                            <StackPanel Orientation="Horizontal" x:Name="customToolbar" RequestedTheme="Light" >
-                                <InkToolbarCustomToolButton x:Name="undoButton" Click="UndoButton_Click" ToolTipService.ToolTip="Undo">
-                                    <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
-                                </InkToolbarCustomToolButton>
-                                <InkToolbarCustomToolButton x:Name="redoButton" Click="RedoButton_Click" ToolTipService.ToolTip="Redo">
-                                    <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
-                                </InkToolbarCustomToolButton>
-                                <InkToolbarCustomToolButton x:Name="clearButton" Click="ClearButton_Click" ToolTipService.ToolTip="Clear All">
-                                    <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
-                                </InkToolbarCustomToolButton>
+                                    <InkToolbarCustomToggleButton x:Name="touchButton" Click="TouchButton_Click" ToolTipService.ToolTip="Touch Writing">
+                                        <SymbolIcon Symbol="{x:Bind Path=TouchWriting}"/>
+                                    </InkToolbarCustomToggleButton>
+                                </InkToolbar>
+
+                                <Rectangle Height="24" Width="1" Fill="Gray" />
+                                <StackPanel Orientation="Horizontal" x:Name="customToolbar">
+                                    <InkToolbarCustomToolButton x:Name="undoButton" Click="UndoButton_Click" ToolTipService.ToolTip="Undo">
+                                        <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
+                                    </InkToolbarCustomToolButton>
+
+                                    <InkToolbarCustomToolButton x:Name="redoButton" Click="RedoButton_Click" ToolTipService.ToolTip="Redo">
+                                        <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
+                                    </InkToolbarCustomToolButton>
+
+                                    <InkToolbarCustomToolButton x:Name="languageSelectButton" Click="LanguageSelectButton_Click" ToolTipService.ToolTip="Select Language">
+                                        <SymbolIcon Symbol="{x:Bind Path=LanguageSelect}"/>
+
+                                        <FlyoutBase.AttachedFlyout>
+                                            <MenuFlyout x:Name="languageDropdown" Placement="Bottom">
+                                                <MenuFlyoutItem Tag="zh-CN" Text="Chinese (Simplified)" FontSize="14"  Width="240" Click="MenuFlyoutItem_Click"/>
+                                                <MenuFlyoutItem Tag="zh-TW" Text="Chinese (Traditional)" FontSize="14" Click="MenuFlyoutItem_Click"/>
+                                                <MenuFlyoutItem Tag="en-GB" Text="English (UK)" FontSize="14" Click="MenuFlyoutItem_Click"/>
+                                                <MenuFlyoutItem Tag="en-US" Text="English (US)" FontSize="14" Click="MenuFlyoutItem_Click" Background="#0078D7"/>
+                                                <MenuFlyoutItem Tag="fr-FR" Text="French" FontSize="14" Click="MenuFlyoutItem_Click"/>
+                                                <MenuFlyoutItem Tag="de-DE" Text="German" FontSize="14" Click="MenuFlyoutItem_Click"/>
+                                                <MenuFlyoutItem Tag="it-IT" Text="Italian" FontSize="14" Click="MenuFlyoutItem_Click"/>
+                                                <MenuFlyoutItem Tag="ko-KR" Text="Korean" FontSize="14" Click="MenuFlyoutItem_Click"/>
+                                                <MenuFlyoutItem Tag="pt-PT" Text="Portuguese" FontSize="14" Click="MenuFlyoutItem_Click"/>
+                                                <MenuFlyoutItem Tag="es-ES" Text="Spanish" FontSize="14" Click="MenuFlyoutItem_Click"/>
+                                            </MenuFlyout>
+                                        </FlyoutBase.AttachedFlyout>
+                                    </InkToolbarCustomToolButton>
+
+                                    <InkToolbarCustomToolButton x:Name="clearButton" Click="ClearButton_Click" ToolTipService.ToolTip="Clear All">
+                                        <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
+                                    </InkToolbarCustomToolButton>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
+                        </toolkit:DropShadowPanel>
                     </Viewbox>
+                    
+                    <Viewbox Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right" Margin="0,5,12,12">
+                        <Grid>
+                            <Grid.Resources>
+                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#2B2B2B"/>
+                                <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#2B2B2B"/>
+                            </Grid.Resources>
 
-                    <Viewbox Grid.Column="1" VerticalAlignment="Stretch" Margin="0,5,10,0">
-                        <StackPanel Orientation="Horizontal" >
-                            <ComboBox x:Name="languageDropdown" DisplayMemberPath="Name" SelectedValuePath="LanguageCode" SelectedIndex="3" Width="175" RequestedTheme="Light"/>
+                            <Button x:Name="recognizeButton" Click="RecognizeButton_Click" Height="50" Width="50" Padding="0" BorderThickness="0" Background="#2B2B2B" ToolTipService.ToolTip="Recognize Ink">
+                                <RelativePanel>
+                                    <Ellipse Fill="White" Height="50" Width="50" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True"/>
+                                    <Ellipse Fill="White" Height="46" Width="46" Stroke="Black" StrokeThickness="2" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True"/>
+                                    <SymbolIcon Symbol="{x:Bind Path=Recognize}" Foreground="Black" RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True"/>
+                                </RelativePanel>
+                            </Button>
 
-                            <RelativePanel>
-                                <Button x:Name="recognizeButton" Click="RecognizeButton_Click" Width="100" RequestedTheme="Light" Background="LightGray" Margin="5,0,0,0">
-                                    <TextBlock x:Name="recognizeButtonText" Text="Recognize" FontWeight="SemiBold"/>
-                                </Button>
-                                <ProgressRing x:Name="progressRing" Foreground="Black"  RelativePanel.AlignHorizontalCenterWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True" Margin="0,5,0,5"/>
-                            </RelativePanel>
-                        </StackPanel>
+                            <ProgressRing x:Name="progressRing" Visibility="Collapsed" Height="50" Width="50"/>
+                        </Grid>
                     </Viewbox>
                 </Grid>
 
-                <Grid Name="resultCanvasGrid" Grid.Column="2" Background="White">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
+                <Grid Name="resultCanvasGrid" Grid.Column="2" Background="#2B2B2B">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*" MinHeight="45"/>
                         <RowDefinition Height="18*"/>
+                        <RowDefinition Height="*" MinHeight="45"/>
+                        <RowDefinition Height="0.4*"/>
                     </Grid.RowDefinitions>
 
-                    <canvas:CanvasControl Grid.ColumnSpan="2" Grid.Row="2" x:Name="resultCanvas" Draw="ResultCanvas_Draw" Margin="0,10,0,0"/>
+                    <canvas:CanvasControl Grid.Row="0" x:Name="resultCanvas" Draw="ResultCanvas_Draw" ClearColor="#2B2B2B" Visibility="Collapsed"/>
 
-                    <Pivot  Grid.ColumnSpan="2" Grid.RowSpan="2" x:Name="jsonPivot" Visibility="Collapsed" RequestedTheme="Light" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,10">
-                        <PivotItem Header="Tree View" Margin="10,10,10,0">
-                            <Grid BorderThickness="2,2,2,2" BorderBrush="Gray" Background="Black">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="15*"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" x:Name="jsonTree" Background="#1F1F1F" Padding="0,20,10,0" Visibility="Collapsed">
+                        <controls:TreeView x:Name="treeView" CanDragItems="False" ItemInvoked="TreeView_ItemInvoked">
+                            <controls:TreeView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
 
-                                <controls:TreeView Grid.Row="0" x:Name="treeView" RequestedTheme="Dark" CanDragItems="False" ItemInvoked="TreeView_ItemInvoked">
-                                    <controls:TreeView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                
-                                                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
-                                                    <TextBlock Text="{Binding Content.Key}"/>
-                                                    <TextBlock Text=":"/>
-                                                    <TextBlock Text="{Binding Content.Value}" Margin="12,0,0,0" Opacity="0.5"/>
-                                                </StackPanel>
+                                        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                                            <TextBlock Text="{Binding Content.Key}"/>
+                                            <TextBlock Text=":"/>
+                                            <TextBlock Text="{Binding Content.Value}" Margin="12,0,0,0" Opacity="0.5"/>
+                                        </StackPanel>
 
-                                                <Rectangle Grid.Row="1" Fill="White" Height="1" Width="2000" Opacity="0.3" Margin="0,4,0,0"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </controls:TreeView.ItemTemplate>
-                                </controls:TreeView>
-                                    
-                                <Viewbox Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,5,5,5">
-                                    <StackPanel Orientation="Horizontal">
-                                        <Button x:Name="expandAllButton" Click="ExpandAllButton_Click" Width="100" RequestedTheme="Dark">
-                                            <TextBlock Text="Expand All" FontWeight="SemiBold"/>
-                                        </Button>
-                                        <Button x:Name="collapseAllButton" Visibility="Collapsed" Click="CollapseAllButton_Click" Width="100" RequestedTheme="Dark">
-                                            <TextBlock Text="Collapse All" FontWeight="SemiBold"/>
-                                        </Button>
-                                    </StackPanel>
-                                </Viewbox>
-                            </Grid>
-                        </PivotItem>
+                                        <Rectangle Grid.Row="1" Fill="White" Height="1" Width="2000" Opacity="0.3" Margin="0,4,0,0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </controls:TreeView.ItemTemplate>
+                        </controls:TreeView>
+                    </Grid>
 
-                        <PivotItem Header="Response JSON" Margin="10,10,10,0">
-                            <Border BorderThickness="2,2,2,2" BorderBrush="Gray" Background="Black" Padding="10,0,10,10">
-                                <ScrollViewer>
-                                    <TextBlock x:Name="responseJson" RequestedTheme="Dark" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
-                                </ScrollViewer>
-                            </Border>
-                        </PivotItem>
+                    <Grid Grid.Row="0" x:Name="responseJson" Background="#1F1F1F" Padding="20,20,10,0" Visibility="Collapsed">
+                        <ScrollViewer>
+                            <TextBlock x:Name="responseJsonText" TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
+                        </ScrollViewer>
+                    </Grid>
 
-                        <PivotItem Header="Request JSON" Margin="10,10,10,0" VerticalAlignment="Stretch">
-                            <Border BorderThickness="2,2,2,2" BorderBrush="Gray" Background="Black" Padding="10,0,10,10">
-                                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                    <TextBlock x:Name="requestJson" RequestedTheme="Dark" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
-                                </ScrollViewer>
-                            </Border>
-                        </PivotItem>
-                    </Pivot>
+                    <Grid Grid.Row="0" x:Name="requestJson" Background="#1F1F1F" Padding="20,20,10,0" Visibility="Collapsed">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <TextBlock x:Name="requestJsonText" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                        </ScrollViewer>
+                    </Grid>
 
-                    <Viewbox Grid.Column="1" HorizontalAlignment="Right" Margin="0,5,10,0">
-                        <StackPanel Orientation="Horizontal">
-                            <Button x:Name="viewJsonButton" Click="ViewJsonButton_Click" Width="100" RequestedTheme="Light" Background="LightGray">
-                                <TextBlock Text="View Data" FontWeight="SemiBold"/>
-                            </Button>
-                            <Button x:Name="viewCanvasButton" Visibility="Collapsed" Click="ViewCanvasButton_Click" Width="100" RequestedTheme="Light" Background="LightGray">
-                                <TextBlock Text="View Canvas" FontWeight="SemiBold"/>
-                            </Button>
-                        </StackPanel>
-                    </Viewbox>
+                    <Grid Grid.Row="1">
+                        <Grid.Resources>
+                            <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="#2B2B2B"/>
+                        </Grid.Resources>
+
+                        <NavigationView x:Name="resultNav" ItemInvoked="ResultNav_ItemInvoked" PaneDisplayMode="Top" IsSettingsVisible="False" IsBackButtonVisible="Collapsed">
+                            <NavigationView.MenuItems>
+                                <NavigationViewItem Name="resultCanvasNavItem" Content="Ink Response" FontSize="22"/>
+                                <NavigationViewItem Name="jsonTreeNavItem" Content="Tree View" FontSize="22"/>
+                                <NavigationViewItem Name="responseJsonNavItem" Content="Response JSON" FontSize="22"/>
+                                <NavigationViewItem Name="requestJsonNavItem" Content="Request JSON" FontSize="22"/>
+                            </NavigationView.MenuItems>
+                        </NavigationView>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

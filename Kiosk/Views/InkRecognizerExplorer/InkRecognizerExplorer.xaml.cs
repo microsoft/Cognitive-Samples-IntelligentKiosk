@@ -43,6 +43,8 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
     [KioskExperience(Title = "Ink Recognizer Explorer", ImagePath = "ms-appx:/Assets/InkRecognizerExplorer.png")]
     public sealed partial class InkRecognizerExplorer : Page
     {
+        private bool pageLoaded = false;
+
         public InkRecognizerExplorer()
         {
             this.InitializeComponent();
@@ -52,30 +54,35 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
         {
             if (string.IsNullOrEmpty(SettingsHelper.Instance.InkRecognizerApiKey))
             {
-                navView.IsEnabled = false;
+                inkScenarioDropdown.IsEnabled = false;
                 await new MessageDialog("Missing Ink Recognizer API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();
             }
             else
             {
                 frame.SourcePageType = typeof(InkMirror);
-                navView.SelectedItem = navView.MenuItems[0];
+                inkScenarioDropdown.SelectedIndex = 0;
+                pageLoaded = true;
             }
 
             base.OnNavigatedTo(e);
         }
 
-        private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+        private void InkScenarioDropdown_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var item = sender.SelectedItem as NavigationViewItem;
-
-            switch (item.Name)
+            if (pageLoaded)
             {
-                case "inkMirror":
-                    frame.Navigate(typeof(InkMirror));
-                    break;
-                case "formFiller":
-                    frame.Navigate(typeof(FormFiller));
-                    break;
+                var dropdown = sender as ComboBox;
+                var item = dropdown.SelectedItem as ComboBoxItem;
+
+                switch (item.Name)
+                {
+                    case "inkMirror":
+                        frame.Navigate(typeof(InkMirror));
+                        break;
+                    case "formFiller":
+                        frame.Navigate(typeof(FormFiller));
+                        break;
+                }
             }
         }
     }

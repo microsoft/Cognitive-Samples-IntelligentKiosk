@@ -43,7 +43,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Numerics;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.Storage;
@@ -53,6 +52,8 @@ using Windows.UI.Input.Inking;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.InkRecognizerExplorer
@@ -80,6 +81,8 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
         private Symbol Undo = (Symbol)0xE7A7;
         private Symbol Redo = (Symbol)0xE7A6;
         private Symbol ClearAll = (Symbol)0xE74D;
+        private Symbol LanguageSelect = (Symbol)0xF2B7;
+        private Symbol Recognize = (Symbol)0xF0AF;
 
         public InkMirror()
         {
@@ -100,21 +103,11 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
             inkCanvas.InkPresenter.StrokeInput.StrokeStarted += InkPresenter_StrokeInputStarted;
             inkCanvas.InkPresenter.StrokesErased += InkPresenter_StrokesErased;
 
-            var languages = new List<Language>
-            {
-                new Language("Chinese (Simplified)", "zh-CN"),
-                new Language("Chinese (Traditional)", "zh-TW"),
-                new Language("English (UK)", "en-GB"),
-                new Language("English (US)", "en-US"),
-                new Language("French", "fr-FR"),
-                new Language("German", "de-DE"),
-                new Language("Italian", "it-IT"),
-                new Language("Korean", "ko-KR"),
-                new Language("Portuguese", "pt-PT"),
-                new Language("Spanish", "es-ES")
-            };
+            resultNav.SelectedItem = resultNav.MenuItems[0];
 
-            languageDropdown.ItemsSource = languages;
+            // Set default ink color to blue
+            ballpointPen.SelectedBrushIndex = 16;
+            pencil.SelectedBrushIndex = 16;
         }
 
         #region Event Handlers - Page
@@ -122,7 +115,7 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
         {
             if (!previouslyLoaded)
             {
-                var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/InkRecognitionSampleInstructions.gif"));
+                var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///Assets/InkRecognizerSampleInstructions.gif"));
                 if (file != null)
                 {
                     using (var stream = await file.OpenSequentialReadAsync())
@@ -139,8 +132,7 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
             var resultCanvas = new CanvasControl();
             resultCanvas.Name = "resultCanvas";
             resultCanvas.Draw += ResultCanvas_Draw;
-            resultCanvas.SetValue(Grid.ColumnSpanProperty, 2);
-            resultCanvas.SetValue(Grid.RowProperty, 2);
+            resultCanvas.SetValue(Grid.RowProperty, 0);
 
             resultCanvasGrid.Children.Add(resultCanvas);
 
@@ -222,6 +214,29 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
             ClearJson();
         }
 
+        private void LanguageSelectButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as InkToolbarCustomToolButton;
+            button.IsChecked = false;
+
+            FlyoutBase.ShowAttachedFlyout(button);
+        }
+
+        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in languageDropdown.Items)
+            {
+                item.Background = null;
+            }
+
+            var selectedItem = sender as MenuFlyoutItem;
+
+            var color = GetColorFromHex("#0078D7");
+            selectedItem.Background = new SolidColorBrush(color);
+
+            inkRecognizer.SetLanguage(selectedItem.Tag.ToString());
+        }
+
         private void TouchButton_Click(object sender, RoutedEventArgs e)
         {
             if (touchButton.IsChecked == true)
@@ -238,7 +253,7 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
         #region Event Handlers - Ink Canvas
         private void InkPresenter_StrokeInputStarted(InkStrokeInput sender, PointerEventArgs args)
         {
-            ViewCanvasButton_Click(null, null);
+            //ViewCanvasButton_Click(null, null);
 
             clearedStrokes.Clear();
             inkCleared = false;
@@ -262,54 +277,50 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
             var strokes = inkCanvas.InkPresenter.StrokeContainer.GetStrokes();
             if (strokes.Count > 0)
             {
-                // Disable use of toolbar during recognition and rendering
+                // Disable use of toolbar during recognition and rendering and
+                // Clear result canvas and viewable JSON before recognition and rendering of results
                 ToggleInkToolbar();
                 ToggleProgressRing();
-
-                // Clear result canvas and viewable JSON before recognition and rendering of results
-                ViewCanvasButton_Click(null, null);
                 ClearJson();
 
-                // Set language code, convert ink to JSON for request, and display it
-                string languageCode = languageDropdown.SelectedValue.ToString();
-                inkRecognizer.SetLanguage(languageCode);
-
+                // Convert ink stroke data to JSON to be sent with request
                 inkRecognizer.ClearStrokes();
                 inkRecognizer.AddStrokes(strokes);
                 JObject json = inkRecognizer.ConvertInkToJson();
-                requestJson.Text = FormatJson(json.ToString());
+                requestJsonText.Text = FormatJson(json.ToString());
 
-                try
+                // Recognize Ink from JSON and display response
+                var response = await inkRecognizer.RecognizeAsync(json);
+                string responseString = await response.Content.ReadAsStringAsync();
+                inkResponse = JsonConvert.DeserializeObject<InkResponse>(responseString);
+
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    // Recognize Ink from JSON and display response
-                    var response = await inkRecognizer.RecognizeAsync(json);
-                    string responseString = await response.Content.ReadAsStringAsync();
-                    inkResponse = JsonConvert.DeserializeObject<InkResponse>(responseString);
+                    // Generate JSON tree view and draw result on right side canvas
+                    CreateJsonTree();
+                    responseJsonText.Text = FormatJson(responseString);
 
-                    if (response.StatusCode == HttpStatusCode.OK)
+                    try
                     {
-                        // Generate JSON tree view and draw result on right side canvas
-                        CreateJsonTree();
-                        responseJson.Text = FormatJson(responseString);
-
                         var resultCanvas = this.FindName("resultCanvas") as CanvasControl;
                         resultCanvas.Invalidate();
                     }
-                    else
+                    catch (NullReferenceException)
                     {
-                        if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.NotFound)
-                        {
-                            await new MessageDialog("Access denied due to invalid subscription key or wrong API endpoint. Make sure to provide a valid key for an active subscription and use a correct API endpoint in the Settings page.", $"Response Code: {inkResponse.Error.code}").ShowAsync();
-                        }
-                        else
-                        {
-                            await new MessageDialog(inkResponse.Error.message, $"Response Code: {inkResponse.Error.code}").ShowAsync();
-                        }
+                        // This occurs when the page is changed before recognition finishes. 
+                        // Since the result canvas gets disposed when navigating away it becomes null.
                     }
                 }
-                catch (TaskCanceledException)
+                else
                 {
-                    // This may occur when a user attempts to navigate to another page during recognition. In this case, we just want to continue on to the selected page
+                    if (response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        await new MessageDialog("Access denied due to invalid subscription key or wrong API endpoint. Make sure to provide a valid key for an active subscription and use a correct API endpoint in the Settings page.", $"Response Code: {inkResponse.Error.code}").ShowAsync();
+                    }
+                    else
+                    {
+                        await new MessageDialog(inkResponse.Error.message, $"Response Code: {inkResponse.Error.code}").ShowAsync();
+                    }
                 }
 
                 // Re-enable use of toolbar after recognition and rendering
@@ -327,7 +338,7 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
         #region Event Handlers - Result Canvas
         private void ResultCanvas_Draw(CanvasControl sender, CanvasDrawEventArgs args)
         {
-            if (!string.IsNullOrEmpty(responseJson.Text))
+            if (!string.IsNullOrEmpty(responseJsonText.Text))
             {
                 // For demo purposes and keeping the initially loaded ink consistent a value of 96 for DPI was used
                 // For production, it is most likely better to use the device's DPI when generating the request JSON and an example of that is below
@@ -335,7 +346,9 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
                 //dipsPerMm = inkRecognizer.GetDipsPerMm(dpi);
 
                 dipsPerMm = inkRecognizer.GetDipsPerMm(96);
-                args.DrawingSession.Clear(Colors.White);
+
+                var backgroundColor = GetColorFromHex("#2B2B2B");
+                args.DrawingSession.Clear(backgroundColor);
 
                 foreach (var recoUnit in inkResponse.RecognitionUnits)
                 {
@@ -359,28 +372,15 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
             }
             else
             {
-                args.DrawingSession.Clear(Colors.White);
+                var backgroundColor = GetColorFromHex("#2B2B2B");
+                args.DrawingSession.Clear(backgroundColor);
             }
         }
 
-        private void ViewCanvasButton_Click(object sender, RoutedEventArgs e)
+        private void ResultNav_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
         {
-            jsonPivot.Visibility = Visibility.Collapsed;
-            viewCanvasButton.Visibility = Visibility.Collapsed;
-            viewJsonButton.Visibility = Visibility.Visible;
-
-            var resultCanvas = this.FindName("resultCanvas") as CanvasControl;
-            resultCanvas.Visibility = Visibility.Visible;
-        }
-
-        private void ViewJsonButton_Click(object sender, RoutedEventArgs e)
-        {
-            var resultCanvas = this.FindName("resultCanvas") as CanvasControl;
-            resultCanvas.Visibility = Visibility.Collapsed;
-
-            viewJsonButton.Visibility = Visibility.Collapsed;
-            viewCanvasButton.Visibility = Visibility.Visible;
-            jsonPivot.Visibility = Visibility.Visible;
+            var item = sender.SelectedItem as NavigationViewItem;
+            NavItemToggle(item.Name);
         }
 
         private void TreeView_ItemInvoked(TreeView sender, TreeViewItemInvokedEventArgs args)
@@ -393,34 +393,6 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
             else
             {
                 node.IsExpanded = false;
-            }
-        }
-
-        private void ExpandAllButton_Click(object sender, RoutedEventArgs e)
-        {
-            expandAllButton.Visibility = Visibility.Collapsed;
-            collapseAllButton.Visibility = Visibility.Visible;
-
-            if (treeView.RootNodes.Count > 0)
-            {
-                var node = treeView.RootNodes[0];
-                node.IsExpanded = true;
-
-                ExpandChildren(node);
-            }
-        }
-
-        private void CollapseAllButton_Click(object sender, RoutedEventArgs e)
-        {
-            collapseAllButton.Visibility = Visibility.Collapsed;
-            expandAllButton.Visibility = Visibility.Visible;
-
-            if (treeView.RootNodes.Count > 0)
-            {
-                var node = treeView.RootNodes[0];
-                node.IsExpanded = true;
-
-                CollapseChildren(node);
             }
         }
         #endregion
@@ -764,8 +736,8 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
         #region Helpers
         private void ClearJson()
         {
-            requestJson.Text = string.Empty;
-            responseJson.Text = string.Empty;
+            requestJsonText.Text = string.Empty;
+            responseJsonText.Text = string.Empty;
             treeView.RootNodes.Clear();
 
             var resultCanvas = this.FindName("resultCanvas") as CanvasControl;
@@ -782,15 +754,15 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
         {
             if (progressRing.IsActive == false)
             {
-                recognizeButtonText.Opacity = 0;
-                progressRing.IsActive = true;
+                recognizeButton.Visibility = Visibility.Collapsed;
                 progressRing.Visibility = Visibility.Visible;
+                progressRing.IsActive = true;
             }
             else
             {
-                recognizeButtonText.Opacity = 100;
                 progressRing.IsActive = false;
                 progressRing.Visibility = Visibility.Collapsed;
+                recognizeButton.Visibility = Visibility.Visible;
             }
         }
 
@@ -817,6 +789,39 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
                     var button = child as InkToolbarCustomToolButton;
                     button.IsEnabled = true;
                 }
+            }
+        }
+
+        private void NavItemToggle(string navItemName)
+        {
+            var resultCanvas = this.FindName("resultCanvas") as CanvasControl;
+
+            switch (navItemName)
+            {
+                case "resultCanvasNavItem":
+                    jsonTree.Visibility = Visibility.Collapsed;
+                    responseJson.Visibility = Visibility.Collapsed;
+                    requestJson.Visibility = Visibility.Collapsed;
+                    resultCanvas.Visibility = Visibility.Visible;
+                    break;
+                case "jsonTreeNavItem":
+                    resultCanvas.Visibility = Visibility.Collapsed;
+                    responseJson.Visibility = Visibility.Collapsed;
+                    requestJson.Visibility = Visibility.Collapsed;
+                    jsonTree.Visibility = Visibility.Visible;
+                    break;
+                case "responseJsonNavItem":
+                    resultCanvas.Visibility = Visibility.Collapsed;
+                    jsonTree.Visibility = Visibility.Collapsed;
+                    requestJson.Visibility = Visibility.Collapsed;
+                    responseJson.Visibility = Visibility.Visible;
+                    break;
+                case "requestJsonNavItem":
+                    resultCanvas.Visibility = Visibility.Collapsed;
+                    jsonTree.Visibility = Visibility.Collapsed;
+                    responseJson.Visibility = Visibility.Collapsed;
+                    requestJson.Visibility = Visibility.Visible;
+                    break;
             }
         }
 
@@ -858,40 +863,14 @@ namespace IntelligentKioskSample.Views.InkRecognizerExplorer
             return strokeWidth;
         }
 
-        private void ExpandChildren(TreeViewNode node)
+        private Color GetColorFromHex(string hexCode)
         {
-            if (node.HasChildren)
-            {
-                var children = node.Children;
+            byte a = 255;
+            byte r = Convert.ToByte(hexCode.Substring(1, 2), 16);
+            byte g = Convert.ToByte(hexCode.Substring(3, 2), 16);
+            byte b = Convert.ToByte(hexCode.Substring(5, 2), 16);
 
-                foreach (var child in children)
-                {
-                    child.IsExpanded = true;
-
-                    if (child.HasChildren)
-                    {
-                        ExpandChildren(child);
-                    }
-                }
-            }
-        }
-
-        private void CollapseChildren(TreeViewNode node)
-        {
-            if (node.HasChildren)
-            {
-                var children = node.Children;
-
-                foreach (var child in children)
-                {
-                    child.IsExpanded = false;
-
-                    if (child.HasChildren)
-                    {
-                        CollapseChildren(child);
-                    }
-                }
-            }
+            return Color.FromArgb(a, r, g, b);
         }
         #endregion
     }

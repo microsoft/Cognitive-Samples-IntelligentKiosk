@@ -86,6 +86,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -100,13 +101,13 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Assets\InkRecognitionSampleInstructions.gif" />
     <Content Include="Assets\InkRecognizerExplorer.png" />
     <Content Include="Assets\AnomalyDetector.png" />
     <Content Include="Assets\AnomalyDetector\BikeSharing.png" />
     <Content Include="Assets\AnomalyDetector\LiveSound.png" />
     <Content Include="Assets\AnomalyDetector\Manufacturing.jpg" />
     <Content Include="Assets\AnomalyDetector\Telcom.png" />
+    <Content Include="Assets\InkRecognizerSampleInstructions.gif" />
     <Content Include="Assets\InsuranceClaimAutomation.jpg" />
     <Content Include="Assets\InsuranceClaimAutomation\icon-F780-64.jpg" />
     <Content Include="Assets\RealtimeObjectDetection.png" />
@@ -208,7 +209,6 @@
     <Compile Include="Models\CustomVisionModelData.cs" />
     <Compile Include="Models\InkRecognizerExplorer\InkResponse.cs" />
     <Compile Include="Models\InkRecognizerExplorer\InkRecognitionUnit.cs" />
-    <Compile Include="Models\InkRecognizerExplorer\Language.cs" />
     <Compile Include="Models\InsuranceClaimAutomation\DataModel.cs" />
     <Compile Include="Models\Platform.cs" />
     <Compile Include="Models\TabHeader.cs" />
