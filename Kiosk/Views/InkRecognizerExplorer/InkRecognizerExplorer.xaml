@@ -8,7 +8,6 @@
     Background="Black">
 
     <Grid>
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -21,12 +20,18 @@
             </CommandBar.Content>
         </CommandBar>
 
-        <NavigationView Grid.Row="1" x:Name="navView" Background="{Binding NavigationViewBackground}" PaneDisplayMode="Top" IsSettingsVisible="False" IsBackButtonVisible="Collapsed" ItemInvoked="NavView_ItemInvoked" Margin="12,10,12,0">
-            <NavigationView.MenuItems>
-                <NavigationViewItem Name="inkMirror" Content="Ink Mirror" FontSize="24"/>
-                <NavigationViewItem Name="formFiller" Content="Form Filler" FontSize="24"/>
-            </NavigationView.MenuItems>
-        </NavigationView>
+        <ComboBox Grid.Row="1" x:Name="inkScenarioDropdown" SelectionChanged="InkScenarioDropdown_SelectionChanged" Height="65" Width="200" Margin="24,0,0,0">
+            <ComboBox.Header>
+                <TextBlock Text="Ink Scenario" FontSize="12"/>
+            </ComboBox.Header>
+
+            <ComboBoxItem Name="inkMirror">
+                <TextBlock Text="Ink Mirror" FontSize="22"/>
+            </ComboBoxItem>
+            <ComboBoxItem Name="formFiller">
+                <TextBlock Text="Form Filler" FontSize="22"/>
+            </ComboBoxItem>
+        </ComboBox>
 
         <Frame Grid.Row="2" x:Name="frame"/>
     </Grid>

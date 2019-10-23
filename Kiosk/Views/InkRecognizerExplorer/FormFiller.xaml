@@ -9,183 +9,140 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1.5*"/>
-            <ColumnDefinition Width="7*"/>
-            <ColumnDefinition Width="1.5*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="1" Background="White" Margin="0,10,0,10" RequestedTheme="Light">
+        <Grid Grid.Column="1" Margin="0,24,0,0">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="15*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="18*"/>
+                    <RowDefinition Height="1.6*" MinHeight="45"/>
+                    <RowDefinition Height="24"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="20,10,20,0">
-                    <Viewbox HorizontalAlignment="Left">
-                        <TextBlock Text="Vehicle Accident Report" FontWeight="Bold" FontSize="24"/>
-                    </Viewbox>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <SymbolIcon Symbol="{x:Bind Path=Car}" Foreground="#CCFFFFFF" Margin="0,0,14,0"/>
+                    <TextBlock Text="Vehicle Accident Report" FontSize="24" Foreground="#CCFFFFFF"/>
+                </StackPanel>
 
-                    <Viewbox HorizontalAlignment="Right" VerticalAlignment="Stretch">
-                        <InkToolbar x:Name="inkToolbar" InitialControls="None" Background="LightGray">
-                            <InkToolbarBallpointPenButton x:Name="ballpointPen"/>
-                            <InkToolbarPencilButton/>
-                            <InkToolbarEraserButton IsClearAllVisible="False"/>
-                            <InkToolbarCustomToggleButton x:Name="touchButton" Click="TouchButton_Click" ToolTipService.ToolTip="Touch Writing">
-                                <SymbolIcon Symbol="{x:Bind Path=TouchWriting}"/>
-                            </InkToolbarCustomToggleButton>
-                        </InkToolbar>
-                    </Viewbox>
-                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="1.5*"/>
+                    </Grid.ColumnDefinitions>
 
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="20,20,20,10">
-                    <Grid>
+                    <Grid Grid.Column="0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="2*"/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0" Text="State Vehicle Information" FontSize="20" FontWeight="SemiBold" Margin="0,0,0,5"/>
-                        <Grid Grid.Row="1" Background="Black" Padding="0,0,0,5"> 
-                            <Grid x:Name="vehicleFields" RequestedTheme="Light">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0" Text="State Vehicle Information" FontSize="20" Foreground="#99FFFFFF" Margin="0,0,0,12"/>
 
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
+                        <Grid Grid.Row="1" Background="#1F1F1F" BorderBrush="#767676" BorderThickness="4">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                                <Grid Grid.Column="0" Grid.Row="0" Name="year" Tag="pending" PointerPressed="FormField_PointerPressed" Background="White" BorderThickness="3" BorderBrush="White" Margin="5,5,0,0">
-                                    <StackPanel>
-                                        <TextBlock Text="Car Year:" FontSize="20" FontWeight="SemiBold" TextDecorations="Underline" Margin="5"/>
-                                        <TextBlock x:Name="yearResult" FontSize="24" Margin="5"/>
-                                    </StackPanel>
-                                </Grid>
-                                <Grid Grid.Column="1" Grid.Row="0" Name="make" Tag="pending" PointerPressed="FormField_PointerPressed" Background="White" BorderThickness="3" BorderBrush="White" Margin="5,5,5,0">
-                                    <StackPanel>
-                                        <TextBlock Text="Car Make:" FontSize="20" FontWeight="SemiBold" TextDecorations="Underline" Margin="5"/>
-                                        <TextBlock x:Name="makeResult" FontSize="24" Margin="5"/>
-                                    </StackPanel>
-                                </Grid>
-
-                                <StackPanel Grid.ColumnSpan="2" Grid.Row="1">
-                                    <Grid x:Name="yearGrid" Height="150" Background="LightGray" Visibility="Collapsed" Margin="5,5,5,0">
-                                        <InkCanvas x:Name="yearCanvas"/>
-
-                                        <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <StackPanel>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Accept" Click="AcceptButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Accept}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Undo" Click="UndoButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Redo" Click="RedoButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Clear All" Click="ClearAllButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
-                                                </InkToolbarCustomToolButton>
-                                            </StackPanel>
-                                        </Viewbox>
-                                    </Grid>
-
-                                    <Grid x:Name="makeGrid" Height="150" Background="LightGray" Visibility="Collapsed" Margin="5,5,5,0">
-                                        <InkCanvas x:Name="makeCanvas"/>
-
-                                        <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <StackPanel>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Accept" Click="AcceptButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Accept}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Undo" Click="UndoButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Redo" Click="RedoButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Clear All" Click="ClearAllButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
-                                                </InkToolbarCustomToolButton>
-                                            </StackPanel>
-                                        </Viewbox>
-                                    </Grid>
+                            <Grid Grid.Row="0" x:Name="year" Background="#2B2B2B" BorderBrush="#767676" BorderThickness="0,0,0,2" PointerPressed="FormField_PointerPressed">
+                                <StackPanel Margin="12">
+                                    <TextBlock Text="Vehicle Year" FontSize="14" Foreground="#CCFFFFFF" Margin="0,0,0,50"/>
+                                    <TextBlock x:Name="yearResult" FontSize="24" Visibility="Collapsed"/>
                                 </StackPanel>
 
-                                <Grid Grid.Column="0" Grid.Row="2" Name="model" Tag="pending" PointerPressed="FormField_PointerPressed" Background="White" BorderThickness="3" BorderBrush="White" Margin="5,5,0,0">
-                                    <StackPanel>
-                                        <TextBlock Text="Car Model:" FontSize="20" FontWeight="SemiBold" TextDecorations="Underline" Margin="5"/>
-                                        <TextBlock x:Name="modelResult" FontSize="24" Margin="5"/>
-                                    </StackPanel>
+                                <Grid x:Name="yearCanvasGrid" Visibility="Visible">
+                                    <InkCanvas x:Name="yearCanvas"/>
+
+                                    <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <StackPanel>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Accept" Click="AcceptButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Accept}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Undo" Click="UndoButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Redo" Click="RedoButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Clear All" Click="ClearAllButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
+                                            </InkToolbarCustomToolButton>
+                                        </StackPanel>
+                                    </Viewbox>
                                 </Grid>
-                                <Grid Grid.Column="1" Grid.Row="2" Name="mileage" Tag="pending" PointerPressed="FormField_PointerPressed" Background="White" BorderThickness="3" BorderBrush="White" Margin="5,5,5,0">
-                                    <StackPanel>
-                                        <TextBlock Text="Mileage:" FontSize="20" FontWeight="SemiBold" TextDecorations="Underline" Margin="5"/>
-                                        <TextBlock x:Name="mileageResult" FontSize="24" Margin="5"/>
-                                    </StackPanel>
-                                </Grid>
+                            </Grid>
 
-                                <StackPanel Grid.ColumnSpan="2" Grid.Row="3">
-                                    <Grid x:Name="modelGrid" Height="150" Background="LightGray" Visibility="Collapsed" Margin="5,5,5,0">
-                                        <InkCanvas x:Name="modelCanvas"/>
-
-                                        <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <StackPanel>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Accept" Click="AcceptButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Accept}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Undo" Click="UndoButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Redo" Click="RedoButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Clear All" Click="ClearAllButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
-                                                </InkToolbarCustomToolButton>
-                                            </StackPanel>
-                                        </Viewbox>
-                                    </Grid>
-
-                                    <Grid x:Name="mileageGrid" Height="150" Background="LightGray" Visibility="Collapsed" Margin="5,5,5,0">
-                                        <InkCanvas x:Name="mileageCanvas"/>
-
-                                        <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
-                                            <StackPanel>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Accept" Click="AcceptButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Accept}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Undo" Click="UndoButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Redo" Click="RedoButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
-                                                </InkToolbarCustomToolButton>
-                                                <InkToolbarCustomToolButton ToolTipService.ToolTip="Clear All" Click="ClearAllButton_Click">
-                                                    <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
-                                                </InkToolbarCustomToolButton>
-                                            </StackPanel>
-                                        </Viewbox>
-                                    </Grid>
+                            <Grid Grid.Row="1" x:Name="make" BorderBrush="#767676" BorderThickness="0,0,0,2" PointerPressed="FormField_PointerPressed">
+                                <StackPanel Margin="12">
+                                    <TextBlock Text="Vehicle Make" FontSize="14" Foreground="#CCFFFFFF" Margin="0,0,0,50"/>
+                                    <TextBlock x:Name="makeResult" FontSize="24" Visibility="Visible"/>
                                 </StackPanel>
 
-                                <Grid Grid.ColumnSpan="2" Grid.Row="4" Name="license" Tag="pending" PointerPressed="FormField_PointerPressed" Background="White" BorderThickness="3" BorderBrush="White" Margin="5,5,5,0">
-                                    <StackPanel>
-                                        <TextBlock Text="License Plate Number:" FontSize="20" FontWeight="SemiBold" TextDecorations="Underline" Margin="5"/>
-                                        <TextBlock x:Name="licenseResult" FontSize="24" Margin="5"/>
-                                    </StackPanel>
-                                </Grid>
+                                <Grid x:Name="makeCanvasGrid" Visibility="Collapsed">
+                                    <InkCanvas x:Name="makeCanvas"/>
 
-                                <Grid Grid.ColumnSpan="2" Grid.Row="5" x:Name="licenseGrid" Height="150" Background="LightGray" Visibility="Collapsed" Margin="5,5,5,0">
+                                    <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <StackPanel>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Accept" Click="AcceptButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Accept}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Undo" Click="UndoButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Redo" Click="RedoButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Clear All" Click="ClearAllButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
+                                            </InkToolbarCustomToolButton>
+                                        </StackPanel>
+                                    </Viewbox>
+                                </Grid>
+                            </Grid>
+
+                            <Grid Grid.Row="2" x:Name="model" BorderBrush="#767676" BorderThickness="0,0,0,2" PointerPressed="FormField_PointerPressed">
+                                <StackPanel Margin="12">
+                                    <TextBlock Text="Vehicle Model" FontSize="14" Foreground="#CCFFFFFF" Margin="0,0,0,50"/>
+                                    <TextBlock x:Name="modelResult" FontSize="24" Visibility="Visible"/>
+                                </StackPanel>
+
+                                <Grid x:Name="modelCanvasGrid" Visibility="Collapsed">
+                                    <InkCanvas x:Name="modelCanvas"/>
+
+                                    <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <StackPanel>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Accept" Click="AcceptButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Accept}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Undo" Click="UndoButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Redo" Click="RedoButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Clear All" Click="ClearAllButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
+                                            </InkToolbarCustomToolButton>
+                                        </StackPanel>
+                                    </Viewbox>
+                                </Grid>
+                            </Grid>
+
+                            <Grid Grid.Row="3" x:Name="license" PointerPressed="FormField_PointerPressed">
+                                <StackPanel Margin="12">
+                                    <TextBlock Text="Vehicle License Plate" FontSize="14" Foreground="#CCFFFFFF" Margin="0,0,0,50"/>
+                                    <TextBlock x:Name="licenseResult" FontSize="24" Visibility="Visible"/>
+                                </StackPanel>
+
+                                <Grid x:Name="licenseCanvasGrid" Visibility="Collapsed">
                                     <InkCanvas x:Name="licenseCanvas"/>
 
                                     <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
@@ -207,9 +164,17 @@
                                 </Grid>
                             </Grid>
                         </Grid>
+                    </Grid>
 
-                        <TextBlock Grid.Row="2" Text="Accident Information" FontSize="20" FontWeight="SemiBold" Margin="0,20,0,5"/>
-                        <Grid Grid.Row="3" x:Name="accidentFields" RequestedTheme="Light" Background="Black" Padding="0,0,0,5">
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Text="Accident Information" FontSize="20" Foreground="#99FFFFFF" Margin="0,0,0,12"/>
+
+                        <Grid Grid.Row="1" Background="#1F1F1F" BorderBrush="#767676" BorderThickness="4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
@@ -217,26 +182,16 @@
 
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="5*"/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="3*"/>
                             </Grid.RowDefinitions>
 
-                            <Grid Grid.Column="0" Grid.Row="0" Name="date" Tag="pending" PointerPressed="FormField_PointerPressed" Background="White" BorderThickness="3" BorderBrush="White" Margin="5,5,0,0">
-                                <StackPanel>
-                                    <TextBlock Text="Date of Accident:" FontSize="20" FontWeight="SemiBold" TextDecorations="Underline" Margin="5"/>
-                                    <TextBlock x:Name="dateResult" FontSize="24" Margin="5"/>
+                            <Grid Grid.Column="0" Grid.Row="0" x:Name="date" BorderBrush="#767676" BorderThickness="0,0,2,2" PointerPressed="FormField_PointerPressed">
+                                <StackPanel Margin="12">
+                                    <TextBlock Text="Accident Date" FontSize="14" Foreground="#CCFFFFFF" Margin="0,0,0,50"/>
+                                    <TextBlock x:Name="dateResult" FontSize="24" Visibility="Visible"/>
                                 </StackPanel>
-                            </Grid>
-                            <Grid Grid.Column="1" Grid.Row="0" Name="time" Tag="pending" PointerPressed="FormField_PointerPressed" Background="White" BorderThickness="3" BorderBrush="White" Margin="5,5,5,0">
-                                <StackPanel>
-                                    <TextBlock Text="Time of Accident:" FontSize="20" FontWeight="SemiBold" TextDecorations="Underline" Margin="5"/>
-                                    <TextBlock x:Name="timeResult" FontSize="24" Margin="5"/>
-                                </StackPanel>
-                            </Grid>
 
-                            <StackPanel Grid.ColumnSpan="2" Grid.Row="1">
-                                <Grid x:Name="dateGrid" Height="150" Background="LightGray" Visibility="Collapsed" Margin="5,5,5,0">
+                                <Grid x:Name="dateCanvasGrid" Visibility="Collapsed">
                                     <InkCanvas x:Name="dateCanvas"/>
 
                                     <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
@@ -256,8 +211,15 @@
                                         </StackPanel>
                                     </Viewbox>
                                 </Grid>
+                            </Grid>
 
-                                <Grid x:Name="timeGrid" Height="150" Background="LightGray" Visibility="Collapsed" Margin="5,5,5,0">
+                            <Grid Grid.Column="1" Grid.Row="0" x:Name="time" BorderBrush="#767676" BorderThickness="0,0,0,2" PointerPressed="FormField_PointerPressed">
+                                <StackPanel Margin="12">
+                                    <TextBlock Text="Accident Time" FontSize="14" Foreground="#CCFFFFFF" Margin="0,0,0,50"/>
+                                    <TextBlock x:Name="timeResult" FontSize="24" Visibility="Visible"/>
+                                </StackPanel>
+
+                                <Grid x:Name="timeCanvasGrid" Visibility="Collapsed">
                                     <InkCanvas x:Name="timeCanvas"/>
 
                                     <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
@@ -277,38 +239,54 @@
                                         </StackPanel>
                                     </Viewbox>
                                 </Grid>
-                            </StackPanel>
-
-                            <Grid Grid.ColumnSpan="2" Grid.Row="2" Name="damage" Tag="pending" PointerPressed="FormField_PointerPressed" Background="White" BorderThickness="3" BorderBrush="White" Margin="5,5,5,0">
-                                <StackPanel>
-                                    <TextBlock Text="Describe Damage to Vehicle:" FontSize="20" FontWeight="SemiBold" TextDecorations="Underline" Margin="5"/>
-                                    <TextBlock x:Name="damageResult" FontSize="24" Margin="5"/>
-                                </StackPanel>
                             </Grid>
 
-                            <Grid Grid.ColumnSpan="2" Grid.Row="3" x:Name="damageGrid" Height="150" Background="LightGray" Visibility="Collapsed" Margin="5,5,5,0">
-                                <InkCanvas x:Name="damageCanvas"/>
+                            <Grid Grid.ColumnSpan="2" Grid.Row="1" x:Name="damage" PointerPressed="FormField_PointerPressed">
+                                <StackPanel Margin="12">
+                                    <TextBlock Text="Damage to Vehicle" FontSize="14" Foreground="#CCFFFFFF" Margin="0,0,0,50"/>
+                                    <TextBlock x:Name="damageResult" FontSize="24" Visibility="Visible"/>
+                                </StackPanel>
 
-                                <Viewbox VerticalAlignment="Center" HorizontalAlignment="Right">
-                                    <StackPanel>
-                                        <InkToolbarCustomToolButton ToolTipService.ToolTip="Accept" Click="AcceptButton_Click">
-                                            <SymbolIcon Symbol="{x:Bind Path=Accept}"/>
-                                        </InkToolbarCustomToolButton>
-                                        <InkToolbarCustomToolButton ToolTipService.ToolTip="Undo" Click="UndoButton_Click">
-                                            <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
-                                        </InkToolbarCustomToolButton>
-                                        <InkToolbarCustomToolButton ToolTipService.ToolTip="Redo" Click="RedoButton_Click">
-                                            <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
-                                        </InkToolbarCustomToolButton>
-                                        <InkToolbarCustomToolButton ToolTipService.ToolTip="Clear All" Click="ClearAllButton_Click">
-                                            <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
-                                        </InkToolbarCustomToolButton>
-                                    </StackPanel>
-                                </Viewbox>
+                                <Grid x:Name="damageCanvasGrid" Visibility="Collapsed">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="2*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <InkCanvas Grid.RowSpan="2" x:Name="damageCanvas"/>
+
+                                    <Viewbox Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <StackPanel>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Accept" Click="AcceptButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Accept}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Undo" Click="UndoButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Undo}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Redo" Click="RedoButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=Redo}"/>
+                                            </InkToolbarCustomToolButton>
+                                            <InkToolbarCustomToolButton ToolTipService.ToolTip="Clear All" Click="ClearAllButton_Click">
+                                                <SymbolIcon Symbol="{x:Bind Path=ClearAll}"/>
+                                            </InkToolbarCustomToolButton>
+                                        </StackPanel>
+                                    </Viewbox>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
-                </ScrollViewer>
+                </Grid>
+
+                <Viewbox Grid.Row="3" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,24,0,0">
+                    <InkToolbar x:Name="inkToolbar" InitialControls="None" Background="#2D2D2D" BorderBrush="#44000000" BorderThickness="1">
+                        <InkToolbarBallpointPenButton x:Name="ballpointPen"/>
+                        <InkToolbarPencilButton x:Name="pencil"/>
+                        <InkToolbarEraserButton IsClearAllVisible="False"/>
+                        <InkToolbarCustomToggleButton x:Name="touchButton" Click="TouchButton_Click" ToolTipService.ToolTip="Touch Writing">
+                            <SymbolIcon Symbol="{x:Bind Path=TouchWriting}"/>
+                        </InkToolbarCustomToggleButton>
+                    </InkToolbar>
+                </Viewbox>
             </Grid>
         </Grid>
     </Grid>
