@@ -142,13 +142,10 @@ namespace IntelligentKioskSample.Views.VisualAlert
             {
                 case VisualAlertBuilderStepType.NewSubject:
                     this.stepNumber.Text = "1";
-                    this.titleTextBlock.Text = "Add images with subject";
                     this.nextStepButton.IsEnabled = !string.IsNullOrEmpty(SubjectName);
                     break;
 
                 case VisualAlertBuilderStepType.AddPositiveImages:
-                    this.titleTextBlock.Text = $"Add images with '{SubjectName}'";
-
                     this.nextStepButton.IsEnabled = PositiveSubjectImageCollection.Any();
                     this.imageCount.Text = $"{PositiveSubjectImageCollection.Count}";
                     this.imageCountTextBlock.Visibility = Visibility.Visible;
@@ -156,7 +153,6 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
                 case VisualAlertBuilderStepType.AddNegativeImages:
                     this.stepNumber.Text = "2";
-                    this.titleTextBlock.Text = "Add images without subject";
 
                     this.nextStepButton.IsEnabled = NegativeSubjectImageCollection.Any();
                     this.imageCount.Text = $"{NegativeSubjectImageCollection.Count}";
@@ -172,7 +168,6 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
                 case VisualAlertBuilderStepType.TrainModel:
                     this.stepNumber.Text = "3";
-                    this.titleTextBlock.Text = "Train alert model";
 
                     this.nextStepButton.Content = "Train model";
                     this.imageCountTextBlock.Visibility = Visibility.Collapsed;

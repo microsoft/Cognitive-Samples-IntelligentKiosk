@@ -38,7 +38,18 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0" x:Name="titleTextBlock" Text="Add images with subject" Style="{StaticResource SubheaderTextBlockStyle}"/>
+            <Grid Grid.Column="0">
+                <Grid.Resources>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}"/>
+                </Grid.Resources>
+                <TextBlock Text="Add images with subject" Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='NewSubject'}"/>
+                <TextBlock                                Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='AddPositiveImages'}">
+                    <Run Text="Add images with"/>
+                    <Run Text="{Binding SubjectName}" FontWeight="SemiBold"/>
+                </TextBlock>
+                <TextBlock Text="Add images without subject" Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='AddNegativeImages'}"/>
+                <TextBlock Text="Train alert model"          Visibility="{Binding BuilderStepType, Converter={StaticResource enumMatchToVisibilityConverter}, ConverterParameter='TrainModel'}"/>
+            </Grid>
 
             <TextBlock Grid.Column="1" x:Name="imageCountTextBlock" Visibility="Collapsed">
                 <Run x:Name="imageCount" Text="0"/>
