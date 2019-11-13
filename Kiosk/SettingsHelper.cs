@@ -522,7 +522,7 @@ namespace IntelligentKioskSample
             }
         }
 
-        private bool showAgeAndGender = false;
+        private bool showAgeAndGender = true;
         public bool ShowAgeAndGender
         {
             get { return showAgeAndGender; }

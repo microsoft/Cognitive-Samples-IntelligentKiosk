@@ -204,6 +204,8 @@
                         <Slider x:Name="MinDetectableFaceSizeSlider" Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" SmallChange="1" LargeChange="5" Header="Minimum detectable face size (as % of image height):" HorizontalAlignment="Left" Margin="0,0,0,0" StepFrequency="1"/>
                         <TextBlock Text="{Binding ElementName=MinDetectableFaceSizeSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>
                     </StackPanel>
+
+                    <ToggleSwitch IsOn="{Binding ShowAgeAndGender, Mode=TwoWay}" Header="Show and and gender info:" Margin="0,6,0,0"/>
                 </StackPanel>
 
                 <StackPanel Margin="0,25,0,0">
