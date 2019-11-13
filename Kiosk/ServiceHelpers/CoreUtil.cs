@@ -55,14 +55,18 @@ namespace ServiceHelpers
             return faceHeightPercentage >= MinDetectableFaceCoveragePercentage;
         }
 
-
-        public static bool AreFacesPotentiallyTheSame(FaceRectangle face1, FaceRectangle face2)
+        public static bool AreFacesPotentiallyTheSame(Face.FaceRectangle face1, Face.FaceRectangle face2)
         {
             return AreFacesPotentiallyTheSame(face1.Left, face1.Top, face1.Width, face1.Height, face2.Left, face2.Top, face2.Width, face2.Height);
         }
 
-        public static bool AreFacesPotentiallyTheSame(int face1X, int face1Y, int face1Width, int face1Height,
-                                                       int face2X, int face2Y, int face2Width, int face2Height)
+        public static bool AreFacesPotentiallyTheSame(Rect face1, Rect face2)
+        {
+            return AreFacesPotentiallyTheSame(face1.Left, face1.Top, face1.Width, face1.Height, face2.Left, face2.Top, face2.Width, face2.Height);
+        }
+
+        public static bool AreFacesPotentiallyTheSame(double face1X, double face1Y, double face1Width, double face1Height,
+                                                       double face2X, double face2Y, double face2Width, double face2Height)
         {
             double distanceThresholdFactor = 1;
             double sizeThresholdFactor = 0.5;

@@ -216,7 +216,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
 
                     this.webCamHostGrid.Visibility = Visibility.Collapsed;
                     this.imageHostGrid.Visibility = Visibility.Collapsed;
-                    this.ocrModeCombobox.Visibility = Visibility.Collapsed;
                     this.ocrTextGrid.Visibility = Visibility.Collapsed;
 
                     this.favoritePhotosGridView.SelectedItem = null;
@@ -294,7 +293,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
         {
             this.UpdateActivePhoto(e);
 
-            this.imageFromCameraWithFaces.TextRecognitionMode = e.TextRecognitionMode;
             this.imageFromCameraWithFaces.DataContext = e;
             this.imageFromCameraWithFaces.Visibility = Visibility.Visible;
 
@@ -330,7 +328,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
 
                 this.UpdateActivePhoto(image);
 
-                this.imageWithFacesControl.TextRecognitionMode = image.TextRecognitionMode;
                 this.imageWithFacesControl.DataContext = image;
 
                 UpdateImageSize();
@@ -351,7 +348,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
 
             this.UpdateActivePhoto(image);
 
-            this.imageWithFacesControl.TextRecognitionMode = image.TextRecognitionMode;
             this.imageWithFacesControl.DataContext = image;
 
             UpdateImageSize();
@@ -366,15 +362,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
         {
             ClearOutputData();
             this.landingMessage.Visibility = Visibility.Collapsed;
-
-            if (printedOCRComboBoxItem.IsSelected)
-            {
-                img.TextRecognitionMode = TextRecognitionMode.Printed;
-            }
-            else if (handwrittigOCRComboBoxItem.IsSelected)
-            {
-                img.TextRecognitionMode = TextRecognitionMode.Handwritten;
-            }
 
             if (img.TextOperationResult?.RecognitionResult != null)
             {
@@ -394,8 +381,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
             this.ocrTextBlock.Text = string.Empty;
             if (imageAnalyzer.TextOperationResult?.RecognitionResult?.Lines != null)
             {
-                this.ocrModeCombobox.Visibility = Visibility.Visible;
-
                 IEnumerable<string> lines = imageAnalyzer.TextOperationResult.RecognitionResult.Lines.Select(l => string.Join(" ", l?.Words?.Select(w => w.Text)));
                 this.ocrTextBlock.Text = string.Join(" ", lines);
                 this.ocrTextGrid.Visibility = Visibility.Visible;
@@ -403,49 +388,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
                 // Detect language and translate the OCR Recognized text
                 await DetectedLanguageAsync(this.ocrTextBlock.Text);
                 await TranslateTextAsync();
-            }
-        }
-
-        private void OcrModeSelectionChanged(object sender, SelectionChangedEventArgs args)
-        {
-            if (printedOCRComboBoxItem.IsSelected)
-            {
-                UpdateTextRecognition(TextRecognitionMode.Printed);
-            }
-            else if (handwrittigOCRComboBoxItem.IsSelected)
-            {
-                UpdateTextRecognition(TextRecognitionMode.Handwritten);
-            }
-        }
-
-        private void UpdateTextRecognition(TextRecognitionMode textRecognitionMode)
-        {
-            if (this.imageFromCameraWithFaces == null || this.imageWithFacesControl == null)
-            {
-                return;
-            }
-
-            imageFromCameraWithFaces.TextRecognitionMode = textRecognitionMode;
-            imageWithFacesControl.TextRecognitionMode = textRecognitionMode;
-
-            var currentImageDisplay = this.imageWithFacesControl.Visibility == Visibility.Visible ? this.imageWithFacesControl : this.imageFromCameraWithFaces;
-            if (currentImageDisplay.DataContext != null)
-            {
-                var img = currentImageDisplay.DataContext;
-                ImageAnalyzer analyzer = (ImageAnalyzer)img;
-                if (analyzer.TextOperationResult?.RecognitionResult != null)
-                {
-                    UpdateOcrTextBoxContent(analyzer);
-                }
-                else
-                {
-                    analyzer.TextRecognitionCompleted += (s, args) =>
-                    {
-                        UpdateOcrTextBoxContent(analyzer);
-                    };
-                }
-                currentImageDisplay.DataContext = null;
-                currentImageDisplay.DataContext = img;
             }
         }
         #endregion

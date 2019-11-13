@@ -261,8 +261,6 @@ namespace IntelligentKioskSample.Controls
             set { SetValue(PerformObjectDetectionProperty, (bool)value); }
         }
 
-        public TextRecognitionMode TextRecognitionMode { get; set; }
-
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
             ImageAnalyzer dataContext = this.DataContext as ImageAnalyzer;
@@ -409,9 +407,9 @@ namespace IntelligentKioskSample.Controls
                     tasks.Add(img.AnalyzeImageAsync(new List<Details> { Details.Celebrities, Details.Landmarks }));
                 }
 
-                if (this.PerformOCRAnalysis && (img.TextOperationResult == null || img.TextRecognitionMode != this.TextRecognitionMode))
+                if (this.PerformOCRAnalysis && img.TextOperationResult == null)
                 {
-                    tasks.Add(img.RecognizeTextAsync(this.TextRecognitionMode));
+                    tasks.Add(img.RecognizeTextAsync());
                 }
 
                 if (this.PerformObjectDetection && img.DetectedObjects == null)

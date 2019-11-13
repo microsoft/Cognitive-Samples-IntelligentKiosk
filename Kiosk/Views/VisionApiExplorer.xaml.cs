@@ -228,26 +228,11 @@ namespace IntelligentKioskSample.Views
 
         private void OnOCRToggled(object sender, RoutedEventArgs e)
         {
-            this.printedOCRComboBoxItem.IsSelected = true;
-            UpdateTextRecognition(TextRecognitionMode.Printed);
+            UpdateTextRecognition();
         }
 
-        private void OcrModeSelectionChanged(object sender, SelectionChangedEventArgs args)
+        private void UpdateTextRecognition()
         {
-            if (printedOCRComboBoxItem.IsSelected)
-            {
-                UpdateTextRecognition(TextRecognitionMode.Printed);
-            }
-            else if (handwrittigOCRComboBoxItem.IsSelected)
-            {
-                UpdateTextRecognition(TextRecognitionMode.Handwritten);
-            }
-        }
-
-        private void UpdateTextRecognition(TextRecognitionMode textRecognitionMode)
-        {
-            imageWithFacesControl.TextRecognitionMode = textRecognitionMode;
-
             var currentImageDisplay = this.imageWithFacesControl;
             if (currentImageDisplay.DataContext != null)
             {

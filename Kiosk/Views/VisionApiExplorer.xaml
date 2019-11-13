@@ -139,12 +139,6 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <ToggleSwitch Header="Text Recognition:" x:Name="ocrToggle" Toggled="OnOCRToggled" />
-                        <ComboBox Grid.Column="1" Header="Recognition Mode:" SelectionChanged="OcrModeSelectionChanged"
-                                  Width="160" HorizontalAlignment="Right"
-                                  Visibility="{Binding ElementName=ocrToggle, Path=IsOn, Converter={StaticResource bolleanToVisibilityConverter}}">
-                            <ComboBoxItem x:Name="printedOCRComboBoxItem" IsSelected="True" Content="Printed Text" />
-                            <ComboBoxItem x:Name="handwrittigOCRComboBoxItem" Content="Handwritten Text" />
-                        </ComboBox>
                     </Grid>
                     <TextBox x:Name="ocrTextBox" Margin="0,5,24,0" AcceptsReturn="True" Height="200"
                              Visibility="{Binding ElementName=ocrToggle, Path=IsOn, Converter={StaticResource bolleanToVisibilityConverter}}"/>

@@ -36,14 +36,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.DigitalAssetManagement
 {
-    [KioskExperience(Id = "DigitalAssetManagement",
-        DisplayName = "Digital Asset Management",
-        Description = "See how Computer Vision can add a layer of insights to image collections",
-        ImagePath = "ms-appx:/Assets/DemoGallery/Image Collection Insights.jpg",
-        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
-        TechnologiesUsed = TechnologyType.Face | TechnologyType.Emotion | TechnologyType.Vision,
-        TechnologyArea = TechnologyAreaType.Vision,
-        DateAdded = "2019/10/30")]
+    [KioskExperience(Title = "Digital Asset Management", ImagePath = "ms-appx:/Assets/ImageCollectionInsights.jpg", ExperienceType = ExperienceType.Other)]
     public sealed partial class DigitalAssetManagementPage : Page, INotifyPropertyChanged
     {
         const int _maxImageCountPerProcessingCycle = 50;
@@ -72,7 +65,7 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
                 await new MessageDialog("Missing Face or Vision API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();
             }
 
-            FaceListManager.FaceListsUserDataFilter = SettingsHelper.Instance.FaceApiUserDataFilter + "_DigitalAssetManagement";
+            FaceListManager.FaceListsUserDataFilter = "DigitalAssetManagement";
             await FaceListManager.Initialize();
 
             //load files
@@ -219,9 +212,6 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
 
                 //save data
                 await FileManager.SaveFileAsync(CurrentData);
-
-                // Send telemetry
-                AppInsightsHelper.TrackEvent("DigitalAssetManagement_ProcessedImages");
             }
             catch
             {
@@ -297,9 +287,6 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
 
                 //save data
                 await FileManager.SaveFileAsync(CurrentData);
-
-                // Send telemetry
-                AppInsightsHelper.TrackEvent("DigitalAssetManagement_ProcessedMoreImages");
             }
             catch
             {

@@ -650,8 +650,6 @@
         </StackPanel>
 
         <ProgressRing x:Name="progressRing" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2" Grid.RowSpan="3"  Grid.Column="1"/>
-
-        <ctl:KioskFooterControl Grid.Row="3" Grid.ColumnSpan="2"/>
-
+        
     </Grid>
 </Page>

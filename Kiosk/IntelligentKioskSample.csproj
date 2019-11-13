@@ -165,6 +165,7 @@
     <Compile Include="Controls\SpeechToTextControl.xaml.cs">
       <DependentUpon>SpeechToTextControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TemplateSelectors.cs" />
     <Compile Include="Controls\UpDownVerticalBarControl.xaml.cs">
       <DependentUpon>UpDownVerticalBarControl.xaml</DependentUpon>
     </Compile>
