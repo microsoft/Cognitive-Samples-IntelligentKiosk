@@ -271,15 +271,6 @@
     <Compile Include="Views\GreetingKiosk.xaml.cs">
       <DependentUpon>GreetingKiosk.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ImageCollectionInsights\EmotionFilterViewModel.cs" />
-    <Compile Include="Views\ImageCollectionInsights\FaceFilterViewModel.cs" />
-    <Compile Include="Views\ImageCollectionInsights\FaceInsights.cs" />
-    <Compile Include="Views\ImageCollectionInsights\ImageCollectionInsights.xaml.cs" />
-    <Compile Include="Views\ImageCollectionInsights\ImageInsights.cs" />
-    <Compile Include="Views\ImageCollectionInsights\ImageInsightsViewModel.cs" />
-    <Compile Include="Views\ImageCollectionInsights\ImageProcessor.cs" />
-    <Compile Include="Views\ImageCollectionInsights\TagFilterViewModel.cs" />
-    <Compile Include="Views\ImageCollectionInsights\VisionInsights.cs" />
     <Compile Include="Views\InkRecognizerExplorer\InkRecognizerExplorer.xaml.cs">
       <DependentUpon>InkRecognizerExplorer.xaml</DependentUpon>
     </Compile>
@@ -557,10 +548,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\GreetingKiosk.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\ImageCollectionInsights\ImageCollectionInsights.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
