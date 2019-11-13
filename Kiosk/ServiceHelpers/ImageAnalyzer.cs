@@ -38,6 +38,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace ServiceHelpers
 {
@@ -81,7 +83,6 @@ namespace ServiceHelpers
         public ImageDescription ImageDescription { get; set; }
         public IEnumerable<DetectedObject> DetectedObjects { get; set; }
         public TextOperationResult TextOperationResult { get; set; }
-        public TextRecognitionMode TextRecognitionMode { get; set; }
 
         // Default to no errors, since this could trigger a stream of popup errors since we might call this
         // for several images at once while auto-detecting the Bing Image Search results.
@@ -116,7 +117,26 @@ namespace ServiceHelpers
             this.DecodedImageWidth = width;
         }
 
-        public async Task DetectFacesAsync(bool detectFaceAttributes = false, bool detectFaceLandmarks = false)
+        public async Task<ImageSource> GetImageSource()
+        {
+            //get image from url
+            if (ImageUrl != null)
+            {
+                return new BitmapImage(new Uri(ImageUrl));
+            }
+
+            //get image from stream
+            else if (GetImageStreamCallback != null)
+            {
+                var bitmap = new BitmapImage();
+                await bitmap.SetSourceAsync((await GetImageStreamCallback()).AsRandomAccessStream());
+                return bitmap;
+            }
+
+            return null;
+        }
+
+        public async Task DetectFacesAsync(bool detectFaceAttributes = false, bool detectFaceLandmarks = false, FaceAttributeType[] faceAttributeTypes = null)
         {
             try
             {
@@ -126,7 +146,7 @@ namespace ServiceHelpers
                         this.ImageUrl,
                         returnFaceId: true,
                         returnFaceLandmarks: detectFaceLandmarks,
-                        returnFaceAttributes: detectFaceAttributes ? DefaultFaceAttributeTypes : null);
+                        returnFaceAttributes: detectFaceAttributes ? faceAttributeTypes ?? DefaultFaceAttributeTypes : null);
                 }
                 else if (this.GetImageStreamCallback != null)
                 {
@@ -134,7 +154,7 @@ namespace ServiceHelpers
                         this.GetImageStreamCallback,
                         returnFaceId: true,
                         returnFaceLandmarks: detectFaceLandmarks,
-                        returnFaceAttributes: detectFaceAttributes ? DefaultFaceAttributeTypes : null);
+                        returnFaceAttributes: detectFaceAttributes ? faceAttributeTypes ?? DefaultFaceAttributeTypes : null);
                 }
 
                 if (this.FilterOutSmallFaces)
@@ -257,18 +277,17 @@ namespace ServiceHelpers
             }
         }
 
-        public async Task RecognizeTextAsync(TextRecognitionMode textRecognitionMode)
+        public async Task RecognizeTextAsync()
         {
             try
             {
-                this.TextRecognitionMode = textRecognitionMode;
                 if (this.ImageUrl != null)
                 {
-                    this.TextOperationResult = await VisionServiceHelper.RecognizeTextAsync(this.ImageUrl, textRecognitionMode);
+                    this.TextOperationResult = (await VisionServiceHelper.BatchReadFileAsync(this.ImageUrl)).ConvertToTextOperationResult();
                 }
                 else if (this.GetImageStreamCallback != null)
                 {
-                    this.TextOperationResult = await VisionServiceHelper.RecognizeTextAsync(this.GetImageStreamCallback, textRecognitionMode);
+                    this.TextOperationResult = (await VisionServiceHelper.BatchReadFileAsync(this.GetImageStreamCallback)).ConvertToTextOperationResult();
                 }
             }
             catch (Exception ex)

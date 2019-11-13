@@ -36,6 +36,7 @@ using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ServiceHelpers
@@ -159,16 +160,16 @@ namespace ServiceHelpers
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.DescribeImageAsync(imageUrl));
         }
 
-        public static async Task<TextOperationResult> RecognizeTextAsync(string imageUrl, TextRecognitionMode textRecognitionMode, bool detectOrientation = true)
+        public static async Task<ReadOperationResult> BatchReadFileAsync(string imageUrl)
         {
-            RecognizeTextHeaders textHeaders = await client.RecognizeTextAsync(imageUrl, textRecognitionMode);
-            return await GetTextRecognitionResultAsync(client, textHeaders.OperationLocation);
+            var textHeaders = await client.BatchReadFileAsync(imageUrl);
+            return await GetReadResultAsync(client, textHeaders.OperationLocation);
         }
 
-        public static async Task<TextOperationResult> RecognizeTextAsync(Func<Task<Stream>> imageStreamCallback, TextRecognitionMode textRecognitionMode, bool detectOrientation = true)
+        public static async Task<ReadOperationResult> BatchReadFileAsync(Func<Task<Stream>> imageStreamCallback)
         {
-            RecognizeTextInStreamHeaders textHeaders = await client.RecognizeTextInStreamAsync(await imageStreamCallback(), textRecognitionMode);
-            return await GetTextRecognitionResultAsync(client, textHeaders.OperationLocation);
+            var textHeaders = await client.BatchReadFileInStreamAsync(await imageStreamCallback());
+            return await GetReadResultAsync(client, textHeaders.OperationLocation);
         }
 
         public static async Task<DetectResult> DetectObjectsInStreamAsync(Func<Task<Stream>> imageStreamCallback)
@@ -181,11 +182,11 @@ namespace ServiceHelpers
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.DetectObjectsAsync(imageUrl));
         }
 
-        private static async Task<TextOperationResult> GetTextRecognitionResultAsync(ComputerVisionClient computerVision, string operationLocation)
+        private static async Task<ReadOperationResult> GetReadResultAsync(ComputerVisionClient computerVision, string operationLocation)
         {
             // Retrieve the URI where the recognized text will be stored from the Operation-Location header
             string operationId = operationLocation.Substring(operationLocation.Length - NumberOfCharsInOperationId);
-            TextOperationResult result = await computerVision.GetTextOperationResultAsync(operationId);
+            var result = await computerVision.GetReadOperationResultAsync(operationId);
 
             // Wait for the operation to complete
             int i = 0;
@@ -193,10 +194,15 @@ namespace ServiceHelpers
                 i++ < MaxRetriesOnTextRecognition)
             {
                 await Task.Delay(DelayOnTextRecognition);
-                result = await computerVision.GetTextOperationResultAsync(operationId);
+                result = await computerVision.GetReadOperationResultAsync(operationId);
             }
 
             return result;
+        }
+
+        public static TextOperationResult ConvertToTextOperationResult(this ReadOperationResult entity)
+        {
+            return new TextOperationResult() { Status = entity.Status, RecognitionResult = entity.RecognitionResults?.FirstOrDefault() };
         }
     }
 }

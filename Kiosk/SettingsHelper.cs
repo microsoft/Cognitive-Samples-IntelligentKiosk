@@ -228,6 +228,16 @@ namespace IntelligentKioskSample
                 }
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["ShowAgeAndGender"];
+            if (value != null)
+            {
+                bool booleanValue;
+                if (bool.TryParse(value.ToString(), out booleanValue))
+                {
+                    this.ShowAgeAndGender = booleanValue;
+                }
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["CustomVisionPredictionApiKey"];
             if (value != null)
             {
@@ -509,6 +519,17 @@ namespace IntelligentKioskSample
             {
                 this.showDebugInfo = value;
                 this.OnSettingChanged("ShowDebugInfo", value);
+            }
+        }
+
+        private bool showAgeAndGender = false;
+        public bool ShowAgeAndGender
+        {
+            get { return showAgeAndGender; }
+            set
+            {
+                this.showAgeAndGender = value;
+                this.OnSettingChanged("ShowAgeAndGender", value);
             }
         }
 

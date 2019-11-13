@@ -31,12 +31,14 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+using Face = Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
+using Windows.Foundation;
 
 namespace ServiceHelpers
 {
-    public class CoreUtil
+    public static class CoreUtil
     {
         public static uint MinDetectableFaceCoveragePercentage = 0;
 
@@ -78,6 +80,33 @@ namespace ServiceHelpers
             }
 
             return false;
+        }
+
+        public static Rect ToRect(this FaceRectangle rect)
+        {
+            return new Rect(rect.Left, rect.Top, rect.Width, rect.Height);
+        }
+
+        public static Rect ToRect(this BoundingRect rect)
+        {
+            return new Rect(rect.X, rect.Y, rect.W, rect.H);
+        }
+
+        public static Rect ToRect(this Face.FaceRectangle rect)
+        {
+            return new Rect(rect.Left, rect.Top, rect.Width, rect.Height);
+        }
+
+        public static Rect Inflate(this Rect rect, double inflatePercentage)
+        {
+            var width = rect.Width * inflatePercentage;
+            var height = rect.Height * inflatePercentage;
+            return new Rect(rect.X - ((width - rect.Width)/2), rect.Y - ((height - rect.Height)/2), width, height);
+        }
+
+        public static Rect Scale(this Rect rect, double scale)
+        {
+            return new Rect(rect.X * scale, rect.Y * scale, rect.Width * scale, rect.Height * scale);
         }
     }
 }
