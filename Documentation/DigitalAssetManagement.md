@@ -1,9 +1,7 @@
 # Digital Asset Management
 This sample illustrates how Computer Vision can add a layer of insights to a collection of images. 
 
-<p align="center">
-  <img src="DigitalAssetManegement.jpg" />
-</p>
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/DigitalAssetManegement.png "Digital Asset Manegement")
 
 
 ## Source Code Structure
