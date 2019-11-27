@@ -103,7 +103,10 @@ namespace ServiceHelpers
 
             var payload = new JObject();
             var strokesArray = new JArray();
-
+            
+            //Set fixed CultureInfo for getting '.' as decimal seperator
+            CultureInfo ci = new CultureInfo("en-US");
+            
             foreach (InkStroke stroke in StrokeMap.Values)
             {
                 var jStroke = new JObject();
@@ -120,7 +123,9 @@ namespace ServiceHelpers
                         var transformedPoint = Vector2.Transform(new Vector2((float)pointsCollection[i].Position.X, (float)pointsCollection[i].Position.Y), transform);
                         double x = transformedPoint.X / dipsPerMm;
                         double y = transformedPoint.Y / dipsPerMm;
-                        points.Append($"{x},{y}");
+                        var x_str = x.ToString(ci);
+                        var y_str = y.ToString(ci);
+                        points.Append($"{x_str},{y_str}");
                         if (i != pointsCollection.Count - 1)
                         {
                             points.Append(",");
