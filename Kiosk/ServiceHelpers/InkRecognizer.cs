@@ -31,16 +31,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ServiceHelpers.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net.Http;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Data.Json;
 using Windows.Graphics.Display;
 using Windows.UI.Input.Inking;
 
