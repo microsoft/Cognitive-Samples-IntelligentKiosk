@@ -92,11 +92,11 @@ namespace ServiceHelpers.Models
             Timestamp = time;
             try
             {
-                Value = double.Parse(data);
+                Value = double.Parse(data, CultureInfo.InvariantCulture);
             }
             catch (Exception)
             {
-                Value = (double)int.Parse(data);
+                Value = (double)int.Parse(data, CultureInfo.InvariantCulture);
             }
         }
 
