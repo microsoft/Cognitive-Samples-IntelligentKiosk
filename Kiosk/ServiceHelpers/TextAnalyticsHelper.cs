@@ -110,10 +110,10 @@ namespace ServiceHelpers
             var inputList = new List<MultiLanguageInput>();
             for (int i = 0; i < input.Length; i++)
             {
-                inputList.Add(new MultiLanguageInput(language, i.ToString(), input[i]));
+                inputList.Add(new MultiLanguageInput(i.ToString(), input[i], language));
             }
 
-            SentimentBatchResult result = await client.SentimentAsync(multiLanguageBatchInput: new MultiLanguageBatchInput(inputList));
+            SentimentBatchResult result = await client.SentimentBatchAsync(multiLanguageBatchInput: new MultiLanguageBatchInput(inputList));
             IEnumerable<double> scores = result.Documents.OrderBy(x => x.Id).Select(x => x.Score.GetValueOrDefault());
             return new SentimentResult { Scores = scores };
         }
@@ -133,10 +133,10 @@ namespace ServiceHelpers
             var inputList = new List<MultiLanguageInput>();
             for (int i = 0; i < input.Length; i++)
             {
-                inputList.Add(new MultiLanguageInput(language, i.ToString(), input[i]));
+                inputList.Add(new MultiLanguageInput(i.ToString(), input[i], language));
             }
 
-            KeyPhraseBatchResult result = await client.KeyPhrasesAsync(multiLanguageBatchInput: new MultiLanguageBatchInput(inputList));
+            KeyPhraseBatchResult result = await client.KeyPhrasesBatchAsync(multiLanguageBatchInput: new MultiLanguageBatchInput(inputList));
             IEnumerable<IList<string>> keyPhrases = result.Documents.OrderBy(x => x.Id).Select(x => x.KeyPhrases);
             return new KeyPhrasesResult() { KeyPhrases = keyPhrases };
         }

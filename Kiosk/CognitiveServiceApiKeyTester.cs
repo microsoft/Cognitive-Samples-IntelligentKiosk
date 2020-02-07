@@ -116,11 +116,11 @@ namespace IntelligentKioskSample
                     Endpoint = apiEndpoint
                 };
 
-                await client.SentimentAsync(multiLanguageBatchInput:
+                await client.SentimentBatchAsync(multiLanguageBatchInput:
                         new MultiLanguageBatchInput(
                             new List<MultiLanguageInput>()
                             {
-                          new MultiLanguageInput("en", "0", "I had the best day of my life."),
+                          new MultiLanguageInput("0", "I had the best day of my life.", "en"),
                             }));
             }
         }
