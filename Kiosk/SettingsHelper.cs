@@ -288,6 +288,15 @@ namespace IntelligentKioskSample
                 this.AnomalyDetectorApiKey = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["ShowAgeAndGender"];
+            if (value != null)
+            {
+                if (bool.TryParse(value.ToString(), out bool booleanValue))
+                {
+                    this.ShowAgeAndGender = booleanValue;
+                }
+            }
+
             // load mall kiosk demo custom settings from file as the content is too big to be saved as a string-like setting
             try
             {
@@ -619,6 +628,17 @@ namespace IntelligentKioskSample
             {
                 this.anomalyDetectorApiKey = value;
                 this.OnSettingChanged("AnomalyDetectorApiKey", value);
+            }
+        }
+
+        private bool showAgeAndGender = false;
+        public bool ShowAgeAndGender
+        {
+            get { return showAgeAndGender; }
+            set
+            {
+                this.showAgeAndGender = value;
+                this.OnSettingChanged("ShowAgeAndGender", value);
             }
         }
 

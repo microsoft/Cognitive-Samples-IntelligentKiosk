@@ -60,12 +60,15 @@ namespace IntelligentKioskSample.Views
         private bool isProcessingLoopInProgress;
         private bool isProcessingPhoto;
 
+        private DateTime lastResultsTimestamp = DateTime.MinValue;
         private IEnumerable<DetectedFace> lastDetectedFaceSample;
         private IEnumerable<Tuple<DetectedFace, IdentifiedPerson>> lastIdentifiedPersonSample;
         private IEnumerable<SimilarFaceMatch> lastSimilarPersistedFaceSample;
 
         private DemographicsData demographics;
         private Dictionary<Guid, Visitor> visitors = new Dictionary<Guid, Visitor>();
+
+        public static bool ShowAgeAndGender { get { return SettingsHelper.Instance.ShowAgeAndGender; } }
 
         public RealTimeDemo()
         {
@@ -159,6 +162,8 @@ namespace IntelligentKioskSample.Views
 
             // Compute Face Identification and Unique Face Ids
             await Task.WhenAll(ComputeFaceIdentificationAsync(e), this.ComputeUniqueFaceIdAsync(e));
+
+            lastResultsTimestamp = DateTime.Now;
 
             this.UpdateDemographics(e);
             this.UpdateEmotionTimelineUI(e);
@@ -396,7 +401,7 @@ namespace IntelligentKioskSample.Views
 
         public DetectedFace GetLastFaceAttributesForFace(BitmapBounds faceBox)
         {
-            if (this.lastDetectedFaceSample == null || !this.lastDetectedFaceSample.Any())
+            if (this.lastDetectedFaceSample == null || !this.lastDetectedFaceSample.Any() || !CanReuseCachedResults())
             {
                 return null;
             }
@@ -406,7 +411,7 @@ namespace IntelligentKioskSample.Views
 
         public IdentifiedPerson GetLastIdentifiedPersonForFace(BitmapBounds faceBox)
         {
-            if (this.lastIdentifiedPersonSample == null || !this.lastIdentifiedPersonSample.Any())
+            if (this.lastIdentifiedPersonSample == null || !this.lastIdentifiedPersonSample.Any() || !CanReuseCachedResults())
             {
                 return null;
             }
@@ -424,7 +429,7 @@ namespace IntelligentKioskSample.Views
 
         public SimilarFace GetLastSimilarPersistedFaceForFace(BitmapBounds faceBox)
         {
-            if (this.lastSimilarPersistedFaceSample == null || !this.lastSimilarPersistedFaceSample.Any())
+            if (this.lastSimilarPersistedFaceSample == null || !this.lastSimilarPersistedFaceSample.Any() || !CanReuseCachedResults())
             {
                 return null;
             }
@@ -434,6 +439,11 @@ namespace IntelligentKioskSample.Views
                                                .OrderBy(f => Math.Abs(faceBox.X - f.Face.FaceRectangle.Left) + Math.Abs(faceBox.Y - f.Face.FaceRectangle.Top)).FirstOrDefault();
 
             return match?.SimilarPersistedFace;
+        }
+
+        private bool CanReuseCachedResults()
+        {
+            return (DateTime.Now - lastResultsTimestamp).TotalSeconds <= 3;
         }
     }
 

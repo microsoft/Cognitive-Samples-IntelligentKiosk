@@ -9,18 +9,18 @@
     SizeChanged="OnPageSizeChanged"
     mc:Ignorable="d">
 
-        
+
     <Grid x:Name="MainGrid" 
             EntranceNavigationTransitionInfo.IsTargetElement="True" Background="#FF262626">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="0.02*" />
             <RowDefinition Height="auto" />
-            <RowDefinition Height="0.01*" />            
+            <RowDefinition Height="0.01*" />
             <RowDefinition />
-            <RowDefinition Height="0.01*" />                            
-            <RowDefinition Height="auto"/>                
-            <RowDefinition Height="0.05*" />            
+            <RowDefinition Height="0.01*" />
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="0.05*" />
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -45,7 +45,7 @@
                 <ColumnDefinition />
                 <ColumnDefinition Width="0.1*"/>
             </Grid.ColumnDefinitions>
-            <ctl:AgeGenderDistributionControl x:Name="ageGenderDistributionControl" HeaderText="Demographics" SubHeaderText="At this hour (erased hourly)" SubHeaderVisibility="Visible" Grid.Column="1" />
+            <ctl:AgeGenderDistributionControl x:Name="ageGenderDistributionControl" HeaderText="Demographics" SubHeaderText="At this hour (erased hourly)" SubHeaderVisibility="Visible" Grid.Column="1" Visibility="{Binding ShowAgeAndGender}" />
             <ctl:OverallStatsControl x:Name="overallStatsControl" HeaderText="Total Faces" SubHeaderText="At this hour (erased hourly)" SubHeaderVisibility="Visible" Margin="24,0,24,0" Grid.Column="2" />
             <ctl:EmotionResponseTimelineControl Grid.Column="3" x:Name="emotionDataTimelineControl"  />
         </Grid>
@@ -58,5 +58,3 @@
         </Grid>
     </Grid>
 </Page>
-
-    

@@ -32,6 +32,20 @@
                 </Setter>
             </Style.Setters>
         </Style>
+        <Style x:Key="Settings.SubTitle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Margin" Value="0,0,0,0" />
+        </Style>
+        <Style x:Key="Settings.SubPanel" TargetType="StackPanel">
+            <Setter Property="Spacing" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,24" />
+        </Style>
+        <Style x:Key="Settings.Comment" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="Gray" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="MaxWidth" Value="490"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
     </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
           EntranceNavigationTransitionInfo.IsTargetElement="True">
@@ -200,9 +214,25 @@
                     <ComboBox Margin="0,6,0,0" x:Name="cameraSourceComboBox" Header="Camera Source"  SelectionChanged="OnCameraSourceSelectionChanged"/>
                     <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info:" Margin="0,6,0,0"/>
 
-                    <StackPanel Orientation="Horizontal">
-                        <Slider x:Name="MinDetectableFaceSizeSlider" Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" SmallChange="1" LargeChange="5" Header="Minimum detectable face size (as % of image height):" HorizontalAlignment="Left" Margin="0,0,0,0" StepFrequency="1"/>
-                        <TextBlock Text="{Binding ElementName=MinDetectableFaceSizeSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                    <StackPanel Style="{StaticResource Settings.SubPanel}">
+                        <TextBlock Text="Face Settings" Style="{StaticResource Settings.SubTitle}"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Slider x:Name="MinDetectableFaceSizeSlider" Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" SmallChange="1" LargeChange="5" Header="Minimum detectable face size (as % of image height):" HorizontalAlignment="Left" Margin="0,0,0,0" StepFrequency="1"/>
+                            <TextBlock Text="{Binding ElementName=MinDetectableFaceSizeSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                        </StackPanel>
+
+                        <ToggleSwitch Header="Age and gender prediction" IsOn="{Binding ShowAgeAndGender, Mode=TwoWay}">
+                            <ToggleSwitch.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="Age and gender prediction"/>
+                                        <TextBlock Style="{StaticResource Settings.Comment}" Text="Predictions based on face appearance may not match a person's identity.&#x0a;Consider if seeing these estimates is appropriate for your audience.&#x0a;Please read the FAQ in the Kiosk User Guide for more." />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ToggleSwitch.HeaderTemplate>
+                        </ToggleSwitch>
+
                     </StackPanel>
                 </StackPanel>
 

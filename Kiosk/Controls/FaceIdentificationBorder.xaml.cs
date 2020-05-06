@@ -147,22 +147,25 @@ namespace IntelligentKioskSample.Controls
                 this.CaptionText = string.Format("{0}, {1} ({2}%)", name, roundedAge, confidence);
                 this.genderIcon.Visibility = Visibility.Collapsed;
             }
-            else if (gender.HasValue)
+            else if (SettingsHelper.Instance.ShowAgeAndGender)
             {
                 this.CaptionText = roundedAge.ToString();
-                switch (gender)
+                if (gender.HasValue)
                 {
-                    case Gender.Male:
-                        this.genderIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/male.png"));
-                        break;
-                    case Gender.Female:
-                        this.genderIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/female.png"));
-                        break;
+                    switch (gender)
+                    {
+                        case Gender.Male:
+                            this.genderIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/male.png"));
+                            break;
+                        case Gender.Female:
+                            this.genderIcon.Source = new BitmapImage(new Uri("ms-appx:///Assets/female.png"));
+                            break;
+                    }
                 }
             }
 
             this.DataContext = this;
-            this.captionCanvas.Visibility = Visibility.Visible;
+            this.captionCanvas.Visibility = !string.IsNullOrEmpty(this.CaptionText) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void ShowEmotionData(Emotion emotion)
