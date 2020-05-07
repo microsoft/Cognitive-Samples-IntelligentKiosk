@@ -212,7 +212,7 @@
                     <TextBlock Foreground="Gray" FontStyle="Italic" Text="Tip: If you would like to share face identification models between multiple kiosk instances, just enter the same Face API Key and Workspace Name for them." />
 
                     <ComboBox Margin="0,6,0,0" x:Name="cameraSourceComboBox" Header="Camera Source"  SelectionChanged="OnCameraSourceSelectionChanged"/>
-                    <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info:" Margin="0,6,0,0"/>
+                    <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info:" Margin="0,6,0,24"/>
 
                     <StackPanel Style="{StaticResource Settings.SubPanel}">
                         <TextBlock Text="Face Settings" Style="{StaticResource Settings.SubTitle}"/>
@@ -227,7 +227,7 @@
                                 <DataTemplate>
                                     <StackPanel>
                                         <TextBlock Text="Age and gender prediction"/>
-                                        <TextBlock Style="{StaticResource Settings.Comment}" Text="Predictions based on face appearance may not match a person's identity.&#x0a;Consider if seeing these estimates is appropriate for your audience.&#x0a;Please read the FAQ in the Kiosk User Guide for more." />
+                                        <TextBlock Style="{StaticResource Settings.Comment}" Text="Predictions based on face appearance may not match a person's identity.&#x0a;Consider if seeing these estimates is appropriate for your audience." />
                                     </StackPanel>
                                 </DataTemplate>
                             </ToggleSwitch.HeaderTemplate>
