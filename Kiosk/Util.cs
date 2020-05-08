@@ -406,6 +406,17 @@ namespace IntelligentKioskSample
             return result;
         }
 
+        static HashSet<string> GenderKeywords = new HashSet<string>(new string[] { "man", "woman", "boy", "girl", "male", "female" }, StringComparer.InvariantCultureIgnoreCase);
+        internal static bool ContainsGenderRelatedKeyword(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+            {
+                return false;
+            }
+
+            return input.Split(' ', StringSplitOptions.RemoveEmptyEntries).Any(word => GenderKeywords.Contains(word));
+        }
+
         private static async Task<Tuple<double, double>> ResizePhoto(Stream photo, int height, IRandomAccessStream resultStream)
         {
             WriteableBitmap wb = new WriteableBitmap(1, 1);

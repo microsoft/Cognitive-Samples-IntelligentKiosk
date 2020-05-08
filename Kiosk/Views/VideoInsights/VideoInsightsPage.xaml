@@ -65,7 +65,7 @@
                     </Grid.RowDefinitions>
                     <ctl:OverallStatsControl x:Name="overallStatsControl" Margin="0,0,0,6" Width="300" HeaderText="Total Faces"/>
 
-                    <ctl:AgeGenderDistributionControl x:Name="ageGenderDistributionControl" Width="300" Margin="0,6,0,0" Grid.Row="1" HeaderText="Demographics"/>
+                    <ctl:AgeGenderDistributionControl x:Name="ageGenderDistributionControl" Width="300" Margin="0,6,0,0" Grid.Row="1" HeaderText="Demographics" Visibility="{Binding ShowAgeAndGender}"/>
                 </Grid>
 
                 <Grid Margin="0,0,6,0" Background="#FF222222" Width="220" Visibility="{Binding ElementName=tagVisualizationComboBoxItem, Path=IsSelected, Converter={StaticResource BooleanToVisibilityConverter}}">

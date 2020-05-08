@@ -196,6 +196,12 @@ namespace IntelligentKioskSample.Views.ImageCollectionInsights
             {
                 tagsGroupedByCountAndSorted.AddRange(group.OrderBy(t => t.Tag));
             }
+
+            if (!SettingsHelper.Instance.ShowAgeAndGender)
+            {
+                tagsGroupedByCountAndSorted = tagsGroupedByCountAndSorted.Where(t => !Util.ContainsGenderRelatedKeyword(t.Tag)).ToList();
+            }
+
             this.TagFilters.Clear();
             this.TagFilters.AddRange(tagsGroupedByCountAndSorted);
 

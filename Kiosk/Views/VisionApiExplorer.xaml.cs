@@ -36,7 +36,6 @@ using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -47,6 +46,8 @@ namespace IntelligentKioskSample.Views
     [KioskExperience(Title = "Vision API Explorer", ImagePath = "ms-appx:/Assets/VisionAPI.jpg")]
     public sealed partial class VisionApiExplorer : Page
     {
+        public static bool ShowAgeAndGender { get { return SettingsHelper.Instance.ShowAgeAndGender; } }
+
         public VisionApiExplorer()
         {
             this.InitializeComponent();
@@ -86,7 +87,13 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                this.tagsGridView.ItemsSource = img.AnalysisResult.Tags.Select(t => new { Confidence = string.Format("({0}%)", Math.Round(t.Confidence * 100)), Name = t.Name });
+                var tags = img.AnalysisResult.Tags.Select(t => new { Confidence = string.Format("({0}%)", Math.Round(t.Confidence * 100)), Name = t.Name });
+                if (!ShowAgeAndGender)
+                {
+                    tags = tags.Where(t => !Util.ContainsGenderRelatedKeyword(t.Name));
+                }
+
+                this.tagsGridView.ItemsSource = tags;
             }
 
             if (img.AnalysisResult.Description == null || !img.AnalysisResult.Description.Captions.Any(d => d.Confidence >= 0.2))
@@ -95,7 +102,20 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                this.descriptionGridView.ItemsSource = img.AnalysisResult.Description.Captions.Select(d => new { Confidence = string.Format("({0}%)", Math.Round(d.Confidence * 100)), Description = d.Text });
+                var descriptions = img.AnalysisResult.Description.Captions.Select(d => new { Confidence = string.Format("({0}%)", Math.Round(d.Confidence * 100)), Description = d.Text });
+                if (!ShowAgeAndGender)
+                {
+                    descriptions = descriptions.Where(t => !Util.ContainsGenderRelatedKeyword(t.Description));
+                }
+
+                if (descriptions.Any())
+                {
+                    this.descriptionGridView.ItemsSource = descriptions;
+                }
+                else
+                {
+                    this.descriptionGridView.ItemsSource = new[] { new { Description = "Please enable Age/Gender prediction in the Settings Page to see the results" } };
+                }
             }
 
             var celebNames = this.GetCelebrityNames(img);

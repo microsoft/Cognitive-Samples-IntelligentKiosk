@@ -69,7 +69,7 @@ namespace IntelligentKioskSample.Controls
             {
                 this.captionTextHeader.Text = string.Format("{0}, {1} ({2}%)", name, roundedAge, confidence);
             }
-            else if (!string.IsNullOrEmpty(gender))
+            else if (SettingsHelper.Instance.ShowAgeAndGender && !string.IsNullOrEmpty(gender))
             {
                 this.captionTextHeader.Text = string.Format("{0}, {1}", roundedAge.ToString(), gender);
             }

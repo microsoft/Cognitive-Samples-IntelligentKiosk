@@ -279,7 +279,7 @@ namespace IntelligentKioskSample.Views
                 {
                     name = p.Person.Name;
                 }
-                else
+                else if (SettingsHelper.Instance.ShowAgeAndGender)
                 {
                     switch (faceMatch.Face.FaceAttributes.Gender)
                     {

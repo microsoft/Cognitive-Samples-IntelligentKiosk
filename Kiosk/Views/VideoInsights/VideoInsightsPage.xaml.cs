@@ -76,6 +76,8 @@ namespace IntelligentKioskSample.Views
         private Dictionary<string, int> detectedObjectsInVideo = new Dictionary<string, int>();
         private Dictionary<int, ImageAnalyzer> detectedObjectsInFrame = new Dictionary<int, ImageAnalyzer>();
 
+        public static bool ShowAgeAndGender { get { return SettingsHelper.Instance.ShowAgeAndGender; } }
+
         public VideoInsightsPage()
         {
             this.InitializeComponent();
@@ -151,7 +153,7 @@ namespace IntelligentKioskSample.Views
             // Compute Face Identification and Unique Face Ids
             await Task.WhenAll(analyzer.IdentifyFacesAsync(), analyzer.FindSimilarPersistedFacesAsync());
 
-            await Task.WhenAll(ProcessPeopleInsightsAsync(analyzer, frameNumber), 
+            await Task.WhenAll(ProcessPeopleInsightsAsync(analyzer, frameNumber),
                                ProcessVisualFeaturesInsightsAsync(analyzer, frameNumber),
                                ProcessObjectDetectionInsightsAsync(analyzer, frameNumber));
 
@@ -196,7 +198,9 @@ namespace IntelligentKioskSample.Views
                                 VideoTrack existingTrack = (VideoTrack)this.peopleListView.Children.FirstOrDefault(f => (Guid)((FrameworkElement)f).Tag == persistedFaceId);
                                 if (existingTrack != null)
                                 {
-                                    existingTrack.DisplayText = string.Format("{0}, {1}", personName, Math.Floor(item.Face.FaceAttributes.Age.GetValueOrDefault()));
+                                    existingTrack.DisplayText = ShowAgeAndGender ?
+                                        string.Format("{0}, {1}", personName, Math.Floor(item.Face.FaceAttributes.Age.GetValueOrDefault())) :
+                                        personName;
                                 }
                             }
                         }
@@ -235,7 +239,10 @@ namespace IntelligentKioskSample.Views
                     string personName = GetDisplayTextForPersonAsync(analyzer, item);
                     if (string.IsNullOrEmpty(personName))
                     {
-                        personName = item.Face.FaceAttributes.Gender?.ToString() ?? string.Empty;
+                        if (ShowAgeAndGender)
+                        {
+                            personName = item.Face.FaceAttributes.Gender?.ToString() ?? string.Empty;
+                        }
 
                         // Add the person to the list of pending identifications so we can try again on some future frames
                         this.pendingIdentificationAttemptCount.Add(persistedFaceId, 1);
@@ -252,7 +259,7 @@ namespace IntelligentKioskSample.Views
                     {
                         Tag = persistedFaceId,
                         CroppedFace = croppedImage,
-                        DisplayText = string.Format("{0}, {1}", personName, Math.Floor(item.Face.FaceAttributes.Age.GetValueOrDefault())),
+                        DisplayText = ShowAgeAndGender ? string.Format("{0}, {1}", personName, Math.Floor(item.Face.FaceAttributes.Age.GetValueOrDefault())) : personName,
                         Duration = (int)this.videoPlayer.NaturalDuration.TimeSpan.TotalSeconds,
                     };
 
@@ -286,7 +293,13 @@ namespace IntelligentKioskSample.Views
 
         private async Task ProcessVisualFeaturesInsightsAsync(ImageAnalyzer analyzer, int frameNumber)
         {
-            foreach (var tag in analyzer.AnalysisResult.Tags)
+            var tags = analyzer.AnalysisResult.Tags;
+            if (!ShowAgeAndGender)
+            {
+                tags = tags.Where(t => !Util.ContainsGenderRelatedKeyword(t.Name)).ToList();
+            }
+
+            foreach (var tag in tags)
             {
                 if (this.tagsInVideo.ContainsKey(tag.Name))
                 {

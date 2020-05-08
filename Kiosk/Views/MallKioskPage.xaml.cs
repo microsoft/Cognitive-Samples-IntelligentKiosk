@@ -175,14 +175,20 @@ namespace IntelligentKioskSample.Views
 
             EnterKioskMode();
 
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey))
+            if (!SettingsHelper.Instance.ShowAgeAndGender)
+            {
+                await new MessageDialog("To use this demo please enable Age and Gender prediction in the Settings screen.", "Age and Gender prediction is disabled").ShowAsync();
+            }
+            else if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey))
             {
                 await new MessageDialog("Missing Face API Key. Please enter a key in the Settings page.", "Missing Face API Key").ShowAsync();
             }
-
-            await this.cameraControl.StartStreamAsync(isForRealTimeProcessing: true);
-            this.UpdateWebCamHostGridSize();
-            this.StartEmotionProcessingLoop();
+            else
+            {
+                await this.cameraControl.StartStreamAsync(isForRealTimeProcessing: true);
+                this.UpdateWebCamHostGridSize();
+                this.StartEmotionProcessingLoop();
+            }
 
             base.OnNavigatedTo(e);
         }
