@@ -293,7 +293,13 @@ namespace IntelligentKioskSample.Views
 
         private async Task ProcessVisualFeaturesInsightsAsync(ImageAnalyzer analyzer, int frameNumber)
         {
-            foreach (var tag in analyzer.AnalysisResult.Tags)
+            var tags = analyzer.AnalysisResult.Tags;
+            if (!ShowAgeAndGender)
+            {
+                tags = tags.Where(t => !Util.ContainsGenderRelatedKeyword(t.Name)).ToList();
+            }
+
+            foreach (var tag in tags)
             {
                 if (this.tagsInVideo.ContainsKey(tag.Name))
                 {
