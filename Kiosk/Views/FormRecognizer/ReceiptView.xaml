@@ -1,0 +1,190 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Views.FormRecognizer.ReceiptView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.FormRecognizer"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:p="using:IntelligentKioskSample.Controls.Overlays.Primitives"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <ctl:ReverseBooleanToVisibilityConverter x:Key="reverseBooleanToVisibilityConverter"/>
+
+        <Style x:Key="ReceiptItemsListViewStyle" TargetType="ListView">
+            <Setter Property="Padding" Value="10,5,10,10"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Padding" Value="0,2"/>
+                        <Setter Property="MinHeight" Value="0"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="HighlightFieldStyle" TargetType="local:HighlightField">
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Grid.Row="1" ColumnSpacing="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.6*"/>
+            <ColumnDefinition Width="0.4*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid VerticalAlignment="Top" ctl:ClipHelper.ToBounds="True">
+            <p:OverlayPresenter x:Name="OverlayPresenter" ClipLabelsTo="Content">
+                <p:OverlayPresenter.ItemTemplate>
+                    <DataTemplate>
+                        <p:OverlayControl OverlayTemplate="{StaticResource Overlay.TextOverlay}">
+                            <p:OverlayControl.Effects>
+                                <p:ToolTipEffect Template="{StaticResource Overlay.TextToolTip}" ToolTipMode="Extended"/>
+                            </p:OverlayControl.Effects>
+                        </p:OverlayControl>
+                    </DataTemplate>
+                </p:OverlayPresenter.ItemTemplate>
+            </p:OverlayPresenter>
+        </Grid>
+
+        <ProgressRing Grid.Column="1" x:Name="progressControl" Width="100" Height="100" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+        <Grid Grid.Column="1" Visibility="{Binding ElementName=progressControl, Path=IsActive, Converter={StaticResource reverseBooleanToVisibilityConverter}}">
+
+            <Pivot Margin="-12,-12,-12,0">
+                <PivotItem>
+                    <PivotItem.Header>
+                        <TextBlock Text="Receipt information" FontSize="18"/>
+                    </PivotItem.Header>
+                    <Grid Margin="0,12,16,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Grid.Column="0" Style="{StaticResource CaptionTextBlockStyle}" FontStyle="Italic" Opacity="0.7"
+                                    Text="The prebuilt Receipt model provides both raw and normalized values. Below you can see the raw values on the left, and the normalized values on the right." />
+                        </StackPanel>
+
+                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Visible">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Fields -->
+                                <StackPanel x:Name="fieldsPanel" Margin="0,0,0,12">
+                                    <local:HighlightField x:Name="nameFieldControl" Style="{StaticResource HighlightFieldStyle}"
+                                                          ReceiptField="{Binding Receipt.MerchantName, Mode=TwoWay}" 
+                                                          LabelField="Merchant" />
+
+                                    <local:HighlightField x:Name="addressFieldControl" Style="{StaticResource HighlightFieldStyle}"
+                                                          ReceiptField="{Binding Receipt.MerchantAddress, Mode=TwoWay}" 
+                                                          LabelField="Address" />
+
+                                    <local:HighlightField x:Name="phoneFieldControl" Style="{StaticResource HighlightFieldStyle}"
+                                                          ReceiptField="{Binding Receipt.MerchantPhoneNumber, Mode=TwoWay}" 
+                                                          LabelField="Phone Number" />
+
+                                    <Rectangle VerticalAlignment="Center" Height="1" Fill="White" Opacity="0.1" Margin="0,0,0,12"/>
+
+                                    <local:HighlightField x:Name="dateFieldControl" Style="{StaticResource HighlightFieldStyle}"
+                                                          ReceiptField="{Binding Receipt.TransactionDate, Mode=TwoWay}" 
+                                                          LabelField="Date" />
+
+                                    <local:HighlightField x:Name="timeFieldControl" Style="{StaticResource HighlightFieldStyle}"
+                                                          ReceiptField="{Binding Receipt.TransactionTime, Mode=TwoWay}" 
+                                                          LabelField="Time" />
+
+                                    <Rectangle VerticalAlignment="Center" Height="1" Fill="White" Opacity="0.1" Margin="0,0,0,12" />
+
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.ColumnSpan="2" Text="Items" Style="{StaticResource CaptionTextBlockStyle}" />
+
+                                        <ListView x:Name="receiptItems" Grid.Row="1" Grid.Column="0" 
+                                                    ItemsSource="{Binding Receipt.Items}" 
+                                                    SelectionMode="None" 
+                                                    IsItemClickEnabled="False" 
+                                                    Style="{StaticResource ReceiptItemsListViewStyle}">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <local:HighlightField Grid.Column="0" NormalizeValueColumnLength="0" ReceiptField="{Binding Quantity, Mode=TwoWay}" />
+
+                                                        <local:HighlightField Grid.Column="1" NormalizeValueColumnLength="0" ReceiptField="{Binding Name, Mode=TwoWay}" />
+
+                                                        <local:HighlightField Grid.Column="2" NormalizeValueColumnLength="0" ReceiptField="{Binding TotalPrice, Mode=TwoWay}" />
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </Grid>
+
+                                    <Rectangle VerticalAlignment="Center" Height="1" Fill="White" Opacity="0.1" Margin="0,0,0,12" />
+
+                                    <local:HighlightField x:Name="subtotalFieldControl" Style="{StaticResource HighlightFieldStyle}"
+                                                          ReceiptField="{Binding Receipt.Subtotal, Mode=TwoWay}" 
+                                                          LabelField="Subtotal"/>
+
+                                    <local:HighlightField x:Name="taxFieldControl" Style="{StaticResource HighlightFieldStyle}"
+                                                          ReceiptField="{Binding Receipt.Tax, Mode=TwoWay}" 
+                                                          LabelField="Tax"/>
+
+                                    <local:HighlightField x:Name="tipFieldControl" Style="{StaticResource HighlightFieldStyle}"
+                                                          ReceiptField="{Binding Receipt.Tip, Mode=TwoWay}" 
+                                                          LabelField="Tip"/>
+
+                                    <local:HighlightField x:Name="totalFieldControl" Style="{StaticResource HighlightFieldStyle}"
+                                                          ReceiptField="{Binding Receipt.Total, Mode=TwoWay}" 
+                                                          LabelField="Total"/>
+
+                                    <Rectangle VerticalAlignment="Center" Height="1" Fill="White" Opacity="0.1"/>
+                                </StackPanel>
+
+                                <!-- Not found fields panel -->
+                                <StackPanel Grid.Row="1" x:Name="notFoundPanel" Visibility="Collapsed" Margin="0,0,0,12">
+                                    <TextBlock Text="Not found" Style="{StaticResource CaptionTextBlockStyle}"/>
+                                    <TextBlock x:Name="notFoundFieldsTextBlock" Foreground="LightGray" TextWrapping="WrapWholeWords"/>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+
+                    </Grid>
+                </PivotItem>
+                <PivotItem>
+                    <PivotItem.Header>
+                        <TextBlock Text="Json" FontSize="18"/>
+                    </PivotItem.Header>
+                    <Border Margin="0,12,0,0" BorderThickness="2,2,2,2" BorderBrush="Gray" Background="Black" Padding="10,0,10,10">
+                        <ScrollViewer>
+                            <TextBlock TextWrapping="Wrap" IsTextSelectionEnabled="True" Text="{Binding Json}"/>
+                        </ScrollViewer>
+                    </Border>
+                </PivotItem>
+            </Pivot>
+
+        </Grid>
+    </Grid>
+</UserControl>

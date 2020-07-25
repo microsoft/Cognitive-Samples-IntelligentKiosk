@@ -101,6 +101,8 @@ namespace IntelligentKioskSample
                     FaceListManager.FaceListsUserDataFilter = SettingsHelper.Instance.WorkspaceKey;
                     CoreUtil.MinDetectableFaceCoveragePercentage = SettingsHelper.Instance.MinDetectableFaceCoveragePercentage;
                     AnomalyDetectorHelper.ApiKey = SettingsHelper.Instance.AnomalyDetectorApiKey;
+                    ReceiptOCRHelper.ApiKey = SettingsHelper.Instance.FormRecognizerApiKey;
+                    ReceiptOCRHelper.ApiEndpoint = SettingsHelper.Instance.FormRecognizerApiKeyEndpoint;
                 };
 
                 // callbacks for core library
@@ -186,7 +188,11 @@ namespace IntelligentKioskSample
 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.AnomalyDetectorApiKey)
                 ? CognitiveServiceApiKeyTester.TestAnomalyDetectorApiKeyAsync(SettingsHelper.Instance.AnomalyDetectorApiKey)
-                : Task.CompletedTask
+                : Task.CompletedTask,
+
+                !string.IsNullOrEmpty(SettingsHelper.Instance.FormRecognizerApiKey)
+                ? CognitiveServiceApiKeyTester.TestFormRecognizerApiKeyAsync(SettingsHelper.Instance.FormRecognizerApiKey, SettingsHelper.Instance.FormRecognizerApiKeyEndpoint)
+                : Task.CompletedTask,
             };
 
             try

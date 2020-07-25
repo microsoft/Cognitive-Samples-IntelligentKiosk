@@ -89,6 +89,19 @@ namespace IntelligentKioskSample.Controls
         }
     }
 
+    public class ReverseNullToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return value == null ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return value;
+        }
+    }
+
     public class StringMatchToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -127,6 +140,24 @@ namespace IntelligentKioskSample.Controls
         }
     }
 
+    public class StringMatchToBooleanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null && parameter != null && string.Equals(value.ToString(), (string)parameter, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return value;
+        }
+    }
+
     public class StringContainsToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)
@@ -137,6 +168,65 @@ namespace IntelligentKioskSample.Controls
                 return Visibility.Visible;
             }
 
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return value;
+        }
+    }
+
+    public class StringFormatConverter : IValueConverter
+    {
+        public string StringFormat { get; set; }
+
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            var format = parameter as string;
+            if (format == null)
+            {
+                format = StringFormat;
+            }
+            if (!string.IsNullOrWhiteSpace(format) && value != null)
+            {
+                return String.Format(format, value);
+            }
+
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class StringLengthToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null && !string.IsNullOrEmpty((string)value))
+            {
+                return Visibility.Visible;
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return value;
+        }
+    }
+
+    public class ReverseStringLengthToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value == null || (value is string && string.IsNullOrEmpty((string)value)))
+            {
+                return Visibility.Visible;
+            }
             return Visibility.Collapsed;
         }
 

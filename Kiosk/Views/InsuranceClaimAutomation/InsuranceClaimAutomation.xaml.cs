@@ -32,11 +32,11 @@
 // 
 
 using IntelligentKioskSample.Models.InsuranceClaimAutomation;
-using Microsoft.Azure.CognitiveServices.FormRecognizer.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
 using ServiceHelpers;
+using ServiceHelpers.Models.FormRecognizer;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -455,26 +455,26 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
             try
             {
-                AnalyzeResult result = null;
+                AnalyzeFormResult result = null;
+                string fileType = IsFormImageSource ? FormRecognizerService.ImageJpegContentType : FormRecognizerService.PdfContentType;
                 using (FileStream stream = new FileStream(file.Path, FileMode.Open))
                 {
-                    result = IsFormImageSource ? await this.formRecognizerService.AnalyzeImageFormWithCustomModelAsync(FormRecognizerModelId, stream)
-                                               : await this.formRecognizerService.AnalyzePdfFormWithCustomModelAsync(FormRecognizerModelId, stream);
+                    result = await this.formRecognizerService.AnalyzeImageFormWithCustomModelAsync(FormRecognizerModelId, stream, fileType);
                 }
 
-                ExtractedPage page = result?.Pages.FirstOrDefault();
-                if (page != null)
+                PageResult page = result?.PageResults.FirstOrDefault();
+                ReadResult pageInfo = result?.ReadResults.FirstOrDefault();
+                if (page != null && pageInfo != null)
                 {
-                    int width = page.Width ?? 0;
-                    int height = page.Height ?? 0;
+                    double width = pageInfo.Width;
+                    double height = pageInfo.Height;
 
                     var keyValuePairList = page.KeyValuePairs
-                        .Where(x => x.Key != null && x.Key.Any() && x.Value != null && x.Value.Any() &&
-                              !x.Key.Select(k => k.Text.ToLower()).Contains("__tokens__")) // showing pairs with non-empty keys
+                        .Where(x => !string.IsNullOrEmpty(x.Key?.Text) && x.Key?.BoundingBox != null) // showing pairs with non-empty keys
                         .Select(x => new Tuple<TokenOverlayInfo, TokenOverlayInfo>(
-                                           new TokenOverlayInfo(x.Key, width, height),
-                                           new TokenOverlayInfo(x.Value, width, height)))
-                        .ToList();
+                            new TokenOverlayInfo(x.Key, width, height),
+                            new TokenOverlayInfo(x.Value, width, height)
+                        )).ToList();
 
                     return keyValuePairList;
                 }

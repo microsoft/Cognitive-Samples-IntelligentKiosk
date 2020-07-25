@@ -1,0 +1,37 @@
+[
+  {
+    "Name": "Receipt",
+    "IsPrebuiltModel": "true",
+    "IsReceiptModel": "true",
+    "SuggestionSamples": [
+      {
+        "Item1": "Example receipt 1",
+        "Item2": "https://intelligentkioskstore.blob.core.windows.net/receiptocr/suggestedphotos/contoso-allinone.jpg"
+      },
+      {
+        "Item1": "Example receipt 2",
+        "Item2": "https://intelligentkioskstore.blob.core.windows.net/receiptocr/suggestedphotos/1.jpg"
+      },
+      {
+        "Item1": "Example receipt 3",
+        "Item2": "https://intelligentkioskstore.blob.core.windows.net/receiptocr/suggestedphotos/1_1.jpg"
+      },
+      {
+        "Item1": "Example receipt 4",
+        "Item2": "https://intelligentkioskstore.blob.core.windows.net/receiptocr/suggestedphotos/2.jpg"
+      },
+      {
+        "Item1": "Example receipt 5",
+        "Item2": "https://intelligentkioskstore.blob.core.windows.net/receiptocr/suggestedphotos/3.jpg"
+      },
+      {
+        "Item1": "Example receipt 6",
+        "Item2": "https://intelligentkioskstore.blob.core.windows.net/receiptocr/suggestedphotos/3_1.jpg"
+      },
+      {
+        "Item1": "Example receipt 7",
+        "Item2": "https://intelligentkioskstore.blob.core.windows.net/receiptocr/suggestedphotos/4.jpg"
+      }
+    ]
+  }
+]

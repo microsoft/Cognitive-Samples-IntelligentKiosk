@@ -2,7 +2,6 @@
     x:Class="IntelligentKioskSample.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:c="using:IntelligentKioskSample.Common"
     RequestedTheme="Dark"
     xmlns:local="using:IntelligentKioskSample">
 
@@ -29,6 +28,8 @@
                         </ResourceDictionary>
                     </ResourceDictionary.ThemeDictionaries>
                 </ResourceDictionary>
+
+                <ResourceDictionary Source="Controls/Overlays/OverlayResources.xaml" /> <!--include overlay resource globally-->
 
             </ResourceDictionary.MergedDictionaries>
 

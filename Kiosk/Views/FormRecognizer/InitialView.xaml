@@ -1,0 +1,22 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Views.FormRecognizer.InitialView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.FormRecognizer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock Text="Choose a scenario to start" HorizontalAlignment="Center" Margin="0,0,0,20" Style="{StaticResource HeaderTextBlockStyle}"/>
+
+        <ComboBox Grid.Row="1"
+                  ItemsSource="{Binding Models}" 
+                  SelectedItem="{Binding CurrentFormModel, Mode=TwoWay}" 
+                  DisplayMemberPath="Name" 
+                  PlaceholderText="Choose a scenario" 
+                  Width="170"  HorizontalAlignment="Center" />
+    </StackPanel>
+</UserControl>
