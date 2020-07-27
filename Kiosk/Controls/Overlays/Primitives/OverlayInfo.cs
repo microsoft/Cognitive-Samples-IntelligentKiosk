@@ -122,5 +122,4 @@ namespace IntelligentKioskSample.Controls.Overlays.Primitives
         Muted,
         Hidden
     }
-
 }
