@@ -169,9 +169,7 @@
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
                         <PasswordBox Header="Form Recognizer API Key" Password="{Binding FormRecognizerApiKey, Mode=TwoWay}" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
-                                  ItemsSource="{Binding AvailableFormRecognizerApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key"
-                                  SelectedItem="{Binding FormRecognizerApiKeyEndpoint, Mode=TwoWay}"/>
+                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355" ItemsSource="{Binding AvailableFormRecognizerApiEndpoints}" SelectedItem="{Binding FormRecognizerApiKeyEndpoint, Mode=TwoWay}"/>
                     </Grid>
 
                     <StackPanel Orientation="Horizontal" Margin="0,15,0,0">

@@ -700,36 +700,33 @@ namespace IntelligentKioskSample
             }
         }
 
-        public KeyValuePair<string, string>[] AvailableFormRecognizerApiEndpoints
+        public string[] AvailableFormRecognizerApiEndpoints
         {
             get
             {
-                return new KeyValuePair<string, string>[]
+                return new string[]
                 {
-                    new KeyValuePair<string,string>("East US",          "https://eastus.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("East US 2",        "https://eastus2.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("West US",          "https://westus.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("West US 2",        "https://westus2.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("Central US",       "https://centralus.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("West Central US",  "https://westcentralus.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("North Central US", "https://northcentralus.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("South Central US", "https://southcentralus.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("Canada Central",   "https://canadacentral.api.cognitive.microsoft.com"),
-
-                    new KeyValuePair<string,string>("Australia East",   "https://australiaeast.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("Southeast Asia",   "https://southeastasia.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("East Asia",        "https://eastasia.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("Japan East",       "https://japaneast.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("Japan West",       "https://japanwest.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("Korea Central",    "https://koreacentral.api.cognitive.microsoft.com"),
-
-                    new KeyValuePair<string,string>("North Europe",     "https://northeurope.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("UK South",         "https://uksouth.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("West Europe",      "https://westeurope.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("France Central",   "https://francecentral.api.cognitive.microsoft.com"),
-
-                    new KeyValuePair<string,string>("UAE North",        "https://uaenorth.api.cognitive.microsoft.com"),
-                    new KeyValuePair<string,string>("Brazil South",     "https://brazilsouth.api.cognitive.microsoft.com")
+                    "https://eastus.api.cognitive.microsoft.com",
+                    "https://eastus2.api.cognitive.microsoft.com",
+                    "https://westus.api.cognitive.microsoft.com",
+                    "https://westus2.api.cognitive.microsoft.com",
+                    "https://centralus.api.cognitive.microsoft.com",
+                    "https://westcentralus.api.cognitive.microsoft.com",
+                    "https://northcentralus.api.cognitive.microsoft.com",
+                    "https://southcentralus.api.cognitive.microsoft.com",
+                    "https://canadacentral.api.cognitive.microsoft.com",
+                    "https://australiaeast.api.cognitive.microsoft.com",
+                    "https://southeastasia.api.cognitive.microsoft.com",
+                    "https://eastasia.api.cognitive.microsoft.com",
+                    "https://japaneast.api.cognitive.microsoft.com",
+                    "https://japanwest.api.cognitive.microsoft.com",
+                    "https://koreacentral.api.cognitive.microsoft.com",
+                    "https://northeurope.api.cognitive.microsoft.com",
+                    "https://uksouth.api.cognitive.microsoft.com",
+                    "https://westeurope.api.cognitive.microsoft.com",
+                    "https://francecentral.api.cognitive.microsoft.com",
+                    "https://uaenorth.api.cognitive.microsoft.com",
+                    "https://brazilsouth.api.cognitive.microsoft.com"
                 };
             }
         }
