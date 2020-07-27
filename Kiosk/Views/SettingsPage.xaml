@@ -161,8 +161,6 @@
 
                     <PasswordBox Header="Anomaly Detector API Key" Password="{Binding AnomalyDetectorApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
 
-                    <PasswordBox Header="Form Recognizer API Key" Password="{Binding AnomalyDetectorApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
-
                     <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
