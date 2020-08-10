@@ -35,6 +35,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace ServiceHelpers.Extensions
@@ -52,6 +53,21 @@ namespace ServiceHelpers.Extensions
                 foreach (string key in headers.Keys)
                 {
                     request.Headers.Add(key, headers[key]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Add headers to request
+        /// </summary>
+        public static void AddHeaders(this HttpRequestHeaders httpRequestHeaders, IDictionary<string, string> headers)
+        {
+            // Add headers to request
+            if (headers != null)
+            {
+                foreach (string key in headers.Keys)
+                {
+                    httpRequestHeaders.Add(key, headers[key]);
                 }
             }
         }

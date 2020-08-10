@@ -38,10 +38,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace ServiceHelpers
 {
-    public class ImageAnalyzer
+    public partial class ImageAnalyzer
     {
         private static readonly FaceAttributeType[] DefaultFaceAttributeTypes = new FaceAttributeType[]
         {
@@ -114,6 +116,25 @@ namespace ServiceHelpers
         {
             this.DecodedImageHeight = height;
             this.DecodedImageWidth = width;
+        }
+
+        public async Task<ImageSource> GetImageSource()
+        {
+            //get image from url
+            if (ImageUrl != null)
+            {
+                return new BitmapImage(new Uri(ImageUrl));
+            }
+
+            //get image from stream
+            else if (GetImageStreamCallback != null)
+            {
+                var bitmap = new BitmapImage();
+                await bitmap.SetSourceAsync((await GetImageStreamCallback()).AsRandomAccessStream());
+                return bitmap;
+            }
+
+            return null;
         }
 
         public async Task DetectFacesAsync(bool detectFaceAttributes = false, bool detectFaceLandmarks = false)

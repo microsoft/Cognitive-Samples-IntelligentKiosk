@@ -1,0 +1,31 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:p="using:IntelligentKioskSample.Controls.Overlays.Primitives">
+    <Style TargetType="p:OverlayPresenter">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="p:OverlayPresenter">
+                    <Grid Name="PART_MainGrid" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}"/>
+                        <Grid Name="Part_ContentGrid" Visibility="{TemplateBinding OverlayVisibility}">
+                            <ItemsPresenter/>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <Grid/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Content">
+            <Setter.Value>
+                <Image/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

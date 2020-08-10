@@ -31,7 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.Azure.CognitiveServices.FormRecognizer.Models;
+using ServiceHelpers.Models.FormRecognizer;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.Foundation;
@@ -40,31 +40,32 @@ namespace IntelligentKioskSample.Models.InsuranceClaimAutomation
 {
     public class TokenOverlayInfo
     {
-        public int PageWidth { get; set; }
-        public int PageHeight { get; set; }
+        public double PageWidth { get; set; }
+        public double PageHeight { get; set; }
         public IList<Rect> RectList { get; set; }
         public string Text { get; set; }
 
         public TokenOverlayInfo() { }
 
-        public TokenOverlayInfo(IList<ExtractedToken> entityList, int width, int height)
+        public TokenOverlayInfo(WordResult entity, double width, double height)
+        {
+            Initialize(entity.Text, entity.BoundingBox, width, height);
+        }
+
+        void Initialize(string name, IList<double?> boundingBox, double width, double height)
         {
             PageWidth = width;
             PageHeight = height;
-            RectList = new List<Rect>();
-            foreach (var entity in entityList)
-            {
-                // ExtractedToken.BoundingBox : The co-ordinate pairs are arranged by top-left, top-right, 
-                // bottom -right and bottom-left endpoints box with origin reference from the bottom-left of the page.
-                double x = entity.BoundingBox?.Where((i, index) => index % 2 == 0).Min() ?? 0; //evens are X's
-                double y = entity.BoundingBox?.Where((i, index) => index % 2 != 0).Select(i => height - i.Value).Min() ?? 0; //odds are Y's
-                double x2 = entity.BoundingBox?.Where((i, index) => index % 2 == 0).Max() ?? 0;
-                double y2 = entity.BoundingBox?.Where((i, index) => index % 2 != 0).Select(i => height - i.Value).Max() ?? 0;
+            Text = name;
 
-                RectList.Add(new Rect(x, y, x2 - x, y2 - y));
-            }
+            // ExtractedToken.BoundingBox : The co-ordinate pairs are arranged by top-left, top-right, 
+            // bottom-right and bottom-left endpoints box.
+            double x = boundingBox?.Where((i, index) => index % 2 == 0).Min() ?? 0; //evens are X's
+            double y = boundingBox?.Where((i, index) => index % 2 != 0).Min() ?? 0; //odds are Y's
+            double x2 = boundingBox?.Where((i, index) => index % 2 == 0).Max() ?? 0;
+            double y2 = boundingBox?.Where((i, index) => index % 2 != 0).Max() ?? 0;
 
-            Text = string.Join(" ", entityList.Select(e => e.Text));
+            RectList = new List<Rect>() { new Rect(x, y, x2 - x, y2 - y) };
         }
     }
 }

@@ -101,6 +101,7 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Assets\FormsRecognizer.jpg" />
     <Content Include="Assets\InkRecognizerExplorer.png" />
     <Content Include="Assets\AnomalyDetector.png" />
     <Content Include="Assets\AnomalyDetector\BikeSharing.png" />
@@ -125,16 +126,29 @@
     <Content Include="Views\CustomVision\BuiltInObjectDetectionModels.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Views\FormRecognizer\BuiltInModels.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AzureBlobHelper.cs" />
     <Compile Include="CognitiveServiceApiKeyTester.cs" />
+    <Compile Include="Controls\Animation\AnimationHelper.cs" />
+    <Compile Include="Controls\Animation\BaseAnimation.cs" />
+    <Compile Include="Controls\Animation\ScaleTransformAnimation.cs" />
+    <Compile Include="Controls\Animation\TranslateTransformAnimation.cs" />
     <Compile Include="Controls\CenteredVerticalBarControl.xaml.cs">
       <DependentUpon>CenteredVerticalBarControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ClipHelper.cs" />
     <Compile Include="Controls\Converters.cs" />
+    <Compile Include="Controls\Converters_Overlay.cs" />
+    <Compile Include="Controls\DataGridControl.xaml.cs">
+      <DependentUpon>DataGridControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\EmotionToColoredBar.xaml.cs">
       <DependentUpon>EmotionToColoredBar.xaml</DependentUpon>
     </Compile>
@@ -143,6 +157,30 @@
     </Compile>
     <Compile Include="Controls\LifecycleControl.xaml.cs">
       <DependentUpon>LifecycleControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Overlays\FormRecognizerOverlayPresenter.xaml.cs">
+      <DependentUpon>FormRecognizerOverlayPresenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Overlays\Primitives\OverlayControl.xaml.cs">
+      <DependentUpon>OverlayControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Overlays\Primitives\OverlayEffect.cs" />
+    <Compile Include="Controls\Overlays\Primitives\OverlayHighlight.cs" />
+    <Compile Include="Controls\Overlays\Primitives\OverlayInfo.cs" />
+    <Compile Include="Controls\Overlays\Primitives\OverlayItemsControl.xaml.cs">
+      <DependentUpon>OverlayItemsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Overlays\Primitives\OverlayLabel.xaml.cs">
+      <DependentUpon>OverlayLabel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Overlays\Primitives\OverlayPresenter.xaml.cs">
+      <DependentUpon>OverlayPresenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Overlays\Primitives\OverlayVisualState.cs" />
+    <Compile Include="Controls\Overlays\Primitives\ToolTipEffect.cs" />
+    <Compile Include="Controls\Overlays\Primitives\ZoomEffect.cs" />
+    <Compile Include="Controls\Overlays\VisionApiOverlayPresenter.xaml.cs">
+      <DependentUpon>VisionApiOverlayPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\PdfViewerControl.xaml.cs">
       <DependentUpon>PdfViewerControl.xaml</DependentUpon>
@@ -165,6 +203,7 @@
     <Compile Include="Controls\SpeechToTextControl.xaml.cs">
       <DependentUpon>SpeechToTextControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TemplateSelectors.cs" />
     <Compile Include="Controls\UpDownVerticalBarControl.xaml.cs">
       <DependentUpon>UpDownVerticalBarControl.xaml</DependentUpon>
     </Compile>
@@ -189,6 +228,7 @@
     <Compile Include="Controls\VideoTrack.xaml.cs">
       <DependentUpon>VideoTrack.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\AnimationExtensions.cs" />
     <Compile Include="KioskExperiences.cs" />
     <Compile Include="Controls\CameraControl.xaml.cs">
       <DependentUpon>CameraControl.xaml</DependentUpon>
@@ -257,6 +297,19 @@
     <Compile Include="Views\FaceIdentificationSetup.xaml.cs">
       <DependentUpon>FaceIdentificationSetup.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\FormRecognizer\FormRecognizerScenarioSetup.xaml.cs">
+      <DependentUpon>FormRecognizerScenarioSetup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FormRecognizer\FormRecognizerDataLoader.cs" />
+    <Compile Include="Views\FormRecognizer\FormRecognizerExplorer.xaml.cs">
+      <DependentUpon>FormRecognizerExplorer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FormRecognizer\HighlightField.xaml.cs">
+      <DependentUpon>HighlightField.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FormRecognizer\ReceiptView.xaml.cs">
+      <DependentUpon>ReceiptView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GreetingKiosk.xaml.cs">
       <DependentUpon>GreetingKiosk.xaml</DependentUpon>
     </Compile>
@@ -269,6 +322,9 @@
     <Compile Include="Views\ImageCollectionInsights\ImageProcessor.cs" />
     <Compile Include="Views\ImageCollectionInsights\TagFilterViewModel.cs" />
     <Compile Include="Views\ImageCollectionInsights\VisionInsights.cs" />
+    <Compile Include="Views\FormRecognizer\InitialView.xaml.cs">
+      <DependentUpon>InitialView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\InkRecognizerExplorer\InkRecognizerExplorer.xaml.cs">
       <DependentUpon>InkRecognizerExplorer.xaml</DependentUpon>
     </Compile>
@@ -392,6 +448,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\DataGridControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\EmotionToColoredBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -403,6 +463,34 @@
     <Page Include="Controls\LifecycleControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Overlays\FormRecognizerOverlayPresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Overlays\OverlayResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Overlays\Primitives\OverlayControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Overlays\Primitives\OverlayItemsControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Overlays\Primitives\OverlayLabel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Overlays\Primitives\OverlayPresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Overlays\VisionApiOverlayPresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\PdfViewerControl.xaml">
       <SubType>Designer</SubType>
@@ -489,6 +577,10 @@
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
+    <Page Include="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AnomalyDetector\AnomalyChartControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -537,6 +629,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\FormRecognizer\FormRecognizerScenarioSetup.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\FormRecognizer\FormRecognizerExplorer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\FormRecognizer\HighlightField.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FormRecognizer\ReceiptView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\GreetingKiosk.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -544,6 +652,10 @@
     <Page Include="Views\ImageCollectionInsights\ImageCollectionInsights.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\FormRecognizer\InitialView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\InkRecognizerExplorer\InkRecognizerExplorer.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -653,9 +765,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.CognitiveServices.FormRecognizer">
-      <Version>0.8.0-preview</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision">
       <Version>5.0.0</Version>
     </PackageReference>
@@ -667,6 +776,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face">
       <Version>2.2.0-preview</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Azure.Storage.Blob">
+      <Version>11.1.7</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
       <Version>6.2.8</Version>
@@ -690,6 +802,7 @@
       <Version>1.6.2</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

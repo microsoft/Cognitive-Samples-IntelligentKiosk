@@ -208,6 +208,20 @@ namespace IntelligentKioskSample
             }
         }
 
+        public static async Task TestFormRecognizerApiKeyAsync(string key, string apiEndpoint)
+        {
+            bool isUri = !string.IsNullOrEmpty(apiEndpoint) ? Uri.IsWellFormedUriString(apiEndpoint, UriKind.Absolute) : false;
+            if (!isUri)
+            {
+                throw new ArgumentException("Invalid URI");
+            }
+            else
+            {
+                var service = new FormRecognizerService(key, apiEndpoint);
+                await service.GetCustomModelsAsync();
+            }
+        }
+
         private static async Task<HttpResponseMessage> RequestAndAutoRetryWhenThrottled(Func<Task<HttpResponseMessage>> action)
         {
             int retriesLeft = 10;

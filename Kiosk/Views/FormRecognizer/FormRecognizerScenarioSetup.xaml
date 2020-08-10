@@ -1,0 +1,143 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Views.FormRecognizer.FormRecognizerScenarioSetup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.FormRecognizer"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    x:Name="userControl">
+
+    <UserControl.Resources>
+        <ctl:StringMatchToBooleanConverter x:Key="stringMatchToBooleanConverter" />
+        <ctl:StringMatchToVisibilityConverter x:Key="stringMatchToVisibilityConverter" />
+        <ctl:ReverseStringMatchToVisibilityConverter x:Key="reverseStringMatchToVisibilityConverter"/>
+        <ctl:ReverseCollectionCountToVisibilityConverter x:Key="reverseCollectionCountToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Popup x:Name="newFormScenario" Opened="OnPopUpOpened" Closed="OnPopUpClosed">
+        <Grid Background="#44ffffff" x:Name="hostGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border Background="{StaticResource ApplicationPageBackgroundThemeBrush}" BorderThickness="1" BorderBrush="#aaffffff"
+                    Width="400" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid>
+                    <AppBarButton Icon="Cancel" Click="OnCloseScenarioFormButtonClicked" HorizontalAlignment="Right" VerticalAlignment="Top" Width="40" Height="40" />
+                    <Grid Margin="24" RowSpacing="12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Add scenario" Style="{StaticResource TitleTextBlockStyle}" />
+
+                        <StackPanel Grid.Row="1" Spacing="12" Visibility="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='NotStarted'}">
+                            <TextBox x:Name="scenarioNameTextBox" TextChanged="OnTextBoxTextChanged" Header="Name your scenario" PlaceholderText="Scenario name" />
+
+                            <TextBlock Text="Add sample form files" />
+
+                            <StackPanel x:Name="progressPanel" VerticalAlignment="Center" Spacing="6">
+                                <TextBlock x:Name="updateLabel" Text="At least five files needed to create custom scenario" Opacity="0.7" FontStyle="Italic"/>
+                                <ProgressBar x:Name="progressBar" Value="{Binding LocalFileCollection.Count}" Maximum="5"/>
+                                <TextBlock x:Name="updateFilesLabel" Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7" FontStyle="Italic">
+                                    <Run Text="{Binding LocalFileCollection.Count}"/>
+                                    <Run Text="/"/>
+                                    <Run Text="{Binding ElementName=userControl, Path=MinFilesCount}"/>
+                                    <Run Text="files added"/>
+                                </TextBlock>
+                            </StackPanel>
+
+                            <Button Content="Browse" Click="OnBrowseFilesButtonClicked" />
+
+                            <Grid>
+                                <ListView AllowDrop="True" SelectionMode="Extended" Height="200" Background="#191919"
+                                      DragOver="FileListView_OnDragOver" 
+                                      Drop="FileListView_OnDrop" 
+                                      ItemsSource="{Binding LocalFileCollection}">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                            <Setter Property="Padding" Value="6,0"/>
+                                            <Setter Property="Margin" Value="0"/>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                                <Button Grid.Column="1" Background="Transparent" HorizontalAlignment="Right" Click="OnDeleteFileButtonClicked">
+                                                    <SymbolIcon Symbol="Delete"/>
+                                                </Button>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+
+                                <Border VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    Visibility="{Binding LocalFileCollection.Count, Converter={StaticResource reverseCollectionCountToVisibilityConverter}}">
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.6">
+                                        <Run Text="Add files using" />
+                                        <Run FontWeight="SemiBold" Text="Browse &#10;" />
+                                        <Run Text="or drag and drop here" />
+                                    </TextBlock>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Spacing="12" Visibility="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource reverseStringMatchToVisibilityConverter}, ConverterParameter='NotStarted'}">
+                            <Grid>
+                                <TextBlock Text="Please wait while your model is trained" Visibility="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Running'}" TextWrapping="Wrap"/>
+                                <TextBlock Text="Your scenario was created successfully" Visibility="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Completed'}" TextWrapping="Wrap"/>
+                                <TextBlock Text="Something went wrong" Visibility="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Error'}" TextWrapping="Wrap"/>
+                            </Grid>
+
+                            <StackPanel>
+                                <TextBlock Text="Scenario name"/>
+                                <TextBlock Text="{Binding ElementName=scenarioNameTextBox, Path=Text}" FontWeight="Bold"/>
+                            </StackPanel>
+
+                            <Grid Height="300" Background="#191919">
+                                <ProgressRing x:Name="progressControl" Width="70" Height="70" Foreground="#0078D7" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                              IsActive="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource stringMatchToBooleanConverter}, ConverterParameter='Running'}"/>
+
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
+                                            Visibility="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Completed'}">
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE930;" Margin="0,0,6,0" FontSize="48"/>
+                                    <TextBlock Text="Your scenario was created successfully" TextWrapping="Wrap" TextAlignment="Center"/>
+                                </StackPanel>
+
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12"
+                                            Visibility="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Error'}">
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE946;" Margin="0,0,6,0" FontSize="48"/>
+                                    <TextBlock Text="Something went wrong" TextWrapping="Wrap" TextAlignment="Center"/>
+                                    <TextBlock Text="{Binding ElementName=userControl, Path=ScenarioCreationErrorDetails}" Margin="12" TextWrapping="Wrap" FontStyle="Italic" Style="{StaticResource CaptionTextBlockStyle}" TextAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <Grid Grid.Row="2" Margin="0,12,0,0" HorizontalAlignment="Stretch" ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" x:Name="scenarioCreateButton" Content="Create scenario" IsEnabled="False" HorizontalAlignment="Stretch" 
+                                    Click="OnCreateScenarioButtonClicked" Visibility="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='NotStarted'}"/>
+
+                            <Button Grid.Column="0" Content="Try again" HorizontalAlignment="Stretch" 
+                                    Click="OnTryAgainButtonClicked" Visibility="{Binding ElementName=userControl, Path=ScenarioSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Error'}"/>
+
+                            <Button Grid.Column="1" Content="Close" Click="OnCloseScenarioFormButtonClicked" HorizontalAlignment="Stretch" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+            </Border>
+        </Grid>
+    </Popup>
+</UserControl>

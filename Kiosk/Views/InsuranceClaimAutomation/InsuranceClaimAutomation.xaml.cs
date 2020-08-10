@@ -32,11 +32,11 @@
 // 
 
 using IntelligentKioskSample.Models.InsuranceClaimAutomation;
-using Microsoft.Azure.CognitiveServices.FormRecognizer.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
 using ServiceHelpers;
+using ServiceHelpers.Models.FormRecognizer;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -56,11 +56,9 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
     [KioskExperience(Title = "Insurance Claim Automation", ImagePath = "ms-appx:/Assets/InsuranceClaimAutomation.jpg", ExperienceType = ExperienceType.Kiosk)]
     public sealed partial class InsuranceClaimAutomation : Page, INotifyPropertyChanged
     {
-        private static readonly string FormRecognizerApiKey = "";              // AZURE FORM RECOGNIZER SUBSCRIPTION KEY;
-        private static readonly string FormRecognizerEndpoint = "";            // AZURE FORM RECOGNIZER SUBSCRIPTION ENPOINT
-        private static readonly Guid FormRecognizerModelId = Guid.Empty;       // FORM RECOGNIZER MODEL ID
-        private static readonly Guid ObjectDetectionModelId = Guid.Empty;      // CUSTOM VISION OBJECT DETECTION MODEL ID
-        private static readonly Guid ObjectClassificationModelId = Guid.Empty; // CUSTOM VISION CLASSIFICATION MODEL ID
+        private static readonly Guid FormRecognizerModelId = Guid.Empty;       // Form Recognizer Model ID created with a Form Recognizer Key on the Settings page
+        private static readonly Guid ObjectDetectionModelId = Guid.Empty;      // Custom Vision Object Detection Model ID created with a Custom Vision Key on the Settings page
+        private static readonly Guid ObjectClassificationModelId = Guid.Empty; // Custom Vision Object Classification Model ID created with a Custom Vision Key on the Settings page
 
         private static readonly string DataGridAction = "DataGridAction";
         private static readonly TokenOverlayInfo emptyRow = new TokenOverlayInfo() { Text = "---" };
@@ -155,13 +153,14 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            bool enableFormRecognizerKeys = !string.IsNullOrEmpty(FormRecognizerApiKey) && !string.IsNullOrEmpty(FormRecognizerEndpoint);
+            bool enableFormRecognizerKeys = !string.IsNullOrEmpty(SettingsHelper.Instance.FormRecognizerApiKey) && !string.IsNullOrEmpty(SettingsHelper.Instance.FormRecognizerApiKeyEndpoint);
             bool enableCustomVisionKeys = !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) && !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey);
+            bool enableModelIds = FormRecognizerModelId != Guid.Empty && ObjectDetectionModelId != Guid.Empty && ObjectClassificationModelId != Guid.Empty;
 
             if (enableFormRecognizerKeys)
             {
                 TempStorageFolder = await ApplicationData.Current.TemporaryFolder.CreateFolderAsync("InsuranceClaimAutomation", CreationCollisionOption.OpenIfExists);
-                this.formRecognizerService = new FormRecognizerService(FormRecognizerApiKey, FormRecognizerEndpoint);
+                this.formRecognizerService = new FormRecognizerService(SettingsHelper.Instance.FormRecognizerApiKey, SettingsHelper.Instance.FormRecognizerApiKeyEndpoint);
             }
 
             if (enableCustomVisionKeys)
@@ -170,10 +169,10 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                 predictionApi = new CustomVisionPredictionClient { Endpoint = SettingsHelper.Instance.CustomVisionPredictionApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionPredictionApiKey };
             }
 
-            if (!enableFormRecognizerKeys || !enableCustomVisionKeys)
+            if (!enableFormRecognizerKeys || !enableCustomVisionKeys || !enableModelIds)
             {
                 this.mainPage.IsEnabled = false;
-                await new MessageDialog("Please enter Custom Vision / Form Recognizer API Keys in the code behind of this demo.", "Missing API Keys").ShowAsync();
+                await new MessageDialog("Please enter Custom Vision / Form Recognizer API Keys / Model Ids in the code behind of this demo.", "Missing API Keys").ShowAsync();
             }
             else
             {
@@ -455,26 +454,26 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
             try
             {
-                AnalyzeResult result = null;
+                AnalyzeFormResult result = null;
+                string fileType = IsFormImageSource ? FormRecognizerService.ImageJpegContentType : FormRecognizerService.PdfContentType;
                 using (FileStream stream = new FileStream(file.Path, FileMode.Open))
                 {
-                    result = IsFormImageSource ? await this.formRecognizerService.AnalyzeImageFormWithCustomModelAsync(FormRecognizerModelId, stream)
-                                               : await this.formRecognizerService.AnalyzePdfFormWithCustomModelAsync(FormRecognizerModelId, stream);
+                    result = await this.formRecognizerService.AnalyzeImageFormWithCustomModelAsync(FormRecognizerModelId, stream, fileType);
                 }
 
-                ExtractedPage page = result?.Pages.FirstOrDefault();
-                if (page != null)
+                PageResult page = result?.PageResults.FirstOrDefault();
+                ReadResult pageInfo = result?.ReadResults.FirstOrDefault();
+                if (page != null && pageInfo != null)
                 {
-                    int width = page.Width ?? 0;
-                    int height = page.Height ?? 0;
+                    double width = pageInfo.Width;
+                    double height = pageInfo.Height;
 
                     var keyValuePairList = page.KeyValuePairs
-                        .Where(x => x.Key != null && x.Key.Any() && x.Value != null && x.Value.Any() &&
-                              !x.Key.Select(k => k.Text.ToLower()).Contains("__tokens__")) // showing pairs with non-empty keys
+                        .Where(x => !string.IsNullOrEmpty(x.Key?.Text) && x.Key?.BoundingBox != null) // showing pairs with non-empty keys
                         .Select(x => new Tuple<TokenOverlayInfo, TokenOverlayInfo>(
-                                           new TokenOverlayInfo(x.Key, width, height),
-                                           new TokenOverlayInfo(x.Value, width, height)))
-                        .ToList();
+                            new TokenOverlayInfo(x.Key, width, height),
+                            new TokenOverlayInfo(x.Value, width, height)
+                        )).ToList();
 
                     return keyValuePairList;
                 }

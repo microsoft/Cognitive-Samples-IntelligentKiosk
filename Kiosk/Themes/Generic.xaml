@@ -1,0 +1,13 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Controls/Overlays/Primitives/OverlayLabel.xaml" />
+        <ResourceDictionary Source="/Controls/Overlays/Primitives/OverlayControl.xaml" />
+        <ResourceDictionary Source="/Controls/Overlays/Primitives/OverlayItemsControl.xaml" />
+        <ResourceDictionary Source="/Controls/Overlays/Primitives/OverlayPresenter.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>
+    

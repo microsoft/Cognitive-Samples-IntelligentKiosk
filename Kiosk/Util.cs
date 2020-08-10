@@ -390,6 +390,13 @@ namespace IntelligentKioskSample
             return await fileOpenPicker.PickSingleFileAsync();
         }
 
+        public static async Task<IReadOnlyList<StorageFile>> PickMultipleFilesAsync(string[] fileTypeFilter = null)
+        {
+            FileOpenPicker fileOpenPicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.PicturesLibrary, ViewMode = PickerViewMode.Thumbnail };
+            fileTypeFilter?.ToList().ForEach(f => fileOpenPicker.FileTypeFilter.Add(f));
+            return await fileOpenPicker.PickMultipleFilesAsync();
+        }
+
         internal static async Task<Stream> ResizePhoto(Stream photo, int height)
         {
             InMemoryRandomAccessStream result = new InMemoryRandomAccessStream();
