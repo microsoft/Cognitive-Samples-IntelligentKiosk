@@ -70,11 +70,11 @@ namespace IntelligentKioskSample.Controls.Animation
             ForceFinalValueRetained = forceFinalValueRetained;
             Element = element;
             storyboard = CreateStoryboard();
-            AnimationHelper.AddManagedAnimation(this);
+            AnimationHelper.AddAnimation(this);
             await storyboard.BeginAsync();
 
             storyboard = null;
-            AnimationHelper.RemoveManagedAnimation(this);
+            AnimationHelper.RemoveAnimation(this);
             Element = null;
 
             var result = completeResult;
@@ -90,9 +90,9 @@ namespace IntelligentKioskSample.Controls.Animation
             }
         }
 
-        public virtual bool Equivalent(BaseAnimation managedAnimation)
+        public virtual bool Equivalent(BaseAnimation animation)
         {
-            return managedAnimation.GetType() == GetType();
+            return animation.GetType() == GetType();
         }
 
         protected abstract Storyboard CreateStoryboard();

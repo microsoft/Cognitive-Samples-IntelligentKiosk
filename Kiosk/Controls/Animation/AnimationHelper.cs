@@ -41,20 +41,20 @@ namespace IntelligentKioskSample.Controls.Animation
     {
         public static readonly DependencyProperty BaseAnimationsProperty = DependencyProperty.RegisterAttached("BaseAnimations", typeof(List<BaseAnimation>), typeof(AnimationHelper), new PropertyMetadata(null));
 
-        public static List<BaseAnimation> GetManagedAnimations(DependencyObject obj)
+        public static List<BaseAnimation> GetAnimations(DependencyObject obj)
         {
             return (List<BaseAnimation>)obj.GetValue(BaseAnimationsProperty);
         }
 
-        public static void SetManagedAnimations(DependencyObject obj, List<BaseAnimation> value)
+        public static void SetAnimations(DependencyObject obj, List<BaseAnimation> value)
         {
             obj.SetValue(BaseAnimationsProperty, value);
         }
 
-        internal static void AddManagedAnimation(BaseAnimation baseAnimation)
+        internal static void AddAnimation(BaseAnimation animation)
         {
-            var list = VerifyList(baseAnimation);
-            int index = list.IndexOfItem(x => x.Equivalent(baseAnimation));
+            var list = VerifyList(animation);
+            int index = list.IndexOfItem(x => x.Equivalent(animation));
             if (index != -1)
             {
                 var item = list[index];
@@ -63,26 +63,26 @@ namespace IntelligentKioskSample.Controls.Animation
                 list.RemoveAt(index);
             }
 
-            list.Add(baseAnimation);
+            list.Add(animation);
         }
 
-        internal static void RemoveManagedAnimation(BaseAnimation baseAnimation)
+        internal static void RemoveAnimation(BaseAnimation animation)
         {
-            var list = GetManagedAnimations(baseAnimation.Element);
+            var list = GetAnimations(animation.Element);
             if (list != null)
             {
-                baseAnimation.Retain();
-                baseAnimation.Stop();
-                list.Remove(baseAnimation);
+                animation.Retain();
+                animation.Stop();
+                list.Remove(animation);
             }
         }
 
-        private static List<BaseAnimation> VerifyList(BaseAnimation baseAnimation)
+        private static List<BaseAnimation> VerifyList(BaseAnimation animation)
         {
-            var list = GetManagedAnimations(baseAnimation.Element);
+            var list = GetAnimations(animation.Element);
             if (list == null)
             {
-                SetManagedAnimations(baseAnimation.Element, list = new List<BaseAnimation>());
+                SetAnimations(animation.Element, list = new List<BaseAnimation>());
             }
             return list;
         }
