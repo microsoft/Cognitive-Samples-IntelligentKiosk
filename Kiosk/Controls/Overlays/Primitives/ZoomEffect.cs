@@ -31,7 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using SocialEbola.Lib.Animation;
+using IntelligentKioskSample.Controls.Animation;
 using System;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -43,7 +43,7 @@ namespace IntelligentKioskSample.Controls.Overlays.Primitives
     /// </summary>
     public class ZoomEffectProcessor : OverlayEffectProcessor
     {
-        ManagedAnimation[] _animations = new ManagedAnimation[4];
+        BaseAnimation[] _animations = new BaseAnimation[4];
 
         public ZoomEffectProcessor(FrameworkElement overlayPresenter, FrameworkElement overlayControl) : base(overlayPresenter, overlayControl)
         {
@@ -100,8 +100,8 @@ namespace IntelligentKioskSample.Controls.Overlays.Primitives
             }
             _animations[2] = _animations[0];
             _animations[3] = _animations[1];
-            _animations[0] = new ScaleTransformManagedAnimation(zoom, zoom, settings.Duration, ManagedAnimation.DefaultInOut);
-            _animations[1] = new TranslateTransformManagedAnimation(focus.X, focus.Y, settings.Duration, ManagedAnimation.DefaultInOut);
+            _animations[0] = new ScaleTransformAnimation(zoom, zoom, settings.Duration, BaseAnimation.DefaultInOut);
+            _animations[1] = new TranslateTransformAnimation(focus.X, focus.Y, settings.Duration, BaseAnimation.DefaultInOut);
             _animations[0].Activate(OverlayPresenter);
             _animations[1].Activate(OverlayPresenter);
         }

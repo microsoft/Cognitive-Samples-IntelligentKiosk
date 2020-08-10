@@ -31,73 +31,63 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using IntelligentKioskSample.Extensions;
 using System;
-using Windows.Foundation;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Shapes;
 
-namespace SocialEbola.Lib.Animation
+namespace IntelligentKioskSample.Controls.Animation
 {
-    public class LineManagedAnimation : ManagedAnimation<Line>
+    public class ScaleTransformAnimation : BaseAnimation
     {
-        public Point Point1 { get; set; }
-        public Point Point2 { get; set; }
+        public double ScaleX { get; set; }
+        public double ScaleY { get; set; }
+        public EasingFunctionBase Easing { get; set; }
         public TimeSpan Duration { get; set; }
-        public EasingFunctionBase EasingFunction { get; set; }
 
-        public LineManagedAnimation(Point pt1, Point pt2, TimeSpan duration, EasingFunctionBase easingFunction = null)
+        public ScaleTransformAnimation(double scaleX, double scaleY, TimeSpan duration, EasingFunctionBase easing = null)
         {
-            Point1 = pt1;
-            Point2 = pt2;
+            ScaleX = scaleX;
+            ScaleY = scaleY;
+            Easing = easing ?? DefaultOut;
             Duration = duration;
-            EasingFunction = easingFunction ?? DefaultOut;
         }
 
         protected override Storyboard CreateStoryboard()
         {
+            var transform = Transform;
+
             Storyboard board = new Storyboard();
             var timeline = new DoubleAnimationUsingKeyFrames();
-            Storyboard.SetTarget(timeline, Element);
-            Storyboard.SetTargetProperty(timeline, "X1");
-            var frame = new EasingDoubleKeyFrame() { KeyTime = Duration, Value = Point1.X, EasingFunction = EasingFunction };
+            Storyboard.SetTarget(timeline, transform);
+            Storyboard.SetTargetProperty(timeline, "ScaleX");
+            var frame = new EasingDoubleKeyFrame() { KeyTime = Duration, Value = ScaleX, EasingFunction = Easing };
             timeline.KeyFrames.Add(frame);
             board.Children.Add(timeline);
 
             timeline = new DoubleAnimationUsingKeyFrames();
-            Storyboard.SetTarget(timeline, Element);
-            Storyboard.SetTargetProperty(timeline, "Y1");
-            frame = new EasingDoubleKeyFrame() { KeyTime = Duration, Value = Point1.Y, EasingFunction = EasingFunction };
-            timeline.KeyFrames.Add(frame);
-            board.Children.Add(timeline);
-
-            timeline = new DoubleAnimationUsingKeyFrames();
-            Storyboard.SetTarget(timeline, Element);
-            Storyboard.SetTargetProperty(timeline, "X2");
-            frame = new EasingDoubleKeyFrame() { KeyTime = Duration, Value = Point2.X, EasingFunction = EasingFunction };
-            timeline.KeyFrames.Add(frame);
-            board.Children.Add(timeline);
-
-            timeline = new DoubleAnimationUsingKeyFrames();
-            Storyboard.SetTarget(timeline, Element);
-            Storyboard.SetTargetProperty(timeline, "Y2");
-            frame = new EasingDoubleKeyFrame() { KeyTime = Duration, Value = Point2.Y, EasingFunction = EasingFunction };
+            Storyboard.SetTarget(timeline, transform);
+            Storyboard.SetTargetProperty(timeline, "ScaleY");
+            frame = new EasingDoubleKeyFrame() { KeyTime = Duration, Value = ScaleY, EasingFunction = Easing };
             timeline.KeyFrames.Add(frame);
             board.Children.Add(timeline);
 
             return board;
         }
 
-        public override bool Equivalent(ManagedAnimation managedAnimation)
+        private CompositeTransform Transform
         {
-            return managedAnimation is ICanvasMoveAnimation;
+            get
+            {
+                return Element.EnsureRenderTransform<CompositeTransform>();
+            }
         }
 
         public override void Retain()
         {
-            Element.X1 = Point1.X;
-            Element.Y1 = Point1.Y;
-            Element.X2 = Point2.X;
-            Element.Y2 = Point2.Y;
+            var transform = Transform;
+            transform.ScaleX = ForceFinalValueRetained ? ScaleX : transform.ScaleX;
+            transform.ScaleY = ForceFinalValueRetained ? ScaleY : transform.ScaleY;
         }
     }
 }

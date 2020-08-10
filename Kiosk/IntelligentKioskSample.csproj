@@ -136,6 +136,10 @@
     </Compile>
     <Compile Include="AzureBlobHelper.cs" />
     <Compile Include="CognitiveServiceApiKeyTester.cs" />
+    <Compile Include="Controls\Animation\AnimationHelper.cs" />
+    <Compile Include="Controls\Animation\BaseAnimation.cs" />
+    <Compile Include="Controls\Animation\ScaleTransformAnimation.cs" />
+    <Compile Include="Controls\Animation\TranslateTransformAnimation.cs" />
     <Compile Include="Controls\CenteredVerticalBarControl.xaml.cs">
       <DependentUpon>CenteredVerticalBarControl.xaml</DependentUpon>
     </Compile>
@@ -224,6 +228,7 @@
     <Compile Include="Controls\VideoTrack.xaml.cs">
       <DependentUpon>VideoTrack.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\AnimationExtensions.cs" />
     <Compile Include="KioskExperiences.cs" />
     <Compile Include="Controls\CameraControl.xaml.cs">
       <DependentUpon>CameraControl.xaml</DependentUpon>
@@ -240,23 +245,6 @@
     <Compile Include="Controls\ImageWithFaceBorderUserControl.xaml.cs">
       <DependentUpon>ImageWithFaceBorderUserControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ManagedAnimationLib\CanvasCircleMoveManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\CanvasMoveManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\CanvasSpiralMoveManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\CircleGenerator.cs" />
-    <Compile Include="ManagedAnimationLib\CompositeTransformManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\Extensions.cs" />
-    <Compile Include="ManagedAnimationLib\FillColorManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\ICanvasMoveAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\LineManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\ManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\ManagedAnimationCompleteEventArgs.cs" />
-    <Compile Include="ManagedAnimationLib\OpacityManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\Orchestration.cs" />
-    <Compile Include="ManagedAnimationLib\ProjectionPropertyManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\ScaleTransformManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\SizeManagedAnimation.cs" />
-    <Compile Include="ManagedAnimationLib\TranslateTransformManagedAnimation.cs" />
     <Compile Include="Models\BaseViewModel.cs" />
     <Compile Include="Models\CustomVisionModelData.cs" />
     <Compile Include="Models\InkRecognizerExplorer\InkResponse.cs" />

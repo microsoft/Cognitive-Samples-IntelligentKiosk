@@ -31,57 +31,58 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using IntelligentKioskSample.Extensions;
 using System.Collections.Generic;
 using Windows.UI.Xaml;
 
-namespace SocialEbola.Lib.Animation
+namespace IntelligentKioskSample.Controls.Animation
 {
-    public class Orchestration
+    public class AnimationHelper
     {
-        public static readonly DependencyProperty ManagedAnimationsProperty = DependencyProperty.RegisterAttached("ManagedAnimations", typeof(List<ManagedAnimation>), typeof(Orchestration), new PropertyMetadata(null));
+        public static readonly DependencyProperty BaseAnimationsProperty = DependencyProperty.RegisterAttached("BaseAnimations", typeof(List<BaseAnimation>), typeof(AnimationHelper), new PropertyMetadata(null));
 
-        public static List<ManagedAnimation> GetManagedAnimations(DependencyObject obj)
+        public static List<BaseAnimation> GetManagedAnimations(DependencyObject obj)
         {
-            return (List<ManagedAnimation>)obj.GetValue(ManagedAnimationsProperty);
+            return (List<BaseAnimation>)obj.GetValue(BaseAnimationsProperty);
         }
 
-        public static void SetManagedAnimations(DependencyObject obj, List<ManagedAnimation> value)
+        public static void SetManagedAnimations(DependencyObject obj, List<BaseAnimation> value)
         {
-            obj.SetValue(ManagedAnimationsProperty, value);
+            obj.SetValue(BaseAnimationsProperty, value);
         }
 
-        internal static void AddManagedAnimation(ManagedAnimation managedAnimation)
+        internal static void AddManagedAnimation(BaseAnimation baseAnimation)
         {
-            var list = VerifyList(managedAnimation);
-            int index = list.IndexOfItem(x => x.Equivalent(managedAnimation));
+            var list = VerifyList(baseAnimation);
+            int index = list.IndexOfItem(x => x.Equivalent(baseAnimation));
             if (index != -1)
             {
-                var managed = list[index];
-                managed.Retain();
-                managed.Stop();
+                var item = list[index];
+                item.Retain();
+                item.Stop();
                 list.RemoveAt(index);
             }
 
-            list.Add(managedAnimation);
+            list.Add(baseAnimation);
         }
 
-        internal static void RemoveManagedAnimation(ManagedAnimation managedAnimation)
+        internal static void RemoveManagedAnimation(BaseAnimation baseAnimation)
         {
-            var list = GetManagedAnimations(managedAnimation.Element);
+            var list = GetManagedAnimations(baseAnimation.Element);
             if (list != null)
             {
-                managedAnimation.Retain();
-                managedAnimation.Stop();
-                list.Remove(managedAnimation);
+                baseAnimation.Retain();
+                baseAnimation.Stop();
+                list.Remove(baseAnimation);
             }
         }
 
-        private static List<ManagedAnimation> VerifyList(ManagedAnimation managedAnimation)
+        private static List<BaseAnimation> VerifyList(BaseAnimation baseAnimation)
         {
-            var list = GetManagedAnimations(managedAnimation.Element);
+            var list = GetManagedAnimations(baseAnimation.Element);
             if (list == null)
             {
-                SetManagedAnimations(managedAnimation.Element, list = new List<ManagedAnimation>());
+                SetManagedAnimations(baseAnimation.Element, list = new List<BaseAnimation>());
             }
             return list;
         }

@@ -31,20 +31,21 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using IntelligentKioskSample.Extensions;
 using System;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 
-namespace SocialEbola.Lib.Animation
+namespace IntelligentKioskSample.Controls.Animation
 {
-    public class TranslateTransformManagedAnimation : ManagedAnimation
+    public class TranslateTransformAnimation : BaseAnimation
     {
         public double X { get; set; }
         public double Y { get; set; }
         public EasingFunctionBase Easing { get; set; }
         public TimeSpan Duration { get; set; }
 
-        public TranslateTransformManagedAnimation(double x, double y, TimeSpan duration, EasingFunctionBase easing = null)
+        public TranslateTransformAnimation(double x, double y, TimeSpan duration, EasingFunctionBase easing = null)
         {
             X = x;
             Y = y;
@@ -76,10 +77,9 @@ namespace SocialEbola.Lib.Animation
 
         private CompositeTransform Transform
         {
-            get
-            {
-                var transform = Element.EnsureRenderTransform<CompositeTransform>();
-                return transform;
+            get 
+            { 
+                return Element.EnsureRenderTransform<CompositeTransform>(); 
             }
         }
 
