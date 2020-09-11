@@ -117,7 +117,6 @@
     <Compile Include="FormRecognizerService.cs" />
     <Compile Include="ImageAnalyzer.cs" />
     <Compile Include="ImageAnalyzer_Receipt.cs" />
-    <Compile Include="InkRecognizer.cs" />
     <Compile Include="Models\AnomalyDetectResult.cs" />
     <Compile Include="Models\FormRecognizer\AnalyzeResultResponse.cs" />
     <Compile Include="Models\FormRecognizer\ModelResultResponse.cs" />

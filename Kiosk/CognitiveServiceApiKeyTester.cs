@@ -46,9 +46,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Windows.Data.Json;
-using Windows.Foundation;
-using Windows.UI.Input.Inking;
 
 namespace IntelligentKioskSample
 {
@@ -246,20 +243,6 @@ namespace IntelligentKioskSample
             }
 
             return response;
-        }
-
-        public static async Task TestInkRecognizerApiKeyAsync(string key)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentException("Invalid API Key");
-            }
-
-            var inkRecognizer = new ServiceHelpers.InkRecognizer(key);
-
-            JObject json = inkRecognizer.ConvertInkToJson();
-            var response = await inkRecognizer.RecognizeAsync(json);
-            response.EnsureSuccessStatusCode();
         }
     }
 
