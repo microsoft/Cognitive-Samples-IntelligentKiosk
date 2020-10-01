@@ -122,15 +122,11 @@
     <Content Include="Assets\DemoGallery\Vision API Explorer.jpg" />
     <Content Include="Assets\DemoGallery\VisualAlertBuilder.jpg" />
     <Content Include="Assets\favorites_empty.png" />
-    <Content Include="Assets\FormsRecognizer.jpg" />
-    <Content Include="Assets\AnomalyDetector.png" />
     <Content Include="Assets\AnomalyDetector\BikeSharing.png" />
     <Content Include="Assets\AnomalyDetector\LiveSound.png" />
     <Content Include="Assets\AnomalyDetector\Manufacturing.jpg" />
     <Content Include="Assets\AnomalyDetector\Telcom.png" />
-    <Content Include="Assets\InsuranceClaimAutomation.jpg" />
     <Content Include="Assets\InsuranceClaimAutomation\icon-F780-64.jpg" />
-    <Content Include="Assets\RealtimeObjectDetection.png" />
     <Content Include="Assets\simple_fruits.onnx" />
     <Content Include="Assets\mixed_items.onnx" />
     <Content Include="Assets\AnomalyDetector\AnomalyDetector-Bike.csv" />
@@ -138,7 +134,6 @@
     <Content Include="Assets\AnomalyDetector\AnomalyDetector-Telcom.csv" />
     <None Include="IntelligentKioskSample_TemporaryKey.pfx" />
     <None Include="packages.config" />
-    <Content Include="Assets\VisualAlertBuilder.jpg" />
     <Content Include="Views\CustomVision\BuiltInClassificationModels.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -426,30 +421,15 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\BingNewsAnalytics.png" />
-    <Content Include="Assets\BingVisualSearch.jpg" />
-    <Content Include="Assets\camera.png" />
-    <Content Include="Assets\CustomVisionExplorer.png" />
     <Content Include="Assets\female.png" />
-    <Content Include="Assets\GreetingKiosk.JPG" />
     <Content Include="Assets\ImageCollectionInsights.JPG" />
     <Content Include="Assets\male_blue.png" />
-    <Content Include="Assets\EmotionRecognition.PNG" />
-    <Content Include="Assets\FaceAPI.PNG" />
     <Content Include="Assets\male.png" />
-    <Content Include="Assets\Mall.png" />
-    <Content Include="Assets\oxford-face.png" />
-    <Content Include="Assets\RealTime.PNG" />
-    <Content Include="Assets\RealtimeDriverMonitoring.jpg" />
-    <Content Include="Assets\RealTimeFromVideo.PNG" />
-    <Content Include="Assets\RealtimeImageClassification.png" />
     <Content Include="Assets\smalltile-sdk.png" />
     <Content Include="Assets\splash-sdk.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\squaretile-sdk.png" />
     <Content Include="Assets\squaretile-sdk-44.png" />
-    <Content Include="Assets\TranslatorExplorer.png" />
-    <Content Include="Assets\VisionAPI.jpg" />
     <Content Include="Properties\Default.rd.xml">
       <SubType>Designer</SubType>
     </Content>

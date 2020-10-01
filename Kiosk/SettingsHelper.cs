@@ -530,8 +530,6 @@ namespace IntelligentKioskSample
             }
         }
 
-        public bool DisableNavigationMenu { get; private set; }
-
         private uint minDetectableFaceCoveragePercentage = 7;
         public uint MinDetectableFaceCoveragePercentage
         {

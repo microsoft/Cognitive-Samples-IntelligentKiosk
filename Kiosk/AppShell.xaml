@@ -66,7 +66,7 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <Grid x:Name="TitleBarHandle" Grid.Column="0" Background="Black">
-                <TextBlock Margin="12,0" FontSize="12" VerticalAlignment="Center">Intelligent Kiosk</TextBlock>
+                <TextBlock Margin="12,0" FontSize="12" VerticalAlignment="Center">Intelligent Kiosk Sample</TextBlock>
             </Grid>
             <StackPanel Grid.Column="1" Orientation="Horizontal">
                 <Button x:Name="FullScreenButton" Style="{StaticResource TitleBarButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Click="FullScreen_Click" ToolTipService.ToolTip="Enter full screen mode (Win+Shift+Enter)" >

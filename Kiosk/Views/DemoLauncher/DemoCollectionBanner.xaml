@@ -117,13 +117,18 @@
             </Grid>
         </DataTemplate>
 
+        <DataTemplate x:Key="FavoritesBanner">
+            <Grid />
+        </DataTemplate>
+
         <c:StringTemplateSelector x:Key="BannerSelector" 
                                   String1="SocialPhotoBooths" Template1="{StaticResource SocialBanner}" 
                                   String2="LanguageAndSpeech" Template2="{StaticResource LanguageBanner}"
                                   String3="Vision" Template3="{StaticResource VisionBanner}"
                                   String4="Search" Template4="{StaticResource SearchBanner}"
                                   String5="RecentlyUsed" Template5="{StaticResource RecentBanner}"
-                                  String6="NewOrUpdated" Template6="{StaticResource NewBanner}"/>
+                                  String6="NewOrUpdated" Template6="{StaticResource NewBanner}"
+                                  String7="Favorites" Template7="{StaticResource FavoritesBanner}"/>
     </UserControl.Resources>
 
     <ContentControl Content="{Binding DemoCollectionGroup}" ContentTemplateSelector="{StaticResource BannerSelector}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"/>

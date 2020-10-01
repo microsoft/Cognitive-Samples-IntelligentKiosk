@@ -106,11 +106,6 @@ namespace IntelligentKioskSample
 
             this.Loaded += (sender, args) =>
             {
-                if (SettingsHelper.Instance.DisableNavigationMenu)
-                {
-                    this.navView.IsPaneVisible = false;
-                }
-
                 Current = this;
 
                 this.NavigateToStartingPage();
@@ -153,7 +148,6 @@ namespace IntelligentKioskSample
             coreTitleBar.ExtendViewIntoTitleBar = true; //hides the built in title bar
             Window.Current.SetTitleBar(TitleBarHandle); //allow moveing the window by this control
 
-            //bug fix: force the LayoutMetricsChanged to trigger
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
 
@@ -172,14 +166,13 @@ namespace IntelligentKioskSample
             if (e.PropertyName == nameof(SettingsHelper.StartupFullScreenMode))
             {
                 //set the startup mode for next time when the app launches
-                ApplicationView.PreferredLaunchWindowingMode = SettingsHelper.Instance.StartupFullScreenMode ? Windows.UI.ViewManagement.ApplicationViewWindowingMode.FullScreen : Windows.UI.ViewManagement.ApplicationViewWindowingMode.Auto;
+                ApplicationView.PreferredLaunchWindowingMode = SettingsHelper.Instance.StartupFullScreenMode ? ApplicationViewWindowingMode.FullScreen : ApplicationViewWindowingMode.Auto;
             }
         }
 
         private void Current_SizeChanged(object sender, WindowSizeChangedEventArgs e)
         {
-            //bug fix: catch the edge case where a window moved from full screen using the title bar button (UpdateTitleBar_Visibility isn't naturally called in this case)
-            var fullScreen = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().IsFullScreenMode;
+            var fullScreen = ApplicationView.GetForCurrentView().IsFullScreenMode;
             if (prevFullScreen == true && fullScreen == false && TitleBar.Visibility == Visibility.Visible)
             {
                 UpdateTitleBar_Visibility(Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().TitleBar);
@@ -205,7 +198,7 @@ namespace IntelligentKioskSample
 
             //set rowspan if in fullscreen
             var rowSpan = Grid.GetRowSpan(TitleBar);
-            var fullScreen = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().IsFullScreenMode;
+            var fullScreen = ApplicationView.GetForCurrentView().IsFullScreenMode;
             var newRowSpan = fullScreen ? 2 : 1;
             if (rowSpan != newRowSpan)
             {
@@ -223,7 +216,7 @@ namespace IntelligentKioskSample
         private void FullScreen_Click(object sender, RoutedEventArgs e)
         {
             //enter full screen mode
-            Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
+            ApplicationView.GetForCurrentView().TryEnterFullScreenMode();
         }
 
         #endregion
@@ -244,10 +237,7 @@ namespace IntelligentKioskSample
 
         public void NavigateToPage(Type destPage, object parameter = null)
         {
-            if (this.AppFrame.CurrentSourcePageType != destPage)
-            {
-                AppFrame.Navigate(destPage, parameter, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
-            }
+            AppFrame.Navigate(destPage, parameter, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
         }
 
         public void NavigateToExperience(KioskExperience experience)
@@ -295,7 +285,7 @@ namespace IntelligentKioskSample
         {
             // Each time a navigation event occurs, update the Back button's visibility
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-                ((Frame)sender).CanGoBack && !(e.Content is DemoLauncherPage) && !SettingsHelper.Instance.DisableNavigationMenu ?
+                ((Frame)sender).CanGoBack && !(e.Content is DemoLauncherPage) ?
                 AppViewBackButtonVisibility.Visible :
                 AppViewBackButtonVisibility.Collapsed;
 

@@ -189,7 +189,7 @@
 
             <!-- View: particular collection -->
             <ScrollViewer Visibility="{Binding IsMainPage, Converter={StaticResource reverseBooleanToVisibilityConverter}}">
-                <Grid >
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition/>
