@@ -68,30 +68,6 @@ namespace IntelligentKioskSample
                 .Where(e => e.Attributes.IsPublic)
                 .ToList();
 
-                RankedExperiences rankData = null;
-                try
-                {
-                    rankData = RankedExperiences.Deserialize("RankedExperiences.xml");
-                }
-                catch
-                { }
-
-                foreach (var item in experiences)
-                {
-                    if (rankData != null)
-                    {
-                        var rankedExperience = rankData.Experiences.FirstOrDefault(e => item.Attributes.Id == e.Experience);
-                        if (rankedExperience != null)
-                        {
-                            item.Attributes.Rank = rankedExperience.Rank;
-                        }
-                        else
-                        {
-                            item.Attributes.Rank = Int32.MaxValue;
-                        }
-                    }
-                }
-
                 return experiences.OrderBy(e => e.Attributes.DisplayName);
             }
         }
@@ -161,41 +137,6 @@ namespace IntelligentKioskSample
         public string DateAdded { get; set; }
         public string DateUpdated { get; set; }
         public string UpdatedDescription { get; set; }
-        public int Rank { get; set; }
-        public bool IsSignedInRequired { get; set; } = false;
         public string RequiredFile { get; set; }
-    }
-
-
-    [XmlRoot]
-    [XmlType]
-    public class RankedExperience
-    {
-        [XmlAttribute]
-        public string Experience { get; set; }
-        [XmlAttribute]
-        public int Rank { get; set; }
-        [XmlAttribute]
-        public int EventCount { get; set; }
-    }
-
-    [XmlRoot]
-    [XmlType]
-    public class RankedExperiences
-    {
-        [XmlArrayItem]
-        public List<RankedExperience> Experiences { get; set; }
-
-        public static RankedExperiences Deserialize(string filePath)
-        {
-            RankedExperiences result = null;
-            using (FileStream fileStream = File.OpenRead(filePath))
-            {
-                var xs = new XmlSerializer(typeof(RankedExperiences));
-                result = (RankedExperiences)xs.Deserialize(fileStream);
-            }
-
-            return result;
-        }
     }
 }
