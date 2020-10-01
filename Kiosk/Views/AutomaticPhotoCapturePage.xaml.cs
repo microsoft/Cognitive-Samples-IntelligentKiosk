@@ -41,14 +41,16 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace IntelligentKioskSample.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    [KioskExperience(Title = "Automatic Photo Capture", ImagePath = "ms-appx:/Assets/camera.png", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(Id = "AutomaticPhotoCapture",
+        DisplayName = "Automatic Photo Capture",
+        Description = "See ages, genders, and landmarks from faces in an image",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Automatic Photo Capture.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Automated,
+        TechnologiesUsed = TechnologyType.Face,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2016/06/10")]
     public sealed partial class AutomaticPhotoCapturePage : Page
     {
         public AutomaticPhotoCapturePage()

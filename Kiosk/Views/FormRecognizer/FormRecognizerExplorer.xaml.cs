@@ -54,7 +54,16 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.FormRecognizer
 {
-    [KioskExperience(Title = "Form Recognizer", ImagePath = "ms-appx:/Assets/FormsRecognizer.jpg", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(Id = "FormRecognizer",
+        DisplayName = "Form Recognizer",
+        Description = "Extract tables and key/value pairs from scanned forms",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Forms Recognizer.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business | ExperienceType.Preview,
+        TechnologiesUsed = TechnologyType.FormRecognizer,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2019/07/22",
+        DateUpdated = "2020/06/03",
+        UpdatedDescription = "Updated to V2.0, including support for new fields in Receipt scenario")]
     public sealed partial class FormRecognizerExplorer : Page, INotifyPropertyChanged
     {
         private FormRecognizerService formRecognizerService;

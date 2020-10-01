@@ -46,14 +46,16 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace IntelligentKioskSample.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    [KioskExperience(Title = "Realtime Crowd Insights", ImagePath = "ms-appx:/Assets/realtime.png", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(Id = "Real-time Kiosk",
+        DisplayName = "Realtime Crowd Insights",
+        Description = "Face analysis in near real-time from a camera stream",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Realtime Crowd Insights.jpg",
+        ExperienceType = ExperienceType.Automated | ExperienceType.Business,
+        TechnologiesUsed = TechnologyType.Emotion | TechnologyType.Face,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2016/02/19")]
     public sealed partial class RealTimeDemo : Page, IRealTimeDataProvider
     {
         private Task processingLoopTask;

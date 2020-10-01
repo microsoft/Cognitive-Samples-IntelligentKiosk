@@ -31,25 +31,29 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace IntelligentKioskSample.Views
+namespace IntelligentKioskSample.Views.DemoLauncher
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    public partial class DemoLauncherPage : Page
+    public sealed partial class DemoCollectionBanner : UserControl
     {
-        public DemoLauncherPage()
-        {
-            this.InitializeComponent();
+        public static readonly DependencyProperty DemoCollectionGroupProperty =
+            DependencyProperty.Register(
+            "DemoCollectionGroup",
+            typeof(DemoCollectionType),
+            typeof(DemoCollectionBanner),
+            new PropertyMetadata(DemoCollectionType.All));
 
-            this.DataContext = KioskExperiences.Experiences;
+        public DemoCollectionType DemoCollectionGroup
+        {
+            get { return (DemoCollectionType)GetValue(DemoCollectionGroupProperty); }
+            set { SetValue(DemoCollectionGroupProperty, value); }
         }
 
-        private void OnDemoClick(object sender, ItemClickEventArgs e)
+        public DemoCollectionBanner()
         {
-            this.Frame.Navigate(((KioskExperience)e.ClickedItem).PageType);
+            this.InitializeComponent();
         }
     }
 }

@@ -33,8 +33,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Serialization;
+using Windows.Storage;
 
 namespace IntelligentKioskSample
 {
@@ -54,11 +57,42 @@ namespace IntelligentKioskSample
         {
             get
             {
-                return expTypes.Select(t => new KioskExperience()
+                var experiences = expTypes.Select(t => new KioskExperience()
                 {
                     PageType = t,
                     Attributes = t.GetTypeInfo().GetCustomAttribute<KioskExperienceAttribute>()
-                }).OrderBy(e => e.Attributes.Title);
+                })
+                .Where(e => !string.IsNullOrEmpty(e.Attributes.RequiredFile)
+                                ? Util.FileExists(ApplicationData.Current.LocalFolder, e.Attributes.RequiredFile) // Hide specific experiences
+                                : true)
+                .Where(e => e.Attributes.IsPublic)
+                .ToList();
+
+                RankedExperiences rankData = null;
+                try
+                {
+                    rankData = RankedExperiences.Deserialize("RankedExperiences.xml");
+                }
+                catch
+                { }
+
+                foreach (var item in experiences)
+                {
+                    if (rankData != null)
+                    {
+                        var rankedExperience = rankData.Experiences.FirstOrDefault(e => item.Attributes.Id == e.Experience);
+                        if (rankedExperience != null)
+                        {
+                            item.Attributes.Rank = rankedExperience.Rank;
+                        }
+                        else
+                        {
+                            item.Attributes.Rank = Int32.MaxValue;
+                        }
+                    }
+                }
+
+                return experiences.OrderBy(e => e.Attributes.DisplayName);
             }
         }
     }
@@ -69,17 +103,99 @@ namespace IntelligentKioskSample
         public KioskExperienceAttribute Attributes { get; set; }
     }
 
+    [Flags]
     public enum ExperienceType
     {
-        Kiosk,
-        Other
+        Automated = 1,
+        Guided = 2,
+        Business = 4,
+        IntelligentEdge = 8,
+        Fun = 16,
+        Experimental = 32,
+        Preview = 64
+    }
+
+    [Flags]
+    public enum TechnologyAreaType
+    {
+        Vision = 1,
+        Speech = 2,
+        Search = 8,
+        Language = 16,
+        Decision = 32
+    }
+
+    [Flags]
+    public enum TechnologyType
+    {
+        Face = 1,
+        Emotion = 2,
+        Vision = 4,
+        TextAnalytics = 8,
+        BingNews = 16,
+        BingImages = 32,
+        BingAutoSuggest = 64,
+        Bots = 128,
+        SpeechToText = 256,
+        CustomVision = 512,
+        QnA = 1024,
+        WinML = 2048,
+        TextToSpeech = 4096,
+        CognitiveSearch = 8192,
+        TranslatorText = 16384,
+        AnomalyDetector = 32768,
+        FormRecognizer = 131072
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class KioskExperienceAttribute : Attribute
     {
-        public string Title { get; set; }
+        public string DisplayName { get; set; }
+        public string Description { get; set; }
+        public string Id { get; set; }
         public string ImagePath { get; set; }
         public ExperienceType ExperienceType { get; set; }
+        public TechnologyAreaType TechnologyArea { get; set; }
+        public TechnologyType TechnologiesUsed { get; set; }
+        public bool IsPublic { get; set; } = true;
+        public string DateAdded { get; set; }
+        public string DateUpdated { get; set; }
+        public string UpdatedDescription { get; set; }
+        public int Rank { get; set; }
+        public bool IsSignedInRequired { get; set; } = false;
+        public string RequiredFile { get; set; }
+    }
+
+
+    [XmlRoot]
+    [XmlType]
+    public class RankedExperience
+    {
+        [XmlAttribute]
+        public string Experience { get; set; }
+        [XmlAttribute]
+        public int Rank { get; set; }
+        [XmlAttribute]
+        public int EventCount { get; set; }
+    }
+
+    [XmlRoot]
+    [XmlType]
+    public class RankedExperiences
+    {
+        [XmlArrayItem]
+        public List<RankedExperience> Experiences { get; set; }
+
+        public static RankedExperiences Deserialize(string filePath)
+        {
+            RankedExperiences result = null;
+            using (FileStream fileStream = File.OpenRead(filePath))
+            {
+                var xs = new XmlSerializer(typeof(RankedExperiences));
+                result = (RankedExperiences)xs.Deserialize(fileStream);
+            }
+
+            return result;
+        }
     }
 }

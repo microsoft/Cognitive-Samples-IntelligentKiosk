@@ -37,14 +37,16 @@ using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace IntelligentKioskSample.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    [KioskExperience(Title = "Emotion Explorer", ImagePath = "ms-appx:/Assets/EmotionRecognition.PNG", ExperienceType = ExperienceType.Other)]
+    [KioskExperience(Id = "EmotionExplorer",
+        DisplayName = "Emotion Explorer",
+        Description = "A playground for the Emotion APIs",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Emotion Explorer.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologyArea = TechnologyAreaType.Vision,
+        TechnologiesUsed = TechnologyType.Emotion | TechnologyType.Face,
+        DateAdded = "2016/01/14")]
     public sealed partial class EmotionRecognitionPage : Page
     {
         public EmotionRecognitionPage()

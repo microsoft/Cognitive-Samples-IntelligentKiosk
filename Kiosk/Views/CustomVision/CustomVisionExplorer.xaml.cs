@@ -53,7 +53,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views
 {
-    [KioskExperience(Title = "Custom Vision Explorer", ImagePath = "ms-appx:/Assets/CustomVisionExplorer.png")]
+    [KioskExperience(Id = "CustomVisionExplorer",
+        DisplayName = "Custom Vision Explorer",
+        Description = "Analyze images using pre-built models, or create your own",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Custom Vision Explorer.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologiesUsed = TechnologyType.BingAutoSuggest | TechnologyType.BingImages | TechnologyType.CustomVision,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2017/05/11")]
     public sealed partial class CustomVisionExplorer : Page
     {
         private ImageAnalyzer currentPhoto;

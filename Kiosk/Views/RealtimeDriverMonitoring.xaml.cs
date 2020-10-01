@@ -52,15 +52,17 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace IntelligentKioskSample.Views
 {
 
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    [KioskExperience(Title = "Realtime Driver Monitoring", ImagePath = "ms-appx:/Assets/RealtimeDriverMonitoring.jpg", ExperienceType = ExperienceType.Other)]
+    [KioskExperience(Id = "RealtimeDriverMonitoring",
+        DisplayName = "Realtime Driver Monitoring",
+        Description = "See how AI can identify a distracted driver",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Realtime Driver Monitoring.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologiesUsed = TechnologyType.Face | TechnologyType.Vision,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2016/11/09")]
     public sealed partial class RealtimeDriverMonitoring : Page
     {
         private Task processingLoopTask;

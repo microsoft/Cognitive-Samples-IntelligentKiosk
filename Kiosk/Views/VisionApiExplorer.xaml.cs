@@ -43,7 +43,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views
 {
-    [KioskExperience(Title = "Vision API Explorer", ImagePath = "ms-appx:/Assets/VisionAPI.jpg")]
+    [KioskExperience(Id = "VisionAPIExplorer",
+        DisplayName = "Vision API Explorer",
+        Description = "Extract insights from images, including tags, text, and objects",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Vision API Explorer.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologyArea = TechnologyAreaType.Vision,
+        TechnologiesUsed = TechnologyType.BingAutoSuggest | TechnologyType.BingImages | TechnologyType.Vision,
+        DateAdded = "2017/02/08")]
     public sealed partial class VisionApiExplorer : Page
     {
         public static bool ShowAgeAndGender { get { return SettingsHelper.Instance.ShowAgeAndGender; } }

@@ -25,8 +25,14 @@
     </Page.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
         <!-- Top-level navigation menu + app content -->
-        <NavigationView x:Name="navView"
+        <NavigationView Grid.Row="1"
+                        x:Name="navView"
                         MenuItemTemplate="{StaticResource NavMenuItemTemplate}" 
                         PaneDisplayMode="LeftCompact" 
                         IsPaneOpen="False" 
@@ -48,6 +54,26 @@
                 </Frame.ContentTransitions>
             </Frame>
         </NavigationView>
+
+        <Grid Grid.Row="1" Background="Black" x:Name="appOverlay" Visibility="Collapsed">
+            <TextBlock Text="Stand by, we are starting a new experience..." Style="{StaticResource HeaderTextBlockStyle}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+
+        <!--Title Bar-->
+        <Grid x:Name="TitleBar" Background="Black" Grid.Row="0" Grid.RowSpan="1" Height="32" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid x:Name="TitleBarHandle" Grid.Column="0" Background="Black">
+                <TextBlock Margin="12,0" FontSize="12" VerticalAlignment="Center">Intelligent Kiosk</TextBlock>
+            </Grid>
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button x:Name="FullScreenButton" Style="{StaticResource TitleBarButtonStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" Click="FullScreen_Click" ToolTipService.ToolTip="Enter full screen mode (Win+Shift+Enter)" >
+                    <FontIcon FontFamily="Segoe MDL2 Assets" FontSize="9" Glyph="&#xE740;"/>
+                </Button>
+            </StackPanel>
+        </Grid>
 
     </Grid>
 </Page>

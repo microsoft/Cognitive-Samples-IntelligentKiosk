@@ -32,7 +32,6 @@
 // 
 
 using System;
-using Windows.UI.Xaml.Controls;
 
 namespace IntelligentKioskSample
 {
@@ -41,9 +40,9 @@ namespace IntelligentKioskSample
     /// </summary>
     public class NavMenuItem
     {
+        public string Id { get; set; }
         public string Label { get; set; }
         public string Glyph { get; set; }
-
         public Type DestPage { get; set; }
         public object Arguments { get; set; }
     }

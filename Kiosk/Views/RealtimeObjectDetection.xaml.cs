@@ -54,7 +54,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views
 {
-    [KioskExperience(Title = "Realtime Object Detection", ImagePath = "ms-appx:/Assets/RealtimeObjectDetection.png", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(Id = "OnDeviceObjectDetection",
+        DisplayName = "Realtime Object Detection",
+        Description = "Detect objects in real-time using Windows ML",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Realtime Object Detection.jpg",
+        ExperienceType = ExperienceType.Automated | ExperienceType.Business | ExperienceType.IntelligentEdge,
+        TechnologiesUsed = TechnologyType.WinML,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2018/03/14")]
     public sealed partial class RealtimeObjectDetection : Page, ICameraFrameProcessor
     {
         private readonly int ObjectDetectionModelInputSize = 416;

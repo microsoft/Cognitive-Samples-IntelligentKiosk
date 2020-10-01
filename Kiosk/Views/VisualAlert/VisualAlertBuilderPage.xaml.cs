@@ -52,10 +52,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.VisualAlert
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    [KioskExperience(Title = "Visual Alert Builder", ImagePath = "ms-appx:/Assets/VisualAlertBuilder.jpg", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(Id = "VisualAlertBuilder",
+        DisplayName = "Visual Alert Builder",
+        Description = "See how Custom Vision enables you to train and trigger visual alerts",
+        ImagePath = "ms-appx:/Assets/DemoGallery/VisualAlertBuilder.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologyArea = TechnologyAreaType.Vision,
+        TechnologiesUsed = TechnologyType.CustomVision,
+        DateAdded = "2019/10/03")]
     public sealed partial class VisualAlertBuilderPage : Page, ICameraFrameProcessor
     {
         private const float MinProbabilityValue = 0.3f;

@@ -383,6 +383,14 @@ namespace IntelligentKioskSample
             return isDate ? datetime.ToString(format) : string.Empty;
         }
 
+        public static bool FileExists(StorageFolder folder, string fileName)
+        {
+            var result = folder?.TryGetItemAsync(fileName);
+            result.AsTask().Wait();
+            var storageFile = result.GetResults();
+            return storageFile != null;
+        }
+
         public static async Task<StorageFile> PickSingleFileAsync(string[] fileTypeFilter = null)
         {
             FileOpenPicker fileOpenPicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.PicturesLibrary, ViewMode = PickerViewMode.Thumbnail };
