@@ -109,6 +109,7 @@
     <Content Include="Assets\DemoGallery\Face API Explorer.jpg" />
     <Content Include="Assets\DemoGallery\Forms Recognizer.jpg" />
     <Content Include="Assets\DemoGallery\Greeting Kiosk.jpg" />
+    <Content Include="Assets\DemoGallery\How Old.jpg" />
     <Content Include="Assets\DemoGallery\Image Collection Insights.jpg" />
     <Content Include="Assets\DemoGallery\InsuranceClaimAutomation.jpg" />
     <Content Include="Assets\DemoGallery\Mall Kiosk.jpg" />
@@ -126,6 +127,7 @@
     <Content Include="Assets\AnomalyDetector\Manufacturing.jpg" />
     <Content Include="Assets\AnomalyDetector\Telcom.png" />
     <Content Include="Assets\InsuranceClaimAutomation\icon-F780-64.jpg" />
+    <Content Include="Assets\photo-icon.png" />
     <Content Include="Assets\simple_fruits.onnx" />
     <Content Include="Assets\mixed_items.onnx" />
     <Content Include="Assets\AnomalyDetector\AnomalyDetector-Bike.csv" />
@@ -332,6 +334,9 @@
     </Compile>
     <Compile Include="Views\GreetingKiosk.xaml.cs">
       <DependentUpon>GreetingKiosk.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\HowOldKioskPage.xaml.cs">
+      <DependentUpon>HowOldKioskPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ImageCollectionInsights\EmotionFilterViewModel.cs" />
     <Compile Include="Views\ImageCollectionInsights\FaceFilterViewModel.cs" />
@@ -653,6 +658,10 @@
     <Page Include="Views\GreetingKiosk.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\HowOldKioskPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ImageCollectionInsights\ImageCollectionInsights.xaml">
       <Generator>MSBuild:Compile</Generator>
