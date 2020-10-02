@@ -7,6 +7,7 @@
         <ResourceDictionary Source="/Controls/Overlays/Primitives/OverlayControl.xaml" />
         <ResourceDictionary Source="/Controls/Overlays/Primitives/OverlayItemsControl.xaml" />
         <ResourceDictionary Source="/Controls/Overlays/Primitives/OverlayPresenter.xaml" />
+        <ResourceDictionary Source="/Controls/LeftRightScrollViewer.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

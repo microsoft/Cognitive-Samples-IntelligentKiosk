@@ -49,10 +49,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.AnomalyDetector
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    [KioskExperience(Title = "Anomaly Detector", ImagePath = "ms-appx:/Assets/anomalydetector.png", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(Id = "AnomalyDetector",
+        DisplayName = "Anomaly Detector",
+        Description = "An AI service that helps you foresee problems before they occur",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Anomaly detector.jpg",
+        ExperienceType = ExperienceType.Preview | ExperienceType.Business,
+        TechnologyArea = TechnologyAreaType.Decision,
+        TechnologiesUsed = TechnologyType.AnomalyDetector,
+        DateAdded = "2019/09/03")]
     public sealed partial class AnomalyDetectorDemo : Page, INotifyPropertyChanged
     {
         private MediaCapture mediaCapture;

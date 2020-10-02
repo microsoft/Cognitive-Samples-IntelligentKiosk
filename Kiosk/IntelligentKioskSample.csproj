@@ -101,15 +101,32 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Assets\FormsRecognizer.jpg" />
-    <Content Include="Assets\AnomalyDetector.png" />
+    <Content Include="Assets\DemoGallery\Anomaly detector.jpg" />
+    <Content Include="Assets\DemoGallery\Automatic Photo Capture.jpg" />
+    <Content Include="Assets\DemoGallery\Bing News Analytics.jpg" />
+    <Content Include="Assets\DemoGallery\Bing Visual Search.jpg" />
+    <Content Include="Assets\DemoGallery\Custom Vision Explorer.jpg" />
+    <Content Include="Assets\DemoGallery\Emotion Explorer.jpg" />
+    <Content Include="Assets\DemoGallery\Face API Explorer.jpg" />
+    <Content Include="Assets\DemoGallery\Forms Recognizer.jpg" />
+    <Content Include="Assets\DemoGallery\Greeting Kiosk.jpg" />
+    <Content Include="Assets\DemoGallery\Image Collection Insights.jpg" />
+    <Content Include="Assets\DemoGallery\InsuranceClaimAutomation.jpg" />
+    <Content Include="Assets\DemoGallery\Mall Kiosk.jpg" />
+    <Content Include="Assets\DemoGallery\Realtime Crowd Insights.jpg" />
+    <Content Include="Assets\DemoGallery\Realtime Driver Monitoring.jpg" />
+    <Content Include="Assets\DemoGallery\Realtime Image Classification Demo.jpg" />
+    <Content Include="Assets\DemoGallery\Realtime Object Detection.jpg" />
+    <Content Include="Assets\DemoGallery\Realtime Video Insights.jpg" />
+    <Content Include="Assets\DemoGallery\Translation Demo.jpg" />
+    <Content Include="Assets\DemoGallery\Vision API Explorer.jpg" />
+    <Content Include="Assets\DemoGallery\VisualAlertBuilder.jpg" />
+    <Content Include="Assets\favorites_empty.png" />
     <Content Include="Assets\AnomalyDetector\BikeSharing.png" />
     <Content Include="Assets\AnomalyDetector\LiveSound.png" />
     <Content Include="Assets\AnomalyDetector\Manufacturing.jpg" />
     <Content Include="Assets\AnomalyDetector\Telcom.png" />
-    <Content Include="Assets\InsuranceClaimAutomation.jpg" />
     <Content Include="Assets\InsuranceClaimAutomation\icon-F780-64.jpg" />
-    <Content Include="Assets\RealtimeObjectDetection.png" />
     <Content Include="Assets\simple_fruits.onnx" />
     <Content Include="Assets\mixed_items.onnx" />
     <Content Include="Assets\AnomalyDetector\AnomalyDetector-Bike.csv" />
@@ -117,7 +134,6 @@
     <Content Include="Assets\AnomalyDetector\AnomalyDetector-Telcom.csv" />
     <None Include="IntelligentKioskSample_TemporaryKey.pfx" />
     <None Include="packages.config" />
-    <Content Include="Assets\VisualAlertBuilder.jpg" />
     <Content Include="Views\CustomVision\BuiltInClassificationModels.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -152,6 +168,9 @@
     </Compile>
     <Compile Include="Controls\ImagePickerControl.xaml.cs">
       <DependentUpon>ImagePickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LeftRightScrollViewer.xaml.cs">
+      <DependentUpon>LeftRightScrollViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\LifecycleControl.xaml.cs">
       <DependentUpon>LifecycleControl.xaml</DependentUpon>
@@ -287,7 +306,13 @@
     <Compile Include="Views\CustomVision\ThumbnailWithRegionsControl.xaml.cs">
       <DependentUpon>ThumbnailWithRegionsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DemoLauncherPage.xaml.cs">
+    <Compile Include="Views\DemoLauncher\DemoCollectionBanner.xaml.cs">
+      <DependentUpon>DemoCollectionBanner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DemoLauncher\DemoCollectionControl.xaml.cs">
+      <DependentUpon>DemoCollectionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DemoLauncher\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FaceIdentificationSetup.xaml.cs">
@@ -396,30 +421,15 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\BingNewsAnalytics.png" />
-    <Content Include="Assets\BingVisualSearch.jpg" />
-    <Content Include="Assets\camera.png" />
-    <Content Include="Assets\CustomVisionExplorer.png" />
     <Content Include="Assets\female.png" />
-    <Content Include="Assets\GreetingKiosk.JPG" />
     <Content Include="Assets\ImageCollectionInsights.JPG" />
     <Content Include="Assets\male_blue.png" />
-    <Content Include="Assets\EmotionRecognition.PNG" />
-    <Content Include="Assets\FaceAPI.PNG" />
     <Content Include="Assets\male.png" />
-    <Content Include="Assets\Mall.png" />
-    <Content Include="Assets\oxford-face.png" />
-    <Content Include="Assets\RealTime.PNG" />
-    <Content Include="Assets\RealtimeDriverMonitoring.jpg" />
-    <Content Include="Assets\RealTimeFromVideo.PNG" />
-    <Content Include="Assets\RealtimeImageClassification.png" />
     <Content Include="Assets\smalltile-sdk.png" />
     <Content Include="Assets\splash-sdk.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\squaretile-sdk.png" />
     <Content Include="Assets\squaretile-sdk-44.png" />
-    <Content Include="Assets\TranslatorExplorer.png" />
-    <Content Include="Assets\VisionAPI.jpg" />
     <Content Include="Properties\Default.rd.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -446,6 +456,10 @@
     <Page Include="Controls\ImagePickerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\LeftRightScrollViewer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\LifecycleControl.xaml">
       <SubType>Designer</SubType>
@@ -608,7 +622,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\DemoLauncherPage.xaml">
+    <Page Include="Views\DemoLauncher\DemoCollectionBanner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DemoLauncher\DemoCollectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DemoLauncher\DemoLauncherPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -58,8 +58,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views
 {
-
-    [KioskExperience(Title = "Realtime Video Insights", ImagePath = "ms-appx:/Assets/realtimeFromVideo.png", ExperienceType = ExperienceType.Other)]
+    [KioskExperience(Id = "RealtimeVideoInsights",
+        DisplayName = "Realtime Video Insights",
+        Description = "Extract insights from video files in near real-time",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Realtime Video Insights.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologiesUsed = TechnologyType.Emotion | TechnologyType.Face | TechnologyType.Vision,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2016/07/21")]
     public sealed partial class VideoInsightsPage : Page
     {
         private Task processingLoopTask;

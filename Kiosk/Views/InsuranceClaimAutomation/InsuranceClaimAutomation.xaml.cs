@@ -53,7 +53,15 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 {
-    [KioskExperience(Title = "Insurance Claim Automation", ImagePath = "ms-appx:/Assets/InsuranceClaimAutomation.jpg", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(
+        Id = "InsuranceClaimAutomation",
+        DisplayName = "Insurance Claim Automation",
+        Description = "See how AI can help automate the filing of insurance claims",
+        ImagePath = "ms-appx:/Assets/DemoGallery/InsuranceClaimAutomation.jpg",
+        ExperienceType = ExperienceType.Business | ExperienceType.Guided | ExperienceType.Preview,
+        TechnologyArea = TechnologyAreaType.Vision,
+        TechnologiesUsed = TechnologyType.CustomVision | TechnologyType.FormRecognizer,
+        DateAdded = "2019/10/24")]
     public sealed partial class InsuranceClaimAutomation : Page, INotifyPropertyChanged
     {
         private static readonly Guid FormRecognizerModelId = Guid.Empty;       // Form Recognizer Model ID created with a Form Recognizer Key on the Settings page

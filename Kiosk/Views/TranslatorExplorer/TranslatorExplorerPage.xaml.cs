@@ -47,7 +47,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.TranslatorExplorer
 {
-    [KioskExperience(Title = "Translator API Explorer", ImagePath = "ms-appx:/Assets/TranslatorExplorer.png")]
+    [KioskExperience(Id = "TranslatorExplorer",
+        DisplayName = "Translator API Explorer",
+        Description = "Translate text between multiple languages",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Translation Demo.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologyArea = TechnologyAreaType.Language,
+        TechnologiesUsed = TechnologyType.Vision | TechnologyType.TranslatorText,
+        DateAdded = "2019/01/15")]
     public sealed partial class TranslatorExplorerPage : Page, INotifyPropertyChanged
     {
         private readonly int autoDetectTimeTickInSecond = 1;

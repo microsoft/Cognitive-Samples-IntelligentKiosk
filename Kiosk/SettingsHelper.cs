@@ -187,6 +187,12 @@ namespace IntelligentKioskSample
                 this.WorkspaceKey = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["StartingPage"];
+            if (value != null)
+            {
+                this.StartingPage = value.ToString();
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsKey"];
             if (value != null)
             {
@@ -294,6 +300,12 @@ namespace IntelligentKioskSample
             if (value != null)
             {
                 this.FormRecognizerApiKeyEndpoint = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["StartupFullScreenMode"];
+            if (value != null)
+            {
+                this.StartupFullScreenMode = (bool)value;
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["ShowAgeAndGender"];
@@ -456,6 +468,17 @@ namespace IntelligentKioskSample
             {
                 this.mallKioskDemoCustomSettings = value;
                 this.OnSettingChanged("MallKioskDemoCustomSettings", value);
+            }
+        }
+
+        private string startingPage = "Demo Gallery";
+        public string StartingPage
+        {
+            get { return startingPage; }
+            set
+            {
+                this.startingPage = value;
+                this.OnSettingChanged("StartingPage", value);
             }
         }
 
@@ -647,6 +670,17 @@ namespace IntelligentKioskSample
             {
                 this.formRecognizerApiKeyEndpoint = value;
                 this.OnSettingChanged("FormRecognizerApiKeyEndpoint", value);
+            }
+        }
+
+        private bool startupFullScreenMode = false;
+        public bool StartupFullScreenMode
+        {
+            get { return this.startupFullScreenMode; }
+            set
+            {
+                this.startupFullScreenMode = value;
+                this.OnSettingChanged("StartupFullScreenMode", value);
             }
         }
 

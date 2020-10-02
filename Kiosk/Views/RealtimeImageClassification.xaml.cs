@@ -53,7 +53,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views
 {
-    [KioskExperience(Title = "Realtime Image Classification", ImagePath = "ms-appx:/Assets/RealtimeImageClassification.png", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(Id = "RealtimeImageClassification",
+        DisplayName = "Realtime Image Classification",
+        Description = "Experience image classification in real-time at the edge",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Realtime Image Classification Demo.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business | ExperienceType.IntelligentEdge,
+        TechnologiesUsed = TechnologyType.CustomVision | TechnologyType.WinML,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2018/11/06")]
     public sealed partial class RealtimeImageClassification : Page, ICameraFrameProcessor
     {
         private readonly int CustomVisionModelInputSize = 227;

@@ -37,18 +37,18 @@ using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
-
 namespace IntelligentKioskSample
 {
+    using IntelligentKioskSample.Views.DemoLauncher;
     using ServiceHelpers;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading.Tasks;
     using Views;
-    using Windows.ApplicationModel.Core;
     using Windows.Data.Xml.Dom;
     using Windows.UI.Notifications;
+    using Windows.UI.Popups;
+
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
@@ -62,6 +62,14 @@ namespace IntelligentKioskSample
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+            this.UnhandledException += App_UnhandledException;
+        }
+
+        private async void App_UnhandledException(object sender, Windows.UI.Xaml.UnhandledExceptionEventArgs e)
+        {
+            // handle exceptions so that we dont crash
+            e.Handled = true;
+            await new MessageDialog("Error:" + e.Message, "An unhandled error occurred").ShowAsync();
         }
 
         /// <summary>
@@ -120,21 +128,6 @@ namespace IntelligentKioskSample
                 shell.Language = Windows.Globalization.ApplicationLanguages.Languages[0];
 
                 shell.AppFrame.NavigationFailed += OnNavigationFailed;
-
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Load state from previously suspended application
-                }
-
-                // Set the TitleBar to Dark Theme
-                var appView = Windows.UI.ViewManagement.ApplicationView.GetForCurrentView();
-                var titleBar = appView.TitleBar;
-                titleBar.BackgroundColor = Windows.UI.Colors.Black;
-                titleBar.ForegroundColor = Windows.UI.Colors.White;
-                titleBar.ButtonBackgroundColor = Windows.UI.Colors.Black;
-                titleBar.ButtonForegroundColor = Windows.UI.Colors.White;
-
-                CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;
             }
 
             // Place our app shell in the current Window
@@ -210,7 +203,7 @@ namespace IntelligentKioskSample
             ToastTemplateType toastTemplate = ToastTemplateType.ToastText02;
             XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
             XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
-            toastTextElements[0].AppendChild(toastXml.CreateTextNode("Intelligent Kiosk"));
+            toastTextElements[0].AppendChild(toastXml.CreateTextNode("Intelligent Kiosk Sample"));
             toastTextElements[1].AppendChild(toastXml.CreateTextNode(errorMessage));
 
             ToastNotification toast = new ToastNotification(toastXml);

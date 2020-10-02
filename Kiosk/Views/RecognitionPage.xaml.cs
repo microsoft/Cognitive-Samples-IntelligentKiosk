@@ -37,14 +37,16 @@ using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace IntelligentKioskSample.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    [KioskExperience(Title = "Face API Explorer", ImagePath = "ms-appx:/Assets/FaceAPI.png", ExperienceType = ExperienceType.Other)]
+    [KioskExperience(Id = "FaceAPIExplorer",
+        DisplayName = "Face API Explorer",
+        Description = "See ages, genders, and landmarks from faces in an image",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Face API Explorer.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologiesUsed = TechnologyType.BingAutoSuggest | TechnologyType.BingImages | TechnologyType.Face | TechnologyType.Emotion,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2015/10/16")]
     public sealed partial class RecognitionPage : Page
     {
         public RecognitionPage()

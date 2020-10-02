@@ -53,7 +53,14 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.ImageCollectionInsights
 {
-    [KioskExperience(Title = "Image Collection Insights", ImagePath = "ms-appx:/Assets/ImageCollectionInsights.jpg", ExperienceType = ExperienceType.Other)]
+    [KioskExperience(Id = "ImageCollectionInsights",
+        DisplayName = "Image Collection Insights",
+        Description = "See how Computer Vision can add a layer of insights to image collections",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Image Collection Insights.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologiesUsed = TechnologyType.Face | TechnologyType.Emotion | TechnologyType.Vision,
+        TechnologyArea = TechnologyAreaType.Vision,
+        DateAdded = "2017/09/11")]
     public sealed partial class ImageCollectionInsights : Page
     {
         private StorageFolder currentRootFolder;

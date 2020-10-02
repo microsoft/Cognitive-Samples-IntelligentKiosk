@@ -47,14 +47,16 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace IntelligentKioskSample.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    [KioskExperience(Title = "Bing News Analytics", ImagePath = "ms-appx:/Assets/BingNewsAnalytics.png", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(Id = "BingNewsAnalytics",
+        DisplayName = "Bing News Analytics",
+        Description = "View sentiment and extract keywords in today's headlines",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Bing News Analytics.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologyArea = TechnologyAreaType.Search | TechnologyAreaType.Language,
+        TechnologiesUsed = TechnologyType.BingAutoSuggest | TechnologyType.BingImages | TechnologyType.BingNews | TechnologyType.TextAnalytics,
+        DateAdded = "2016/08/01")]
     public sealed partial class BingNewsAnalyticsPage : Page
     {
         public ObservableCollection<NewsAndSentimentScore> FilteredNewsResults { get; set; } = new ObservableCollection<NewsAndSentimentScore>();

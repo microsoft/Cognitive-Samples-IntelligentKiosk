@@ -47,14 +47,16 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace IntelligentKioskSample.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
-    [KioskExperience(Title = "Mall Kiosk", ImagePath = "ms-appx:/Assets/mall.png", ExperienceType = ExperienceType.Kiosk)]
+    [KioskExperience(Id = "MallKiosk",
+        DisplayName = "Mall Kiosk",
+        Description = "Get product suggestions from face and speech insights",
+        ImagePath = "ms-appx:/Assets/DemoGallery/Mall Kiosk.jpg",
+        ExperienceType = ExperienceType.Guided | ExperienceType.Business,
+        TechnologiesUsed = TechnologyType.Face | TechnologyType.Emotion | TechnologyType.SpeechToText | TechnologyType.TextAnalytics,
+        TechnologyArea = TechnologyAreaType.Vision | TechnologyAreaType.Speech | TechnologyAreaType.Language,
+        DateAdded = "2015/10/28")]
     public sealed partial class MallKioskPage : Page
     {
         private MallKioskDemoSettings kioskSettings;
