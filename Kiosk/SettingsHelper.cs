@@ -216,6 +216,16 @@ namespace IntelligentKioskSample
                 this.CameraName = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["HowOldKioskResultDisplayDuration"];
+            if (value != null)
+            {
+                int duration;
+                if (int.TryParse(value.ToString(), out duration))
+                {
+                    this.HowOldKioskResultDisplayDuration = duration;
+                }
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["MinDetectableFaceCoveragePercentage"];
             if (value != null)
             {
@@ -468,6 +478,17 @@ namespace IntelligentKioskSample
             {
                 this.mallKioskDemoCustomSettings = value;
                 this.OnSettingChanged("MallKioskDemoCustomSettings", value);
+            }
+        }
+
+        private int howOldKioskResultDisplayDuration = 10;
+        public int HowOldKioskResultDisplayDuration
+        {
+            get { return this.howOldKioskResultDisplayDuration; }
+            set
+            {
+                this.howOldKioskResultDisplayDuration = value;
+                this.OnSettingChanged("HowOldKioskResultDisplayDuration", value);
             }
         }
 

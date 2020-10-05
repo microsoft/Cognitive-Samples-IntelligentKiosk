@@ -1,6 +1,6 @@
-# Automatic Photo Capture
+# How Old
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/AutomaticPhotoCapture.png "Automatic Photo Capture")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/HowOld.jpg "How Old")
 
 This is an example of an autonomous workflow for capturing photos when people approach a web camera and pose for a photo.
 
@@ -8,7 +8,7 @@ It uses the built-in face tracking functionality in Windows 10 to detect when pe
 
 # Key Source Code
 
-* [AutomaticPhotoCapturePage](../Kiosk/Views/AutomaticPhotoCapturePage.xaml.cs): Main page that drives the demo. It hosts the CameraControl (see below) to display the live camera feed, configures it to run in autonomous mode and reacts to the state machine changes to capture photos and analyze them.
+* [HowOldKioskPage](../Kiosk/Views/HowOldKioskPage.xaml.cs): Main page that drives the demo. It hosts the CameraControl (see below) to display the live camera feed, configures it to run in autonomous mode and reacts to the state machine changes to capture photos and analyze them.
 
 * [CameraControl](../Kiosk/Controls/CameraControl.xaml.cs): The code that contains the camera feed and runs a background loop to perform several tasks (track faces, draw face rectangles, execute the state machine that drives the autonomous photo capture workflow, etc)
 

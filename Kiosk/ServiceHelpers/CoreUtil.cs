@@ -33,10 +33,11 @@
 
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
+using Windows.Foundation;
 
 namespace ServiceHelpers
 {
-    public class CoreUtil
+    public static class CoreUtil
     {
         public static uint MinDetectableFaceCoveragePercentage = 0;
 
@@ -78,6 +79,11 @@ namespace ServiceHelpers
             }
 
             return false;
+        }
+
+        public static Rect ToRect(this FaceRectangle rect)
+        {
+            return new Rect(rect.Left, rect.Top, rect.Width, rect.Height);
         }
     }
 }

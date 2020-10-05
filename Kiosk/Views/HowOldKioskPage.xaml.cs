@@ -31,29 +31,33 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using ServiceHelpers;
 using IntelligentKioskSample.Controls;
+using IntelligentKioskSample.Controls.Overlays;
+using IntelligentKioskSample.Controls.Overlays.Primitives;
+using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using ServiceHelpers;
 using System;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views
 {
-    [KioskExperience(Id = "AutomaticPhotoCapture",
-        DisplayName = "Automatic Photo Capture",
-        Description = "See ages, genders, and landmarks from faces in an image",
-        ImagePath = "ms-appx:/Assets/DemoGallery/Automatic Photo Capture.jpg",
-        ExperienceType = ExperienceType.Guided | ExperienceType.Automated,
+    [KioskExperience(Id = "How-Old Kiosk",
+        DisplayName = "How Old",
+        Description = "Get an estimate of a person's age and gender from a photo",
+        ImagePath = "ms-appx:/Assets/DemoGallery/How Old.jpg",
+        ExperienceType = ExperienceType.Automated | ExperienceType.Fun,
         TechnologiesUsed = TechnologyType.Face,
         TechnologyArea = TechnologyAreaType.Vision,
-        DateAdded = "2016/06/10")]
-    public sealed partial class AutomaticPhotoCapturePage : Page
+        DateAdded = "2015/10/30")]
+    public sealed partial class HowOldKioskPage : Page
     {
-        public AutomaticPhotoCapturePage()
+        public HowOldKioskPage()
         {
             this.InitializeComponent();
 
@@ -62,6 +66,7 @@ namespace IntelligentKioskSample.Views
             this.cameraControl.FilterOutSmallFaces = true;
             this.cameraControl.AutoCaptureStateChanged += CameraControl_AutoCaptureStateChanged;
             this.cameraControl.CameraAspectRatioChanged += CameraControl_CameraAspectRatioChanged;
+            this.cameraControl.ShowDialogOnApiErrors = false;
         }
 
         private void CameraControl_CameraAspectRatioChanged(object sender, EventArgs e)
@@ -116,40 +121,57 @@ namespace IntelligentKioskSample.Views
             }
         }
 
-        private void ProcessCameraCapture(ImageAnalyzer e)
+        private async void ProcessCameraCapture(ImageAnalyzer e)
         {
             if (e == null)
             {
-				this.cameraControl.RestartAutoCaptureCycle();
+                this.cameraControl.RestartAutoCaptureCycle();
                 return;
             }
 
-            this.imageFromCameraWithFaces.DataContext = e;
-
-            e.FaceRecognitionCompleted += async (s, args) =>
+            //Show age label
+            ProgressIndicator.IsActive = true;
+            var image = await e.GetImageSource();
+            OverlayPresenter.Source = image;
+            await e.DetectFacesAsync(true);
+            await e.IdentifyFacesAsync();
+            Overlays.ItemsSource = e.DetectedFaces.Select(i => new OverlayInfo<Object, AgeInfo>
             {
-                this.photoCaptureBalloonHost.Opacity = 1;
-
-                int photoDisplayDuration = 10;
-                double decrementPerSecond = 100.0 / photoDisplayDuration;
-                for (double i = 100; i >= 0; i -= decrementPerSecond)
+                Rect = i.FaceRectangle.ToRect(),
+                LabelsExt = new[] { new AgeInfo()
                 {
-                    this.resultDisplayTimerUI.Value = i;
-                    await Task.Delay(1000);
-                }
+                    Age = (int)Math.Round(i.FaceAttributes.Age.GetValueOrDefault()),
+                    Gender = i.FaceAttributes.Gender.GetValueOrDefault() == Gender.Female ? AgeInfoGender.Female : AgeInfoGender.Male,
+                    Name = e.IdentifiedPersons.FirstOrDefault(t => i.FaceId == t.FaceId)?.Person?.Name,
+                    Confidence = e.IdentifiedPersons.FirstOrDefault(t => i.FaceId == t.FaceId)?.Confidence ?? 0
+                } }
+            }).ToArray();
+            ProgressIndicator.IsActive = false;
 
-                this.photoCaptureBalloonHost.Opacity = 0;
-                this.imageFromCameraWithFaces.DataContext = null;
+            //Show timer
+            this.photoBalloonHost.Opacity = 1;
+            this.photoBalloonHost.IsHitTestVisible = true;
+            double decrementPerSecond = 100.0 / SettingsHelper.Instance.HowOldKioskResultDisplayDuration;
+            for (double i = 100; i >= 0; i -= decrementPerSecond)
+            {
+                this.resultDisplayTimerUI.Value = i;
+                await Task.Delay(1000);
+            }
 
-                this.cameraControl.RestartAutoCaptureCycle();
-            };
+            this.photoBalloonHost.Opacity = 0;
+            this.photoBalloonHost.IsHitTestVisible = false;
+            this.cameraControl.RestartAutoCaptureCycle();
+            Overlays.ItemsSource = null;
+            OverlayPresenter.Source = null;
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            EnterKioskMode();
-
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey))
+            if (!SettingsHelper.Instance.ShowAgeAndGender)
+            {
+                await new MessageDialog("To use this demo please enable Age and Gender prediction in the Settings screen.", "Age and Gender prediction is disabled").ShowAsync();
+            }
+            else if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey))
             {
                 await new MessageDialog("Missing Face API Key. Please enter a key in the Settings page.", "Missing Face API Key").ShowAsync();
             }
@@ -159,15 +181,6 @@ namespace IntelligentKioskSample.Views
             }
 
             base.OnNavigatedTo(e);
-        }
-
-        private void EnterKioskMode()
-        {
-            ApplicationView view = ApplicationView.GetForCurrentView();
-            if (!view.IsFullScreenMode)
-            {
-                view.TryEnterFullScreenMode();
-            }
         }
 
         protected override async void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -187,7 +200,7 @@ namespace IntelligentKioskSample.Views
 
         private void UpdateCameraHostSize()
         {
-            this.cameraHostGrid.Width = this.cameraHostGrid.ActualHeight * (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
+            this.cameraHostGrid.Height = this.cameraHostGrid.ActualWidth / (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
         }
     }
 }
