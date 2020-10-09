@@ -11,6 +11,7 @@
     <Page.Resources>
         <ctl:StringMatchToVisibilityConverter x:Key="StringMatchToVisibilityConverter"/>
         <ctl:StringContainsToVisibilityConverter x:Key="StringContainsToVisibilityConverter"/>
+        <local:DemoIdToDisplayNameConverter x:Key="DemoIdToDisplayNameConverter"/>
         <x:String x:Key="CustomEndpointName">Custom</x:String>
         <x:String x:Key="LocalHost">://localhost</x:String>
         <Style TargetType="Button" x:Key="LocalHostSetupButtonStyle">
@@ -32,13 +33,13 @@
                 </Setter>
             </Style.Setters>
         </Style>
+        <Style x:Key="Settings.Title" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="Margin" Value="0,24,0,24" />
+        </Style>
         <Style x:Key="Settings.SubTitle" TargetType="TextBlock" BasedOn="{StaticResource SubheaderTextBlockStyle}">
             <Setter Property="FontSize" Value="18" />
             <Setter Property="Margin" Value="0,0,0,0" />
-        </Style>
-        <Style x:Key="Settings.SubPanel" TargetType="StackPanel">
-            <Setter Property="Spacing" Value="12" />
-            <Setter Property="Margin" Value="0,0,0,24" />
         </Style>
         <Style x:Key="Settings.Comment" TargetType="TextBlock">
             <Setter Property="Foreground" Value="Gray" />
@@ -46,7 +47,32 @@
             <Setter Property="MaxWidth" Value="490"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
+        <Style x:Key="Settings.Panel" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0,0,0,48" />
+        </Style>
+        <Style x:Key="Settings.SubPanel" TargetType="StackPanel">
+            <Setter Property="Spacing" Value="12" />
+            <Setter Property="Margin" Value="0,0,0,24" />
+        </Style>
+        <Style x:Key="Settings.Panel.Horizontal" TargetType="StackPanel">
+            <Setter Property="Spacing" Value="24" />
+            <Setter Property="Orientation" Value="Horizontal" />
+        </Style>
+        <Style x:Key="Settings.Panel.CustomEndPoint" BasedOn="{StaticResource Settings.Panel.Horizontal}" TargetType="StackPanel">
+            <Setter Property="Margin" Value="0,-24,0,0" />
+        </Style>
+        <Style x:Key="Settings.Input" TargetType="FrameworkElement">
+            <Setter Property="Width" Value="320" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Margin" Value="0,0,0,24" />
+        </Style>
+        <Style x:Key="Settings.Line" TargetType="Grid">
+            <Setter Property="BorderBrush" Value="#666666"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Opacity" Value=".5"/>
+        </Style>
     </Page.Resources>
+    
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
           EntranceNavigationTransitionInfo.IsTargetElement="True">
         <Grid.RowDefinitions>
@@ -62,195 +88,216 @@
             </CommandBar.Content>
         </CommandBar>
 
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="1" IsTabStop="True">
+            <Grid>
+                <TextBlock x:Name="versionTextBlock" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="35"/>
 
-            <StackPanel Orientation="Vertical" Margin="12,12" >
-                <StackPanel>
+                <StackPanel Margin="12,0,36,12">
 
-                    <TextBlock Text="Cognitive Services Keys" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Center"/>
+                    <!--General-->
+                    <TextBlock Text="General" Style="{StaticResource Settings.Title}"/>
+                    <StackPanel Style="{StaticResource Settings.Panel}">
 
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Face API Key" Password="{Binding FaceApiKey, Mode=TwoWay}" VerticalAlignment="Top" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
-                                  x:Name="faceApiEndpointCombobox"
-                                  ItemsSource="{Binding AvailableApiEndpoints}" 
-                                  SelectedItem="{Binding BindingFaceApiKeyEndpoint, Mode=TwoWay}"/>
-                        <StackPanel Grid.Column="2" Orientation="Horizontal"
-                                    Visibility="{Binding ElementName=faceApiEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
-                            <TextBox Header="Custom Face API Endpoint" MaxWidth="450" x:Name="faceApiEndpointTextBox"
-                                 PlaceholderText="Custom endpoint (e.g. https://virginia.api.cognitive.microsoft.us)" 
-                                 Text="{Binding CustomFaceApiEndpoint, Mode=TwoWay}" />
-                            <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=faceApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Computer Vision API Key" Password="{Binding VisionApiKey, Mode=TwoWay}" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
-                                  x:Name="visionApiEndpointCombobox"
-                                  ItemsSource="{Binding AvailableApiEndpoints}" 
-                                  SelectedItem="{Binding BindingVisionApiKeyEndpoint, Mode=TwoWay}"/>
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" 
-                                    Visibility="{Binding ElementName=visionApiEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
-                            <TextBox Header="Custom Computer Vision API Endpoint" MaxWidth="450" x:Name="computerVisionApiEndpointTextBox"
-                                 PlaceholderText="Custom endpoint (e.g. https://virginia.api.cognitive.microsoft.us)" 
-                                 Text="{Binding CustomComputerVisionApiEndpoint, Mode=TwoWay}" />
-                            <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=computerVisionApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Custom Vision Training Key" Password="{Binding CustomVisionTrainingApiKey, Mode=TwoWay}" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
-                                  ItemsSource="{Binding AvailableCustomVisionApiEndpoints}" 
-                                  SelectedItem="{Binding CustomVisionTrainingApiKeyEndpoint, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Custom Vision Prediction Key" Password="{Binding CustomVisionPredictionApiKey, Mode=TwoWay}" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
-                                  ItemsSource="{Binding AvailableCustomVisionApiEndpoints}" 
-                                  SelectedItem="{Binding CustomVisionPredictionApiKeyEndpoint, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <PasswordBox Header="Bing Search API Key" Password="{Binding BingSearchApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
-
-                    <PasswordBox Header="Bing Auto Suggestion API Key" Password="{Binding BingAutoSuggestionApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
-
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Text Analytics Key" Password="{Binding TextAnalyticsKey, Mode=TwoWay}" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355"
-                                  x:Name="textAnalyticsEndpointCombobox"
-                                  ItemsSource="{Binding AvailableApiEndpoints}" 
-                                  SelectedItem="{Binding BindingTextAnalyticsApiKeyEndpoint, Mode=TwoWay}"/>
-                        <StackPanel Grid.Column="2" Orientation="Horizontal" 
-                                    Visibility="{Binding ElementName=textAnalyticsEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
-                            <TextBox Header="Custom Text Analytics Endpoint" MaxWidth="450" x:Name="textAnalyticsApiEndpointTextBox"
-                                     PlaceholderText="Custom endpoint (e.g. https://virginia.api.cognitive.microsoft.us)" 
-                                     Text="{Binding CustomTextAnalyticsEndpoint, Mode=TwoWay}" />
-                            <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=textAnalyticsApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <PasswordBox Header="Translator Text API Key" Password="{Binding TranslatorTextApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
-
-                    <PasswordBox Header="Anomaly Detector API Key" Password="{Binding AnomalyDetectorApiKey, Mode=TwoWay}" Margin="0,10,0,0" />
-
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <PasswordBox Header="Form Recognizer API Key" Password="{Binding FormRecognizerApiKey, Mode=TwoWay}" />
-                        <ComboBox Grid.Column="1" Margin="10,0,6,0" Header="Endpoint" Width="355" ItemsSource="{Binding AvailableFormRecognizerApiEndpoints}" SelectedItem="{Binding FormRecognizerApiKeyEndpoint, Mode=TwoWay}"/>
-                    </Grid>
-
-                    <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
-                        <Button VerticalAlignment="Bottom" Content="Click here if you need keys" >
-                            <Button.Flyout>
-                                <Flyout>
-                                    <StackPanel Width="400">
-                                        <TextBlock TextWrapping="Wrap" Text="We recommend getting S0 level keys from your Azure Subscription. Below are some handy deep links for creating the keys depending on your needs. For keys that support multiple regions, make sure to set the corresponding region when entering your keys in the kiosk settings."/>
-                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesFace" Content="Face"/>
-                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesComputerVision" Content="Computer Vision"/>
-                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesCustomVision" Content="Custom Vision"/>
-                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingSearch-v7" Content="Bing Search"/>
-                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingAutosuggest-v7" Content="Bing Autosuggest"/>
-                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextAnalytics" Content="Text Analytics"/>
-                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation" Content="Translator Text"/>
-                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesAnomalyDetector" Content="Anomaly Detector"/>
-                                        <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesFormRecognizer" Content="Form Recognizer"/>
-
-                                        <TextBlock TextWrapping="WrapWholeWords" Foreground="OrangeRed" Margin="0,10,0,0" Text="Important: The free-tier (F0) keys provided by Azure won't support the load from the real-time demos in the kiosk. For the best experience upgrade to a paid key if using those demos."/>
-                                    </StackPanel>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-
-                        <Button Margin="24,0,0,0" Content="Run Key Validation Test">
-                            <Button.Flyout>
-                                <Flyout Opened="KeyTestFlyoutOpened">
-                                    <StackPanel Width="400">
-                                        <TextBlock Text="Couple of notes about the validation tests:"/>
-                                        <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Margin="6,0,0,0" Text="- Recently acquired keys might need a few minutes to become valid"/>
-                                        <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Margin="6,0,0,0" Text="- If you no longer need a particular service, set its key to empty to remove it from validation"/>
-                                        <TextBox x:Name="keyTestResultTextBox" Margin="0,6,0,0" Height="150" AcceptsReturn="True" TextWrapping="Wrap" IsReadOnly="True"></TextBox>
-                                    </StackPanel>
-                                </Flyout>
-                            </Button.Flyout>
-                        </Button>
-                    </StackPanel>
-                </StackPanel>
-
-                <StackPanel Margin="0,50,0,0">
-                    <TextBlock Text="Miscellaneous" Style="{StaticResource SubheaderTextBlockStyle}"/>
-
-                    <Grid Margin="0,6,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Header="Workspace Name" PlaceholderText="Something like JoeKiosk, or use the button to create an unique name" Text="{Binding WorkspaceKey, Mode=TwoWay}"  />
-                        <Button Content="Generate Name" Grid.Column="1" Margin="10,0,6,0" Click="OnGenerateNewKeyClicked" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-                    </Grid>
-                    <TextBlock Foreground="Gray" FontStyle="Italic" Text="Tip: If you would like to share face identification models between multiple kiosk instances, just enter the same Face API Key and Workspace Name for them." />
-
-                    <ComboBox Margin="0,6,0,0" x:Name="cameraSourceComboBox" Header="Camera Source"  SelectionChanged="OnCameraSourceSelectionChanged"/>
-                    <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info:" Margin="0,6,0,24"/>
-
-                    <StackPanel Style="{StaticResource Settings.SubPanel}">
-                        <TextBlock Text="Face Settings" Style="{StaticResource Settings.SubTitle}"/>
-
-                        <StackPanel Orientation="Horizontal">
-                            <Slider x:Name="MinDetectableFaceSizeSlider" Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" SmallChange="1" LargeChange="5" Header="Minimum detectable face size (as % of image height):" HorizontalAlignment="Left" Margin="0,0,0,0" StepFrequency="1"/>
-                            <TextBlock Text="{Binding ElementName=MinDetectableFaceSizeSlider, Path=Value}" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" Margin="12,0,0,0"/>
+                        <!--workspace name-->
+                        <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                            <TextBox Header="Workspace Name" Text="{Binding WorkspaceKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+                            <Button Content="Generate Name" Click="OnGenerateNewKeyClicked" />
                         </StackPanel>
 
-                        <ToggleSwitch Header="Age and gender prediction" IsOn="{Binding ShowAgeAndGender, Mode=TwoWay}">
-                            <ToggleSwitch.HeaderTemplate>
+                        <!--camera source-->
+                        <ComboBox x:Name="cameraSourceComboBox" Header="Camera source" Style="{StaticResource Settings.Input}" SelectionChanged="OnCameraSourceSelectionChanged"/>
+
+                        <!--starting page-->
+                        <ComboBox Header="Starting page" ItemsSource="{Binding StartingPageNames}" SelectedItem="{Binding StartingPage, Mode=TwoWay}" Style="{StaticResource Settings.Input}">
+                            <ComboBox.ItemTemplate>
                                 <DataTemplate>
-                                    <StackPanel>
-                                        <TextBlock Text="Age and gender prediction"/>
-                                        <TextBlock Style="{StaticResource Settings.Comment}" Text="Predictions based on face appearance may not match a person's identity.&#x0a;Consider if seeing these estimates is appropriate for your audience." />
-                                    </StackPanel>
+                                    <TextBlock Text="{Binding Converter={StaticResource DemoIdToDisplayNameConverter}}" Margin="0,0,10,0"/>
                                 </DataTemplate>
-                            </ToggleSwitch.HeaderTemplate>
-                        </ToggleSwitch>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
 
+                        <!--Full Screen-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <ToggleSwitch IsOn="{Binding StartupFullScreenMode, Mode=TwoWay}" Header="Start in full screen mode"/>
+                        </StackPanel>
+
+                        <!--face detection-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <TextBlock Text="Face detection" Style="{StaticResource Settings.SubTitle}"/>
+
+                            <StackPanel Spacing="7">
+                                <TextBlock Text="Minimum detectable face size (as percentage of image height)" />
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <ctl:NumericUpDown Minimum="0" Maximum="100" Value="{Binding MinDetectableFaceCoveragePercentage, Mode=TwoWay}" />
+                                    <TextBlock Text="%" VerticalAlignment="Bottom"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <ToggleSwitch Header="Age and gender prediction" IsOn="{Binding ShowAgeAndGender, Mode=TwoWay}">
+                                <ToggleSwitch.HeaderTemplate>
+                                    <DataTemplate>
+                                        <StackPanel>
+                                            <TextBlock Text="Age and gender prediction"/>
+                                            <TextBlock Style="{StaticResource Settings.Comment}" Text="Predictions based on face appearance may not match a person's identity.&#x0a;Consider if seeing these estimates is appropriate for your audience."/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ToggleSwitch.HeaderTemplate>
+                            </ToggleSwitch>
+                        </StackPanel>
                     </StackPanel>
+
+                    <Grid Style="{StaticResource Settings.Line}"/>
+
+                    <!--keys-->
+                    <TextBlock Text="Cognitive Services Keys" Style="{StaticResource Settings.Title}"/>
+                    <StackPanel Style="{StaticResource Settings.Panel}">
+
+                        <!--face api-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <TextBlock Text="Face API" Style="{StaticResource Settings.SubTitle}"/>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                                <PasswordBox Header="Face API Key" Password="{Binding FaceApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}"/>
+                                <ComboBox Header="Location" x:Name="faceApiEndpointCombobox" ItemsSource="{Binding AvailableApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding BindingFaceApiKeyEndpoint, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.CustomEndPoint}" 
+                                    Visibility="{Binding ElementName=faceApiEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
+                                <TextBox Header="Custom endpoint" x:Name="faceApiEndpointTextBox" Style="{StaticResource Settings.Input}"
+                                 PlaceholderText="(e.g. https://virginia.api.cognitive.microsoft.us)" 
+                                 Text="{Binding CustomFaceApiEndpoint, Mode=TwoWay}" />
+                                <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=faceApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!--custom vision-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <TextBlock Text="Custom Vision" Style="{StaticResource Settings.SubTitle}"/>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                                <PasswordBox Header="Custom Vision Training Key" Password="{Binding CustomVisionTrainingApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}"  />
+                                <ComboBox Header="Location" ItemsSource="{Binding AvailableCustomVisionApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" 
+                                          SelectedValue="{Binding CustomVisionTrainingApiKeyEndpoint, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                                <PasswordBox Header="Custom Vision Prediction Key" Password="{Binding CustomVisionPredictionApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" Margin="0,0,0,36"/>
+                                <ComboBox Header="Location" ItemsSource="{Binding AvailableCustomVisionApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" 
+                                          SelectedValue="{Binding CustomVisionPredictionApiKeyEndpoint, Mode=TwoWay}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!--computer vision-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <TextBlock Text="Computer Vision" Style="{StaticResource Settings.SubTitle}"/>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                                <PasswordBox Header="Computer Vision key" Password="{Binding VisionApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+                                <ComboBox Header="Location" x:Name="visionApiEndpointCombobox" ItemsSource="{Binding AvailableApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding BindingVisionApiKeyEndpoint, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.CustomEndPoint}" 
+                                    Visibility="{Binding ElementName=visionApiEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
+                                <TextBox Header="Custom endpoint" x:Name="computerVisionApiEndpointTextBox" Style="{StaticResource Settings.Input}"
+                                 PlaceholderText="(e.g. https://virginia.api.cognitive.microsoft.us)" 
+                                 Text="{Binding CustomComputerVisionApiEndpoint, Mode=TwoWay}" />
+                                <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=computerVisionApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!--text analytics-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <TextBlock Text="Text Analytics" Style="{StaticResource Settings.SubTitle}"/>
+                            <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                                <PasswordBox Header="Text Analytics Key" Password="{Binding TextAnalyticsKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}"/>
+                                <ComboBox Header="Location" x:Name="textAnalyticsEndpointCombobox" ItemsSource="{Binding AvailableApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding BindingTextAnalyticsApiKeyEndpoint, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.CustomEndPoint}"  
+                                    Visibility="{Binding ElementName=textAnalyticsEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
+                                <TextBox Header="Custom endpoint" x:Name="textAnalyticsApiEndpointTextBox" Style="{StaticResource Settings.Input}"
+                                     PlaceholderText="(e.g. https://virginia.api.cognitive.microsoft.us)" 
+                                     Text="{Binding CustomTextAnalyticsEndpoint, Mode=TwoWay}" />
+                                <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=textAnalyticsApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- form recognizer api -->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <TextBlock Text="Form Recognizer API" Style="{StaticResource Settings.SubTitle}"/>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                                <PasswordBox Header="Form Recognizer API Key" Password="{Binding FormRecognizerApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}"/>
+                                <ComboBox Header="Location" ItemsSource="{Binding AvailableFormRecognizerApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding FormRecognizerApiKeyEndpoint, Mode=TwoWay}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!--bing search-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}" >
+                            <TextBlock Text="Bing Search" Style="{StaticResource Settings.SubTitle}"/>
+                            <PasswordBox Header="Bing Search API Key" Password="{Binding BingSearchApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+                            <PasswordBox Header="Bing Auto Suggestion API Key" Password="{Binding BingAutoSuggestionApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+                        </StackPanel>
+
+                        <!--translator text api-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}" >
+                            <TextBlock Text="Translator Text" Style="{StaticResource Settings.SubTitle}"/>
+                            <PasswordBox Header="Translator Text API Key" Password="{Binding TranslatorTextApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+                        </StackPanel>
+
+                        <!--anomaly detector api-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}" >
+                            <TextBlock Text="Anomaly Detector" Style="{StaticResource Settings.SubTitle}"/>
+                            <PasswordBox Header="Anomaly Detector API Key" Password="{Binding AnomalyDetectorApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+                        </StackPanel>
+
+                        <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                            <Button VerticalAlignment="Bottom" Content="Click here if you need keys" >
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel Width="400">
+                                            <TextBlock TextWrapping="Wrap" Text="We recommend getting S0 level keys from your Azure Subscription. Below are some handy deep links for creating the keys depending on your needs. For keys that support multiple regions, make sure to set the corresponding region when entering your keys in the kiosk settings."/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesFace" Content="Face"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesComputerVision" Content="Computer Vision"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextAnalytics" Content="Text Analytics"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesCustomVision" Content="Custom Vision"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingSearch-v7" Content="Bing Search"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingAutosuggest-v7" Content="Bing Autosuggest"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation" Content="Translator Text"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesAnomalyDetector" Content="Anomaly Detector"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesFormRecognizer" Content="Form Recognizer"/>
+
+                                            <TextBlock TextWrapping="WrapWholeWords" Foreground="OrangeRed" Margin="0,10,0,0" Text="Important: The free-tier (F0) keys provided by Azure won't support the load from the real-time demos in the kiosk. For the best experience upgrade to a paid key if using those demos."/>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+
+                            <Button Content="Run Key Validation Test">
+                                <Button.Flyout>
+                                    <Flyout Opened="KeyTestFlyoutOpened">
+                                        <StackPanel Width="400">
+                                            <TextBlock Text="Couple of notes about the validation tests:"/>
+                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Margin="6,0,0,0" Text="- Recently acquired keys might need a few minutes to become valid"/>
+                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Margin="6,0,0,0" Text="- If you no longer need a particular service, set its key to empty to remove it from validation"/>
+                                            <TextBox x:Name="keyTestResultTextBox" Margin="0,6,0,0" Height="150" AcceptsReturn="True" TextWrapping="Wrap" IsReadOnly="True" />
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Grid Style="{StaticResource Settings.Line}"/>
+
+                    <!--Advanced-->
+                    <TextBlock Text="Advanced" Style="{StaticResource Settings.Title}"/>
+                    <StackPanel Style="{StaticResource Settings.Panel}">
+                        <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info"/>
+                    </StackPanel>
+
                 </StackPanel>
-
-                <StackPanel Margin="0,25,0,0">
-                    <TextBlock Text="Mall Kiosk" Style="{StaticResource SubheaderTextBlockStyle}"/>
-                    <TextBox TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding MallKioskDemoCustomSettings, Mode=TwoWay}" PlaceholderText="Paste custom settings for Mall Kiosk Demo here"/>
-                    <Button Margin="0,6,0,0" Click="ResetMallKioskSettingsButtonClick">Reset to Default Mall Kiosk Settings</Button>
-                </StackPanel>
-
-            </StackPanel>
-
+            </Grid>
         </ScrollViewer>
 
     </Grid>

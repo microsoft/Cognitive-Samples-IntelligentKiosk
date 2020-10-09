@@ -176,6 +176,9 @@
     <Compile Include="Controls\LifecycleControl.xaml.cs">
       <DependentUpon>LifecycleControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\NumericUpDown.xaml.cs">
+      <DependentUpon>NumericUpDown.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Overlays\FormRecognizerOverlayPresenter.xaml.cs">
       <DependentUpon>FormRecognizerOverlayPresenter.xaml</DependentUpon>
     </Compile>
@@ -463,6 +466,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\LifecycleControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\NumericUpDown.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
