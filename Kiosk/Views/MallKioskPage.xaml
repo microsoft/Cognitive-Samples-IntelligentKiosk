@@ -16,6 +16,26 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
+        <!--settings-->
+        <CommandBar Grid.Row="0" x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}" HorizontalContentAlignment="Stretch" IsDynamicOverflowEnabled="False" DefaultLabelPosition="Right">
+            <AppBarButton Icon="Setting" Label="Settings" AllowFocusOnInteraction="True">
+                <AppBarButton.Flyout>
+                    <Flyout>
+                        <Flyout.FlyoutPresenterStyle>
+                            <Style TargetType="FlyoutPresenter">
+                                <Setter Property="MinWidth" Value="820"/>
+                            </Style>
+                        </Flyout.FlyoutPresenterStyle>
+                        <StackPanel Spacing="10" Margin="20" x:Name="Settings">
+                            <TextBlock Text="Mall kiosk settings" Margin="0,0,0,10"/>
+                            <TextBox AcceptsReturn="True" TextWrapping="Wrap" Text="{Binding MallKioskDemoCustomSettings, Mode=TwoWay}" PlaceholderText="Paste custom settings for Mall Kiosk Demo here"/>
+                            <Button Margin="0,6,0,0" Click="ResetMallKioskSettingsButtonClick">Reset to Default Mall Kiosk Settings</Button>
+                        </StackPanel>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+        </CommandBar>
+
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1">
             <TextBlock Text="Mall Kiosk" HorizontalAlignment="Center"  Style="{StaticResource HeaderTextBlockStyle}"></TextBlock>
             <TextBlock Text="Take a photo to get a product recommendation!" HorizontalAlignment="Center" Style="{StaticResource SubheaderTextBlockStyle}" Margin="0,30,0,0" FontStyle="Italic"/>

@@ -32,19 +32,17 @@
 // 
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace IntelligentKioskSample.Views
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class SettingsPage : Page
     {
         public SettingsPage()
@@ -55,6 +53,9 @@ namespace IntelligentKioskSample.Views
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            this.versionTextBlock.Text = string.Format("Version: {0}.{1}.{2}.{3}", Package.Current.Id.Version.Major, Package.Current.Id.Version.Minor, 
+                Package.Current.Id.Version.Build, Package.Current.Id.Version.Revision);
+
             this.cameraSourceComboBox.ItemsSource = await Util.GetAvailableCameraNamesAsync();
             this.cameraSourceComboBox.SelectedItem = SettingsHelper.Instance.CameraName;
             base.OnNavigatedFrom(e);
@@ -81,11 +82,6 @@ namespace IntelligentKioskSample.Views
             {
                 SettingsHelper.Instance.CameraName = this.cameraSourceComboBox.SelectedItem.ToString();
             }
-        }
-
-        private void ResetMallKioskSettingsButtonClick(object sender, RoutedEventArgs e)
-        {
-            SettingsHelper.Instance.RestoreMallKioskSettingsToDefaultFile();
         }
 
         private async void KeyTestFlyoutOpened(object sender, object e)
@@ -146,6 +142,34 @@ namespace IntelligentKioskSample.Views
             {
                 this.keyTestResultTextBox.Text += string.Format("Failed! Error message: \"{0}\"\n\n", Util.GetMessageFromException(ex));
             }
+        }
+    }
+
+    public class DemoIdToDisplayNameConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            string demoId = (string)value;
+            KioskExperience matchingExp = KioskExperiences.Experiences.FirstOrDefault(exp => exp.Attributes.Id == demoId);
+            if (matchingExp != null)
+            {
+                return matchingExp.Attributes.DisplayName;
+            }
+
+            return demoId;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            // Not used
+            string demoDisplayName = (string)value;
+            KioskExperience matchingExp = KioskExperiences.Experiences.FirstOrDefault(exp => exp.Attributes.DisplayName == demoDisplayName);
+            if (matchingExp != null)
+            {
+                return matchingExp.Attributes.Id;
+            }
+
+            return demoDisplayName;
         }
     }
 }

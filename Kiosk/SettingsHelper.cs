@@ -47,24 +47,31 @@ namespace IntelligentKioskSample
         public static readonly string DefaultCustomVisionApiEndpoint = "https://southcentralus.api.cognitive.microsoft.com";
         public static readonly string DefaultFormRecognizerApiEndpoint = "https://westus2.api.cognitive.microsoft.com";
 
-        public static readonly string[] AvailableApiRegions = new string[]
+        public static readonly KeyValuePair<string, string>[] AvailableApiRegions = new KeyValuePair<string, string>[]
         {
-            "westus",
-            "westus2",
-            "eastus",
-            "eastus2",
-            "westcentralus",
-            "southcentralus",
-            "westeurope",
-            "northeurope",
-            "southeastasia",
-            "eastasia",
-            "australiaeast",
-            "brazilsouth",
-            "canadacentral",
-            "centralindia",
-            "uksouth",
-            "japaneast"
+            new KeyValuePair<string,string>("West US", "westus"),
+            new KeyValuePair<string,string>("West US 2", "westus2"),
+            new KeyValuePair<string,string>("East US", "eastus"),
+            new KeyValuePair<string,string>("East US 2", "eastus2"),
+            new KeyValuePair<string,string>("Central US", "centralus"),
+            new KeyValuePair<string,string>("North Central US", "northcentralus"),
+            new KeyValuePair<string,string>("South Central US", "southcentralus"),
+            new KeyValuePair<string,string>("West Central US", "westcentralus"),
+            new KeyValuePair<string,string>("Canada Central", "canadacentral"),
+            new KeyValuePair<string,string>("Central India", "centralindia"),
+            new KeyValuePair<string,string>("East Asia", "eastasia"),
+            new KeyValuePair<string,string>("Southeast Asia", "southeastasia"),
+            new KeyValuePair<string,string>("Japan East", "japaneast"),
+            new KeyValuePair<string,string>("Japan West", "japanwest"),
+            new KeyValuePair<string,string>("Korea Central", "koreacentral"),
+            new KeyValuePair<string,string>("North Europe", "northeurope"),
+            new KeyValuePair<string,string>("West Europe", "westeurope"),
+            new KeyValuePair<string,string>("UK South", "uksouth"),
+            new KeyValuePair<string,string>("France Central", "francecentral"),
+            new KeyValuePair<string,string>("Brazil South", "brazilsouth"),
+            new KeyValuePair<string,string>("Australia East", "australiaeast"),
+            new KeyValuePair<string,string>("South Africa North", "southafricanorth"),
+            new KeyValuePair<string,string>("UAE North", "uaenorth"),
         };
 
         public event EventHandler SettingsChanged;
@@ -80,7 +87,12 @@ namespace IntelligentKioskSample
         public void Initialize()
         {
             LoadRoamingSettings();
-            Windows.Storage.ApplicationData.Current.DataChanged += RoamingDataChanged;
+            ApplicationData.Current.DataChanged += RoamingDataChanged;
+
+            List<string> pageList = new List<string>();
+            pageList.Add("Demo Gallery");
+            pageList.AddRange(KioskExperiences.Experiences.Select(e => e.Attributes.Id));
+            this.startingPageNames = pageList.ToArray();
         }
 
         private void RoamingDataChanged(ApplicationData sender, object args)
@@ -344,13 +356,13 @@ namespace IntelligentKioskSample
             }
         }
 
-        public string GetRegionEndpoint(string region)
+        public static string GetRegionEndpoint(string region, string endpointTemplate = "https://{0}.api.cognitive.microsoft.com", string defaultEndpoint = null)
         {
-            if (!string.IsNullOrEmpty(region) && AvailableApiRegions.Any(x => string.Equals(x, region, StringComparison.OrdinalIgnoreCase)))
+            if (!string.IsNullOrEmpty(region) && AvailableApiRegions.Any(x => string.Compare(x.Value, region, StringComparison.OrdinalIgnoreCase) == 0))
             {
-                return $"https://{region.ToLower()}.api.cognitive.microsoft.com";
+                return string.Format(endpointTemplate, region.ToLower());
             }
-            return DefaultApiEndpoint;
+            return defaultEndpoint ?? DefaultApiEndpoint;
         }
 
         public void RestoreMallKioskSettingsToDefaultFile()
@@ -500,6 +512,17 @@ namespace IntelligentKioskSample
             {
                 this.startingPage = value;
                 this.OnSettingChanged("StartingPage", value);
+            }
+        }
+
+        private string[] startingPageNames;
+        public string[] StartingPageNames
+        {
+            get { return startingPageNames; }
+            set
+            {
+                this.startingPageNames = value;
+                this.OnSettingChanged("StartingPageNames", value);
             }
         }
 
@@ -716,82 +739,67 @@ namespace IntelligentKioskSample
             }
         }
 
-        public string[] AvailableCustomVisionApiEndpoints
+        public KeyValuePair<string, string>[] AvailableApiEndpoints
         {
             get
             {
-                return new string[]
+                return AvailableApiRegions.Select(i => new KeyValuePair<string, string>(i.Key, $"https://{i.Value}.api.cognitive.microsoft.com")).Concat(new KeyValuePair<string, string>[] { new KeyValuePair<string, string>("Custom Endpoint", CustomEndpointName) }).ToArray();
+            }
+        }
+
+        public KeyValuePair<string, string>[] AvailableCustomVisionApiEndpoints
+        {
+            get
+            {
+                return new KeyValuePair<string, string>[]
                 {
-                    "https://eastus.api.cognitive.microsoft.com",
-                    "https://eastus2.api.cognitive.microsoft.com",
-                    "https://southcentralus.api.cognitive.microsoft.com",
-                    "https://westus2.api.cognitive.microsoft.com",
-                    "https://northcentralus.api.cognitive.microsoft.com",
-                    "https://australiaeast.api.cognitive.microsoft.com",
-                    "https://southeastasia.api.cognitive.microsoft.com",
-                    "https://centralindia.api.cognitive.microsoft.com",
-                    "https://japaneast.api.cognitive.microsoft.com",
-                    "https://northeurope.api.cognitive.microsoft.com",
-                    "https://uksouth.api.cognitive.microsoft.com",
-                    "https://westeurope.api.cognitive.microsoft.com"
+                    new KeyValuePair<string,string>("East US",            "https://eastus.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("East US 2",          "https://eastus2.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("South Central US",   "https://southcentralus.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("West US 2",          "https://westus2.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("North Central US",   "https://northcentralus.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Australia East",     "https://australiaeast.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Southeast Asia",     "https://southeastasia.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Central India",      "https://centralindia.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Japan East",         "https://japaneast.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("North Europe",       "https://northeurope.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("UK South",           "https://uksouth.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("West Europe",        "https://westeurope.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("South Africa North", "https://southafricanorth.api.cognitive.microsoft.com")
                 };
             }
         }
 
-        public string[] AvailableFormRecognizerApiEndpoints
+        public KeyValuePair<string, string>[] AvailableFormRecognizerApiEndpoints
         {
             get
             {
-                return new string[]
+                return new KeyValuePair<string, string>[]
                 {
-                    "https://eastus.api.cognitive.microsoft.com",
-                    "https://eastus2.api.cognitive.microsoft.com",
-                    "https://westus.api.cognitive.microsoft.com",
-                    "https://westus2.api.cognitive.microsoft.com",
-                    "https://centralus.api.cognitive.microsoft.com",
-                    "https://westcentralus.api.cognitive.microsoft.com",
-                    "https://northcentralus.api.cognitive.microsoft.com",
-                    "https://southcentralus.api.cognitive.microsoft.com",
-                    "https://canadacentral.api.cognitive.microsoft.com",
-                    "https://australiaeast.api.cognitive.microsoft.com",
-                    "https://southeastasia.api.cognitive.microsoft.com",
-                    "https://eastasia.api.cognitive.microsoft.com",
-                    "https://japaneast.api.cognitive.microsoft.com",
-                    "https://japanwest.api.cognitive.microsoft.com",
-                    "https://koreacentral.api.cognitive.microsoft.com",
-                    "https://northeurope.api.cognitive.microsoft.com",
-                    "https://uksouth.api.cognitive.microsoft.com",
-                    "https://westeurope.api.cognitive.microsoft.com",
-                    "https://francecentral.api.cognitive.microsoft.com",
-                    "https://uaenorth.api.cognitive.microsoft.com",
-                    "https://brazilsouth.api.cognitive.microsoft.com"
-                };
-            }
-        }
+                    new KeyValuePair<string,string>("East US",          "https://eastus.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("East US 2",        "https://eastus2.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("West US",          "https://westus.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("West US 2",        "https://westus2.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Central US",       "https://centralus.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("West Central US",  "https://westcentralus.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("North Central US", "https://northcentralus.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("South Central US", "https://southcentralus.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Canada Central",   "https://canadacentral.api.cognitive.microsoft.com"),
 
-        public string[] AvailableApiEndpoints
-        {
-            get
-            {
-                return new string[]
-                {
-                    CustomEndpointName,
-                    "https://westus.api.cognitive.microsoft.com",
-                    "https://westus2.api.cognitive.microsoft.com",
-                    "https://eastus.api.cognitive.microsoft.com",
-                    "https://eastus2.api.cognitive.microsoft.com",
-                    "https://westcentralus.api.cognitive.microsoft.com",
-                    "https://southcentralus.api.cognitive.microsoft.com",
-                    "https://westeurope.api.cognitive.microsoft.com",
-                    "https://northeurope.api.cognitive.microsoft.com",
-                    "https://southeastasia.api.cognitive.microsoft.com",
-                    "https://eastasia.api.cognitive.microsoft.com",
-                    "https://australiaeast.api.cognitive.microsoft.com",
-                    "https://brazilsouth.api.cognitive.microsoft.com",
-                    "https://canadacentral.api.cognitive.microsoft.com",
-                    "https://centralindia.api.cognitive.microsoft.com",
-                    "https://uksouth.api.cognitive.microsoft.com",
-                    "https://japaneast.api.cognitive.microsoft.com"
+                    new KeyValuePair<string,string>("Australia East",   "https://australiaeast.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Southeast Asia",   "https://southeastasia.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("East Asia",        "https://eastasia.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Japan East",       "https://japaneast.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Japan West",       "https://japanwest.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Korea Central",    "https://koreacentral.api.cognitive.microsoft.com"),
+
+                    new KeyValuePair<string,string>("North Europe",     "https://northeurope.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("UK South",         "https://uksouth.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("West Europe",      "https://westeurope.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("France Central",   "https://francecentral.api.cognitive.microsoft.com"),
+
+                    new KeyValuePair<string,string>("UAE North",        "https://uaenorth.api.cognitive.microsoft.com"),
+                    new KeyValuePair<string,string>("Brazil South",     "https://brazilsouth.api.cognitive.microsoft.com")
                 };
             }
         }

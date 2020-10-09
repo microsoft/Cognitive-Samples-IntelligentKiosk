@@ -74,6 +74,9 @@ namespace IntelligentKioskSample.Views
             this.speechToTextControl.SpeechRecognitionAndSentimentProcessed += OnSpeechRecognitionAndSentimentProcessed;
 
             this.emotionFacesGrid.DataContext = this;
+
+            //databind settings
+            Settings.DataContext = SettingsHelper.Instance;
         }
 
         private async void CameraControl_CameraRestarted(object sender, EventArgs e)
@@ -175,8 +178,6 @@ namespace IntelligentKioskSample.Views
                 this.kioskSettings = await MallKioskDemoSettings.FromFileAsync("Views\\MallKioskDemoConfig\\MallKioskDemoSettings.xml");
             }
 
-            EnterKioskMode();
-
             if (!SettingsHelper.Instance.ShowAgeAndGender)
             {
                 await new MessageDialog("To use this demo please enable Age and Gender prediction in the Settings screen.", "Age and Gender prediction is disabled").ShowAsync();
@@ -199,15 +200,6 @@ namespace IntelligentKioskSample.Views
         {
             this.webCamHostGrid.Width = Math.Round(this.ActualWidth * 0.25);
             this.webCamHostGrid.Height = Math.Round(this.webCamHostGrid.Width / (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777));
-        }
-
-        private void EnterKioskMode()
-        {
-            ApplicationView view = ApplicationView.GetForCurrentView();
-            if (!view.IsFullScreenMode)
-            {
-                view.TryEnterFullScreenMode();
-            }
         }
 
         protected override async void OnNavigatingFrom(NavigatingCancelEventArgs e)
@@ -402,6 +394,11 @@ namespace IntelligentKioskSample.Views
         private void OnEmotionFacesToggleChecked(object sender, RoutedEventArgs e)
         {
             emotionFacesGrid.Visibility = Visibility.Visible;
+        }
+
+        private void ResetMallKioskSettingsButtonClick(object sender, RoutedEventArgs e)
+        {
+            SettingsHelper.Instance.RestoreMallKioskSettingsToDefaultFile();
         }
     }
 
