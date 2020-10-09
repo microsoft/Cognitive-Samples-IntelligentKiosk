@@ -7,7 +7,7 @@ An  example of a Mall kiosk that makes product recommendations based on the peop
 * The workflow starts with a snapshot from the webcam. To do that just wait until the target audience is in the frame and click on the Camera button in the camera preview. 
 * Depending on the people’s ages and gender (or identity) a recommended product is displayed in the screen.
 * To start over just click on the Refresh button and the webcam preview will restart and be ready for another snapshot.
-* The recommendations are configurable via the Settings page. The format is a self-explanatory set of URLs. It provides a way to define a set of generic recommendations based on gender/age/# of people, personalized recommendations based on people’s names, as well as recommendation overrides based on spoken keywords or sentiment. 
+* The recommendations are configurable via the Settings button. The format is a self-explanatory set of URLs. It provides a way to define a set of generic recommendations based on gender/age/# of people, personalized recommendations based on people’s names, as well as recommendation overrides based on spoken keywords or sentiment. 
 
 # Analyzing the reaction to a recommendation
 
