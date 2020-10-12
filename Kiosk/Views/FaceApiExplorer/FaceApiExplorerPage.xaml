@@ -1,0 +1,323 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.FaceApiExplorer.FaceApiExplorerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.FaceApiExplorer"
+    xmlns:model="using:IntelligentKioskSample.Models"
+    xmlns:p="using:IntelligentKioskSample.Controls.Overlays.Primitives"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Name="page">
+
+    <Page.Resources>
+        <ctl:BooleanToVisibilityConverter x:Key="visibleIfTrue"/>
+        <ctl:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+        <ctl:StringFormatConverter StringFormat="{}({0:0%})" x:Key="ToPercentage" />
+        <ctl:CollectionCountToVisibilityConverter x:Key="collectionCountToVisibilityConverter"/>
+        <DataTemplate x:Key="FaceInfoTemplate" x:DataType="local:DetectedFaceViewModel">
+            <StackPanel Orientation="Horizontal" Height="64" AutomationProperties.Name="{Binding Entity.FaceTitle}">
+                <Ellipse Height="48" Width="48" VerticalAlignment="Center">
+                    <Ellipse.Fill>
+                        <ImageBrush ImageSource="{Binding Image}"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center" Margin="12,0,0,0">
+                    <TextBlock Text="{Binding Entity.FaceTitle}"  Style="{ThemeResource BaseTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseHighBrush}" />
+                    <TextBlock Text="{Binding Entity.FaceDescription}" Style="{ThemeResource BodyTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+          EntranceNavigationTransitionInfo.IsTargetElement="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" Style="{StaticResource PageTitleCommandBarStyle}">
+            <CommandBar.Content>
+                <TextBlock Text="Face API Explorer" Style="{ThemeResource PageTitleTextBlockStyle}"/>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1" Margin="0,12,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+                <RowDefinition Height="0.1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="54"/>
+                <ColumnDefinition Width="0.45*"/>
+                <ColumnDefinition Width="0.5*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,6,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.6*"/>
+                    <RowDefinition Height="0.4*"/>
+                </Grid.RowDefinitions>
+
+                <p:OverlayPresenter x:Name="OverlayPresenter" EnableHoverSelection="False">
+                    <p:OverlayPresenter.ItemTemplate>
+                        <DataTemplate>
+                            <p:OverlayControl OverlayTemplate="{StaticResource Overlay.BoxOverlay}"/>
+                        </DataTemplate>
+                    </p:OverlayPresenter.ItemTemplate>
+                </p:OverlayPresenter>
+                <ProgressRing x:Name="ProgressIndicator" Foreground="White" Width="100" Height="100" />
+
+                <Grid Grid.Row="1" Visibility="{Binding DetectedFaceCollection.Count, Converter={StaticResource collectionCountToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Faces" Style="{StaticResource TitleTextBlockStyle}" Margin="0,12"/>
+                    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <ListView ItemsSource="{Binding DetectedFaceCollection}" SelectionMode="Single"
+                                  ItemTemplate="{StaticResource FaceInfoTemplate}" 
+                                  SelectedItem="{Binding CurrentDetectedFace, Mode=TwoWay}"/>
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="1" Grid.Column="2" Margin="6,0,0,0" 
+                  Visibility="{Binding DetectedFaceCollection.Count, Converter={StaticResource collectionCountToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.3*"/>
+                    <ColumnDefinition Width="0.7*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" Margin="0,0,12,0">
+                    <StackPanel>
+                        <Grid x:Name="faceImageGrid" SizeChanged="OnFaceImageSizeChanged" Margin="0,0,0,12">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Image Grid.Row="0" x:Name="faceImage" Source="{Binding CurrentDetectedFace.Image}" SizeChanged="OnFaceImageSizeChanged"/>
+                            <local:FaceLandmarksControl Grid.Row="0" x:Name="faceLandmarksControl" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                            <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="3" Margin="0,6,0,0" 
+                                        Visibility="{Binding CurrentDetectedFace.Entity.IdentifiedPerson, Converter={StaticResource nullToVisibilityConverter}}">
+                                <TextBlock Text="{Binding CurrentDetectedFace.Entity.IdentifiedPerson.Person.Name}"/>
+                                <TextBlock Opacity=".5" Text="{Binding CurrentDetectedFace.Entity.IdentifiedPerson.Confidence, Converter={StaticResource ToPercentage}}" />
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Face landmarks" VerticalAlignment="Center"/>
+                        <ToggleSwitch x:Name="showFaceLandmarksToggle" IsOn="True" Toggled="OnShowFaceLandmarksToggleChanged" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid Grid.Column="1" x:Name="resultsDetails" Margin="12,0,0,0">
+                    <Grid.Resources>
+                        <Style x:Key="Header" TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="12" />
+                            <Setter Property="Padding" Value="0,24,0,0" />
+                        </Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="15" />
+                        </Style>
+                        <Style TargetType="RadioButton">
+                            <Setter Property="FontSize" Value="15" />
+                        </Style>
+                        <Style TargetType="GridView">
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                        <Style TargetType="GridViewItem">
+                            <Setter Property="MinHeight" Value="0"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="FontSize" Value="15"/>
+                        </Style>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="Padding" Value="0" />
+                        </Style>
+                    </Grid.Resources>
+
+                    <Pivot SelectedItem="{Binding SelectedTab, Mode=TwoWay}">
+                        <Pivot.HeaderTemplate>
+                            <DataTemplate x:DataType="model:TabHeader">
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="18" 
+                                           Visibility="{Binding IsVisible, Mode=OneWay, Converter={StaticResource visibleIfTrue}}"/>
+                            </DataTemplate>
+                        </Pivot.HeaderTemplate>
+
+                        <PivotItem Header="{Binding AppearanceTab}" Visibility="{Binding AppearanceTab.IsVisible, Mode=OneWay, Converter={StaticResource visibleIfTrue}}">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel Spacing="10">
+
+                                    <StackPanel Spacing="10" Visibility="{Binding ShowAgeAndGender}">
+                                        <!-- Gender -->
+                                        <TextBlock Text="Gender" Style="{StaticResource Header}"/>
+                                        <TextBlock x:Name="genderTextBlock" TextWrapping="Wrap" />
+
+                                        <!-- Age -->
+                                        <TextBlock Text="Age" Style="{StaticResource Header}"/>
+                                        <TextBlock x:Name="ageTextBlock" TextWrapping="Wrap" />
+                                    </StackPanel>
+
+                                    <!-- Hair colors -->
+                                    <TextBlock Text="Hair color" Style="{StaticResource Header}"/>
+                                    <GridView x:Name="haircolorsGridView" IsItemClickEnabled="False" SelectionMode="None">
+                                        <GridView.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock TextWrapping="WrapWholeWords" VerticalAlignment="Center" MinWidth="120">
+                                                    <Run Text="{Binding HairColor}" />
+                                                    <Run Text="{Binding Confidence}" Foreground="Gray" />
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </GridView.ItemTemplate>
+                                    </GridView>
+
+                                    <!-- Facial hair -->
+                                    <TextBlock Text="Facial hair" Style="{StaticResource Header}"/>
+                                    <Grid>
+                                        <ListView x:Name="facialHairGridView" IsItemClickEnabled="False" SelectionMode="None" Visibility="Collapsed">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Margin="0,0,0,24">
+                                                        <TextBlock Text="{Binding Type}" Margin="0,0,0,12"/>
+                                                        <ProgressBar Value="{Binding Value}" Height="8" ToolTipService.ToolTip="{Binding Value}" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                        <TextBlock x:Name="facialHairTextBlock" TextWrapping="Wrap" />
+                                    </Grid>
+
+                                    <!-- Glasses -->
+                                    <TextBlock Text="Glasses" Style="{StaticResource Header}"/>
+                                    <TextBlock x:Name="glassesTextBlock" TextWrapping="Wrap" />
+
+                                    <!-- Makeup -->
+                                    <TextBlock Text="Makeup" Style="{StaticResource Header}"/>
+                                    <TextBlock x:Name="makeupTextBlock" TextWrapping="Wrap" />
+
+                                    <!--Accessories-->
+                                    <TextBlock Text="Accessories" Style="{StaticResource Header}"/>
+                                    <GridView x:Name="accessoriesGridView" IsItemClickEnabled="False" SelectionMode="None">
+                                        <GridView.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock TextWrapping="WrapWholeWords" VerticalAlignment="Center" MinWidth="120" >
+                                                    <Run Text="{Binding Accessory}" />
+                                                    <Run Text="{Binding Confidence}" Foreground="Gray" />
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </GridView.ItemTemplate>
+                                    </GridView>
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </PivotItem>
+
+                        <PivotItem Header="{Binding EmotionTab}" Visibility="{Binding EmotionTab.IsVisible, Mode=OneWay, Converter={StaticResource visibleIfTrue}}">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel Spacing="10">
+
+                                    <!-- Detected emotions -->
+                                    <TextBlock Text="Detected" Style="{StaticResource Header}"/>
+                                    <Grid Margin="0,0,0,-24">
+                                        <ListView x:Name="detectedEmotionGridView" IsItemClickEnabled="False" SelectionMode="None" Visibility="Collapsed">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Margin="0,0,0,24">
+                                                        <TextBlock Text="{Binding Type}" Margin="0,0,0,12"/>
+                                                        <ProgressBar Value="{Binding Value}" Height="8" ToolTipService.ToolTip="{Binding Value}" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                        <TextBlock x:Name="detectedEmotionTextBlock" TextWrapping="Wrap" Visibility="Collapsed"/>
+                                    </Grid>
+
+                                    <!-- Not detected emotions -->
+                                    <TextBlock Text="Not detected" Style="{StaticResource Header}"/>
+                                    <TextBlock x:Name="notDetectedEmotionTextBlock" TextWrapping="Wrap" />
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </PivotItem>
+
+                        <PivotItem Header="{Binding PoseTab}" Visibility="{Binding PoseTab.IsVisible, Mode=OneWay, Converter={StaticResource visibleIfTrue}}">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel Spacing="10">
+
+                                    <!-- Head tilt -->
+                                    <TextBlock Text="Head tilt" Style="{StaticResource Header}" />
+                                    <TextBlock x:Name="headTiltTextBlock" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                                    <local:FacePoseControl x:Name="headTiltControl" IconSource="ms-appx:///Assets/FaceApiExplorer/head-tilt20px.png" MaxProgressBar="180" />
+
+                                    <!-- Chin angle -->
+                                    <TextBlock Text="Chin angle" Style="{StaticResource Header}"/>
+                                    <TextBlock x:Name="chinAngleTextBlock" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                                    <local:FacePoseControl x:Name="chinAngleControl" IconSource="ms-appx:///Assets/FaceApiExplorer/chin-angle20px.png" MaxProgressBar="180"/>
+
+                                    <!-- Face rotation -->
+                                    <TextBlock Text="Face rotation" Style="{StaticResource Header}"/>
+                                    <TextBlock x:Name="faceRotationTextBlock" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                                    <local:FacePoseControl x:Name="faceRotationControl" IconSource="ms-appx:///Assets/FaceApiExplorer/face-rotation20px.png" MaxProgressBar="180"/>
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </PivotItem>
+
+                        <PivotItem Header="{Binding ImageQualityTab}" Visibility="{Binding ImageQualityTab.IsVisible, Mode=OneWay, Converter={StaticResource visibleIfTrue}}">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                                <StackPanel Spacing="10">
+
+                                    <!-- Exposure -->
+                                    <TextBlock Text="Exposure" Style="{StaticResource Header}"/>
+                                    <StackPanel>
+                                        <TextBlock x:Name="expouseTextBlock" />
+                                        <ProgressBar x:Name="expouseProgressBar" Height="8" ToolTipService.ToolTip="{Binding Value, ElementName=expouseProgressBar}" Margin="0,12,0,0"/>
+                                    </StackPanel>
+
+                                    <!-- Blur -->
+                                    <TextBlock Text="Blur" Style="{StaticResource Header}"/>
+                                    <StackPanel>
+                                        <TextBlock x:Name="blurTextBlock" />
+                                        <ProgressBar x:Name="blurProgressBar" Height="8" ToolTipService.ToolTip="{Binding Value, ElementName=blurProgressBar}" Margin="0,12,0,0"/>
+                                    </StackPanel>
+
+                                    <!-- Noise -->
+                                    <TextBlock Text="Noise" Style="{StaticResource Header}"/>
+                                    <StackPanel>
+                                        <TextBlock x:Name="noiseTextBlock" />
+                                        <ProgressBar x:Name="noiseProgressBar" Height="8" ToolTipService.ToolTip="{Binding Value, ElementName=noiseProgressBar}" Margin="0,12,0,0"/>
+                                    </StackPanel>
+
+                                    <!-- Occlusion -->
+                                    <TextBlock Text="Occlusion" Style="{StaticResource Header}"/>
+                                    <TextBlock x:Name="occlusionTextBlock" TextWrapping="Wrap" />
+
+                                </StackPanel>
+                            </ScrollViewer>
+                        </PivotItem>
+                    </Pivot>
+
+                </Grid>
+            </Grid>
+
+            <Grid x:Name="notFoundGrid" Grid.Row="1" Grid.Column="2" Margin="6,0,0,0" Visibility="Collapsed">
+                <StackPanel Margin="10,0" VerticalAlignment="Top">
+                    <TextBlock Text="No faces found" Margin="0,0,0,12" Style="{StaticResource HeaderTextBlockStyle}"/>
+                    <TextBlock Text="We didn't detect any faces in this image" Style="{StaticResource SubtitleTextBlockStyle}"/>
+                </StackPanel>
+            </Grid>
+
+            <ProgressRing Grid.Row="1" Grid.Column="2" x:Name="progressRing" Width="100" Height="100" Foreground="White"/>
+
+        </Grid>
+
+        <ctl:ImagePickerControl x:Name="imagePicker" Grid.Row="1" TryAnotherButtonAlignment="Left" OnImageSearchCompleted="OnImageSearchCompleted" />
+
+    </Grid>
+</Page>

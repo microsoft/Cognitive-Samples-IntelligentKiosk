@@ -31,6 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using IntelligentKioskSample.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using Microsoft.Rest;
 using ServiceHelpers;
@@ -186,7 +187,7 @@ namespace IntelligentKioskSample
             return true;
         }
 
-        async private static Task CropBitmapAsync(Stream localFileStream, FaceRectangle rectangle, StorageFile resultFile)
+        async private static Task CropBitmapAsync(Stream localFileStream, Rect rectangle, StorageFile resultFile)
         {
             //Get pixels of the crop region
             var pixels = await GetCroppedPixelsAsync(localFileStream.AsRandomAccessStream(), rectangle);
@@ -199,8 +200,8 @@ namespace IntelligentKioskSample
 
                 encoder.SetPixelData(BitmapPixelFormat.Bgra8,
                                         BitmapAlphaMode.Ignore,
-                                        (uint)rectangle.Width, (uint)rectangle.Height,
-                                        DisplayInformation.GetForCurrentView().LogicalDpi, DisplayInformation.GetForCurrentView().LogicalDpi, pixels);
+                                        pixels.Item2.Width, pixels.Item2.Height,
+                                        DisplayInformation.GetForCurrentView().LogicalDpi, DisplayInformation.GetForCurrentView().LogicalDpi, pixels.Item1);
 
                 await encoder.FlushAsync();
             }
@@ -258,7 +259,7 @@ namespace IntelligentKioskSample
             }
         }
 
-        async public static Task<ImageSource> DownloadAndCropBitmapAsync(string imageUrl, FaceRectangle rectangle)
+        async public static Task<ImageSource> DownloadAndCropBitmapAsync(string imageUrl, Rect rectangle)
         {
             byte[] imgBytes = await new System.Net.Http.HttpClient().GetByteArrayAsync(imageUrl);
             using (Stream stream = new MemoryStream(imgBytes))
@@ -267,12 +268,12 @@ namespace IntelligentKioskSample
             }
         }
 
-        async public static Task CropBitmapAsync(Func<Task<Stream>> localFile, FaceRectangle rectangle, StorageFile resultFile)
+        async public static Task CropBitmapAsync(Func<Task<Stream>> localFile, Rect rectangle, StorageFile resultFile)
         {
             await CropBitmapAsync(await localFile(), rectangle, resultFile);
         }
 
-        async public static Task<ImageSource> GetCroppedBitmapAsync(Func<Task<Stream>> originalImgFile, FaceRectangle rectangle)
+        async public static Task<ImageSource> GetCroppedBitmapAsync(Func<Task<Stream>> originalImgFile, Rect rectangle)
         {
             try
             {
@@ -288,18 +289,18 @@ namespace IntelligentKioskSample
             }
         }
 
-        async public static Task<ImageSource> GetCroppedBitmapAsync(IRandomAccessStream stream, FaceRectangle rectangle)
+        async public static Task<ImageSource> GetCroppedBitmapAsync(IRandomAccessStream stream, Rect rectangle)
         {
             var pixels = await GetCroppedPixelsAsync(stream, rectangle);
 
             // Stream the bytes into a WriteableBitmap 
-            WriteableBitmap cropBmp = new WriteableBitmap(rectangle.Width, rectangle.Height);
-            cropBmp.FromByteArray(pixels);
+            WriteableBitmap cropBmp = new WriteableBitmap((int)pixels.Item2.Width, (int)pixels.Item2.Height);
+            cropBmp.FromByteArray(pixels.Item1);
 
             return cropBmp;
         }
 
-        async private static Task<byte[]> GetCroppedPixelsAsync(IRandomAccessStream stream, FaceRectangle rectangle)
+        async private static Task<Tuple<byte[], BitmapBounds>> GetCroppedPixelsAsync(IRandomAccessStream stream, Rect rectangle)
         {
             // Create a decoder from the stream. With the decoder, we can get  
             // the properties of the image. 
@@ -308,10 +309,10 @@ namespace IntelligentKioskSample
             // Create cropping BitmapTransform and define the bounds. 
             BitmapTransform transform = new BitmapTransform();
             BitmapBounds bounds = new BitmapBounds();
-            bounds.X = (uint)rectangle.Left;
-            bounds.Y = (uint)rectangle.Top;
-            bounds.Height = (uint)rectangle.Height;
-            bounds.Width = (uint)rectangle.Width;
+            bounds.X = (uint)Math.Max(0, rectangle.Left);
+            bounds.Y = (uint)Math.Max(0, rectangle.Top);
+            bounds.Height = bounds.Y + rectangle.Height <= decoder.PixelHeight ? (uint)rectangle.Height : decoder.PixelHeight - bounds.Y;
+            bounds.Width = bounds.X + rectangle.Width <= decoder.PixelWidth ? (uint)rectangle.Width : decoder.PixelWidth - bounds.X;
             transform.Bounds = bounds;
 
             // Get the cropped pixels within the bounds of transform. 
@@ -322,7 +323,7 @@ namespace IntelligentKioskSample
                 ExifOrientationMode.IgnoreExifOrientation,
                 ColorManagementMode.ColorManageToSRgb);
 
-            return pix.DetachPixelData();
+            return new Tuple<byte[], BitmapBounds>(pix.DetachPixelData(), transform.Bounds);
         }
 
         internal static async Task DownloadFileASync(string link, StorageFile destination, IProgress<DownloadOperation> progress, CancellationToken cancellationToken = default)
@@ -391,6 +392,17 @@ namespace IntelligentKioskSample
             return storageFile != null;
         }
 
+        public static string UppercaseFirst(string str)
+        {
+            // Check for empty string.
+            if (string.IsNullOrEmpty(str))
+            {
+                return string.Empty;
+            }
+            // Return char and concat substring.
+            return str.Length > 1 ? char.ToUpper(str[0]) + str.Substring(1) : str.ToUpper();
+        }
+
         public static async Task<StorageFile> PickSingleFileAsync(string[] fileTypeFilter = null)
         {
             FileOpenPicker fileOpenPicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.PicturesLibrary, ViewMode = PickerViewMode.Thumbnail };
@@ -403,6 +415,26 @@ namespace IntelligentKioskSample
             FileOpenPicker fileOpenPicker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.PicturesLibrary, ViewMode = PickerViewMode.Thumbnail };
             fileTypeFilter?.ToList().ForEach(f => fileOpenPicker.FileTypeFilter.Add(f));
             return await fileOpenPicker.PickMultipleFilesAsync();
+        }
+
+        public static async Task<IList<ImageCrop<T>>> GetImageCrops<T>(IEnumerable<T> entities, Func<T, Rect> crop, IRandomAccessStream imageStream)
+        {
+            //validate
+            if (entities == null)
+            {
+                return null;
+            }
+            var result = new List<ImageCrop<T>>();
+            foreach (var entity in entities)
+            {
+                result.Add(new ImageCrop<T>() { Entity = entity, Image = await GetCroppedBitmapAsync(imageStream, crop(entity)) });
+            }
+
+            if (result.Count == 0)
+            {
+                return null;
+            }
+            return result;
         }
 
         internal static async Task<Stream> ResizePhoto(Stream photo, int height)

@@ -232,7 +232,7 @@ namespace IntelligentKioskSample.Views
                     biggerRectangle.Left = Math.Max(0, item.Face.FaceRectangle.Left - (int)(item.Face.FaceRectangle.Width * ((widthScaleFactor - 1) / 2)));
                     biggerRectangle.Top = Math.Max(0, item.Face.FaceRectangle.Top - (int)(item.Face.FaceRectangle.Height * ((heightScaleFactor - 1) / 1.4)));
 
-                    var croppedImage = await Util.GetCroppedBitmapAsync(analyzer.GetImageStreamCallback, biggerRectangle);
+                    var croppedImage = await Util.GetCroppedBitmapAsync(analyzer.GetImageStreamCallback, biggerRectangle.ToRect());
 
                     if (croppedImage == null || biggerRectangle.Height == 0 && biggerRectangle.Width == 0)
                     {
@@ -405,14 +405,7 @@ namespace IntelligentKioskSample.Views
                 {
                     this.detectedObjectsInVideo[detectedObject.ObjectProperty] = 1;
 
-                    ImageSource croppedContent = await Util.GetCroppedBitmapAsync(analyzer.GetImageStreamCallback,
-                                                                        new Microsoft.Azure.CognitiveServices.Vision.Face.Models.FaceRectangle
-                                                                        {
-                                                                            Left = detectedObject.Rectangle.X,
-                                                                            Top = detectedObject.Rectangle.Y,
-                                                                            Width = detectedObject.Rectangle.W,
-                                                                            Height = detectedObject.Rectangle.H
-                                                                        });
+                    ImageSource croppedContent = await Util.GetCroppedBitmapAsync(analyzer.GetImageStreamCallback, detectedObject.Rectangle.ToRect());
 
                     BitmapImage frameBitmap = new BitmapImage();
                     await frameBitmap.SetSourceAsync((await analyzer.GetImageStreamCallback()).AsRandomAccessStream());

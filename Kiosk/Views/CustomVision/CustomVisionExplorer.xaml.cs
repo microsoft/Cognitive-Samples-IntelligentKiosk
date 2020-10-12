@@ -43,6 +43,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -349,13 +350,10 @@ namespace IntelligentKioskSample.Views
                             // relevant than the whole image. 
                             ImageSource croppedImage = await Util.DownloadAndCropBitmapAsync(
                                 imageModelSample.OriginalImageUri,
-                                new FaceRectangle
-                                {
-                                    Left = (int)(tagRegion.Left * imageModelSample.Width),
-                                    Top = (int)(tagRegion.Top * imageModelSample.Height),
-                                    Width = (int)(tagRegion.Width * imageModelSample.Width),
-                                    Height = (int)(tagRegion.Height * imageModelSample.Height)
-                                });
+                                new Rect(tagRegion.Left * imageModelSample.Width,
+                                         tagRegion.Top * imageModelSample.Height,
+                                         tagRegion.Width * imageModelSample.Width,
+                                         tagRegion.Height * imageModelSample.Height));
 
                             collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = croppedImage });
                         }

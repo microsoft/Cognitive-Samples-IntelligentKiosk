@@ -313,7 +313,7 @@ namespace IntelligentKioskSample.Controls
                                                     "FaceRecoCameraCapture.jpg",
                                                     CreationCollisionOption.GenerateUniqueName);
 
-            await Util.CropBitmapAsync(img.GetImageStreamCallback, biggerRectangle, tempFile);
+            await Util.CropBitmapAsync(img.GetImageStreamCallback, biggerRectangle.ToRect(), tempFile);
 
             return new ImageAnalyzer(tempFile.OpenStreamForReadAsync, tempFile.Path);
         }

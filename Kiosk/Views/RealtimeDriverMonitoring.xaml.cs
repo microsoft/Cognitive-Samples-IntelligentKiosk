@@ -501,7 +501,7 @@ namespace IntelligentKioskSample.Views
                 biggerRectangle.Left = Math.Max(0, rect.Left - (int)(rect.Width * ((widthScaleFactor - 1) / 2)));
                 biggerRectangle.Top = Math.Max(0, rect.Top - (int)(rect.Height * ((heightScaleFactor - 1) / 1.4)));
 
-                croppedImage = await Util.GetCroppedBitmapAsync(img.GetImageStreamCallback, biggerRectangle);
+                croppedImage = await Util.GetCroppedBitmapAsync(img.GetImageStreamCallback, biggerRectangle.ToRect());
             }
 
             return new Image { Source = croppedImage, Height = 200 };
