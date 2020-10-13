@@ -107,6 +107,9 @@
                         <!--camera source-->
                         <ComboBox x:Name="cameraSourceComboBox" Header="Camera source" Style="{StaticResource Settings.Input}" SelectionChanged="OnCameraSourceSelectionChanged"/>
 
+                        <!--camera rotation-->
+                        <ComboBox x:Name="cameraRotationComboBox" Header="Camera rotation" DisplayMemberPath="Item1" Style="{StaticResource Settings.Input}" SelectionChanged="OnCameraRotationSelectionChanged"/>
+
                         <!--starting page-->
                         <ComboBox Header="Starting page" ItemsSource="{Binding StartingPageNames}" SelectedItem="{Binding StartingPage, Mode=TwoWay}" Style="{StaticResource Settings.Input}">
                             <ComboBox.ItemTemplate>
@@ -120,6 +123,40 @@
                         <StackPanel Style="{StaticResource Settings.SubPanel}">
                             <ToggleSwitch IsOn="{Binding StartupFullScreenMode, Mode=TwoWay}" Header="Start in full screen mode"/>
                         </StackPanel>
+
+                        <!--demo visibility-->
+                        <Button Content="Demo visibility" Margin="0,6,0,24">
+                            <Button.Flyout>
+                                <Flyout x:Name="DemoAvailabilityFlyout" Opened="DemoAvailabilityFlyoutOpened">
+                                    <StackPanel>
+                                        <ListView x:Name="demoAvailabilityListView" ItemsSource="{Binding Entries}" Height="350" SelectionMode="None" IsItemClickEnabled="False">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding KioskExperience.Attributes.DisplayName}" Width="220" VerticalAlignment="Center"/>
+                                                        <ToggleSwitch IsOn="{Binding Enabled, Mode=TwoWay}" Margin="12,0,0,0" />
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                        <Grid Margin="10">
+                                            <Button Click="ApplyDemoAvailability" Background="Transparent" HorizontalAlignment="Left" >
+                                                <StackPanel>
+                                                    <SymbolIcon Symbol="Accept"/>
+                                                    <TextBlock Text="Apply"/>
+                                                </StackPanel>
+                                            </Button>
+                                            <Button Click="RestoreDemoAvailability" Background="Transparent" HorizontalAlignment="Right" >
+                                                <StackPanel>
+                                                    <SymbolIcon Symbol="Undo"/>
+                                                    <TextBlock Text="Restore Defaults"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </Grid>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
 
                         <!--face detection-->
                         <StackPanel Style="{StaticResource Settings.SubPanel}">
@@ -290,9 +327,67 @@
 
                     <Grid Style="{StaticResource Settings.Line}"/>
 
+                    <!--Autonomous mode-->
+                    <TextBlock Text="Autonomous mode" Style="{StaticResource Settings.Title}"/>
+                    <StackPanel Style="{StaticResource Settings.Panel}">
+
+                        <!--Demo rotation-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <TextBlock Text="Demo Rotation" Style="{StaticResource Settings.SubTitle}"/>
+                            <ToggleSwitch x:Name="autoRotateDemosToggle" IsOn="{Binding AutoRotateThroughDemos, Mode=TwoWay}" Toggled="AutoRotateToggleChanged" Header="Automatically rotate demos" />
+                            <Button VerticalAlignment="Center" Content="Demo Rotation Settings" IsEnabled="{Binding ElementName=autoRotateDemosToggle, Path=IsOn}">
+                                <Button.Flyout>
+                                    <Flyout Opened="DemoRotationFlyoutOpened" Closed="DemoRotationFlyoutClosed" >
+                                        <StackPanel Width="420" >
+                                            <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Please select the rotation frequency and demos" TextWrapping="Wrap"/>
+                                            <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="The rotation will start as soon as you dismiss this pop up, and again every time the app starts. The order of the demos will be random, and the rotation will restart at the end of each full cycle." TextWrapping="Wrap"/>
+
+                                            <StackPanel Spacing="7" Margin="0,12,0,12">
+                                                <TextBlock Text="Duration per demo" />
+                                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                                    <ctl:NumericUpDown Minimum="5" Maximum="480" Value="{Binding DemoRotationTimePerDemo, Mode=TwoWay}" />
+                                                    <TextBlock Text="minutes" VerticalAlignment="Bottom"/>
+                                                </StackPanel>
+                                            </StackPanel>
+
+                                            <TextBlock Text="Demos to include in the rotation:" Margin="0,6,0,6" />
+                                            <ListView x:Name="demoRotationEntriesListView" Height="350" SelectionMode="None" IsItemClickEnabled="False" IsTabStop="true" TabIndex="0">
+                                                <ListView.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding KioskExperience.Attributes.DisplayName}" Grid.Column="1" Width="220" VerticalAlignment="Center"/>
+                                                            <ToggleSwitch IsOn="{Binding Enabled, Mode=TwoWay}" Margin="12,0,0,0" />
+                                                        </StackPanel>
+                                                    </DataTemplate>
+                                                </ListView.ItemTemplate>
+                                            </ListView>
+                                            <CheckBox Margin="0,6,0,0" IsChecked="True" x:Name="handsFreeDemoRotationCheckBox" Checked="HandsFreeDemoRotationCheckBoxChanged" Unchecked="HandsFreeDemoRotationCheckBoxChanged">Show only hands-free demos (i.e. fully automated)</CheckBox>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </StackPanel>
+
+                        <!--Photo settings-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <TextBlock Text="Photo Settings" Style="{StaticResource Settings.SubTitle}"/>
+                            <StackPanel Spacing="7">
+                                <TextBlock Text="Display snapshot for" />
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <ctl:NumericUpDown Minimum="1" Maximum="60" Value="{Binding HowOldKioskResultDisplayDuration, Mode=TwoWay}" />
+                                    <TextBlock Text="seconds" VerticalAlignment="Bottom"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+
+                    </StackPanel>
+
+                    <Grid Style="{StaticResource Settings.Line}"/>
+
                     <!--Advanced-->
                     <TextBlock Text="Advanced" Style="{StaticResource Settings.Title}"/>
                     <StackPanel Style="{StaticResource Settings.Panel}">
+                        <ToggleSwitch IsOn="{Binding ShowDialogOnFaceApiCallErrorsOnHowOldKiosk, Mode=TwoWay}" Header="Show API call errors"/>
                         <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info"/>
                     </StackPanel>
 

@@ -240,6 +240,9 @@ namespace IntelligentKioskSample.Controls
                     await SetVideoEncodingToHighestResolution(isForRealTimeProcessing);
                     isStreamingOnRealtimeResolution = isForRealTimeProcessing;
 
+                    //rotate the camera
+                    captureManager.SetPreviewRotation(SettingsHelper.Instance.CameraRotation);
+
                     this.webCamCaptureElement.Source = captureManager;
                 }
 

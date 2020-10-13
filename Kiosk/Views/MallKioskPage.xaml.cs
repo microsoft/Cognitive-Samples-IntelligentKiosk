@@ -41,7 +41,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -70,6 +69,7 @@ namespace IntelligentKioskSample.Views
             this.cameraControl.ImageCaptured += CameraControl_ImageCaptured;
             this.cameraControl.CameraRestarted += CameraControl_CameraRestarted;
             this.cameraControl.FilterOutSmallFaces = true;
+            this.cameraControl.ShowDialogOnApiErrors = SettingsHelper.Instance.ShowDialogOnFaceApiCallErrorsOnHowOldKiosk;
 
             this.speechToTextControl.SpeechRecognitionAndSentimentProcessed += OnSpeechRecognitionAndSentimentProcessed;
 

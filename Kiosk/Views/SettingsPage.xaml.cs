@@ -31,10 +31,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using IntelligentKioskSample.Views.DemoLauncher;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using Windows.ApplicationModel;
+using Windows.Media.Capture;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -45,6 +50,8 @@ namespace IntelligentKioskSample.Views
 {
     public sealed partial class SettingsPage : Page
     {
+        private DemoLauncherConfig demoRotationConfig;
+
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -58,6 +65,15 @@ namespace IntelligentKioskSample.Views
 
             this.cameraSourceComboBox.ItemsSource = await Util.GetAvailableCameraNamesAsync();
             this.cameraSourceComboBox.SelectedItem = SettingsHelper.Instance.CameraName;
+            var cameraRotations = new[]
+            {
+                Tuple.Create("None", VideoRotation.None),
+                Tuple.Create("Clockwise 90 Degrees", VideoRotation.Clockwise90Degrees),
+                Tuple.Create("Clockwise 180 Degrees", VideoRotation.Clockwise180Degrees),
+                Tuple.Create("Clockwise 270 Degrees", VideoRotation.Clockwise270Degrees)
+            };
+            this.cameraRotationComboBox.ItemsSource = cameraRotations;
+            this.cameraRotationComboBox.SelectedItem = cameraRotations.FirstOrDefault(i => i.Item2 == SettingsHelper.Instance.CameraRotation);
             base.OnNavigatedFrom(e);
         }
 
@@ -81,6 +97,14 @@ namespace IntelligentKioskSample.Views
             if (this.cameraSourceComboBox.SelectedItem != null)
             {
                 SettingsHelper.Instance.CameraName = this.cameraSourceComboBox.SelectedItem.ToString();
+            }
+        }
+
+        private void OnCameraRotationSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.cameraRotationComboBox.SelectedItem != null)
+            {
+                SettingsHelper.Instance.CameraRotation = ((Tuple<string, VideoRotation>)this.cameraRotationComboBox.SelectedItem).Item2;
             }
         }
 
@@ -142,6 +166,107 @@ namespace IntelligentKioskSample.Views
             {
                 this.keyTestResultTextBox.Text += string.Format("Failed! Error message: \"{0}\"\n\n", Util.GetMessageFromException(ex));
             }
+        }
+
+        private async void DemoAvailabilityFlyoutOpened(object sender, object e)
+        {
+            await LoadDemoAvailability();
+        }
+
+        private async void ApplyDemoAvailability(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            await SaveDemoAvailability(this.demoAvailabilityListView.DataContext as DemoLauncherConfig);
+            DemoAvailabilityFlyout.Hide();
+        }
+
+        private async Task LoadDemoAvailability(bool forceLoad = false)
+        {
+            if (this.demoAvailabilityListView.ItemsSource == null || forceLoad)
+            {
+                this.demoAvailabilityListView.DataContext = await DemoLauncherPage.LoadDemoLauncherConfigFromFile("DemoLauncherConfig.xml");
+            }
+        }
+
+        private async Task SaveDemoAvailability(DemoLauncherConfig config)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(DemoLauncherConfig));
+            StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync("DemoLauncherConfig.xml", CreationCollisionOption.ReplaceExisting);
+
+            using (Stream stream = await file.OpenStreamForWriteAsync())
+            {
+                serializer.Serialize(stream, config);
+            }
+        }
+
+        private async void RestoreDemoAvailability(object sender, RoutedEventArgs e)
+        {
+            var config = this.demoAvailabilityListView.DataContext as DemoLauncherConfig;
+            if (config != null)
+            {
+                config.Entries.ForEach(d => d.Enabled = true);
+                await SaveDemoAvailability(config);
+                await LoadDemoAvailability(forceLoad: true);
+            }
+        }
+
+        private async void DemoRotationFlyoutClosed(object sender, object e)
+        {
+            this.demoRotationEntriesListView.ItemsSource = null;
+
+            // Persist to file
+            XmlSerializer serializer = new XmlSerializer(typeof(DemoLauncherConfig));
+            StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync("DemoRotationConfig.xml", CreationCollisionOption.ReplaceExisting);
+
+            using (Stream stream = await file.OpenStreamForWriteAsync())
+            {
+                serializer.Serialize(stream, this.demoRotationConfig);
+            }
+
+            // Reset the scheduler
+            DemoRotationScheduler.Instance.Start();
+        }
+
+        private async void DemoRotationFlyoutOpened(object sender, object e)
+        {
+            // Load from file
+            this.demoRotationConfig = await LoadDemoRotationConfigFromFileAsync();
+
+            this.UpdateDemoRotationEntriesUI();
+        }
+
+        private void UpdateDemoRotationEntriesUI()
+        {
+            if (this.demoRotationConfig == null)
+            {
+                return;
+            }
+
+            var entries = this.demoRotationConfig.Entries.OrderBy(entry => entry.KioskExperience.Attributes.DisplayName).ToList();
+
+            if (this.handsFreeDemoRotationCheckBox.IsChecked.Value)
+            {
+                entries = entries.Where(d => (d.KioskExperience.Attributes.ExperienceType & ExperienceType.Automated) == ExperienceType.Automated).ToList();
+            }
+
+            this.demoRotationEntriesListView.ItemsSource = entries;
+        }
+
+        public static async Task<DemoLauncherConfig> LoadDemoRotationConfigFromFileAsync()
+        {
+            return await DemoLauncherPage.LoadDemoLauncherConfigFromFile("DemoRotationConfig.xml", enableDemosByDefault: false);
+        }
+
+        private void AutoRotateToggleChanged(object sender, RoutedEventArgs e)
+        {
+            if (!this.autoRotateDemosToggle.IsOn)
+            {
+                DemoRotationScheduler.Instance.Stop();
+            }
+        }
+
+        private void HandsFreeDemoRotationCheckBoxChanged(object sender, RoutedEventArgs e)
+        {
+            this.UpdateDemoRotationEntriesUI();
         }
     }
 

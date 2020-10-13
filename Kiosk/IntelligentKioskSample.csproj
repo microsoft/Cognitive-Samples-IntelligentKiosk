@@ -153,6 +153,7 @@
     <Compile Include="CognitiveServiceApiKeyTester.cs" />
     <Compile Include="Controls\Animation\AnimationHelper.cs" />
     <Compile Include="Controls\Animation\BaseAnimation.cs" />
+    <Compile Include="Controls\Animation\OpacityAnimation.cs" />
     <Compile Include="Controls\Animation\ScaleTransformAnimation.cs" />
     <Compile Include="Controls\Animation\TranslateTransformAnimation.cs" />
     <Compile Include="Controls\CenteredVerticalBarControl.xaml.cs">
@@ -249,6 +250,7 @@
     <Compile Include="Controls\VideoTrack.xaml.cs">
       <DependentUpon>VideoTrack.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DemoRotationScheduler.cs" />
     <Compile Include="Extensions\AnimationExtensions.cs" />
     <Compile Include="KioskExperiences.cs" />
     <Compile Include="Controls\CameraControl.xaml.cs">
