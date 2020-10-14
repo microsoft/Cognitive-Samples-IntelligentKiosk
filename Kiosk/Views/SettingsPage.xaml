@@ -387,7 +387,7 @@
                     <!--Advanced-->
                     <TextBlock Text="Advanced" Style="{StaticResource Settings.Title}"/>
                     <StackPanel Style="{StaticResource Settings.Panel}">
-                        <ToggleSwitch IsOn="{Binding ShowDialogOnFaceApiCallErrorsOnHowOldKiosk, Mode=TwoWay}" Header="Show API call errors"/>
+                        <ToggleSwitch IsOn="{Binding ShowDialogOnApiErrors, Mode=TwoWay}" Header="Show API call errors"/>
                         <ToggleSwitch IsOn="{Binding ShowDebugInfo, Mode=TwoWay}" Header="Show debug info"/>
                     </StackPanel>
 

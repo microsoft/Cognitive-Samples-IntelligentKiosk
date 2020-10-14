@@ -66,7 +66,7 @@ namespace IntelligentKioskSample.Views
             this.cameraControl.FilterOutSmallFaces = true;
             this.cameraControl.AutoCaptureStateChanged += CameraControl_AutoCaptureStateChanged;
             this.cameraControl.CameraAspectRatioChanged += CameraControl_CameraAspectRatioChanged;
-            this.cameraControl.ShowDialogOnApiErrors = SettingsHelper.Instance.ShowDialogOnFaceApiCallErrorsOnHowOldKiosk;
+            this.cameraControl.ShowDialogOnApiErrors = SettingsHelper.Instance.ShowDialogOnApiErrors;
         }
 
         private void CameraControl_CameraAspectRatioChanged(object sender, EventArgs e)

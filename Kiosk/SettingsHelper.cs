@@ -370,13 +370,13 @@ namespace IntelligentKioskSample
                 }
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["ShowDialogOnFaceApiCallErrorsOnHowOldKiosk"];
+            value = ApplicationData.Current.RoamingSettings.Values["ShowDialogOnApiErrors"];
             if (value != null)
             {
                 bool booleanValue;
                 if (bool.TryParse(value.ToString(), out booleanValue))
                 {
-                    this.ShowDialogOnFaceApiCallErrorsOnHowOldKiosk = booleanValue;
+                    this.ShowDialogOnApiErrors = booleanValue;
                 }
             }
 
@@ -813,14 +813,14 @@ namespace IntelligentKioskSample
             }
         }
 
-        private bool showDialogOnFaceApiCallErrorsOnHowOldKiosk = false;
-        public bool ShowDialogOnFaceApiCallErrorsOnHowOldKiosk
+        private bool showDialogOnApiErrors = false;
+        public bool ShowDialogOnApiErrors
         {
-            get { return showDialogOnFaceApiCallErrorsOnHowOldKiosk; }
+            get { return showDialogOnApiErrors; }
             set
             {
-                this.showDialogOnFaceApiCallErrorsOnHowOldKiosk = value;
-                this.OnSettingChanged("ShowDialogOnFaceApiCallErrorsOnHowOldKiosk", value);
+                this.showDialogOnApiErrors = value;
+                this.OnSettingChanged("ShowDialogOnApiErrors", value);
             }
         }
 

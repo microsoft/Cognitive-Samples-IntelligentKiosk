@@ -69,7 +69,7 @@ namespace IntelligentKioskSample.Views
             this.cameraControl.ImageCaptured += CameraControl_ImageCaptured;
             this.cameraControl.CameraRestarted += CameraControl_CameraRestarted;
             this.cameraControl.FilterOutSmallFaces = true;
-            this.cameraControl.ShowDialogOnApiErrors = SettingsHelper.Instance.ShowDialogOnFaceApiCallErrorsOnHowOldKiosk;
+            this.cameraControl.ShowDialogOnApiErrors = SettingsHelper.Instance.ShowDialogOnApiErrors;
 
             this.speechToTextControl.SpeechRecognitionAndSentimentProcessed += OnSpeechRecognitionAndSentimentProcessed;
 
