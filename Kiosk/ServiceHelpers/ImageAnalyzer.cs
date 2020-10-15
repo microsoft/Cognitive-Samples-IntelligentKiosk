@@ -52,20 +52,23 @@ namespace ServiceHelpers
             FaceAttributeType.HeadPose,
             FaceAttributeType.Emotion
         };
-        private static readonly List<VisualFeatureTypes> DefaultVisualFeatures = new List<VisualFeatureTypes>()
+        private static readonly List<VisualFeatureTypes?> DefaultVisualFeatures = new List<VisualFeatureTypes?>()
         {
             VisualFeatureTypes.Tags,
             VisualFeatureTypes.Faces,
             VisualFeatureTypes.Categories,
             VisualFeatureTypes.Description,
-            VisualFeatureTypes.Color
+            VisualFeatureTypes.Color,
+            VisualFeatureTypes.Brands,
+            VisualFeatureTypes.Adult,
+            VisualFeatureTypes.ImageType,
+            VisualFeatureTypes.Objects
         };
 
         public event EventHandler FaceDetectionCompleted;
         public event EventHandler FaceRecognitionCompleted;
         public event EventHandler ComputerVisionAnalysisCompleted;
         public event EventHandler ObjectDetectionCompleted;
-        public event EventHandler TextRecognitionCompleted;
 
         public static string PeopleGroupsUserDataFilter = null;
 
@@ -82,8 +85,7 @@ namespace ServiceHelpers
         public ImageAnalysis AnalysisResult { get; set; }
         public ImageDescription ImageDescription { get; set; }
         public IEnumerable<DetectedObject> DetectedObjects { get; set; }
-        public TextOperationResult TextOperationResult { get; set; }
-        public TextRecognitionMode TextRecognitionMode { get; set; }
+        public ReadResult TextOperationResult { get; set; }
 
         // Default to no errors, since this could trigger a stream of popup errors since we might call this
         // for several images at once while auto-detecting the Bing Image Search results.
@@ -220,8 +222,8 @@ namespace ServiceHelpers
                 {
                     this.AnalysisResult = await VisionServiceHelper.AnalyzeImageAsync(
                         this.GetImageStreamCallback,
-                        new List<VisualFeatureTypes>() { VisualFeatureTypes.Categories },
-                        new List<Details>() { Details.Celebrities });
+                        new List<VisualFeatureTypes?>() { VisualFeatureTypes.Categories },
+                        new List<Details?>() { Details.Celebrities });
                 }
             }
             catch (Exception e)
@@ -237,7 +239,7 @@ namespace ServiceHelpers
             }
         }
 
-        public async Task AnalyzeImageAsync(IList<Details> details = null, IList<VisualFeatureTypes> visualFeatures = null)
+        public async Task AnalyzeImageAsync(IList<Details?> details = null, IList<VisualFeatureTypes?> visualFeatures = null)
         {
             try
             {
@@ -278,34 +280,29 @@ namespace ServiceHelpers
             }
         }
 
-        public async Task RecognizeTextAsync(TextRecognitionMode textRecognitionMode)
+        public async Task RecognizeTextAsync()
         {
             try
             {
-                this.TextRecognitionMode = textRecognitionMode;
                 if (this.ImageUrl != null)
                 {
-                    this.TextOperationResult = await VisionServiceHelper.RecognizeTextAsync(this.ImageUrl, textRecognitionMode);
+                    this.TextOperationResult = (await VisionServiceHelper.ReadFileAsync(this.ImageUrl))?.ReadResults?.FirstOrDefault();
                 }
                 else if (this.GetImageStreamCallback != null)
                 {
-                    this.TextOperationResult = await VisionServiceHelper.RecognizeTextAsync(this.GetImageStreamCallback, textRecognitionMode);
+                    this.TextOperationResult = (await VisionServiceHelper.ReadFileAsync(this.GetImageStreamCallback))?.ReadResults?.FirstOrDefault();
                 }
             }
             catch (Exception ex)
             {
                 ErrorTrackingHelper.TrackException(ex, "Vision API RecognizeTextAsync error");
 
-                this.TextOperationResult = new TextOperationResult();
+                this.TextOperationResult = new ReadResult();
 
                 if (this.ShowDialogOnFaceApiErrors)
                 {
                     await ErrorTrackingHelper.GenericApiCallExceptionHandler(ex, "Vision API failed.");
                 }
-            }
-            finally
-            {
-                this.TextRecognitionCompleted?.Invoke(this, EventArgs.Empty);
             }
         }
 

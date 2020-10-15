@@ -267,6 +267,17 @@ namespace IntelligentKioskSample
             }
         }
 
+        async public static Task<ImageSource> GetCroppedBitmapAsync(IRandomAccessStream stream, Rect rectangle)
+        {
+            var pixels = await GetCroppedPixelsAsync(stream, rectangle);
+
+            // Stream the bytes into a WriteableBitmap 
+            WriteableBitmap cropBmp = new WriteableBitmap((int)pixels.Item2.Width, (int)pixels.Item2.Height);
+            cropBmp.FromByteArray(pixels.Item1);
+
+            return cropBmp;
+        }
+
         async public static Task CropBitmapAsync(Func<Task<Stream>> localFile, FaceRectangle rectangle, StorageFile resultFile)
         {
             await CropBitmapAsync(await localFile(), rectangle, resultFile);
@@ -323,6 +334,32 @@ namespace IntelligentKioskSample
                 ColorManagementMode.ColorManageToSRgb);
 
             return pix.DetachPixelData();
+        }
+
+        async private static Task<Tuple<byte[], BitmapBounds>> GetCroppedPixelsAsync(IRandomAccessStream stream, Rect rectangle)
+        {
+            // Create a decoder from the stream. With the decoder, we can get  
+            // the properties of the image. 
+            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+
+            // Create cropping BitmapTransform and define the bounds. 
+            BitmapTransform transform = new BitmapTransform();
+            BitmapBounds bounds = new BitmapBounds();
+            bounds.X = (uint)Math.Max(0, rectangle.Left);
+            bounds.Y = (uint)Math.Max(0, rectangle.Top);
+            bounds.Height = bounds.Y + rectangle.Height <= decoder.PixelHeight ? (uint)rectangle.Height : decoder.PixelHeight - bounds.Y;
+            bounds.Width = bounds.X + rectangle.Width <= decoder.PixelWidth ? (uint)rectangle.Width : decoder.PixelWidth - bounds.X;
+            transform.Bounds = bounds;
+
+            // Get the cropped pixels within the bounds of transform. 
+            PixelDataProvider pix = await decoder.GetPixelDataAsync(
+                BitmapPixelFormat.Bgra8,
+                BitmapAlphaMode.Straight,
+                transform,
+                ExifOrientationMode.IgnoreExifOrientation,
+                ColorManagementMode.ColorManageToSRgb);
+
+            return new Tuple<byte[], BitmapBounds>(pix.DetachPixelData(), transform.Bounds);
         }
 
         internal static async Task DownloadFileASync(string link, StorageFile destination, IProgress<DownloadOperation> progress, CancellationToken cancellationToken = default)

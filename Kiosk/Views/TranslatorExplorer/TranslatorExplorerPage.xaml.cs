@@ -31,7 +31,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+using IntelligentKioskSample.Controls.Overlays;
+using IntelligentKioskSample.Controls.Overlays.Primitives;
 using ServiceHelpers;
 using ServiceHelpers.Models;
 using System;
@@ -223,12 +224,13 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
 
                     this.webCamHostGrid.Visibility = Visibility.Collapsed;
                     this.imageHostGrid.Visibility = Visibility.Collapsed;
-                    this.ocrModeCombobox.Visibility = Visibility.Collapsed;
                     this.ocrTextGrid.Visibility = Visibility.Collapsed;
 
                     this.favoritePhotosGridView.SelectedItem = null;
-                    this.imageFromCameraWithFaces.DataContext = null;
-                    this.imageWithFacesControl.DataContext = null;
+                    WebCamOverlayPresenter.Source = null;
+                    WebCamOverlayPresenter.ItemsSource = null;
+                    ImageOverlayPresenter.Source = null;
+                    WebCamOverlayPresenter.ItemsSource = null;
                     this.ocrTextBlock.Text = string.Empty;
                     this.outputText.MinHeight = panelHeight;
                     break;
@@ -294,18 +296,37 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
             // We induce a delay here to give the camera some time to start rendering before we hide the last captured photo.
             // This avoids a black flash.
             await Task.Delay(500);
-            this.imageFromCameraWithFaces.Visibility = Visibility.Collapsed;
+            WebCamOverlayPresenter.Source = null;
+            WebCamOverlayPresenter.ItemsSource = null;
         }
 
         private async void CameraControl_ImageCaptured(object sender, ImageAnalyzer e)
         {
-            this.UpdateActivePhoto(e);
+            await TranslateFromImage(e, WebCamOverlayPresenter);
+        }
 
-            this.imageFromCameraWithFaces.TextRecognitionMode = e.TextRecognitionMode;
-            this.imageFromCameraWithFaces.DataContext = e;
-            this.imageFromCameraWithFaces.Visibility = Visibility.Visible;
+        async Task TranslateFromImage(ImageAnalyzer image, OverlayPresenter overlayPresenter)
+        {
+            ProgressIndicator.IsActive = true;
 
+            //clear results
+            this.UpdateActivePhoto(image);
+            overlayPresenter.ItemsSource = null;
+
+            //show image
+            overlayPresenter.Source = await image.GetImageSource();
             await this.cameraControl.StopStreamAsync();
+
+            //get OCR
+            await image.RecognizeTextAsync();
+
+            //outline words
+            overlayPresenter.ItemsSource = image.TextOperationResult?.Lines.SelectMany(line => line.Words.Select(word => new TextOverlayInfo(word.Text, word.BoundingBox))).ToArray();
+
+            //translate text
+            await UpdateOcrTextBoxContent(image);
+
+            ProgressIndicator.IsActive = false;
         }
 
         private async void OnWebCamButtonClicked(object sender, RoutedEventArgs e)
@@ -317,7 +338,8 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
 
             await this.cameraControl.StartStreamAsync();
             await Task.Delay(250);
-            this.imageFromCameraWithFaces.Visibility = Visibility.Collapsed;
+            WebCamOverlayPresenter.Source = null;
+            WebCamOverlayPresenter.ItemsSource = null;
 
             UpdateWebCamHostGridSize();
         }
@@ -329,18 +351,11 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
             {
                 this.landingMessage.Visibility = Visibility.Collapsed;
                 ImageAnalyzer image = new ImageAnalyzer((string)this.favoritePhotosGridView.SelectedValue);
-                image.ShowDialogOnFaceApiErrors = true;
 
                 this.imageHostGrid.Visibility = Visibility.Visible;
                 this.webCamHostGrid.Visibility = Visibility.Collapsed;
-                await this.cameraControl.StopStreamAsync();
 
-                this.UpdateActivePhoto(image);
-
-                this.imageWithFacesControl.TextRecognitionMode = image.TextRecognitionMode;
-                this.imageWithFacesControl.DataContext = image;
-
-                UpdateImageSize();
+                await TranslateFromImage(image, ImageOverlayPresenter);
             }
         }
 
@@ -350,18 +365,11 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
 
             this.imageSearchFlyout.Hide();
             ImageAnalyzer image = args.First();
-            image.ShowDialogOnFaceApiErrors = true;
 
             this.imageHostGrid.Visibility = Visibility.Visible;
             this.webCamHostGrid.Visibility = Visibility.Collapsed;
-            await this.cameraControl.StopStreamAsync();
 
-            this.UpdateActivePhoto(image);
-
-            this.imageWithFacesControl.TextRecognitionMode = image.TextRecognitionMode;
-            this.imageWithFacesControl.DataContext = image;
-
-            UpdateImageSize();
+            await TranslateFromImage(image, ImageOverlayPresenter);
         }
 
         private void OnImageSearchCanceled(object sender, EventArgs e)
@@ -373,37 +381,14 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
         {
             ClearOutputData();
             this.landingMessage.Visibility = Visibility.Collapsed;
-
-            if (printedOCRComboBoxItem.IsSelected)
-            {
-                img.TextRecognitionMode = TextRecognitionMode.Printed;
-            }
-            else if (handwrittigOCRComboBoxItem.IsSelected)
-            {
-                img.TextRecognitionMode = TextRecognitionMode.Handwritten;
-            }
-
-            if (img.TextOperationResult?.RecognitionResult != null)
-            {
-                this.UpdateOcrTextBoxContent(img);
-            }
-            else
-            {
-                img.TextRecognitionCompleted += (s, args) =>
-                {
-                    this.UpdateOcrTextBoxContent(img);
-                };
-            }
         }
 
-        private async void UpdateOcrTextBoxContent(ImageAnalyzer imageAnalyzer)
+        private async Task UpdateOcrTextBoxContent(ImageAnalyzer imageAnalyzer)
         {
             this.ocrTextBlock.Text = string.Empty;
-            if (imageAnalyzer.TextOperationResult?.RecognitionResult?.Lines != null)
+            if (imageAnalyzer.TextOperationResult?.Lines != null)
             {
-                this.ocrModeCombobox.Visibility = Visibility.Visible;
-
-                IEnumerable<string> lines = imageAnalyzer.TextOperationResult.RecognitionResult.Lines.Select(l => string.Join(" ", l?.Words?.Select(w => w.Text)));
+                IEnumerable<string> lines = imageAnalyzer.TextOperationResult.Lines.Select(l => string.Join(" ", l?.Words?.Select(w => w.Text)));
                 this.ocrTextBlock.Text = string.Join(" ", lines);
                 this.ocrTextGrid.Visibility = Visibility.Visible;
 
@@ -413,48 +398,6 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
             }
         }
 
-        private void OcrModeSelectionChanged(object sender, SelectionChangedEventArgs args)
-        {
-            if (printedOCRComboBoxItem.IsSelected)
-            {
-                UpdateTextRecognition(TextRecognitionMode.Printed);
-            }
-            else if (handwrittigOCRComboBoxItem.IsSelected)
-            {
-                UpdateTextRecognition(TextRecognitionMode.Handwritten);
-            }
-        }
-
-        private void UpdateTextRecognition(TextRecognitionMode textRecognitionMode)
-        {
-            if (this.imageFromCameraWithFaces == null || this.imageWithFacesControl == null)
-            {
-                return;
-            }
-
-            imageFromCameraWithFaces.TextRecognitionMode = textRecognitionMode;
-            imageWithFacesControl.TextRecognitionMode = textRecognitionMode;
-
-            var currentImageDisplay = this.imageWithFacesControl.Visibility == Visibility.Visible ? this.imageWithFacesControl : this.imageFromCameraWithFaces;
-            if (currentImageDisplay.DataContext != null)
-            {
-                var img = currentImageDisplay.DataContext;
-                ImageAnalyzer analyzer = (ImageAnalyzer)img;
-                if (analyzer.TextOperationResult?.RecognitionResult != null)
-                {
-                    UpdateOcrTextBoxContent(analyzer);
-                }
-                else
-                {
-                    analyzer.TextRecognitionCompleted += (s, args) =>
-                    {
-                        UpdateOcrTextBoxContent(analyzer);
-                    };
-                }
-                currentImageDisplay.DataContext = null;
-                currentImageDisplay.DataContext = img;
-            }
-        }
         #endregion
 
         private async Task DetectedLanguageAsync(string text)
@@ -547,7 +490,8 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
                     if (lookupLanguage?.Translations != null && lookupLanguage.Translations.Any())
                     {
                         var alternativeTranslations = new List<AlternativeTranslations>();
-                        Dictionary<string, List<LookupTranslations>> groupedTranslations = lookupLanguage.Translations.GroupBy(t => t.PosTag).ToDictionary(k => k.Key, v => v.ToList());
+                        Dictionary<string, List<LookupTranslations>> groupedTranslations =
+                            lookupLanguage.Translations.GroupBy(t => t.PosTag).ToDictionary(k => k.Key, v => v.ToList());
                         foreach (var groupedTranslation in groupedTranslations)
                         {
                             alternativeTranslations.Add(new AlternativeTranslations()
@@ -569,7 +513,10 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
             }
             catch (Exception ex)
             {
-                await Util.GenericApiCallExceptionHandler(ex, "Failure loading alternative translations");
+                if (SettingsHelper.Instance.ShowDebugInfo)
+                {
+                    await Util.GenericApiCallExceptionHandler(ex, "Failure loading alternative translations");
+                }
             }
         }
 

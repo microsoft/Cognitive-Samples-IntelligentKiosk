@@ -35,10 +35,11 @@ namespace IntelligentKioskSample.Models
 {
     public class TabHeader : BaseViewModel
     {
-        bool isVisible = true;
-
-        public bool IsVisible { get => isVisible; set => Set(ref isVisible, value); }
+        bool _isVisible = true;
+        string _summary;
 
         public string Name { get; set; }
+        public bool IsVisible { get => _isVisible; set => Set(ref _isVisible, value); }
+        public string Summary { get => _summary; set => Set(ref _summary, value); }
     }
 }

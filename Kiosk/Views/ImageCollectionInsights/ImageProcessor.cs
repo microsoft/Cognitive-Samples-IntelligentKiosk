@@ -43,7 +43,7 @@ namespace IntelligentKioskSample.Views.ImageCollectionInsights
 {
     public class ImageProcessor
     {
-        private static readonly List<VisualFeatureTypes> DefaultVisualFeatureTypes = new List<VisualFeatureTypes>
+        private static readonly List<VisualFeatureTypes?> DefaultVisualFeatureTypes = new List<VisualFeatureTypes?>
         {
             VisualFeatureTypes.Tags,
             VisualFeatureTypes.Description

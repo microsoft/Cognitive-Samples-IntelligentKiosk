@@ -153,7 +153,7 @@ namespace IntelligentKioskSample.Views
             // Compute Emotion, Age, Gender, Celebrities and Visual Features
             await Task.WhenAll(
                 analyzer.DetectFacesAsync(detectFaceAttributes: true),
-                analyzer.AnalyzeImageAsync(new List<Details> { Details.Celebrities }, new List<VisualFeatureTypes>() { VisualFeatureTypes.Categories, VisualFeatureTypes.Tags }),
+                analyzer.AnalyzeImageAsync(new List<Details?> { Details.Celebrities }, new List<VisualFeatureTypes?>() { VisualFeatureTypes.Categories, VisualFeatureTypes.Tags }),
                 analyzer.DetectObjectsAsync());
 
             // Compute Face Identification and Unique Face Ids
