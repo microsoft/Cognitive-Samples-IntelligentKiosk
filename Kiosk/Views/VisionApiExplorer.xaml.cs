@@ -41,6 +41,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,8 +69,6 @@ namespace IntelligentKioskSample.Views
         DateAdded = "2017/02/08")]
     public sealed partial class VisionApiExplorer : Page, INotifyPropertyChanged
     {
-        ImageAnalyzer _imageAnalyzer;
-
         IList<IList<TextOverlayInfo>> _ocrLines;
         IList<FaceOverlayInfo> _celebrities;
         IList<FaceOverlayInfo> _faces;
@@ -148,7 +147,7 @@ namespace IntelligentKioskSample.Views
             OverlayPresenter.TextInfo = null;
         }
 
-        private async Task UpdateResults(ImageAnalyzer img)
+        private async Task UpdateResultsAsync(ImageAnalyzer img)
         {
             //convert results to OverlayInfo
             var faces = img.AnalysisResult.Faces.Select(i => new FaceOverlayInfo(i, GetCelebrity(i, img.AnalysisResult)) { IsMuted = true }).ToArray();
@@ -156,20 +155,21 @@ namespace IntelligentKioskSample.Views
             var brands = img.AnalysisResult.Brands.Select(i => new ObjectOverlayInfo(i) { IsMuted = true }).ToArray();
 
             //extract crops from the image
-            var stream = img.ImageUrl == null ? (await img.GetImageStreamCallback()).AsRandomAccessStream() : await RandomAccessStreamReference.CreateFromUri(new Uri(img.ImageUrl)).OpenReadAsync();
+            var stream = img.ImageUrl == null ? await img.GetImageStreamCallback() : new MemoryStream(await new HttpClient().GetByteArrayAsync(img.ImageUrl));
+
             using (stream)
             {
                 foreach (var face in faces)
                 {
-                    face.EntityExt.Image = await Util.GetCroppedBitmapAsync(stream, face.Rect);
+                    face.EntityExt.Image = await Util.GetCroppedBitmapAsync(stream.AsRandomAccessStream(), face.Rect);
                 }
                 foreach (var obj in objects)
                 {
-                    obj.EntityExt.Image = await Util.GetCroppedBitmapAsync(stream, obj.Rect);
+                    obj.EntityExt.Image = await Util.GetCroppedBitmapAsync(stream.AsRandomAccessStream(), obj.Rect);
                 }
                 foreach (var brand in brands)
                 {
-                    brand.EntityExt.Image = await Util.GetCroppedBitmapAsync(stream, brand.Rect);
+                    brand.EntityExt.Image = await Util.GetCroppedBitmapAsync(stream.AsRandomAccessStream(), brand.Rect);
                 }
             }
 
@@ -339,7 +339,7 @@ namespace IntelligentKioskSample.Views
 
             if (img.AnalysisResult != null)
             {
-                await this.UpdateResults(img);
+                await this.UpdateResultsAsync(img);
             }
             if (img.TextOperationResult != null)
             {
@@ -362,7 +362,6 @@ namespace IntelligentKioskSample.Views
             ImageAnalyzer image = args.First();
             image.ShowDialogOnFaceApiErrors = true;
 
-            _imageAnalyzer = image;
             //set image source
             if (image.ImageUrl != null)
             {
