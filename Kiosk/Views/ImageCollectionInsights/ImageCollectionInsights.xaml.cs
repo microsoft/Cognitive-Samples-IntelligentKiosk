@@ -41,6 +41,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Search;
@@ -254,13 +255,12 @@ namespace IntelligentKioskSample.Views.ImageCollectionInsights
                     StorageFile file = (await rootFolder.GetFileAsync(insights.ImageId));
                     ImageSource croppedFaced = await Util.GetCroppedBitmapAsync(
                         file.OpenStreamForReadAsync,
-                        new FaceRectangle
-                        {
-                            Height = faceInsights.FaceRectangle.Height,
-                            Width = faceInsights.FaceRectangle.Width,
-                            Left = faceInsights.FaceRectangle.Left,
-                            Top = faceInsights.FaceRectangle.Top
-                        });
+                        new Rect(
+                            faceInsights.FaceRectangle.Left,
+                            faceInsights.FaceRectangle.Top,
+                            faceInsights.FaceRectangle.Width,
+                            faceInsights.FaceRectangle.Height
+                         ));
 
                     fvm = new FaceFilterViewModel(faceInsights.UniqueFaceId, croppedFaced);
                     this.FaceFilters.Add(fvm);

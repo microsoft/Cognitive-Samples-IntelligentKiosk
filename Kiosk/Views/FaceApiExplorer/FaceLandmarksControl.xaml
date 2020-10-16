@@ -1,0 +1,733 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Views.FaceApiExplorer.FaceLandmarksControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.FaceApiExplorer"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid x:Name="mainGrid">
+
+        <!-- Mouth (6)-->
+        <Rectangle x:Name="mouthleft" />
+        <Rectangle x:Name="mouthright" />
+        <Rectangle x:Name="upperlipbottom" />
+        <Rectangle x:Name="upperliptop" />
+        <Rectangle x:Name="underlipbottom" />
+        <Rectangle x:Name="underliptop" />
+
+        <!--Eyes (10)-->
+        <Rectangle x:Name="eyeleftbottom" />
+        <Rectangle x:Name="eyelefttop" />
+        <Rectangle x:Name="eyeleftinner" />
+        <Rectangle x:Name="eyeleftouter" />
+        <Rectangle x:Name="eyerightbottom" />
+        <Rectangle x:Name="eyerighttop" />
+        <Rectangle x:Name="eyerightinner" />
+        <Rectangle x:Name="eyerightouter" />
+        <Rectangle x:Name="pupilleft" />
+        <Rectangle x:Name="pupilright" />
+
+        <!--nose (7)-->
+        <Rectangle x:Name="noseleftalarouttip" />
+        <Rectangle x:Name="noseleftalartop" />
+        <Rectangle x:Name="noserightalarouttip" />
+        <Rectangle x:Name="noserightalartop" />
+        <Rectangle x:Name="noserootleft" />
+        <Rectangle x:Name="noserootright" />
+        <Rectangle x:Name="nosetip" />
+
+        <!--eyebrows (4)-->
+        <Rectangle x:Name="eyebrowleftinner" />
+        <Rectangle x:Name="eyebrowleftouter" />
+        <Rectangle x:Name="eyebrowrightinner" />
+        <Rectangle x:Name="eyebrowrightouter" />
+    </Grid>
+
+    <UserControl.Resources>
+        <Storyboard x:Name="FaceLandmarksStoryboard"  SpeedRatio="1.0">
+
+            <!-- ///////////////////////// Mouth (6) ///////////////////////// -->
+            <!-- mouthleft -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="mouthleft" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeyTime="0:0:0.375" Value="0" />
+                <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="2.65" />
+                <SplineDoubleKeyFrame KeyTime="0:0:0.625" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.875" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="mouthleft" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeyTime="0:0:0.375" Value="0" />
+                <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="2.65" />
+                <SplineDoubleKeyFrame KeyTime="0:0:0.625" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.875" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="mouthleft" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.375" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.542" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.875" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- mouthright -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="mouthright" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.583" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.708" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.833" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.083" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="mouthright" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.583" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.708" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.833" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.083" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="mouthright" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.583" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.75" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.083" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- upperlipbottom -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="upperlipbottom" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="upperlipbottom" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="upperlipbottom" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.417" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.583" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.75" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- upperliptop -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="upperliptop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="upperliptop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="upperliptop" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.417" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.583" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.75" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- underlipbottom -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="underlipbottom" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="underlipbottom" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="underlipbottom" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.417" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.583" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- underliptop -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="underliptop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="underliptop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="underliptop" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.417" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.583" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.75" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+
+            <!-- ///////////////////////// Eyes (10) ///////////////////////// -->
+            <!-- eyeleftbottom -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyeleftbottom" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.88" KeyTime="0:0:0.208" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.38, 0.58, 1" KeyTime="0:0:0.333" Value="2.02" />
+                <SplineDoubleKeyFrame KeySpline="0.36, 0, 0.67, 0.84" KeyTime="0:0:0.542" Value="3.32" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyeleftbottom" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.88" KeyTime="0:0:0.208" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.38, 0.58, 1" KeyTime="0:0:0.333" Value="2.02" />
+                <SplineDoubleKeyFrame KeySpline="0.36, 0, 0.67, 0.84" KeyTime="0:0:0.542" Value="3.32" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyeleftbottom" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.208" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.375" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.542" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyelefttop -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyelefttop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.208" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.333" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.458" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyelefttop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.208" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.333" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.458" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyelefttop" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.208" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.375" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.542" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyeleftinner -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyeleftinner" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.292" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.417" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.542" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyeleftinner" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.292" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.417" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.542" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyeleftinner" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.292" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.458" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.625" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyeleftouter -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyeleftouter" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.125" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.25" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.375" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.625" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyeleftouter" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.125" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.25" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.375" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.625" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyeleftouter" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.125" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.292" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.458" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.625" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyerightbottom -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerightbottom" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.625" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.75" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.875" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.125" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerightbottom" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.625" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.75" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.875" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.125" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerightbottom" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.625" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.958" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.125" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyerighttop -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerighttop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.625" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.75" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.875" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.125" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerighttop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.625" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.75" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.875" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.125" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerighttop" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.625" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.958" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.125" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyerightinner -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerightinner" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.5" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.625" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.75" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerightinner" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.5" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.625" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.75" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerightinner" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.5" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.667" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyerightouter -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerightouter" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.667" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.792" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.917" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.167" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerightouter" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.667" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.792" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.917" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.167" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyerightouter" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.667" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.167" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- pupilleft -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="pupilleft" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.208" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.333" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.458" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="pupilleft" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.208" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.333" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.458" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="pupilleft" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.208" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.375" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.542" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.708" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- pupilright -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="pupilright" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.625" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.75" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.875" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.125" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="pupilright" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.625" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.75" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.875" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.125" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="pupilright" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.625" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.958" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.125" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+
+            <!-- ///////////////////////// nose (7) ///////////////////////// -->
+            <!-- noseleftalarouttip -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noseleftalarouttip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.292" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.417" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.542" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noseleftalarouttip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.292" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.417" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.542" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noseleftalarouttip" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.292" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.458" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.625" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- noseleftalartop -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noseleftalartop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.333" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.458" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.583" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noseleftalartop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.333" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.458" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.583" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noseleftalartop" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.333" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.667" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- noserightalarouttip -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserightalarouttip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.5" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.625" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.75" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserightalarouttip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.5" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.625" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.75" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserightalarouttip" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.5" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.667" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- noserightalartop -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserightalartop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.5" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.625" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.75" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserightalartop" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.5" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.625" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.75" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserightalartop" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.5" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.667" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- noserootleft -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserootleft" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.333" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.458" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.583" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserootleft" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.333" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.458" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.583" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserootleft" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.333" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.667" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.833" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- noserootright -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserootright" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.458" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.583" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.708" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.958" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserootright" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.458" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.583" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.708" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.958" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="noserootright" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.458" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.625" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.958" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- nosetip -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="nosetip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="nosetip" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.417" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.542" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.667" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="nosetip" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.417" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.583" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.75" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+
+            <!-- ///////////////////////// eyebrows (4) ///////////////////////// -->
+            <!-- eyebrowleftinner -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowleftinner" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.25" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.375" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.5" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.75" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowleftinner" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.25" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.375" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.5" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.75" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowleftinner" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.25" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.417" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.583" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.75" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyebrowleftouter -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowleftouter" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.125" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.25" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowleftouter" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.125" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.25" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowleftouter" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.167" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.333" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.5" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyebrowrightinner -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowrightinner" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.458" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.583" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.708" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.958" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowrightinner" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.458" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.583" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:0.708" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.958" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowrightinner" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.458" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.625" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.792" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.958" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+
+            <!-- eyebrowrightouter -->
+            <!-- Property: Scale -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowrightouter" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.75" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.875" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:1" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.25" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowrightouter" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.61, 0, 0.82, 0.91" KeyTime="0:0:0.75" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.22, 0.41, 0.58, 1" KeyTime="0:0:0.875" Value="2.65" />
+                <SplineDoubleKeyFrame KeySpline="0.18, 0, 0, 1" KeyTime="0:0:1" Value="3.36" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.25" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+            <!-- Property: Opacity -->
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="eyebrowrightouter" Storyboard.TargetProperty="(UIElement.Opacity)">
+                <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                <SplineDoubleKeyFrame KeySpline="0.74, 0, 0.78, 1" KeyTime="0:0:0.75" Value="0" />
+                <LinearDoubleKeyFrame KeyTime="0:0:0.917" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.083" Value="1" />
+                <LinearDoubleKeyFrame KeyTime="0:0:1.25" Value="1" />
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </UserControl.Resources>
+    
+</UserControl>

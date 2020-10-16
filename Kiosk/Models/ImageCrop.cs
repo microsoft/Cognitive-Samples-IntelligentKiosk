@@ -31,15 +31,13 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using Windows.UI.Xaml.Media;
+
 namespace IntelligentKioskSample.Models
 {
-    public class TabHeader : BaseViewModel
+    public class ImageCrop<T>
     {
-        bool _isVisible = true;
-        string _summary;
-
-        public string Name { get; set; }
-        public bool IsVisible { get => _isVisible; set => Set(ref _isVisible, value); }
-        public string Summary { get => _summary; set => Set(ref _summary, value); }
+        public T Entity { get; set; }
+        public ImageSource Image { get; set; }
     }
 }
