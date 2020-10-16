@@ -65,7 +65,6 @@ namespace ServiceHelpers
             VisualFeatureTypes.Objects
         };
 
-        public event EventHandler FaceDetectionCompleted;
         public event EventHandler FaceRecognitionCompleted;
         public event EventHandler ComputerVisionAnalysisCompleted;
         public event EventHandler ObjectDetectionCompleted;
@@ -139,7 +138,7 @@ namespace ServiceHelpers
             return null;
         }
 
-        public async Task DetectFacesAsync(bool detectFaceAttributes = false, bool detectFaceLandmarks = false)
+        public async Task DetectFacesAsync(bool detectFaceAttributes = false, bool detectFaceLandmarks = false, FaceAttributeType[] faceAttributeTypes = null)
         {
             try
             {
@@ -149,7 +148,7 @@ namespace ServiceHelpers
                         this.ImageUrl,
                         returnFaceId: true,
                         returnFaceLandmarks: detectFaceLandmarks,
-                        returnFaceAttributes: detectFaceAttributes ? DefaultFaceAttributeTypes : null);
+                        returnFaceAttributes: detectFaceAttributes ? faceAttributeTypes ?? DefaultFaceAttributeTypes : null);
                 }
                 else if (this.GetImageStreamCallback != null)
                 {
@@ -157,7 +156,7 @@ namespace ServiceHelpers
                         this.GetImageStreamCallback,
                         returnFaceId: true,
                         returnFaceLandmarks: detectFaceLandmarks,
-                        returnFaceAttributes: detectFaceAttributes ? DefaultFaceAttributeTypes : null);
+                        returnFaceAttributes: detectFaceAttributes ? faceAttributeTypes ?? DefaultFaceAttributeTypes : null);
                 }
 
                 if (this.FilterOutSmallFaces)
@@ -175,10 +174,6 @@ namespace ServiceHelpers
                 {
                     await ErrorTrackingHelper.GenericApiCallExceptionHandler(e, "Face API failed.");
                 }
-            }
-            finally
-            {
-                this.OnFaceDetectionCompleted();
             }
         }
 
@@ -445,11 +440,6 @@ namespace ServiceHelpers
             {
                 this.ObjectDetectionCompleted?.Invoke(this, EventArgs.Empty);
             }
-        }
-
-        private void OnFaceDetectionCompleted()
-        {
-            this.FaceDetectionCompleted?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnFaceRecognitionCompleted()

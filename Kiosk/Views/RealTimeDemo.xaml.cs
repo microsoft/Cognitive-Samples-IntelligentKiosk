@@ -80,8 +80,9 @@ namespace IntelligentKioskSample.Views
 
             Window.Current.Activated += CurrentWindowActivationStateChanged;
             this.cameraControl.SetRealTimeDataProvider(this);
-            this.cameraControl.FilterOutSmallFaces = true;
+            this.cameraControl.FilterOutSmallFaces = false;
             this.cameraControl.HideCameraControls();
+            this.cameraControl.ShowDialogOnApiErrors = SettingsHelper.Instance.ShowDialogOnApiErrors;
             this.cameraControl.CameraAspectRatioChanged += CameraControl_CameraAspectRatioChanged;
         }
 

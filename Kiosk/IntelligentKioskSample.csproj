@@ -105,7 +105,6 @@
     <Content Include="Assets\DemoGallery\Bing News Analytics.jpg" />
     <Content Include="Assets\DemoGallery\Bing Visual Search.jpg" />
     <Content Include="Assets\DemoGallery\Custom Vision Explorer.jpg" />
-    <Content Include="Assets\DemoGallery\Emotion Explorer.jpg" />
     <Content Include="Assets\DemoGallery\Face API Explorer.jpg" />
     <Content Include="Assets\DemoGallery\Forms Recognizer.jpg" />
     <Content Include="Assets\DemoGallery\Greeting Kiosk.jpg" />
@@ -153,6 +152,7 @@
     <Compile Include="CognitiveServiceApiKeyTester.cs" />
     <Compile Include="Controls\Animation\AnimationHelper.cs" />
     <Compile Include="Controls\Animation\BaseAnimation.cs" />
+    <Compile Include="Controls\Animation\OpacityAnimation.cs" />
     <Compile Include="Controls\Animation\ScaleTransformAnimation.cs" />
     <Compile Include="Controls\Animation\TranslateTransformAnimation.cs" />
     <Compile Include="Controls\CenteredVerticalBarControl.xaml.cs">
@@ -249,6 +249,7 @@
     <Compile Include="Controls\VideoTrack.xaml.cs">
       <DependentUpon>VideoTrack.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DemoRotationScheduler.cs" />
     <Compile Include="Extensions\AnimationExtensions.cs" />
     <Compile Include="KioskExperiences.cs" />
     <Compile Include="Controls\CameraControl.xaml.cs">
@@ -268,6 +269,7 @@
     </Compile>
     <Compile Include="Models\BaseViewModel.cs" />
     <Compile Include="Models\CustomVisionModelData.cs" />
+    <Compile Include="Models\ImageCrop.cs" />
     <Compile Include="Models\InsuranceClaimAutomation\DataModel.cs" />
     <Compile Include="Models\Platform.cs" />
     <Compile Include="Models\TabHeader.cs" />
@@ -318,6 +320,15 @@
     </Compile>
     <Compile Include="Views\DemoLauncher\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FaceApiExplorer\FaceApiExplorerPage.xaml.cs">
+      <DependentUpon>FaceApiExplorerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FaceApiExplorer\FaceLandmarksControl.xaml.cs">
+      <DependentUpon>FaceLandmarksControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FaceApiExplorer\FacePoseControl.xaml.cs">
+      <DependentUpon>FacePoseControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\FaceIdentificationSetup.xaml.cs">
       <DependentUpon>FaceIdentificationSetup.xaml</DependentUpon>
@@ -371,9 +382,6 @@
     <Compile Include="Views\RealTimeDemo.xaml.cs">
       <DependentUpon>RealTimeDemo.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\EmotionRecognitionPage.xaml.cs">
-      <DependentUpon>EmotionRecognitionPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\RealtimeDriverMonitoring.xaml.cs">
       <DependentUpon>RealtimeDriverMonitoring.xaml</DependentUpon>
     </Compile>
@@ -382,9 +390,6 @@
     </Compile>
     <Compile Include="Views\RealtimeObjectDetection.xaml.cs">
       <DependentUpon>RealtimeObjectDetection.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RecognitionPage.xaml.cs">
-      <DependentUpon>RecognitionPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
@@ -642,6 +647,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\FaceApiExplorer\FaceApiExplorerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FaceApiExplorer\FaceLandmarksControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\FaceApiExplorer\FacePoseControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\FaceIdentificationSetup.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -698,10 +715,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\EmotionRecognitionPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\RealtimeDriverMonitoring.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -713,10 +726,6 @@
     <Page Include="Views\RealtimeObjectDetection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\RecognitionPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\SettingsPage.xaml">
       <SubType>Designer</SubType>
@@ -780,7 +789,7 @@
       <Version>0.13.0-preview</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face">
-      <Version>2.2.0-preview</Version>
+      <Version>2.4.0-preview</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.Storage.Blob">
       <Version>11.1.7</Version>

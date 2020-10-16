@@ -41,7 +41,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -70,6 +69,7 @@ namespace IntelligentKioskSample.Views
             this.cameraControl.ImageCaptured += CameraControl_ImageCaptured;
             this.cameraControl.CameraRestarted += CameraControl_CameraRestarted;
             this.cameraControl.FilterOutSmallFaces = true;
+            this.cameraControl.ShowDialogOnApiErrors = SettingsHelper.Instance.ShowDialogOnApiErrors;
 
             this.speechToTextControl.SpeechRecognitionAndSentimentProcessed += OnSpeechRecognitionAndSentimentProcessed;
 
@@ -365,7 +365,7 @@ namespace IntelligentKioskSample.Views
                         biggerRectangle.Left = Math.Max(0, rect.Left - (int)(rect.Width * ((widthScaleFactor - 1) / 2)));
                         biggerRectangle.Top = Math.Max(0, rect.Top - (int)(rect.Height * ((heightScaleFactor - 1) / 1.4)));
 
-                        ImageSource croppedImage = await Util.GetCroppedBitmapAsync(e.GetImageStreamCallback, biggerRectangle);
+                        ImageSource croppedImage = await Util.GetCroppedBitmapAsync(e.GetImageStreamCallback, biggerRectangle.ToRect());
 
                         // Add the face and emotion to the collection of faces
                         if (croppedImage != null && biggerRectangle.Height > 0 && biggerRectangle.Width > 0)

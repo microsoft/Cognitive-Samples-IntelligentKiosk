@@ -1,4 +1,37 @@
-﻿using ServiceHelpers;
+﻿// 
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license.
+// 
+// Microsoft Cognitive Services: http://www.microsoft.com/cognitive
+// 
+// Microsoft Cognitive Services Github:
+// https://github.com/Microsoft/Cognitive
+// 
+// Copyright (c) Microsoft Corporation
+// All rights reserved.
+// 
+// MIT License:
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+// 
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED ""AS IS"", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+// LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// 
+
+using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,6 +42,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace IntelligentKioskSample.Controls
 {
@@ -17,7 +51,6 @@ namespace IntelligentKioskSample.Controls
         InputTypes,
         CameraStream,
         BingImageSearch,
-        ImageSuggestions,
         LocalFile,
         ShowingSelectedImage
     }
@@ -98,7 +131,24 @@ namespace IntelligentKioskSample.Controls
 
         public void SetSuggestedImageList(params string[] imageUrls)
         {
+            //validate
+            imageUrls = imageUrls ?? new string[] { };
+
             suggestedImagesGrid.ItemsSource = imageUrls.Select(url => new ImageAnalyzer(url));
+
+            //reset scrolling
+            suggestedImagesScroll.ResetScroll();
+        }
+
+        public void SetSuggestedImageList(IEnumerable<ImageSource> images)
+        {
+            //validate
+            images = images ?? new ImageSource[] { };
+
+            suggestedImagesGrid.ItemsSource = images.Select(i => new ImageAnalyzer((i as Windows.UI.Xaml.Media.Imaging.BitmapImage).UriSource.AbsoluteUri));
+
+            //reset scrolling
+            suggestedImagesScroll.ResetScroll();
         }
 
         public ImagePickerControl()
@@ -107,10 +157,9 @@ namespace IntelligentKioskSample.Controls
 
             inputSourcesGridView.ItemsSource = new[]
                 {
-                    new { Gliph = "\uEB9F", Label = "From suggestions", Tag = ImagePickerState.ImageSuggestions },
-                    new { Gliph = "\uE721", Label = "From search", Tag = ImagePickerState.BingImageSearch },
-                    new { Gliph = "\uE722", Label = "From camera", Tag = ImagePickerState.CameraStream },
-                    new { Gliph = "\uE8B7", Label = "From local file", Tag = ImagePickerState.LocalFile }
+                    new { Gliph = "\uE721", Label = "From search", Tag = ImagePickerState.BingImageSearch, IsWide = true },
+                    new { Gliph = "\uE722", Label = "From camera", Tag = ImagePickerState.CameraStream, IsWide = false },
+                    new { Gliph = "\uF12B", Label = "From local file", Tag = ImagePickerState.LocalFile, IsWide = false }
                 };
 
             DataContext = this;
@@ -276,6 +325,21 @@ namespace IntelligentKioskSample.Controls
         private void OnImageItemClicked(object sender, ItemClickEventArgs e)
         {
             ProcessImageSelection(new ImageAnalyzer[] { e.ClickedItem as ImageAnalyzer });
+        }
+    }
+
+
+    public class WideStyleSelector : StyleSelector
+    {
+        public Style WideStyle { get; set; }
+        public Style DefaultStyle { get; set; }
+        protected override Style SelectStyleCore(object item, DependencyObject container)
+        {
+            if (((dynamic)item).IsWide)
+            {
+                return WideStyle;
+            }
+            return DefaultStyle;
         }
     }
 }

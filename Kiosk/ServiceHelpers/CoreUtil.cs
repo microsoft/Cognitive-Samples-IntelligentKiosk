@@ -31,7 +31,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+using Face = Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using System;
 using Windows.Foundation;
 
@@ -55,7 +56,7 @@ namespace ServiceHelpers
         }
 
 
-        public static bool AreFacesPotentiallyTheSame(FaceRectangle face1, FaceRectangle face2)
+        public static bool AreFacesPotentiallyTheSame(Face.FaceRectangle face1, Face.FaceRectangle face2)
         {
             return AreFacesPotentiallyTheSame(face1.Left, face1.Top, face1.Width, face1.Height, face2.Left, face2.Top, face2.Width, face2.Height);
         }
@@ -81,9 +82,14 @@ namespace ServiceHelpers
             return false;
         }
 
-        public static Rect ToRect(this FaceRectangle rect)
+        public static Rect ToRect(this Face.FaceRectangle rect)
         {
             return new Rect(rect.Left, rect.Top, rect.Width, rect.Height);
+        }
+
+        public static Rect ToRect(this BoundingRect rect)
+        {
+            return new Rect(rect.X, rect.Y, rect.W, rect.H);
         }
     }
 }
