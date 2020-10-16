@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using Windows.Media.Capture;
 using Windows.Storage;
 
 namespace IntelligentKioskSample
@@ -228,6 +229,16 @@ namespace IntelligentKioskSample
                 this.CameraName = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["CameraRotation"];
+            if (value != null)
+            {
+                object rotationValue;
+                if (Enum.TryParse(typeof(VideoRotation), value.ToString(), out rotationValue))
+                {
+                    this.CameraRotation = (VideoRotation)rotationValue;
+                }
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["HowOldKioskResultDisplayDuration"];
             if (value != null)
             {
@@ -336,6 +347,36 @@ namespace IntelligentKioskSample
                 if (bool.TryParse(value.ToString(), out bool booleanValue))
                 {
                     this.ShowAgeAndGender = booleanValue;
+                }
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["AutoRotateThroughDemos"];
+            if (value != null)
+            {
+                bool booleanValue;
+                if (bool.TryParse(value.ToString(), out booleanValue))
+                {
+                    this.AutoRotateThroughDemos = booleanValue;
+                }
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["DemoRotationTimePerDemo"];
+            if (value != null)
+            {
+                int duration;
+                if (int.TryParse(value.ToString(), out duration))
+                {
+                    this.DemoRotationTimePerDemo = duration;
+                }
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["ShowDialogOnApiErrors"];
+            if (value != null)
+            {
+                bool booleanValue;
+                if (bool.TryParse(value.ToString(), out booleanValue))
+                {
+                    this.ShowDialogOnApiErrors = booleanValue;
                 }
             }
 
@@ -574,6 +615,17 @@ namespace IntelligentKioskSample
             }
         }
 
+        private VideoRotation cameraRotation = VideoRotation.None;
+        public VideoRotation CameraRotation
+        {
+            get { return cameraRotation; }
+            set
+            {
+                this.cameraRotation = value;
+                this.OnSettingChanged("CameraRotation", value.ToString());
+            }
+        }
+
         private uint minDetectableFaceCoveragePercentage = 7;
         public uint MinDetectableFaceCoveragePercentage
         {
@@ -736,6 +788,39 @@ namespace IntelligentKioskSample
             {
                 this.showAgeAndGender = value;
                 this.OnSettingChanged("ShowAgeAndGender", value);
+            }
+        }
+
+        private bool autoRotateThroughDemos = false;
+        public bool AutoRotateThroughDemos
+        {
+            get { return this.autoRotateThroughDemos; }
+            set
+            {
+                this.autoRotateThroughDemos = value;
+                this.OnSettingChanged("AutoRotateThroughDemos", value);
+            }
+        }
+
+        private int demoRotationTimePerDemo = 30;
+        public int DemoRotationTimePerDemo
+        {
+            get { return this.demoRotationTimePerDemo; }
+            set
+            {
+                this.demoRotationTimePerDemo = value;
+                this.OnSettingChanged("DemoRotationTimePerDemo", value);
+            }
+        }
+
+        private bool showDialogOnApiErrors = false;
+        public bool ShowDialogOnApiErrors
+        {
+            get { return showDialogOnApiErrors; }
+            set
+            {
+                this.showDialogOnApiErrors = value;
+                this.OnSettingChanged("ShowDialogOnApiErrors", value);
             }
         }
 
