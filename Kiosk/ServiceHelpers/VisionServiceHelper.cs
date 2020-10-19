@@ -101,7 +101,6 @@ namespace ServiceHelpers
                 {
                     Endpoint = ApiEndpoint
                 };
-            client.HttpClient.DefaultRequestHeaders.Add("ms-retain-telemetry-image", "false");
         }
 
         private static async Task<TResponse> RunTaskWithAutoRetryOnQuotaLimitExceededError<TResponse>(Func<Task<TResponse>> action)
