@@ -42,9 +42,10 @@ namespace ServiceHelpers
 {
     public static class VisionServiceHelper
     {
-        private const int NumberOfCharsInOperationId = 36;
         private const int MaxRetriesOnTextRecognition = 10;
         private const int DelayOnTextRecognition = 1000;
+        private const int NumberOfCharsInOperationId = 36;
+
         private const int RetryCountOnQuotaLimitError = 6;
         private const int RetryDelayOnQuotaLimitError = 500;
 
@@ -134,22 +135,17 @@ namespace ServiceHelpers
             return response;
         }
 
-        private static async Task RunTaskWithAutoRetryOnQuotaLimitExceededError(Func<Task> action)
-        {
-            await RunTaskWithAutoRetryOnQuotaLimitExceededError<object>(async () => { await action(); return null; });
-        }
-
         public static async Task<ImageDescription> DescribeAsync(Func<Task<Stream>> imageStreamCallback)
         {
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await client.DescribeImageInStreamAsync(await imageStreamCallback()));
         }
 
-        public static async Task<ImageAnalysis> AnalyzeImageAsync(string imageUrl, IList<VisualFeatureTypes> visualFeatures = null, IList<Details> details = null)
+        public static async Task<ImageAnalysis> AnalyzeImageAsync(string imageUrl, IList<VisualFeatureTypes?> visualFeatures = null, IList<Details?> details = null)
         {
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.AnalyzeImageAsync(imageUrl, visualFeatures, details));
         }
 
-        public static async Task<ImageAnalysis> AnalyzeImageAsync(Func<Task<Stream>> imageStreamCallback, IList<VisualFeatureTypes> visualFeatures = null, IList<Details> details = null)
+        public static async Task<ImageAnalysis> AnalyzeImageAsync(Func<Task<Stream>> imageStreamCallback, IList<VisualFeatureTypes?> visualFeatures = null, IList<Details?> details = null)
         {
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await client.AnalyzeImageInStreamAsync(await imageStreamCallback(), visualFeatures, details));
         }
@@ -159,16 +155,14 @@ namespace ServiceHelpers
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.DescribeImageAsync(imageUrl));
         }
 
-        public static async Task<TextOperationResult> RecognizeTextAsync(string imageUrl, TextRecognitionMode textRecognitionMode, bool detectOrientation = true)
+        public static async Task<AnalyzeResults> ReadFileAsync(string imageUrl)
         {
-            RecognizeTextHeaders textHeaders = await client.RecognizeTextAsync(imageUrl, textRecognitionMode);
-            return await GetTextRecognitionResultAsync(client, textHeaders.OperationLocation);
+            return await GetReadFileResultFromOperationAsync(await GetReadOperationRequestAsync(imageUrl));
         }
 
-        public static async Task<TextOperationResult> RecognizeTextAsync(Func<Task<Stream>> imageStreamCallback, TextRecognitionMode textRecognitionMode, bool detectOrientation = true)
+        public static async Task<AnalyzeResults> ReadFileAsync(Func<Task<Stream>> imageStreamCallback)
         {
-            RecognizeTextInStreamHeaders textHeaders = await client.RecognizeTextInStreamAsync(await imageStreamCallback(), textRecognitionMode);
-            return await GetTextRecognitionResultAsync(client, textHeaders.OperationLocation);
+            return await GetReadFileResultFromOperationAsync(await GetReadOperationRequestAsync(await imageStreamCallback()));
         }
 
         public static async Task<DetectResult> DetectObjectsInStreamAsync(Func<Task<Stream>> imageStreamCallback)
@@ -181,22 +175,59 @@ namespace ServiceHelpers
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.DetectObjectsAsync(imageUrl));
         }
 
-        private static async Task<TextOperationResult> GetTextRecognitionResultAsync(ComputerVisionClient computerVision, string operationLocation)
+        private static async Task<AnalyzeResults> GetReadFileResultFromOperationAsync(string operation)
         {
-            // Retrieve the URI where the recognized text will be stored from the Operation-Location header
-            string operationId = operationLocation.Substring(operationLocation.Length - NumberOfCharsInOperationId);
-            TextOperationResult result = await computerVision.GetTextOperationResultAsync(operationId);
-
-            // Wait for the operation to complete
-            int i = 0;
-            while ((result.Status == TextOperationStatusCodes.Running || result.Status == TextOperationStatusCodes.NotStarted) &&
-                i++ < MaxRetriesOnTextRecognition)
+            bool isValidGuid = Guid.TryParse(operation, out Guid operationId);
+            if (!isValidGuid)
             {
-                await Task.Delay(DelayOnTextRecognition);
-                result = await computerVision.GetTextOperationResultAsync(operationId);
+                throw new ArgumentException("Operation Id is invalid.");
             }
 
-            return result;
+            var opResult = new ReadOperationResult();
+
+            int i = 0;
+            while (i++ < MaxRetriesOnTextRecognition)
+            {
+                // Get the operation result
+                opResult = await client.GetReadResultAsync(operationId);
+
+                // Wait if operation is running or has not started
+                if (opResult.Status == OperationStatusCodes.NotStarted || opResult.Status == OperationStatusCodes.Running)
+                {
+                    await Task.Delay(DelayOnTextRecognition);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (opResult.Status != OperationStatusCodes.Succeeded)
+            {
+                throw new Exception($"Computer Vision operation was not successful with status: {opResult.Status}");
+            }
+
+            return opResult.AnalyzeResult;
+        }
+
+        private static async Task<string> GetReadOperationRequestAsync(string imageUrl)
+        {
+            ReadHeaders result = await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.ReadAsync(imageUrl));
+            string operationLocation = result.OperationLocation;
+
+            // Retrieve the URI where the extracted text will be stored from the Operation-Location header.
+            // We only need the ID and not the full URL
+            return operationLocation.Substring(operationLocation.Length - NumberOfCharsInOperationId);
+        }
+
+        private static async Task<string> GetReadOperationRequestAsync(Stream image)
+        {
+            ReadInStreamHeaders result = await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => client.ReadInStreamAsync(image));
+            string operationLocation = result.OperationLocation;
+
+            // Retrieve the URI where the extracted text will be stored from the Operation-Location header.
+            // We only need the ID and not the full URL
+            return operationLocation.Substring(operationLocation.Length - NumberOfCharsInOperationId);
         }
     }
 }

@@ -261,8 +261,6 @@ namespace IntelligentKioskSample.Controls
             set { SetValue(PerformObjectDetectionProperty, (bool)value); }
         }
 
-        public TextRecognitionMode TextRecognitionMode { get; set; }
-
         private async void OnDataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
             ImageAnalyzer dataContext = this.DataContext as ImageAnalyzer;
@@ -406,12 +404,12 @@ namespace IntelligentKioskSample.Controls
                 List<Task> tasks = new List<Task>();
                 if (img.AnalysisResult == null)
                 {
-                    tasks.Add(img.AnalyzeImageAsync(new List<Details> { Details.Celebrities, Details.Landmarks }));
+                    tasks.Add(img.AnalyzeImageAsync(new List<Details?> { Details.Celebrities, Details.Landmarks }));
                 }
 
-                if (this.PerformOCRAnalysis && (img.TextOperationResult == null || img.TextRecognitionMode != this.TextRecognitionMode))
+                if (this.PerformOCRAnalysis && img.TextOperationResult == null)
                 {
-                    tasks.Add(img.RecognizeTextAsync(this.TextRecognitionMode));
+                    tasks.Add(img.RecognizeTextAsync());
                 }
 
                 if (this.PerformObjectDetection && img.DetectedObjects == null)
@@ -474,15 +472,15 @@ namespace IntelligentKioskSample.Controls
                 }
 
                 // OCR request (Printed / Handwritten)
-                if (this.PerformOCRAnalysis && img.TextOperationResult?.RecognitionResult?.Lines != null)
+                if (this.PerformOCRAnalysis && img.TextOperationResult?.Lines != null)
                 {
                     this.imageControl.RenderTransform = new RotateTransform { Angle = 0, CenterX = this.imageControl.RenderSize.Width / 2, CenterY = this.imageControl.RenderSize.Height / 2 };
 
-                    foreach (Line line in img.TextOperationResult.RecognitionResult.Lines)
+                    foreach (Line line in img.TextOperationResult.Lines)
                     {
                         foreach (var word in line.Words)
                         {
-                            double[] boundingBox = word?.BoundingBox?.ToArray() ?? new double[] { };
+                            var boundingBox = word?.BoundingBox?.Select(v => v.Value).ToArray() ?? new double[] { };
                             if (boundingBox.Length == 8)
                             {
                                 double minLeft = renderedImageXTransform * (new List<double>() { boundingBox[0], boundingBox[2], boundingBox[4], boundingBox[6] }).Min();
