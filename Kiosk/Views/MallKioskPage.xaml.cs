@@ -32,6 +32,8 @@
 // 
 
 using IntelligentKioskSample.Controls;
+using IntelligentKioskSample.Controls.Overlays;
+using IntelligentKioskSample.Controls.Overlays.Primitives;
 using IntelligentKioskSample.MallKioskPageConfig;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
@@ -92,9 +94,6 @@ namespace IntelligentKioskSample.Views
             // We induce a delay here to give the camera some time to start rendering before we hide the last captured photo.
             // This avoids a black flash.
             await Task.Delay(500);
-
-            this.imageFromCameraWithFaces.DataContext = null;
-            this.imageFromCameraWithFaces.Visibility = Visibility.Collapsed;
         }
 
         private void OnSpeechRecognitionAndSentimentProcessed(object sender, SpeechRecognitionAndSentimentResult e)
@@ -143,19 +142,26 @@ namespace IntelligentKioskSample.Views
 
         private async void CameraControl_ImageCaptured(object sender, ImageAnalyzer e)
         {
-            this.imageFromCameraWithFaces.DataContext = e;
-            this.imageFromCameraWithFaces.Visibility = Visibility.Visible;
-
-            // We induce a delay here to give the captured image some time to render before we hide the camera.
-            // This avoids a black flash.
-            await Task.Delay(50);
-
+            //detect age and person
+            var image = await e.GetImageSource();
+            OverlayPresenter.Source = image;
+            Overlays.ItemsSource = null;
             await this.cameraControl.StopStreamAsync();
-
-            e.FaceRecognitionCompleted += (s, args) =>
+            await e.DetectFacesAsync(true);
+            await e.IdentifyFacesAsync();
+            Overlays.ItemsSource = e.DetectedFaces.Select(i => new OverlayInfo<Object, AgeInfo>
             {
-                ShowRecommendations(e);
-            };
+                Rect = i.FaceRectangle.ToRect(),
+                LabelsExt = new[] { new AgeInfo()
+                {
+                    Age = (int)Math.Round(i.FaceAttributes.Age.GetValueOrDefault()),
+                    Gender = i.FaceAttributes.Gender.GetValueOrDefault() == Gender.Female ? AgeInfoGender.Female : AgeInfoGender.Male,
+                    Name = e.IdentifiedPersons.FirstOrDefault(t => i.FaceId == t.FaceId)?.Person?.Name,
+                    Confidence = e.IdentifiedPersons.FirstOrDefault(t => i.FaceId == t.FaceId)?.Confidence ?? 0
+                } }
+            }).ToArray();
+
+            ShowRecommendations(e);
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -231,7 +237,10 @@ namespace IntelligentKioskSample.Views
                     // Didn't find a personalized recommendation (or we don't have anyone recognized), so default to 
                     // the age/gender-based generic recommendation
                     DetectedFace face = imageWithFaces.DetectedFaces.First();
-                    recommendation = this.kioskSettings.GetGenericRecommendationForPerson((int)face.FaceAttributes.Age, face.FaceAttributes.Gender);
+                    if (face?.FaceAttributes != null)
+                    {
+                        recommendation = this.kioskSettings.GetGenericRecommendationForPerson((int)face.FaceAttributes.Age.GetValueOrDefault(), face.FaceAttributes.Gender);
+                    }
                 }
             }
             else if (numberOfPeople > 1 && imageWithFaces.DetectedFaces.Any(f => f.FaceAttributes.Age <= 12) &&
@@ -304,7 +313,7 @@ namespace IntelligentKioskSample.Views
                         }
                         else
                         {
-                            await this.ProcessCameraCapture(await this.cameraControl.CaptureFrameAsync());
+                            await this.ProcessCameraCapture(await this.cameraControl.TakeAutoCapturePhoto());
                         }
                     }
                 });
@@ -321,9 +330,9 @@ namespace IntelligentKioskSample.Views
                 return;
             }
 
-            // detect emotions
             await e.DetectFacesAsync(detectFaceAttributes: true);
 
+            // Analyze emotions
             if (e.DetectedFaces.Any())
             {
                 // Update the average emotion response
@@ -348,7 +357,7 @@ namespace IntelligentKioskSample.Views
                 // show captured faces and their emotion
                 if (this.emotionFacesGrid.Visibility == Visibility.Visible)
                 {
-                    foreach (var face in e.DetectedFaces)
+                    foreach (DetectedFace face in e.DetectedFaces)
                     {
                         // Get top emotion on this face
                         KeyValuePair<string, double> topEmotion = Util.EmotionToRankedList(face.FaceAttributes.Emotion).First();

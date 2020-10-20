@@ -15,6 +15,7 @@
 
     <UserControl.Resources>
         <controls:BooleanToVisibilityConverter x:Key="bolleanToVisibilityConverter"/>
+        <controls:ImageAnalyzerToImageSourceConverter x:Key="ToImageSource"/>
     </UserControl.Resources>
 
     <Grid>
@@ -58,7 +59,6 @@
                     </Button.Flyout>
                     <SymbolIcon Symbol="Video"/>
                 </Button>
-
             </StackPanel>
 
         </Grid>
@@ -67,7 +67,7 @@
                   Margin="0,10" Grid.Row="1" IsMultiSelectCheckBoxEnabled="False" SelectionChanged="OnImageResultSelectionChanged">
             <GridView.ItemTemplate>
                 <DataTemplate>
-                    <controls:ImageWithFaceBorderUserControl DataContext="{Binding}" DetectFacesOnLoad="{Binding ElementName=SearchControl, Path=DetectFacesOnLoad}" Width="120" Height="90" />
+                    <Image Source="{Binding Converter={StaticResource ToImageSource}}" Width="120" Height="90"/>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>

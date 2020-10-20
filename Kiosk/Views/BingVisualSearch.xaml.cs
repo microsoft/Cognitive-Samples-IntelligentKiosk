@@ -59,13 +59,12 @@ namespace IntelligentKioskSample.Views
             this.InitializeComponent();
 
             this.imagePicker.SetSuggestedImageList(
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/1.jpg",
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/3.jpg",
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/4.jpg",
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/11.jpg",
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/12.jpg",
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/13.jpg"
-            );
+                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/1.jpg",
+                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/3.jpg",
+                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/4.jpg",
+                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/11.jpg",
+                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/12.jpg",
+                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/13.jpg");
         }
 
         private void DisplayProcessingUI()
@@ -150,16 +149,14 @@ namespace IntelligentKioskSample.Views
             base.OnNavigatedTo(e);
         }
 
-        private void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)
+        private async void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)
         {
             ImageAnalyzer image = args.First();
             image.ShowDialogOnFaceApiErrors = true;
 
-            this.imageWithFacesControl.Visibility = Visibility.Visible;
-
             this.UpdateActivePhoto(image);
 
-            this.imageWithFacesControl.DataContext = image;
+            DisplayImage.Source = await image.GetImageSource();
         }
 
         private void OnResultTypeSelectionChanged(object sender, SelectionChangedEventArgs e)

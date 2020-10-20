@@ -31,6 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using ServiceHelpers;
 using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
@@ -336,6 +337,24 @@ namespace IntelligentKioskSample.Controls
                 return number;
             }
             return 0;
+        }
+    }
+
+    public class ImageAnalyzerToImageSourceConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            var imageAnalyzer = value as ImageAnalyzer;
+            if (imageAnalyzer != null)
+            {
+                return imageAnalyzer.GetImageSource().Result;
+            }
+            return value; //no convertion
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
         }
     }
 }

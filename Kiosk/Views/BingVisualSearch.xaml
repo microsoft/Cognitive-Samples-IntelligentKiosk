@@ -68,7 +68,7 @@
 
         <local:ResultItemTemplateSelector x:Key="SearchResultTemplateSelector" PhotoTemplate="{StaticResource PhotoResultTemplate}" ProductTemplate="{StaticResource ProductResultTemplate}" CelebrityTemplate="{StaticResource CelebrityResultTemplate}"/>
     </Page.Resources>
-    
+
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
           EntranceNavigationTransitionInfo.IsTargetElement="True">
         <Grid.RowDefinitions>
@@ -81,7 +81,7 @@
                 <TextBlock Text="Bing Visual Search" Style="{ThemeResource PageTitleTextBlockStyle}"/>
             </CommandBar.Content>
         </CommandBar>
-        
+
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.15*"/>
@@ -94,7 +94,7 @@
                 <ColumnDefinition Width="0.6*"/>
             </Grid.ColumnDefinitions>
 
-            <ctl:ImageWithFaceBorderUserControl Grid.Row="1" Grid.Column="1" VerticalAlignment="Top" BalloonBackground="#ECCF11" BalloonForeground="#D86C2A" x:Name="imageWithFacesControl" />
+            <Image x:Name="DisplayImage" Grid.Row="1" Grid.Column="1" VerticalAlignment="Top"/>
 
             <StackPanel Orientation="Horizontal" Margin="6" HorizontalAlignment="Right" Grid.Column="2" VerticalAlignment="Top">
                 <TextBlock Text="Search type:" VerticalAlignment="Center" Margin="0,0,6,0" />
