@@ -31,20 +31,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using IntelligentKioskSample.Controls.Overlays;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction;
-using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models;
-using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
-using Microsoft.Rest;
 using ServiceHelpers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Windows.Foundation;
-using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -56,7 +53,7 @@ namespace IntelligentKioskSample.Views
 {
     [KioskExperience(Id = "CustomVisionExplorer",
         DisplayName = "Custom Vision Explorer",
-        Description = "Analyze images using pre-built models, or create your own",
+        Description = "Analyze images using your own models",
         ImagePath = "ms-appx:/Assets/DemoGallery/Custom Vision Explorer.jpg",
         ExperienceType = ExperienceType.Guided | ExperienceType.Business,
         TechnologiesUsed = TechnologyType.BingAutoSuggest | TechnologyType.BingImages | TechnologyType.CustomVision,
@@ -64,7 +61,6 @@ namespace IntelligentKioskSample.Views
         DateAdded = "2017/05/11")]
     public sealed partial class CustomVisionExplorer : Page
     {
-        private ImageAnalyzer currentPhoto;
         private CustomVisionTrainingClient userProvidedTrainingApi;
         private CustomVisionPredictionClient userProvidedPredictionApi;
 
@@ -72,43 +68,22 @@ namespace IntelligentKioskSample.Views
 
         public ObservableCollection<ActiveLearningTagViewModel> PredictionDataForRetraining { get; set; } = new ObservableCollection<ActiveLearningTagViewModel>();
 
-        private IEnumerable<PredictionModel> currentDetectedObjects;
-
         public CustomVisionExplorer()
         {
             this.InitializeComponent();
-
-            this.cameraControl.ImageCaptured += CameraControl_ImageCaptured;
-            this.cameraControl.CameraRestarted += CameraControl_CameraRestarted;
-        }
-
-        private async void CameraControl_CameraRestarted(object sender, EventArgs e)
-        {
-            // We induce a delay here to give the camera some time to start rendering before we hide the last captured photo.
-            // This avoids a black flash.
-            await Task.Delay(500);
-
-            this.imageFromCameraWithFaces.Visibility = Visibility.Collapsed;
-            this.resultsDetails.Visibility = Visibility.Collapsed;
-            this.objectDetectionVisualizationCanvas.Children.Clear();
-            this.currentDetectedObjects = null;
         }
 
         private void DisplayProcessingUI()
         {
-            this.resultsDetails.Visibility = Visibility.Collapsed;
-            this.resultsGridView.ItemsSource = null;
-
-            this.objectDetectionVisualizationCanvas.Children.Clear();
-            this.currentDetectedObjects = null;
+            //clear overlays
+            OverlayPresenter.ObjectInfo = null;
+            OverlayPresenter.MatchInfo = null;
 
             this.progressRing.IsActive = true;
         }
 
         private async void UpdateResults(ImageAnalyzer img)
         {
-            this.searchErrorTextBlock.Visibility = Visibility.Collapsed;
-
             Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models.ImagePrediction result = null;
             var currentProjectViewModel = (ProjectViewModel)this.projectsComboBox.SelectedValue;
             var currentProject = ((ProjectViewModel)this.projectsComboBox.SelectedValue).Model;
@@ -142,26 +117,18 @@ namespace IntelligentKioskSample.Views
             }
 
             this.progressRing.IsActive = false;
-            this.resultsDetails.Visibility = Visibility.Visible;
 
             var matches = result?.Predictions?.Where(r => Math.Round(r.Probability * 100) > 0);
 
-            if (matches == null || !matches.Any())
+            if (!currentProjectViewModel.IsObjectDetection)
             {
-                this.searchErrorTextBlock.Visibility = Visibility.Visible;
+                //show image classification matches
+                OverlayPresenter.MatchInfo = new MatchOverlayInfo(matches);
             }
             else
             {
-                if (!currentProjectViewModel.IsObjectDetection)
-                {
-                    this.resultsGridView.ItemsSource = matches.Select(t => new { Tag = t.TagName, Probability = string.Format("{0}%", Math.Round(t.Probability * 100)) });
-                }
-                else
-                {
-                    this.resultsDetails.Visibility = Visibility.Collapsed;
-                    this.currentDetectedObjects = matches.Where(m => m.Probability >= 0.6);
-                    ShowObjectDetectionBoxes(this.currentDetectedObjects);
-                }
+                //show detected objects
+                OverlayPresenter.ObjectInfo = matches.Where(m => m.Probability >= 0.6).Select(i => new PredictedObjectOverlayInfo(i)).ToList();
             }
 
             if (result?.Predictions != null && !currentProjectViewModel.IsObjectDetection)
@@ -169,14 +136,13 @@ namespace IntelligentKioskSample.Views
                 this.activeLearningButton.Opacity = 1;
 
                 this.PredictionDataForRetraining.Clear();
-                this.PredictionDataForRetraining.AddRange(result.Predictions.Select(
-                    t => new ActiveLearningTagViewModel
-                    {
-                        PredictionResultId = result.Id,
-                        TagId = t.TagId,
-                        TagName = t.TagName,
-                        HasTag = Math.Round(t.Probability * 100) > 0
-                    }));
+                this.PredictionDataForRetraining.AddRange(result.Predictions.Select(t => new ActiveLearningTagViewModel
+                {
+                    PredictionResultId = result.Id,
+                    TagId = t.TagId,
+                    TagName = t.TagName,
+                    HasTag = Math.Round(t.Probability * 100) > 0
+                }));
             }
             else
             {
@@ -184,82 +150,18 @@ namespace IntelligentKioskSample.Views
             }
         }
 
-        private void ShowObjectDetectionBoxes(IEnumerable<PredictionModel> detectedObjects)
+        private async Task UpdateActivePhoto(ImageAnalyzer img)
         {
-            this.objectDetectionVisualizationCanvas.Children.Clear();
-
-            double canvasWidth = objectDetectionVisualizationCanvas.ActualWidth;
-            double canvasHeight = objectDetectionVisualizationCanvas.ActualHeight;
-
-            foreach (PredictionModel prediction in detectedObjects)
-            {
-                objectDetectionVisualizationCanvas.Children.Add(
-                    new Border
-                    {
-                        BorderBrush = new SolidColorBrush(Colors.Lime),
-                        BorderThickness = new Thickness(2),
-                        Margin = new Thickness(prediction.BoundingBox.Left * canvasWidth,
-                                               prediction.BoundingBox.Top * canvasHeight, 0, 0),
-                        Width = prediction.BoundingBox.Width * canvasWidth,
-                        Height = prediction.BoundingBox.Height * canvasHeight,
-                    });
-
-                objectDetectionVisualizationCanvas.Children.Add(
-                    new Border
-                    {
-                        Height = 40,
-                        FlowDirection = FlowDirection.LeftToRight,
-                        HorizontalAlignment = HorizontalAlignment.Left,
-                        Margin = new Thickness(prediction.BoundingBox.Left * canvasWidth,
-                                               prediction.BoundingBox.Top * canvasHeight - 40, 0, 0),
-
-                        Child = new Border
-                        {
-                            Background = new SolidColorBrush(Colors.Lime),
-                            HorizontalAlignment = HorizontalAlignment.Left,
-                            VerticalAlignment = VerticalAlignment.Bottom,
-                            Child =
-                                new TextBlock
-                                {
-                                    Foreground = new SolidColorBrush(Colors.Black),
-                                    Text = $"{prediction.TagName} ({Math.Round(prediction.Probability * 100)}%)",
-                                    FontSize = 16,
-                                    Margin = new Thickness(6, 0, 6, 0)
-                                }
-                        }
-                    });
-            }
-        }
-
-        private async void CameraControl_ImageCaptured(object sender, ImageAnalyzer e)
-        {
-            this.UpdateActivePhoto(e);
-
-            this.imageFromCameraWithFaces.DataContext = e;
-            this.imageFromCameraWithFaces.Visibility = Visibility.Visible;
-
-            await this.cameraControl.StopStreamAsync();
-        }
-
-        private void UpdateActivePhoto(ImageAnalyzer img)
-        {
-            this.currentPhoto = img;
-
-            this.landingMessage.Visibility = Visibility.Collapsed;
+            //set image source
+            OverlayPresenter.Source = await img.GetImageSource();
 
             this.DisplayProcessingUI();
             this.UpdateResults(img);
         }
 
-        protected override async void OnNavigatingFrom(NavigatingCancelEventArgs e)
-        {
-            await this.cameraControl.StopStreamAsync();
-            base.OnNavigatingFrom(e);
-        }
-
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (!string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) && 
+            if (!string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) &&
                 !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey))
             {
                 userProvidedTrainingApi = new CustomVisionTrainingClient { Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
@@ -268,13 +170,6 @@ namespace IntelligentKioskSample.Views
 
             this.DataContext = this;
             await this.LoadProjectsFromService();
-
-            if (!this.Projects.Any())
-            {
-                await new MessageDialog("It looks like you don't have any projects yet. Please create a project via the '+' button near the Target Project list in this page.", "No projects found").ShowAsync();
-                this.webCamButton.IsEnabled = false;
-                this.PicturesAppBarButton.IsEnabled = false;
-            }
 
             base.OnNavigatedTo(e);
         }
@@ -300,7 +195,6 @@ namespace IntelligentKioskSample.Views
                                 TagSamples = new ObservableCollection<TagSampleViewModel>(),
                                 IsObjectDetection = CustomVisionServiceHelper.ObjectDetectionDomainGuidList.Contains(project.Settings.DomainId)
                             });
-
                     }
                 }
 
@@ -316,7 +210,6 @@ namespace IntelligentKioskSample.Views
                                             this.userProvidedTrainingApi,
                                             project.TagSamples);
                 }
-
             }
             catch (Exception ex)
             {
@@ -330,97 +223,45 @@ namespace IntelligentKioskSample.Views
 
         private async void PopulateTagSamplesAsync(Guid projectId, CustomVisionTrainingClient trainingEndPoint, ObservableCollection<TagSampleViewModel> collection)
         {
-            
-            foreach (var tag in (await trainingEndPoint.GetTagsAsync(projectId)).OrderBy(t => t.Name))
-            { 
-                try
-                {
-                    if (tag.ImageCount > 0)
-                    {
-                        var imageModelSample = (await trainingEndPoint.GetTaggedImagesAsync(projectId, null, new string[] { tag.Id.ToString() }, null, 1)).First();
-
-                        var tagRegion = imageModelSample.Regions?.FirstOrDefault(r => r.TagId == tag.Id);
-                        if (tagRegion == null || (tagRegion.Width == 0 && tagRegion.Height == 0))
-                        {
-                            collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = new BitmapImage(new Uri(imageModelSample.ThumbnailUri)) });
-                        }
-                        else
-                        {
-                            // Crop a region from the image that is associated with the tag, so we show something more 
-                            // relevant than the whole image. 
-                            ImageSource croppedImage = await Util.DownloadAndCropBitmapAsync(
-                                imageModelSample.OriginalImageUri,
-                                new Rect(tagRegion.Left * imageModelSample.Width,
-                                         tagRegion.Top * imageModelSample.Height,
-                                         tagRegion.Width * imageModelSample.Width,
-                                         tagRegion.Height * imageModelSample.Height));
-
-                            collection.Add(new TagSampleViewModel { TagName = tag.Name, TagSampleImage = croppedImage });
-                        }
-                    }
-                }
-                catch (HttpOperationException exception) when (exception.Response.StatusCode == (System.Net.HttpStatusCode)429)
-                {
-                    continue;
-                }
+            //take samples images rotating through each tag
+            var maxSamples = 8;
+            var tags = (await trainingEndPoint.GetTagsAsync(projectId)).OrderBy(i => i.Name).ToArray();
+            //extend sample count to atleast match tag count
+            if (tags.Length > maxSamples)
+            {
+                maxSamples = (int)Math.Ceiling(tags.Length / 4d) * 4;
             }
+            var sampleTasks = tags.Select(i => trainingEndPoint.GetTaggedImagesAsync(projectId, null, new string[] { i.Id.ToString() }, null, maxSamples)).ToArray(); //request sample images for each tag
+            await Task.WhenAll(sampleTasks); //wait for request to finish
+            //round-robin out sample images
+            var roundRobin = new RoundRobinIterator<Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image>(sampleTasks.Select(i => i.Result));
+            collection.AddRange(roundRobin.Distinct(new TaggedImageComparer()).Take(maxSamples).Select(i => new TagSampleViewModel { TagSampleImage = new BitmapImage(new Uri(i.OriginalImageUri)) }));
+
+            UpdateSuggestedPhotoList();
         }
 
         private async void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)
         {
-            this.imageSearchFlyout.Hide();
             ImageAnalyzer image = args.First();
             image.ShowDialogOnFaceApiErrors = true;
 
-            this.imageWithFacesControl.Visibility = Visibility.Visible;
-            this.webCamHostGrid.Visibility = Visibility.Collapsed;
-            await this.cameraControl.StopStreamAsync();
-
-            this.UpdateActivePhoto(image);
-
-            this.imageWithFacesControl.DataContext = image;
+            await this.UpdateActivePhoto(image);
         }
 
-        private void OnImageSearchCanceled(object sender, EventArgs e)
+        private void OnTargetProjectChanged(object sender, SelectionChangedEventArgs e)
         {
-            this.imageSearchFlyout.Hide();
+            // go back to the initial state, so the user can pick a new appropriate image for the new project
+            UpdateSuggestedPhotoList();
+            imagePicker.CurrentState = Controls.ImagePickerState.InputTypes;
         }
 
-        private async void OnWebCamButtonClicked(object sender, RoutedEventArgs e)
+        void UpdateSuggestedPhotoList()
         {
-            await StartWebCameraAsync();
-        }
-
-        private async Task StartWebCameraAsync()
-        {
-            this.landingMessage.Visibility = Visibility.Collapsed;
-            this.webCamHostGrid.Visibility = Visibility.Visible;
-            this.imageWithFacesControl.Visibility = Visibility.Collapsed;
-            this.resultsDetails.Visibility = Visibility.Collapsed;
-            this.objectDetectionVisualizationCanvas.Children.Clear();
-
-            await this.cameraControl.StartStreamAsync();
-            await Task.Delay(250);
-            this.imageFromCameraWithFaces.Visibility = Visibility.Collapsed;
-
-            UpdateWebCamHostGridSize();
-        }
-
-        private void OnPageSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            UpdateWebCamHostGridSize();
-        }
-
-        private void UpdateWebCamHostGridSize()
-        {
-            this.webCamHostGrid.Width = this.webCamHostGrid.ActualHeight * (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
-        }
-
-        private void OnResultTypeSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (this.currentPhoto != null)
+            //update suggested photo list
+            var selectedModel = projectsComboBox.SelectedValue as ProjectViewModel;
+            if (selectedModel != null)
             {
-                this.UpdateActivePhoto(this.currentPhoto);
+                imagePicker.SetSuggestedImageList(selectedModel.TagSamples?.Select(i => i.TagSampleImage));
             }
         }
 
@@ -495,20 +336,68 @@ namespace IntelligentKioskSample.Views
 
             this.progressRing.IsActive = false;
         }
+    }
 
-        private void OnObjectDetectionVisualizationCanvasSizeChanged(object sender, SizeChangedEventArgs e)
+    class RoundRobinIterator<T> : IEnumerable<T>
+    {
+        IEnumerable<IEnumerable<T>> _iterators;
+
+        public RoundRobinIterator(IEnumerable<IEnumerable<T>> iterators)
         {
-            if (this.currentDetectedObjects != null && this.objectDetectionVisualizationCanvas.Children.Any())
+            //set fields
+            _iterators = iterators;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            //validate
+            if (_iterators == null)
             {
-                this.ShowObjectDetectionBoxes(this.currentDetectedObjects);
+                yield break;
             }
+
+            //get enumerators
+            var enumerators = _iterators.Select(i => i.GetEnumerator()).ToArray();
+
+            //round robin until no results are left
+            var hasResult = false;
+            do
+            {
+                foreach (var enumerator in enumerators)
+                {
+                    if (enumerator.MoveNext())
+                    {
+                        hasResult = true;
+                        yield return enumerator.Current;
+                    }
+                }
+            } while (hasResult);
+            yield break;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+    class TaggedImageComparer : IEqualityComparer<Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image>
+    {
+        public bool Equals(Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image x, Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image y)
+        {
+            return x.OriginalImageUri == y.OriginalImageUri;
+        }
+
+        public int GetHashCode(Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image obj)
+        {
+            return obj.OriginalImageUri.GetHashCode();
         }
     }
 
     public class ProjectViewModel
     {
-        public Project Model { get; set; }
         public bool IsObjectDetection { get; set; }
+        public Project Model { get; set; }
         public ObservableCollection<TagSampleViewModel> TagSamples { get; set; }
     }
 

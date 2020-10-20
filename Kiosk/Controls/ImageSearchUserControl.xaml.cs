@@ -45,8 +45,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
-
 namespace IntelligentKioskSample.Controls
 {
     public sealed partial class ImageSearchUserControl : UserControl
@@ -61,14 +59,6 @@ namespace IntelligentKioskSample.Controls
             typeof(bool),
             typeof(ImageSearchUserControl),
             new PropertyMetadata(true)
-            );
-
-        public static readonly DependencyProperty DetectFacesOnLoadProperty =
-            DependencyProperty.Register(
-            "DetectFacesOnLoad",
-            typeof(bool),
-            typeof(ImageSearchUserControl),
-            new PropertyMetadata(false)
             );
 
         public static readonly DependencyProperty ImageContentTypeProperty =
@@ -107,34 +97,28 @@ namespace IntelligentKioskSample.Controls
         public event EventHandler<IEnumerable<ImageAnalyzer>> OnCameraFrameCaptured;
         public event EventHandler OnImageSearchCanceled;
 
-        public bool DetectFacesOnLoad
-        {
-            get { return (bool)GetValue(DetectFacesOnLoadProperty); }
-            set { SetValue(DetectFacesOnLoadProperty, (bool)value); }
-        }
-
         public bool ClearStateWhenClosed
         {
             get { return (bool)GetValue(ClearStateWhenClosedProperty); }
-            set { SetValue(ClearStateWhenClosedProperty, (bool)value); }
+            set { SetValue(ClearStateWhenClosedProperty, value); }
         }
 
         public string ImageContentType
         {
             get { return (string)GetValue(ImageContentTypeProperty); }
-            set { SetValue(ImageContentTypeProperty, (string)value); }
+            set { SetValue(ImageContentTypeProperty, value); }
         }
 
         public bool EnableCameraCapture
         {
             get { return (bool)GetValue(EnableCameraCaptureProperty); }
-            set { SetValue(EnableCameraCaptureProperty, (bool)value); }
+            set { SetValue(EnableCameraCaptureProperty, value); }
         }
 
         public bool RequireFaceInCameraCapture
         {
             get { return (bool)GetValue(RequireFaceInCameraCaptureProperty); }
-            set { SetValue(RequireFaceInCameraCaptureProperty, (bool)value); }
+            set { SetValue(RequireFaceInCameraCaptureProperty, value); }
         }
 
         public ListViewSelectionMode ImageSelectionMode
@@ -209,6 +193,7 @@ namespace IntelligentKioskSample.Controls
             {
                 await QueryBingImages(this.autoSuggestBox.Text);
             }
+
         }
 
         private void OnAcceptButtonClicked(object sender, RoutedEventArgs e)

@@ -179,6 +179,9 @@
     <Compile Include="Controls\NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Overlays\CustomVisionOverlayPresenter.xaml.cs">
+      <DependentUpon>CustomVisionOverlayPresenter.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Overlays\FormRecognizerOverlayPresenter.xaml.cs">
       <DependentUpon>FormRecognizerOverlayPresenter.xaml</DependentUpon>
     </Compile>
@@ -257,15 +260,6 @@
     </Compile>
     <Compile Include="Controls\RealTimeFaceIdentificationBorder.xaml.cs">
       <DependentUpon>RealTimeFaceIdentificationBorder.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\FaceIdentificationBorder.xaml.cs">
-      <DependentUpon>FaceIdentificationBorder.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\EmotionMeterControl.xaml.cs">
-      <DependentUpon>EmotionMeterControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ImageWithFaceBorderUserControl.xaml.cs">
-      <DependentUpon>ImageWithFaceBorderUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Models\BaseViewModel.cs" />
     <Compile Include="Models\CustomVisionModelData.cs" />
@@ -478,6 +472,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Controls\Overlays\CustomVisionOverlayPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\Overlays\FormRecognizerOverlayPresenter.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -565,18 +563,6 @@
     <Page Include="Controls\RealTimeFaceIdentificationBorder.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\FaceIdentificationBorder.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Controls\EmotionMeterControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Controls\ImageWithFaceBorderUserControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\EmotionEmojiControl.xaml">
       <Generator>MSBuild:Compile</Generator>

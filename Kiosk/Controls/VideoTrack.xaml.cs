@@ -31,15 +31,16 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using IntelligentKioskSample.Controls.Overlays;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
+using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
-
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace IntelligentKioskSample.Controls
 {
@@ -121,28 +122,57 @@ namespace IntelligentKioskSample.Controls
                 element.Width = width;
                 element.Margin = new Thickness
                 {
-                    Left = ((double) ((int)element.Tag) / this.duration) * this.chart.ActualWidth
+                    Left = ((double)((int)element.Tag) / this.duration) * this.chart.ActualWidth
                 };
             }
         }
 
         private void AddFlyoutToElement(FrameworkElement element, ImageAnalyzer analysisResult)
         {
-            var content = new ImageWithFaceBorderUserControl
+            //show overlay
+            var faces = analysisResult.AnalysisResult.Faces?.Select(i => new FaceOverlayInfo(i, GetCelebrity(i, analysisResult.AnalysisResult))).ToArray() ?? Enumerable.Empty<FaceOverlayInfo>().ToArray();
+            var objects = analysisResult.AnalysisResult.Objects?.Select(i => new ObjectOverlayInfo(i)).ToArray() ?? Enumerable.Empty<ObjectOverlayInfo>();
+            var brands = analysisResult.AnalysisResult.Brands?.Select(i => new ObjectOverlayInfo(i)).ToArray() ?? Enumerable.Empty<ObjectOverlayInfo>();
+            var content = new VisionApiOverlayPresenter()
             {
-                PerformComputerVisionAnalysis = true,
-                PerformObjectDetection = true,
-                DetectFacesOnLoad = true,
-                DataContext = analysisResult,
-                Width = 400
+                EnableHoverSelection = false,
+                Width = 400,
+                FaceInfo = faces,
+                ObjectInfo = objects.Concat(brands).ToArray()
             };
 
             FlyoutBase.SetAttachedFlyout(element, new Flyout { Content = content });
 
-            element.PointerReleased += (s, e) =>
+            element.PointerReleased += async (s, e) =>
             {
+                content.Source = null;
+                content.Source = await analysisResult.GetImageSource();
                 FlyoutBase.ShowAttachedFlyout(element);
             };
+        }
+
+        private CelebritiesModel GetCelebrity(FaceDescription face, ImageAnalysis result)
+        {
+            if (result.Categories != null)
+            {
+                foreach (var category in result.Categories.Where(c => c.Detail != null))
+                {
+                    if (category.Detail.Celebrities != null)
+                    {
+                        foreach (var celebrity in category.Detail.Celebrities)
+                        {
+                            int left = celebrity.FaceRectangle.Left;
+                            int top = celebrity.FaceRectangle.Top;
+
+                            if (Math.Abs(left - face.FaceRectangle.Left) <= 3 && Math.Abs(top - face.FaceRectangle.Top) <= 3)
+                            {
+                                return celebrity;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }
