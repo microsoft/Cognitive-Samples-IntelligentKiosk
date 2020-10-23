@@ -38,11 +38,32 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace ServiceHelpers
 {
     public class FaceServiceHelper
     {
+        public const string LatestRecognitionModelName = "recognition_02";
+
+        public static readonly FaceAttributeType[] AllFaceAttributeTypes = new FaceAttributeType[]
+        {
+            FaceAttributeType.Age,
+            FaceAttributeType.Gender,
+            FaceAttributeType.HeadPose,
+            FaceAttributeType.Smile,
+            FaceAttributeType.FacialHair,
+            FaceAttributeType.Glasses,
+            FaceAttributeType.Emotion,
+            FaceAttributeType.Hair,
+            FaceAttributeType.Makeup,
+            FaceAttributeType.Occlusion,
+            FaceAttributeType.Accessories,
+            FaceAttributeType.Blur,
+            FaceAttributeType.Exposure,
+            FaceAttributeType.Noise
+        };
+
         public readonly static int RetryCountOnQuotaLimitError = 6;
         public readonly static int RetryDelayOnQuotaLimitError = 500;
 
@@ -135,7 +156,7 @@ namespace ServiceHelpers
 
         public static async Task CreatePersonGroupAsync(string personGroupId, string name, string userData)
         {
-            await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.PersonGroup.CreateAsync(personGroupId, name, userData));
+            await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.PersonGroup.CreateAsync(personGroupId, name, userData, recognitionModel: LatestRecognitionModelName));
         }
 
         public static async Task<IList<Person>> GetPersonsAsync(string personGroupId)
@@ -145,12 +166,12 @@ namespace ServiceHelpers
 
         public static async Task<IList<DetectedFace>> DetectWithStreamAsync(Func<Task<Stream>> imageStreamCallback, bool returnFaceId = true, bool returnFaceLandmarks = false, IList<FaceAttributeType> returnFaceAttributes = null)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await faceClient.Face.DetectWithStreamAsync(await imageStreamCallback(), returnFaceId, returnFaceLandmarks, returnFaceAttributes));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await faceClient.Face.DetectWithStreamAsync(await imageStreamCallback(), returnFaceId, returnFaceLandmarks, returnFaceAttributes, recognitionModel: LatestRecognitionModelName, returnRecognitionModel: true));
         }
 
         public static async Task<IList<DetectedFace>> DetectWithUrlAsync(string url, bool returnFaceId = true, bool returnFaceLandmarks = false, IList<FaceAttributeType> returnFaceAttributes = null)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.Face.DetectWithUrlAsync(url, returnFaceId, returnFaceLandmarks, returnFaceAttributes));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.Face.DetectWithUrlAsync(url, returnFaceId, returnFaceLandmarks, returnFaceAttributes, recognitionModel: LatestRecognitionModelName, returnRecognitionModel: true));
         }
 
         public static async Task<PersistedFace> GetPersonFaceAsync(string personGroupId, Guid personId, Guid face)
@@ -160,12 +181,12 @@ namespace ServiceHelpers
 
         public static async Task<IEnumerable<PersonGroup>> ListPersonGroupsAsync(string userDataFilter = null)
         {
-            return (await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.PersonGroup.ListAsync())).Where(group => string.Equals(group.UserData, userDataFilter));
+            return (await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.PersonGroup.ListAsync(returnRecognitionModel: true))).Where(group => string.Equals(group.UserData, userDataFilter));
         }
 
         public static async Task<IEnumerable<FaceList>> GetFaceListsAsync(string userDataFilter = null)
         {
-            return (await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.FaceList.ListAsync())).Where(list => string.Equals(list.UserData, userDataFilter));
+            return (await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.FaceList.ListAsync(returnRecognitionModel: true))).Where(list => string.Equals(list.UserData, userDataFilter));
         }
 
         public static async Task<PersistedFace> GetFaceInLargeFaceListAsync(string largeFaceListId, Guid persistedFaceId)
@@ -180,7 +201,7 @@ namespace ServiceHelpers
 
         public static async Task<LargeFaceList> GetLargeFaceListAsync(string faceId)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.LargeFaceList.GetAsync(faceId));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.LargeFaceList.GetAsync(faceId, returnRecognitionModel: true));
         }
 
         public static async Task DeleteLargeFaceListAsync(string faceId)
@@ -204,6 +225,12 @@ namespace ServiceHelpers
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await faceClient.FaceList.AddFaceFromStreamAsync(faceListId, await imageStreamCallback(), null, targetFace));
         }
 
+        public static async Task<PersistedFace> AddFaceToFaceListFromUrlAsync(string faceListId, string imageUrl, FaceRectangle targetFaceRect)
+        {
+            IList<int> targetFace = targetFaceRect != null ? new List<int>() { targetFaceRect.Left, targetFaceRect.Top, targetFaceRect.Width, targetFaceRect.Height } : null;
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await faceClient.FaceList.AddFaceFromUrlAsync(faceListId, imageUrl, null, targetFace));
+        }
+
         public static async Task<PersistedFace> AddFaceToLargeFaceListFromStreamAsync(string faceListId, Func<Task<Stream>> imageStreamCallback, string userData, FaceRectangle targetFaceRect)
         {
             IList<int> targetFace = targetFaceRect != null ? new List<int>() { targetFaceRect.Left, targetFaceRect.Top, targetFaceRect.Width, targetFaceRect.Height } : null;
@@ -218,12 +245,12 @@ namespace ServiceHelpers
 
         public static async Task CreateFaceListAsync(string faceListId, string name, string userData)
         {
-            await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.FaceList.CreateAsync(faceListId, name, userData));
+            await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.FaceList.CreateAsync(faceListId, name, userData, recognitionModel: LatestRecognitionModelName));
         }
 
         public static async Task CreateLargeFaceListAsync(string faceListId, string name, string userData)
         {
-            await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.LargeFaceList.CreateAsync(faceListId, name, userData));
+            await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.LargeFaceList.CreateAsync(faceListId, name, userData, recognitionModel: LatestRecognitionModelName));
         }
 
         public static async Task DeleteFaceFromLargeFaceListAsync(string largeFaceListId, Guid persistedFaceId)
@@ -302,5 +329,109 @@ namespace ServiceHelpers
         {
             return await RunTaskWithAutoRetryOnQuotaLimitExceededError(() => faceClient.LargeFaceList.GetTrainingStatusAsync(largeFaceListId));
         }
+
+        public static async Task UpdatePersonGroupsWithNewRecModelAsync(PersonGroup oldPersonGroup, string userDataFilder, IProgress<FaceIdentificationModelUpdateStatus> progress = null)
+        {
+            try
+            {
+
+                bool allPeopleHaveAtLeastOneFaceMigrated = true;
+
+                // just make sure the person group use previous recognition model
+                bool isOldPersonGroup = oldPersonGroup?.RecognitionModel != null && !oldPersonGroup.RecognitionModel.Equals(LatestRecognitionModelName, StringComparison.OrdinalIgnoreCase);
+
+                // get persons
+                IList<Person> personsInGroup = isOldPersonGroup ? await GetPersonsAsync(oldPersonGroup.PersonGroupId) : new List<Person>();
+                if (personsInGroup.Any())
+                {
+                    // create new person group
+                    string newPersonGroupId = Guid.NewGuid().ToString();
+                    await CreatePersonGroupAsync(newPersonGroupId, oldPersonGroup.Name, userDataFilder);
+
+                    // create new persons
+                    var newPersonList = new List<Tuple<Person, Person>>();
+                    foreach (Person oldPerson in personsInGroup)
+                    {
+                        Person newPerson = await CreatePersonAsync(newPersonGroupId, oldPerson.Name);
+                        newPersonList.Add(new Tuple<Person, Person>(oldPerson, newPerson));
+                    }
+
+                    // add face images
+                    foreach (var (personItem, index) in newPersonList.Select((v, i) => (v, i)))
+                    {
+                        Person oldPerson = personItem.Item1;
+                        Person newPerson = personItem.Item2;
+
+                        // get face images from the old model
+                        var personFaces = new List<PersistedFace>();
+                        foreach (Guid face in oldPerson.PersistedFaceIds)
+                        {
+                            PersistedFace personFace = await GetPersonFaceAsync(oldPersonGroup.PersonGroupId, oldPerson.PersonId, face);
+                            personFaces.Add(personFace);
+                        }
+
+                        bool addedAtLeastOneFaceImageForPerson = false;
+                        // add face images to the new model
+                        foreach (PersistedFace persistedFace in personFaces)
+                        {
+                            try
+                            {
+                                bool isUri = !string.IsNullOrEmpty(persistedFace.UserData) ? Uri.IsWellFormedUriString(persistedFace.UserData, UriKind.Absolute) : false;
+                                if (isUri)
+                                {
+                                    await AddPersonFaceFromUrlAsync(newPersonGroupId, newPerson.PersonId, imageUrl: persistedFace.UserData, userData: persistedFace.UserData, targetFaceRect: null);
+                                }
+                                else
+                                {
+                                    StorageFile localImage = await StorageFile.GetFileFromPathAsync(persistedFace.UserData);
+                                    await AddPersonFaceFromStreamAsync(newPersonGroupId, newPerson.PersonId, imageStreamCallback: localImage.OpenStreamForReadAsync, userData: localImage.Path, targetFaceRect: null);
+                                }
+
+                                addedAtLeastOneFaceImageForPerson = true;
+                            }
+                            catch { /* Ignore the error and continue. Other images might work */ }
+                        }
+
+                        if (!addedAtLeastOneFaceImageForPerson)
+                        {
+                            allPeopleHaveAtLeastOneFaceMigrated = false;
+                        }
+
+                        progress?.Report(new FaceIdentificationModelUpdateStatus { State = FaceIdentificationModelUpdateState.Running, Count = index + 1, Total = personsInGroup.Count });
+                    }
+
+                    // delete old person group
+                    await DeletePersonGroupAsync(oldPersonGroup.PersonGroupId);
+
+                    // train new person group
+                    await TrainPersonGroupAsync(newPersonGroupId);
+                }
+
+                progress?.Report(new FaceIdentificationModelUpdateStatus { State = allPeopleHaveAtLeastOneFaceMigrated ? FaceIdentificationModelUpdateState.Complete : FaceIdentificationModelUpdateState.CompletedWithSomeEmptyPeople });
+            }
+            catch (Exception ex)
+            {
+                ErrorTrackingHelper.TrackException(ex, "Face API: Update PersonGroup using new recognition model error");
+                progress?.Report(new FaceIdentificationModelUpdateStatus { State = FaceIdentificationModelUpdateState.Error });
+            }
+        }
+    }
+
+    public class FaceIdentificationModelUpdateStatus
+    {
+        public FaceIdentificationModelUpdateState State { get; set; }
+
+        public int Count { get; set; }
+
+        public int Total { get; set; }
+    }
+
+    public enum FaceIdentificationModelUpdateState
+    {
+        NotStarted,
+        Running,
+        Complete,
+        Error,
+        CompletedWithSomeEmptyPeople
     }
 }

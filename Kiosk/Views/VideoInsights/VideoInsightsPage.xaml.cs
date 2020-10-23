@@ -48,7 +48,6 @@ using Windows.Media.Effects;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Popups;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
@@ -153,8 +152,7 @@ namespace IntelligentKioskSample.Views
             // Compute Emotion, Age, Gender, Celebrities and Visual Features
             await Task.WhenAll(
                 analyzer.DetectFacesAsync(detectFaceAttributes: true),
-                analyzer.AnalyzeImageAsync(new List<Details?> { Details.Celebrities }, new List<VisualFeatureTypes?>() { VisualFeatureTypes.Categories, VisualFeatureTypes.Tags }),
-                analyzer.DetectObjectsAsync());
+                analyzer.AnalyzeImageAsync(new List<Details?> { Details.Celebrities }, new List<VisualFeatureTypes?>() { VisualFeatureTypes.Categories, VisualFeatureTypes.Tags, VisualFeatureTypes.Objects }));
 
             // Compute Face Identification and Unique Face Ids
             await Task.WhenAll(analyzer.IdentifyFacesAsync(), analyzer.FindSimilarPersistedFacesAsync());
@@ -247,7 +245,7 @@ namespace IntelligentKioskSample.Views
                     {
                         if (ShowAgeAndGender)
                         {
-                            personName = item.Face.FaceAttributes.Gender?.ToString() ?? string.Empty;
+                            personName = item.Face.FaceAttributes.Gender?.ToString();
                         }
 
                         // Add the person to the list of pending identifications so we can try again on some future frames
@@ -395,7 +393,7 @@ namespace IntelligentKioskSample.Views
         {
             this.detectedObjectsInFrame.Add(frameNumber, analyzer);
 
-            foreach (var detectedObject in analyzer.DetectedObjects)
+            foreach (var detectedObject in analyzer.AnalysisResult.Objects)
             {
                 if (this.detectedObjectsInVideo.ContainsKey(detectedObject.ObjectProperty))
                 {
@@ -632,8 +630,6 @@ namespace IntelligentKioskSample.Views
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            this.EnterKioskMode();
-
             if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey) ||
                 string.IsNullOrEmpty(SettingsHelper.Instance.VisionApiKey))
             {
@@ -650,15 +646,7 @@ namespace IntelligentKioskSample.Views
         {
             await FaceListManager.ResetFaceLists();
             base.OnNavigatingFrom(e);
-        }
 
-        private void EnterKioskMode()
-        {
-            ApplicationView view = ApplicationView.GetForCurrentView();
-            if (!view.IsFullScreenMode)
-            {
-                view.TryEnterFullScreenMode();
-            }
         }
 
         private async void FromFileClick(object sender, RoutedEventArgs e)
@@ -714,11 +702,6 @@ namespace IntelligentKioskSample.Views
                     this.videoPlayer.Position = TimeSpan.FromSeconds((position.X / this.timelineRectangle.ActualWidth) * this.videoPlayer.NaturalDuration.TimeSpan.TotalSeconds);
                 }
             }
-        }
-
-        private void TagFilterChanged(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 
