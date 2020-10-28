@@ -145,7 +145,7 @@ namespace IntelligentKioskSample.Views
                 : Task.CompletedTask);
 
             await (!string.IsNullOrEmpty(SettingsHelper.Instance.AnomalyDetectorApiKey)
-                ? CallApiAndReportResult("Anomaly Detector API Test: ", async () => await CognitiveServiceApiKeyTester.TestAnomalyDetectorApiKeyAsync(SettingsHelper.Instance.AnomalyDetectorApiKey))
+                ? CallApiAndReportResult("Anomaly Detector API Test: ", async () => await CognitiveServiceApiKeyTester.TestAnomalyDetectorApiKeyAsync(SettingsHelper.Instance.AnomalyDetectorApiKey, SettingsHelper.Instance.AnomalyDetectorKeyEndpoint))
                 : Task.CompletedTask);
 
             await (!string.IsNullOrEmpty(SettingsHelper.Instance.FormRecognizerApiKey)

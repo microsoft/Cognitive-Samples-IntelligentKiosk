@@ -31,6 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using Microsoft.Rest;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -146,7 +147,7 @@ namespace IntelligentKioskSample
             }
         }
 
-        private async void LoadRoamingSettings()
+        private void LoadFaceRoamingSettings()
         {
             object value = ApplicationData.Current.RoamingSettings.Values["FaceApiKey"];
             if (value != null)
@@ -165,7 +166,16 @@ namespace IntelligentKioskSample
                 this.FaceApiKeyEndpoint = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["VisionApiKey"];
+            value = ApplicationData.Current.RoamingSettings.Values["CustomFaceApiEndpoint"];
+            if (value != null)
+            {
+                this.CustomFaceApiEndpoint = value.ToString();
+            }
+        }
+
+        private void LoadComputerVisionRoamingSettings()
+        {
+            object value = ApplicationData.Current.RoamingSettings.Values["VisionApiKey"];
             if (value != null)
             {
                 this.VisionApiKey = value.ToString();
@@ -181,8 +191,11 @@ namespace IntelligentKioskSample
             {
                 this.VisionApiKeyEndpoint = value.ToString();
             }
+        }
 
-            value = ApplicationData.Current.RoamingSettings.Values["BingSearchApiKey"];
+        private void LoadBingRoamingSettings()
+        {
+            object value = ApplicationData.Current.RoamingSettings.Values["BingSearchApiKey"];
             if (value != null)
             {
                 this.BingSearchApiKey = value.ToString();
@@ -193,8 +206,11 @@ namespace IntelligentKioskSample
             {
                 this.BingAutoSuggestionApiKey = value.ToString();
             }
+        }
 
-            value = ApplicationData.Current.RoamingSettings.Values["WorkspaceKey"];
+        private void LoadAppRoamingSettings()
+        {
+            object value = ApplicationData.Current.RoamingSettings.Values["WorkspaceKey"];
             if (value != null)
             {
                 this.WorkspaceKey = value.ToString();
@@ -204,23 +220,6 @@ namespace IntelligentKioskSample
             if (value != null)
             {
                 this.StartingPage = value.ToString();
-            }
-
-            value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsKey"];
-            if (value != null)
-            {
-                this.TextAnalyticsKey = value.ToString();
-            }
-
-            value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyEndpoint"];
-            if (value == null && ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyRegion"] != null)
-            {
-                var textAnalyticsApiRegion = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyRegion"].ToString();
-                value = GetRegionEndpoint(textAnalyticsApiRegion);
-            }
-            if (value != null)
-            {
-                this.TextAnalyticsApiKeyEndpoint = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["CameraName"];
@@ -269,7 +268,51 @@ namespace IntelligentKioskSample
                 }
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["CustomVisionPredictionApiKey"];
+            value = ApplicationData.Current.RoamingSettings.Values["StartupFullScreenMode"];
+            if (value != null)
+            {
+                this.StartupFullScreenMode = (bool)value;
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["ShowAgeAndGender"];
+            if (value != null)
+            {
+                if (bool.TryParse(value.ToString(), out bool booleanValue))
+                {
+                    this.ShowAgeAndGender = booleanValue;
+                }
+            }
+        }
+
+        private void LoadTextAnalyticsRoamingSettings()
+        {
+            object value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsKey"];
+            if (value != null)
+            {
+                this.TextAnalyticsKey = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyEndpoint"];
+            if (value == null && ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyRegion"] != null)
+            {
+                var textAnalyticsApiRegion = ApplicationData.Current.RoamingSettings.Values["TextAnalyticsApiKeyRegion"].ToString();
+                value = GetRegionEndpoint(textAnalyticsApiRegion);
+            }
+            if (value != null)
+            {
+                this.TextAnalyticsApiKeyEndpoint = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["CustomTextAnalyticsEndpoint"];
+            if (value != null)
+            {
+                this.CustomTextAnalyticsEndpoint = value.ToString();
+            }
+        }
+
+        private void LoadCustomVisionRoamingSettings()
+        {
+            object value = ApplicationData.Current.RoamingSettings.Values["CustomVisionPredictionApiKey"];
             if (value != null)
             {
                 this.CustomVisionPredictionApiKey = value.ToString();
@@ -298,32 +341,45 @@ namespace IntelligentKioskSample
             {
                 this.CustomComputerVisionApiEndpoint = value.ToString();
             }
+        }
 
-            value = ApplicationData.Current.RoamingSettings.Values["CustomFaceApiEndpoint"];
-            if (value != null)
-            {
-                this.CustomFaceApiEndpoint = value.ToString();
-            }
-
-            value = ApplicationData.Current.RoamingSettings.Values["CustomTextAnalyticsEndpoint"];
-            if (value != null)
-            {
-                this.CustomTextAnalyticsEndpoint = value.ToString();
-            }
-
-            value = ApplicationData.Current.RoamingSettings.Values["TranslatorTextApiKey"];
+        private void LoadTranslatorRoamingSettings()
+        {
+            object value = ApplicationData.Current.RoamingSettings.Values["TranslatorTextApiKey"];
             if (value != null)
             {
                 this.TranslatorTextApiKey = value.ToString();
             }
+        }
 
-            value = ApplicationData.Current.RoamingSettings.Values["AnomalyDetectorApiKey"];
+        public void LoadAnomalyDetectorRoamingSettings()
+        {
+            object value = ApplicationData.Current.RoamingSettings.Values["AnomalyDetectorApiKey"];
             if (value != null)
             {
                 this.AnomalyDetectorApiKey = value.ToString();
             }
 
-            value = ApplicationData.Current.RoamingSettings.Values["FormRecognizerApiKey"];
+            value = ApplicationData.Current.RoamingSettings.Values["AnomalyDetectorKeyEndpoint"];
+            if (value == null && ApplicationData.Current.RoamingSettings.Values["AnomalyDetectorApiKeyRegion"] != null)
+            {
+                var anomalyDetectorApiRegion = ApplicationData.Current.RoamingSettings.Values["AnomalyDetectorApiKeyRegion"].ToString();
+                value = GetRegionEndpoint(anomalyDetectorApiRegion);
+            }
+            if (value != null)
+            {
+                this.AnomalyDetectorKeyEndpoint = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["CustomAnomalyDetectorKeyEndpoint"];
+            if (value != null)
+            {
+                this.CustomAnomalyDetectorApiEndpoint = value.ToString();
+            }
+        }
+        public void LoadFormRecognizerRoamingSettings()
+        {
+            object value = ApplicationData.Current.RoamingSettings.Values["FormRecognizerApiKey"];
             if (value != null)
             {
                 this.FormRecognizerApiKey = value.ToString();
@@ -334,21 +390,20 @@ namespace IntelligentKioskSample
             {
                 this.FormRecognizerApiKeyEndpoint = value.ToString();
             }
+        }
 
-            value = ApplicationData.Current.RoamingSettings.Values["StartupFullScreenMode"];
-            if (value != null)
-            {
-                this.StartupFullScreenMode = (bool)value;
-            }
+        private async void LoadRoamingSettings()
+        {
+            LoadAppRoamingSettings();
+            LoadFaceRoamingSettings();
+            LoadComputerVisionRoamingSettings();
+            LoadBingRoamingSettings();
+            LoadTextAnalyticsRoamingSettings();
+            LoadCustomVisionRoamingSettings();
+            LoadTranslatorRoamingSettings();
+            LoadAnomalyDetectorRoamingSettings();
+            LoadFormRecognizerRoamingSettings();
 
-            value = ApplicationData.Current.RoamingSettings.Values["ShowAgeAndGender"];
-            if (value != null)
-            {
-                if (bool.TryParse(value.ToString(), out bool booleanValue))
-                {
-                    this.ShowAgeAndGender = booleanValue;
-                }
-            }
 
             value = ApplicationData.Current.RoamingSettings.Values["AutoRotateThroughDemos"];
             if (value != null)
@@ -725,6 +780,17 @@ namespace IntelligentKioskSample
             }
         }
 
+        private string customAnomalyDetectorApiEndpoint = string.Empty;
+        public string CustomAnomalyDetectorApiEndpoint
+        {
+            get { return this.customAnomalyDetectorApiEndpoint; }
+            set
+            {
+                this.customAnomalyDetectorApiEndpoint = value;
+                this.OnSettingChanged("CustomAnomalyDetectorApiEndpoint", value);
+            }
+        }
+
         private string translatorTextApiKey = string.Empty;
         public string TranslatorTextApiKey
         {
@@ -744,6 +810,31 @@ namespace IntelligentKioskSample
             {
                 this.anomalyDetectorApiKey = value;
                 this.OnSettingChanged("AnomalyDetectorApiKey", value);
+            }
+        }
+
+        private string anomalyDetectorKeyEndpoint = string.Empty;
+        public string AnomalyDetectorKeyEndpoint
+        {
+            get 
+            { 
+                return string.Equals(this.anomalyDetectorKeyEndpoint, SettingsHelper.CustomEndpointName, StringComparison.OrdinalIgnoreCase)
+                    ? this.customAnomalyDetectorApiEndpoint
+                    : this.anomalyDetectorKeyEndpoint;
+            }
+            set
+            {
+                this.anomalyDetectorKeyEndpoint = value;
+                this.OnSettingChanged("AnomalyDetectorKeyEndpoint", value);
+            }
+        }
+
+        public string BindingAnomalyDetectorApiKeyEndpoint
+        {
+            get { return this.anomalyDetectorKeyEndpoint; }
+            set
+            {
+                this.AnomalyDetectorKeyEndpoint = value;
             }
         }
 

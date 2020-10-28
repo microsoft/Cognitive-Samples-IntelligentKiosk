@@ -42,8 +42,9 @@ namespace ServiceHelpers
     public class AnomalyDetectorHelper : ServiceBase
     {
         private static readonly string HEADER_SUB_KEY = "Ocp-Apim-Subscription-Key";
-        private static readonly Uri BATCH_SERVICE_URL = new Uri("https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/entire/detect");
-        private static readonly Uri STREAMING_SERVICE_URL = new Uri("https://westus2.api.cognitive.microsoft.com/anomalydetector/v1.0/timeseries/last/detect");
+        private static readonly string SERVICE_URL_FORMAT = "{0}/anomalydetector/v1.0";
+        private static readonly string BATCH_SERVICE_URL = "/timeseries/entire/detect";
+        private static readonly string STREAMING_SERVICE_URL = "/timeseries/last/detect";
 
         private static IDictionary<string, string> defaultRequestHeaders;
 
@@ -62,6 +63,17 @@ namespace ServiceHelpers
             }
         }
 
+        private static string endpoint = string.Empty;
+
+        public static string Endpoint
+        {
+            get { return endpoint; }
+            set
+            {
+                endpoint = string.Format(SERVICE_URL_FORMAT, value) ;
+            }
+        }
+
         static AnomalyDetectorHelper()
         {
             InitializeService();
@@ -77,12 +89,12 @@ namespace ServiceHelpers
 
         public static async Task<AnomalyLastDetectResult> GetStreamingDetectionResult(AnomalyDetectionRequest dataRequest)
         {
-            return await HttpClientUtility.PostAsJsonAsync<AnomalyLastDetectResult>(STREAMING_SERVICE_URL, defaultRequestHeaders, dataRequest);
+            return await HttpClientUtility.PostAsJsonAsync<AnomalyLastDetectResult>(new Uri(endpoint + STREAMING_SERVICE_URL), defaultRequestHeaders, dataRequest);
         }
 
         public static async Task<AnomalyEntireDetectResult> GetBatchDetectionResult(AnomalyDetectionRequest dataRequest)
         {
-            return await HttpClientUtility.PostAsJsonAsync<AnomalyEntireDetectResult>(BATCH_SERVICE_URL, defaultRequestHeaders, dataRequest);
+            return await HttpClientUtility.PostAsJsonAsync<AnomalyEntireDetectResult>(new Uri(endpoint + BATCH_SERVICE_URL), defaultRequestHeaders, dataRequest);
         }
     }
 }
