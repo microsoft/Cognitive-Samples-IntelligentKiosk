@@ -31,6 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using IntelligentKioskSample.Controls;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
@@ -46,6 +47,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -70,7 +72,16 @@ namespace IntelligentKioskSample.Views
         {
             this.DataContext = this;
 
-            await this.LoadPersonGroupsFromService();
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey))
+            {
+                await new MessageDialog("If you would like to configure the kiosk to recognize individuals, please enter a valid Face API key and Workspace Name in the Settings Page.").ShowAsync();
+            }
+            else
+            {
+                await this.LoadPersonGroupsFromService();
+            }
+
+            this.UpdateTrainingUIState();
 
             base.OnNavigatedTo(e);
         }
@@ -86,9 +97,38 @@ namespace IntelligentKioskSample.Views
             base.OnNavigatingFrom(e);
         }
 
+        private void UpdateTrainingUIState()
+        {
+            bool canTrain = false, canCreatePersonGroups = false;
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.FaceApiKey))
+            {
+                canCreatePersonGroups = false;
+                canTrain = false;
+            }
+            else
+            {
+                if (!this.PersonGroups.Any())
+                {
+                    canCreatePersonGroups = true;
+                    canTrain = false;
+                }
+                else
+                {
+                    canCreatePersonGroups = true;
+                    canTrain = true;
+                }
+            }
+
+            this.trainButton.IsEnabled = canTrain;
+            this.bulkTrainFromBingButton.IsEnabled = canTrain;
+            this.bulkTrainFromFolderButton.IsEnabled = canTrain;
+
+            this.addPersonGroupButton.IsEnabled = canCreatePersonGroups;
+        }
+
         #region Group management
 
-        private async Task LoadPersonGroupsFromService()
+        private async Task LoadPersonGroupsFromService(bool autoSelectFirstGroup = true)
         {
             this.progressControl.IsActive = true;
 
@@ -98,7 +138,7 @@ namespace IntelligentKioskSample.Views
                 IEnumerable<PersonGroup> personGroups = await FaceServiceHelper.ListPersonGroupsAsync(SettingsHelper.Instance.WorkspaceKey);
                 this.PersonGroups.AddRange(personGroups.OrderBy(pg => pg.Name));
 
-                if (this.personGroupsListView.Items.Any())
+                if (this.personGroupsListView.Items.Any() && autoSelectFirstGroup)
                 {
                     this.personGroupsListView.SelectedIndex = 0;
                 }
@@ -117,12 +157,12 @@ namespace IntelligentKioskSample.Views
             {
                 if (string.IsNullOrEmpty(SettingsHelper.Instance.WorkspaceKey))
                 {
-                    throw new InvalidOperationException("Before you can create groups you need to define a Workspace Key in the Settings Page.");
+                    throw new InvalidOperationException("Before you can create groups you need to define a Workspace Name in the Settings Page.");
                 }
 
                 Guid personGroupGuid = Guid.NewGuid();
                 await FaceServiceHelper.CreatePersonGroupAsync(personGroupGuid.ToString(), this.personGroupNameTextBox.Text, SettingsHelper.Instance.WorkspaceKey);
-                PersonGroup newGroup = new PersonGroup { Name = this.personGroupNameTextBox.Text, PersonGroupId = personGroupGuid.ToString() };
+                PersonGroup newGroup = new PersonGroup { Name = this.personGroupNameTextBox.Text, PersonGroupId = personGroupGuid.ToString(), RecognitionModel = FaceServiceHelper.LatestRecognitionModelName };
 
                 this.PersonGroups.Add(newGroup);
                 this.personGroupsListView.SelectedValue = newGroup;
@@ -131,6 +171,7 @@ namespace IntelligentKioskSample.Views
                 this.addPersonGroupFlyout.Hide();
 
                 this.needsTraining = true;
+                this.UpdateTrainingUIState();
             }
             catch (Exception ex)
             {
@@ -158,6 +199,8 @@ namespace IntelligentKioskSample.Views
 
                 this.PersonsInCurrentGroup.Clear();
                 this.SelectedPersonFaces.Clear();
+
+                this.UpdateTrainingUIState();
             }
             catch (Exception ex)
             {
@@ -329,9 +372,22 @@ namespace IntelligentKioskSample.Views
 
         private async void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)
         {
+            await AddTrainingImages(args);
+        }
+
+        private async void OnCameraFrameCaptured(object sender, IEnumerable<ImageAnalyzer> e)
+        {
+            await this.AddTrainingImages(e, dismissImageCollectorFlyout: false);
+        }
+
+        private async Task AddTrainingImages(IEnumerable<ImageAnalyzer> args, bool dismissImageCollectorFlyout = true)
+        {
             this.progressControl.IsActive = true;
 
-            this.trainingImageCollectorFlyout.Hide();
+            if (dismissImageCollectorFlyout)
+            {
+                this.trainingImageCollectorFlyout.Hide();
+            }
 
             bool foundError = false;
             Exception lastError = null;
@@ -644,5 +700,44 @@ namespace IntelligentKioskSample.Views
         }
 
         #endregion
+
+        private async void OnMigrateToLatestFaceRecognitionModelButtonClicked(object sender, RoutedEventArgs e)
+        {
+            string personGroupName = CurrentPersonGroup.Name;
+            FaceIdentificationModelUpdateDialog dialog = new FaceIdentificationModelUpdateDialog(CurrentPersonGroup);
+            await dialog.ShowAsync();
+
+            // refresh page if user successfully updated the current model
+            if (dialog.PersonGroupUpdated)
+            {
+                await this.LoadPersonGroupsFromService(autoSelectFirstGroup: false);
+
+                // select new person group
+                PersonGroup selectedPersonGroup = this.PersonGroups.FirstOrDefault(x => x.Name.Equals(personGroupName));
+                if (this.personGroupsListView.Items.Any())
+                {
+                    int selectedItemIndex = this.personGroupsListView.Items.IndexOf(selectedPersonGroup);
+                    this.personGroupsListView.SelectedIndex = selectedItemIndex != -1 ? selectedItemIndex : 0;
+                }
+            }
+        }
+    }
+
+    public class ReverseLatestFaceRecognitionModelNameToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null && string.Equals(value.ToString(), FaceServiceHelper.LatestRecognitionModelName, StringComparison.OrdinalIgnoreCase))
+            {
+                return Visibility.Collapsed;
+            }
+
+            return Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return value;
+        }
     }
 }

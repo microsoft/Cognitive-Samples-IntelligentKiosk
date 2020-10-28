@@ -167,6 +167,9 @@
     <Compile Include="Controls\EmotionToColoredBar.xaml.cs">
       <DependentUpon>EmotionToColoredBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\FaceIdentificationModelUpdateDialog.xaml.cs">
+      <DependentUpon>FaceIdentificationModelUpdateDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ImagePickerControl.xaml.cs">
       <DependentUpon>ImagePickerControl.xaml</DependentUpon>
     </Compile>
@@ -401,7 +404,9 @@
     <Compile Include="Views\TranslatorExplorer\TranslatorExplorerPage.xaml.cs">
       <DependentUpon>TranslatorExplorerPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\VideoInsights\TagFilterControl.xaml.cs" />
+    <Compile Include="Views\VideoInsights\TagFilterControl.xaml.cs">
+      <DependentUpon>TagFilterControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\VideoInsights\VideoInsightsPage.xaml.cs">
       <DependentUpon>VideoInsightsPage.xaml</DependentUpon>
     </Compile>
@@ -455,6 +460,10 @@
     <Page Include="Controls\EmotionToColoredBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\FaceIdentificationModelUpdateDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ImagePickerControl.xaml">
       <SubType>Designer</SubType>
@@ -734,8 +743,8 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\VideoInsights\TagFilterControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\VideoInsights\VideoInsightsPage.xaml">
       <Generator>MSBuild:Compile</Generator>

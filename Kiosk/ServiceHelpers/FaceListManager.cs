@@ -36,11 +36,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServiceHelpers
 {
-    internal class FaceListInfo
+    class FaceListInfo
     {
         public string FaceListId { get; set; }
         public DateTime LastMatchTimestamp { get; set; }
@@ -51,6 +52,7 @@ namespace ServiceHelpers
     {
         private const int MaxFaceListCount = 64;
         private static Dictionary<string, FaceListInfo> faceLists;
+        private static readonly SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
 
         public static string FaceListsUserDataFilter { get; set; }
 
@@ -92,7 +94,30 @@ namespace ServiceHelpers
             }
         }
 
-        public static async Task<SimilarFace> FindSimilarPersistedFaceAsync(Func<Task<Stream>> imageStreamCallback, Guid faceId, DetectedFace face)
+        public static Task<SimilarFace> FindSimilarPersistedFaceAsync(string imageUrl, Guid faceId, DetectedFace face)
+        {
+            return FindSimilarPersistedFaceAsync(imageUrl, null, faceId, face);
+        }
+
+        public static Task<SimilarFace> FindSimilarPersistedFaceAsync(Func<Task<Stream>> imageStreamCallback, Guid faceId, DetectedFace face)
+        {
+            return FindSimilarPersistedFaceAsync(null, imageStreamCallback, faceId, face);
+        }
+
+        private static async Task<SimilarFace> FindSimilarPersistedFaceAsync(string imageUrl, Func<Task<Stream>> imageStreamCallback, Guid faceId, DetectedFace face)
+        {
+            await semaphore.WaitAsync();
+            try
+            {
+                return await FindSimilarOrInsertAsync(imageUrl, imageStreamCallback, faceId, face);
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        }
+
+        private static async Task<SimilarFace> FindSimilarOrInsertAsync(string imageUrl, Func<Task<Stream>> imageStreamCallback, Guid faceId, DetectedFace face)
         {
             if (faceLists == null)
             {
@@ -139,7 +164,7 @@ namespace ServiceHelpers
             {
                 // If we are here we didnt' find a match, so let's add the face to the first FaceList that we can add it to. We
                 // might create a new list if none exist, and if all lists are full we will delete the oldest face list (based on when we  
-                // last matched anything on it) so that we can add the new one.
+                // last match anything on) so that we can add the new one.
 
                 double maxAngle = 30;
                 if (face.FaceAttributes.HeadPose != null &&
@@ -171,7 +196,14 @@ namespace ServiceHelpers
 
                     try
                     {
-                        addResult = await FaceServiceHelper.AddFaceToFaceListFromStreamAsync(faceList.Key, imageStreamCallback, face.FaceRectangle);
+                        if (imageUrl != null)
+                        {
+                            addResult = await FaceServiceHelper.AddFaceToFaceListFromUrlAsync(faceList.Key, imageUrl, face.FaceRectangle);
+                        }
+                        else
+                        {
+                            addResult = await FaceServiceHelper.AddFaceToFaceListFromStreamAsync(faceList.Key, imageStreamCallback, face.FaceRectangle);
+                        }
                         break;
                     }
                     catch (Exception ex)
@@ -211,7 +243,14 @@ namespace ServiceHelpers
                     faceLists.Add(newFaceListId, new FaceListInfo { FaceListId = newFaceListId, LastMatchTimestamp = DateTime.Now });
 
                     // Add face to new list
-                    addResult = await FaceServiceHelper.AddFaceToFaceListFromStreamAsync(newFaceListId, imageStreamCallback, face.FaceRectangle);
+                    if (imageUrl != null)
+                    {
+                        addResult = await FaceServiceHelper.AddFaceToFaceListFromUrlAsync(newFaceListId, imageUrl, face.FaceRectangle);
+                    }
+                    else
+                    {
+                        addResult = await FaceServiceHelper.AddFaceToFaceListFromStreamAsync(newFaceListId, imageStreamCallback, face.FaceRectangle);
+                    }
                 }
 
                 if (addResult != null)
