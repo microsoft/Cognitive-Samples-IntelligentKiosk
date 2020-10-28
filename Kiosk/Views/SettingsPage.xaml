@@ -304,9 +304,20 @@
                         </StackPanel>
 
                         <!--anomaly detector api-->
-                        <StackPanel Style="{StaticResource Settings.SubPanel}" >
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
                             <TextBlock Text="Anomaly Detector" Style="{StaticResource Settings.SubTitle}"/>
-                            <PasswordBox Header="Anomaly Detector API Key" Password="{Binding AnomalyDetectorApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+                            <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                                <PasswordBox Header="Anomaly Detector Key" Password="{Binding AnomalyDetectorApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}"/>
+                                <ComboBox Header="Location" x:Name="anomalyDetectorEndpointCombobox" ItemsSource="{Binding AvailableApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding BindingAnomalyDetectorApiKeyEndpoint, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.CustomEndPoint}"  
+                                    Visibility="{Binding ElementName=anomalyDetectorEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
+                                <TextBox Header="Custom endpoint" x:Name="anomalyDetectorApiEndpointTextBox" Style="{StaticResource Settings.Input}"
+                                     PlaceholderText="(e.g. https://virginia.api.cognitive.microsoft.us)" 
+                                     Text="{Binding CustomAnomalyDetectorApiEndpoint, Mode=TwoWay}" />
+                                <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=anomalyDetectorApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
+                            </StackPanel>
                         </StackPanel>
 
                         <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">

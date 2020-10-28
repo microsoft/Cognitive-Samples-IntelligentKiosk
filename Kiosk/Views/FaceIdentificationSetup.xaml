@@ -2,7 +2,7 @@
     x:Class="IntelligentKioskSample.Views.FaceIdentificationSetup"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:IntelligentKioskSample"
+    xmlns:local="using:IntelligentKioskSample.Views"
     xmlns:ctl="using:IntelligentKioskSample.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,6 +10,7 @@
 
     <Page.Resources>
         <ctl:NullToVisibilityConverter x:Key="nullToVisibilityConverter"/>
+        <local:ReverseLatestFaceRecognitionModelNameToVisibilityConverter x:Key="reverseLatestFaceRecognitionModelNameToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
@@ -20,12 +21,12 @@
         </Grid.RowDefinitions>
 
         <CommandBar x:Name="commandBar" DefaultLabelPosition="Right">
-           
-            <AppBarButton Icon="Play" Label="Train Group" Click="OnStartTrainingClicked" />
+
+            <AppBarButton x:Name="trainButton" Icon="Play" Label="Train Group" Click="OnStartTrainingClicked" />
 
             <CommandBar.SecondaryCommands>
-                <AppBarButton Icon="Folder" Label="Auto-train from photo albums" Click="OnSelectFolderButtonClicked"/>
-                <AppBarButton Icon="World" Label="Auto-train from Bing Image search" AllowFocusOnInteraction="True">
+                <AppBarButton x:Name="bulkTrainFromFolderButton" Icon="Folder" Label="Auto-train from photo albums" Click="OnSelectFolderButtonClicked"/>
+                <AppBarButton x:Name="bulkTrainFromBingButton" Icon="World" Label="Auto-train from Bing Image search" AllowFocusOnInteraction="True">
                     <AppBarButton.Flyout>
                         <Flyout x:Name="addPeopleInBatchesFlyout">
                             <StackPanel Orientation="Vertical">
@@ -35,7 +36,7 @@
 
                                 <TextBox x:Name="importImageSearchKeywordPrefix" PlaceholderText="Bing Image search prefix keywords" Margin="0,10" Width="262" HorizontalAlignment="Left"/>
                                 <TextBox x:Name="importImageSearchKeywordSufix" PlaceholderText="Bing Image search sufix keywords" Margin="0,0,0,10" Width="262" HorizontalAlignment="Left"/>
-                                
+
                                 <CommandBar VerticalAlignment="Bottom" >
                                     <AppBarButton x:Name="ComfirmImportActionButton" Icon="Accept" Label="Import" Click="OnConfirmImportButtonClicked"  >
 
@@ -66,19 +67,19 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-
-            <Grid Margin="0,6,0,6" Padding="6" MinWidth="160" Background="#ff151515" >
+            <Grid Margin="0,6,0,6" Padding="6" MinWidth="160" Background="#ff151515">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Text="Group:" Style="{StaticResource SubtitleTextBlockStyle}"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right"  >
-                    <Button   Background="Transparent" Click="OnDeletePersonGroupClicked" x:Name="deleteGroupButton" Visibility="{Binding ElementName=personGroupsListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Background="Transparent" Click="OnDeletePersonGroupClicked" x:Name="deleteGroupButton" Visibility="{Binding ElementName=personGroupsListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}">
                         <SymbolIcon Symbol="Delete"/>
                     </Button>
-                    <Button   Background="Transparent" >
+                    <Button Background="Transparent" x:Name="addPersonGroupButton">
                         <SymbolIcon Symbol="Add"/>
                         <Button.Flyout>
                             <Flyout x:Name="addPersonGroupFlyout">
@@ -92,27 +93,37 @@
                     </Button>
                 </StackPanel>
 
-                <ComboBox Grid.Row="1" Margin="0,12,0,0" x:Name="personGroupsListView" HorizontalAlignment="Stretch" ItemsSource="{Binding PersonGroups}" SelectionChanged="OnGroupSelectionChanged" >
+                <ComboBox Grid.Row="1" Margin="0,12,0,0" x:Name="personGroupsListView" HorizontalAlignment="Stretch" ItemsSource="{Binding PersonGroups}" SelectionChanged="OnGroupSelectionChanged">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="{Binding Name}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{ThemeResource BodyTextBlockStyle}" Text="{Binding Name}"/>
+                                <TextBlock Text=" (disabled)" FontStyle="Italic" Visibility="{Binding RecognitionModel, Converter={StaticResource reverseLatestFaceRecognitionModelNameToVisibilityConverter}}"/>
+                            </StackPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
+                <Grid Grid.Row="2" Width="200" Visibility="{Binding ElementName=personGroupsListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}">
+                    <StackPanel Visibility="{Binding ElementName=personGroupsListView, Path=SelectedValue.RecognitionModel, Converter={StaticResource reverseLatestFaceRecognitionModelNameToVisibilityConverter}}">
+                        <TextBlock Text="This group is based on an old Face API model and is currently disabled. We can try migrating it for you. Would you like to do that now?"
+                               Style="{StaticResource CaptionTextBlockStyle}" Foreground="OrangeRed" Margin="0,6"/>
+                        <Button Content="Migrate" HorizontalAlignment="Center" Click="OnMigrateToLatestFaceRecognitionModelButtonClicked"/>
+                    </StackPanel>
+                </Grid>
             </Grid>
 
-            <Grid Padding="6" Margin="0,0,0,6" Grid.Row="1" Background="#ff151515" >
+            <Grid Padding="6" Margin="0,0,0,6" Grid.Row="1" Background="#ff151515">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <Grid >
+                <Grid>
                     <TextBlock Text="People:" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Left" />
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button   Background="Transparent" Click="OnDeletePersonClicked" x:Name="deletePersonButton" Visibility="{Binding ElementName=personGroupPeopleListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}">
+                        <Button Background="Transparent" Click="OnDeletePersonClicked" x:Name="deletePersonButton" Visibility="{Binding ElementName=personGroupPeopleListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}">
                             <SymbolIcon Symbol="Delete"/>
                         </Button>
 
@@ -163,7 +174,7 @@
                         <SymbolIcon Symbol="Add" Visibility="{Binding ElementName=personGroupPeopleListView, Path=SelectedValue, Converter={StaticResource nullToVisibilityConverter}}"/>
                         <Button.Flyout>
                             <Flyout x:Name="trainingImageCollectorFlyout" Opened="OnImageSearchFlyoutOpened">
-                                <ctl:ImageSearchUserControl x:Name="bingSearchControl" ImageSelectionMode="Multiple" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" EnableCameraCapture="True" />
+                                <ctl:ImageSearchUserControl x:Name="bingSearchControl" ImageSelectionMode="Multiple" OnCameraFrameCaptured="OnCameraFrameCaptured" OnImageSearchCompleted="OnImageSearchCompleted" OnImageSearchCanceled="OnImageSearchCanceled" EnableCameraCapture="True" />
                             </Flyout>
                         </Button.Flyout>
                     </Button>
@@ -195,7 +206,7 @@
                     </GridView.ItemTemplate>
                 </GridView>
             </Grid>
-            
+
         </Grid>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="12">
@@ -208,6 +219,6 @@
             </StackPanel>
         </StackPanel>
 
-        <ProgressRing Grid.Row="1" x:Name="progressControl" Width="100" Height="100"></ProgressRing>
+        <ProgressRing Grid.Row="1" x:Name="progressControl" Width="100" Height="100" />
     </Grid>
 </Page>

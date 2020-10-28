@@ -157,6 +157,7 @@ namespace IntelligentKioskSample.Controls
         public int CameraResolutionHeight { get; private set; }
 
         public int NumFacesOnLastFrame { get; set; }
+        public DateTime LastFaceTimestamp { get; set; }
         public int ContinuousModeTimerInSecond { get; set; } = 5;
 
         public CameraStreamState CameraStreamState { get { return captureManager != null ? captureManager.CameraStreamState : CameraStreamState.NotStreaming; } }
@@ -345,6 +346,10 @@ namespace IntelligentKioskSample.Controls
                         }
 
                         this.NumFacesOnLastFrame = faces.Count();
+                        if (this.NumFacesOnLastFrame != 0)
+                        {
+                            this.LastFaceTimestamp = DateTime.Now;
+                        }
 
                         if (this.EnableAutoCaptureMode)
                         {
