@@ -47,6 +47,7 @@ namespace IntelligentKioskSample
         public static readonly string DefaultApiEndpoint = "https://westus.api.cognitive.microsoft.com";
         public static readonly string DefaultCustomVisionApiEndpoint = "https://southcentralus.api.cognitive.microsoft.com";
         public static readonly string DefaultFormRecognizerApiEndpoint = "https://westus2.api.cognitive.microsoft.com";
+        public static readonly string DefaultSpeechApiEndpoint = "wss://westus.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1";
 
         public static readonly KeyValuePair<string, string>[] AvailableApiRegions = new KeyValuePair<string, string>[]
         {
@@ -239,6 +240,12 @@ namespace IntelligentKioskSample
                 }
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["MicrophoneName"];
+            if (value != null)
+            {
+                this.MicrophoneName = value.ToString();
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["HowOldKioskResultDisplayDuration"];
             if (value != null)
             {
@@ -311,6 +318,12 @@ namespace IntelligentKioskSample
                 this.CustomTextAnalyticsEndpoint = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["CustomSpeechApiEndpoint"];
+            if (value != null)
+            {
+                this.CustomSpeechApiEndpoint = value.ToString();
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["TranslatorTextApiKey"];
             if (value != null)
             {
@@ -333,6 +346,18 @@ namespace IntelligentKioskSample
             if (value != null)
             {
                 this.FormRecognizerApiKeyEndpoint = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["SpeechApiKey"];
+            if (value != null)
+            {
+                this.SpeechApiKey = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["SpeechApiEndpoint"];
+            if (value != null)
+            {
+                this.SpeechApiEndpoint = value.ToString();
             }
 
             value = ApplicationData.Current.RoamingSettings.Values["StartupFullScreenMode"];
@@ -615,6 +640,17 @@ namespace IntelligentKioskSample
             }
         }
 
+        private string microphoneName = string.Empty;
+        public string MicrophoneName
+        {
+            get { return microphoneName; }
+            set
+            {
+                this.microphoneName = value;
+                this.OnSettingChanged("MicrophoneName", value);
+            }
+        }
+
         private VideoRotation cameraRotation = VideoRotation.None;
         public VideoRotation CameraRotation
         {
@@ -725,6 +761,17 @@ namespace IntelligentKioskSample
             }
         }
 
+        private string customSpeechApiEndpoint = string.Empty;
+        public string CustomSpeechApiEndpoint
+        {
+            get { return this.customSpeechApiEndpoint; }
+            set
+            {
+                this.customSpeechApiEndpoint = value;
+                this.OnSettingChanged("CustomSpeechApiEndpoint", value);
+            }
+        }
+
         private string translatorTextApiKey = string.Empty;
         public string TranslatorTextApiKey
         {
@@ -766,6 +813,43 @@ namespace IntelligentKioskSample
             {
                 this.formRecognizerApiKeyEndpoint = value;
                 this.OnSettingChanged("FormRecognizerApiKeyEndpoint", value);
+            }
+        }
+
+        private string speechApiKey;
+        public string SpeechApiKey
+        {
+            get { return this.speechApiKey; }
+            set
+            {
+                this.speechApiKey = value;
+                this.OnSettingChanged("SpeechApiKey", value);
+            }
+        }
+
+        private string speechApiEndpoint = DefaultSpeechApiEndpoint;
+        public string SpeechApiEndpoint
+        {
+            get
+            {
+                return string.Equals(this.speechApiEndpoint, SettingsHelper.CustomEndpointName, StringComparison.OrdinalIgnoreCase)
+                        ? this.customSpeechApiEndpoint
+                        : this.speechApiEndpoint;
+            }
+            set
+            {
+                this.speechApiEndpoint = value;
+                this.OnSettingChanged("SpeechApiEndpoint", value);
+            }
+        }
+
+        public string BindingSpeechApiKeyEndpoint
+        {
+            get { return this.speechApiEndpoint; }
+            set
+            {
+                this.speechApiEndpoint = value;
+                this.OnSettingChanged("SpeechApiEndpoint", value);
             }
         }
 
@@ -829,6 +913,14 @@ namespace IntelligentKioskSample
             get
             {
                 return AvailableApiRegions.Select(i => new KeyValuePair<string, string>(i.Key, $"https://{i.Value}.api.cognitive.microsoft.com")).Concat(new KeyValuePair<string, string>[] { new KeyValuePair<string, string>("Custom Endpoint", CustomEndpointName) }).ToArray();
+            }
+        }
+
+        public KeyValuePair<string, string>[] AvailableSpeechApiEndpoints
+        {
+            get
+            {
+                return AvailableApiRegions.Select(i => new KeyValuePair<string, string>(i.Key, $"wss://{i.Value}.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1")).Concat(new KeyValuePair<string, string>[] { new KeyValuePair<string, string>("Custom Endpoint", CustomEndpointName) }).ToArray();
             }
         }
 

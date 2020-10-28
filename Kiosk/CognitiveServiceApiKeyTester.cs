@@ -205,6 +205,30 @@ namespace IntelligentKioskSample
             }
         }
 
+        public static async Task TestSpeechApiKeyAsync(string key, string apiEndpoint)
+        {
+            bool isUri = !string.IsNullOrEmpty(apiEndpoint) ? Uri.IsWellFormedUriString(apiEndpoint, UriKind.Absolute) : false;
+            if (!isUri)
+            {
+                throw new ArgumentException("Invalid endpoint");
+            }
+
+            string host = new Uri(apiEndpoint).Host.Replace("stt.speech", "api.cognitive");
+            if (!string.IsNullOrEmpty(host) && host.Contains(@"api.cognitive.microsoft.com"))
+            {
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", key);
+
+                    HttpResponseMessage response = await client.PostAsync($"https://{host}/sts/v1.0/issueToken", null);
+                    response.EnsureSuccessStatusCode();
+
+                    // if user entered a valid subscription key, the command returns an authorization token, otherwise an error is returned.
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                }
+            }
+        }
+
         public static async Task TestFormRecognizerApiKeyAsync(string key, string apiEndpoint)
         {
             bool isUri = !string.IsNullOrEmpty(apiEndpoint) ? Uri.IsWellFormedUriString(apiEndpoint, UriKind.Absolute) : false;

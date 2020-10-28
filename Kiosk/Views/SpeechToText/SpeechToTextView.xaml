@@ -1,0 +1,51 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Views.SpeechToText.SpeechToTextView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.SpeechToText"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <UserControl.Resources>
+        <ctl:ReverseBooleanConverter x:Key="reverseBooleanConverter"/>
+        <ctl:StringLengthToVisibilityConverter x:Key="stringLengthToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition />
+            <RowDefinition Height="0.1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.45*"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="0.45*"/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left">
+            <ComboBox x:Name="inputLanguageCombobox"
+                  ItemsSource="{Binding InputLanguagesCollection}" 
+                  SelectedItem="{Binding CurrentInputLanguage, Mode=TwoWay}" 
+                  IsEnabled="{Binding IsProcessing, Converter={StaticResource reverseBooleanConverter}}"
+                  DisplayMemberPath="Name" 
+                  Width="170"
+                  Margin="0,0,0,10"/>
+            <HyperlinkButton Click="OnCopyTextButtonClicked" VerticalAlignment="Top" Margin="30,0,0,0"
+                             Visibility="{Binding Text, ElementName=dictationTextBlock, Converter={StaticResource stringLengthToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal" Spacing="5">
+                    <SymbolIcon Symbol="Copy"/>
+                    <TextBlock Text="Copy text"/>
+                </StackPanel>
+            </HyperlinkButton>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="1">
+            <TextBlock x:Name="dictationTextBlock" TextWrapping="Wrap" FontSize="24" HorizontalAlignment="Left"/>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

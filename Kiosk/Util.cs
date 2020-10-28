@@ -44,6 +44,7 @@ using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Devices.Enumeration;
 using Windows.Foundation;
 using Windows.Graphics.Display;
@@ -131,10 +132,10 @@ namespace IntelligentKioskSample
             await messageDialog.ShowAsync();
         }
 
-        public static async Task<IEnumerable<string>> GetAvailableCameraNamesAsync()
+        public static async Task<IEnumerable<string>> GetAvailableDeviceNamesAsync(DeviceClass deviceClass)
         {
-            DeviceInformationCollection deviceInfo = await DeviceInformation.FindAllAsync(DeviceClass.VideoCapture);
-            return deviceInfo.OrderBy(d => d.Name).Select(d => d.Name);
+            DeviceInformationCollection deviceInfo = await DeviceInformation.FindAllAsync(deviceClass);
+            return deviceInfo.Select(d => GetDeviceName(d, deviceInfo)).OrderBy(name => name);
         }
 
         public static KeyValuePair<string, double>[] EmotionToRankedList(Emotion emotion)
@@ -185,6 +186,23 @@ namespace IntelligentKioskSample
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Returns the device name. It is the same underlying name if only one camera exist with the same name, otherwise it is a combination
+        /// of the underlying name and unique Id.
+        /// </summary>
+        internal static string GetDeviceName(DeviceInformation deviceInfo, DeviceInformationCollection allDevices)
+        {
+            bool isDeviceNameUnique = allDevices.Count(c => c.Name == deviceInfo.Name) == 1;
+            return isDeviceNameUnique ? deviceInfo.Name : string.Format("{0} [{1}]", deviceInfo.Name, deviceInfo.Id);
+        }
+
+        internal static async Task<DeviceInformation> GetDeviceInformation(DeviceClass deviceClass, string deviceName)
+        {
+            var deviceCollection = await DeviceInformation.FindAllAsync(deviceClass);
+            var selectedDevice = deviceCollection?.FirstOrDefault(c => GetDeviceName(c, deviceCollection) == deviceName);
+            return selectedDevice ?? deviceCollection?.FirstOrDefault();
         }
 
         async private static Task CropBitmapAsync(Stream localFileStream, Rect rectangle, StorageFile resultFile)
@@ -401,6 +419,17 @@ namespace IntelligentKioskSample
             }
             // Return char and concat substring.
             return str.Length > 1 ? char.ToUpper(str[0]) + str.Substring(1) : str.ToUpper();
+        }
+
+        public static void CopyToClipboard(string text)
+        {
+            if (!string.IsNullOrEmpty(text))
+            {
+                // send text to clipboard
+                var dataPackage = new DataPackage();
+                dataPackage.SetText(text);
+                Clipboard.SetContent(dataPackage);
+            }
         }
 
         public static async Task<StorageFile> PickSingleFileAsync(string[] fileTypeFilter = null)

@@ -1,0 +1,134 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.SpeechToText.SpeechToTextExplorer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.SpeechToText"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Name="mainPage">
+
+    <Page.Resources>
+        <ctl:BooleanToVisibilityConverter x:Key="bolleanToVisibilityConverter"/>
+        <ctl:ReverseBooleanToVisibilityConverter x:Key="reverseBooleanToVisibilityConverter"/>
+        <ctl:ReverseBooleanConverter x:Key="reverseBooleanConverter"/>
+        <ctl:CollectionCountToVisibilityConverter x:Key="collectionCountToVisibilityConverter"/>
+        <local:PageStateToVisibilityConverter x:Key="pageStateToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid Tapped="OnMainGridTapped" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
+            <CommandBar.Content>
+                <TextBlock Text="Speech to Text Explorer" Style="{ThemeResource PageTitleTextBlockStyle}"/>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1">
+
+            <local:InitialView DataContext="{Binding ElementName=mainPage}"
+                               Visibility="{Binding SpeechExplorerState, Converter={StaticResource pageStateToVisibilityConverter}, ConverterParameter=Initial}"/>
+
+            <local:SpeechToTextView DataContext="{Binding ElementName=mainPage}" x:Name="speechToTextView"
+                                    Visibility="{Binding SpeechExplorerState, Converter={StaticResource pageStateToVisibilityConverter}, ConverterParameter=SpeechToText}"/>
+
+            <local:SpeechToTextWithTranslation DataContext="{Binding ElementName=mainPage}" x:Name="speechToTextWithTranslation"
+                                               Visibility="{Binding SpeechExplorerState, Converter={StaticResource pageStateToVisibilityConverter}, ConverterParameter=SpeechToTextWithTranslation}"/>
+        </Grid>
+
+        <Grid Grid.Row="2" Height="130" Background="#0B0B0B">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition />
+                <RowDefinition Height="0.1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Grid.Row="1" ToolTipService.ToolTip="Audio samples" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent"
+                    IsEnabled="{Binding IsProcessing, Converter={StaticResource reverseBooleanConverter}}"
+                    Visibility="{Binding AudioSampleCollection.Count, Converter={StaticResource collectionCountToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Comment" Margin="0,2,6,0"/>
+                    <TextBlock Text="Sample audio" />
+                </StackPanel>
+                <Button.Flyout>
+                    <Flyout x:Name="audioSampleFlyout" Placement="Top">
+                        <Flyout.FlyoutPresenterStyle>
+                            <Style TargetType="FlyoutPresenter">
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0"/>
+                            </Style>
+                        </Flyout.FlyoutPresenterStyle>
+                        <ListView x:Name="audioSampleListView" ItemsSource="{Binding AudioSampleCollection}"
+                                  DisplayMemberPath="Name" 
+                                  SelectionChanged="AudioSampleCollection_SelectionChanged"/>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+
+            <Grid Grid.Column="1" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" x:Name="startDictateButton" HorizontalAlignment="Center" Background="Transparent" CornerRadius="35" Padding="0"
+                        Visibility="{Binding IsProcessing, Converter={StaticResource reverseBooleanToVisibilityConverter}}"
+                        Click="StartDictateButtonClicked">
+                    <Grid>
+                        <Ellipse Width="70" Height="70" Fill="#767676"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE720;" Foreground="White"/>
+                    </Grid>
+                </Button>
+                <Button Grid.Row="0" x:Name="stopDictateButton" HorizontalAlignment="Center" Background="Transparent" CornerRadius="35" Padding="0"
+                        Visibility="{Binding IsProcessing, Converter={StaticResource bolleanToVisibilityConverter}}"
+                        Click="StopDictateButtonClicked">
+                    <Grid>
+                        <Ellipse Width="70" Height="70" Fill="#0078D7"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE73B;" Foreground="White"/>
+                    </Grid>
+                </Button>
+
+                <StackPanel Grid.Row="1" x:Name="recordingTimePanel" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                    <TextBlock x:Name="recordingSecondsTextBlock" Text="00:00"/>
+                    <TextBlock Text=" / 00:30"/>
+                </StackPanel>
+            </Grid>
+
+            <Button Grid.Column="2" Grid.Row="1" ToolTipService.ToolTip="Translation Languages" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent"
+                    IsEnabled="{Binding IsProcessing, Converter={StaticResource reverseBooleanConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <SymbolIcon Symbol="Add" Margin="0,0,6,0"/>
+                    <TextBlock Text="Translation" />
+                </StackPanel>
+                <Button.Flyout>
+                    <Flyout x:Name="translationFlyout" Placement="Top" Opened="TranslationFlyout_Opened">
+                        <Flyout.FlyoutPresenterStyle>
+                            <Style TargetType="FlyoutPresenter">
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0"/>
+                            </Style>
+                        </Flyout.FlyoutPresenterStyle>
+                        <ListView x:Name="targetLanguagesListView" ItemsSource="{Binding TranslationLanguagesCollection, Mode=TwoWay}" 
+                                  DisplayMemberPath="Name"
+                                  SelectionChanged="TargetLanguagesListView_SelectionChanged">
+                        </ListView>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+
+        <MediaPlayerElement x:Name="mediaPlayerElement" Visibility="Collapsed" AutoPlay="False"/>
+
+        <ctl:NotificationControl Grid.Row="3" x:Name="notificationControl" />
+    </Grid>
+</Page>

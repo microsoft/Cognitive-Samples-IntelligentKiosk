@@ -1,0 +1,29 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Controls.NotificationControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Name="userControl">
+
+    <Grid x:Name="notificationPanel" Padding="22,0" Height="44" Visibility="Collapsed">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE946;" Foreground="White" Margin="0,2,5,0" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" x:Name="notificationTextBlock" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" 
+                       TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis"/>
+        </Grid>
+        <Button Grid.Column="1" Background="Transparent" HorizontalAlignment="Right" Click="OnNotificationPanelCloseButtonClicked">
+            <SymbolIcon Symbol="Cancel" ToolTipService.ToolTip="Close"/>
+        </Button>
+    </Grid>
+</UserControl>
