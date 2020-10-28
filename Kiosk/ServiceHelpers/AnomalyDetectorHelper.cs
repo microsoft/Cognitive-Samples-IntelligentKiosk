@@ -70,7 +70,7 @@ namespace ServiceHelpers
             get { return endpoint; }
             set
             {
-                endpoint = string.Format(SERVICE_URL_FORMAT,value) ;
+                endpoint = string.Format(SERVICE_URL_FORMAT, value) ;
             }
         }
 
@@ -89,12 +89,12 @@ namespace ServiceHelpers
 
         public static async Task<AnomalyLastDetectResult> GetStreamingDetectionResult(AnomalyDetectionRequest dataRequest)
         {
-            return await HttpClientUtility.PostAsJsonAsync<AnomalyLastDetectResult>(new Uri(endpoint+STREAMING_SERVICE_URL), defaultRequestHeaders, dataRequest);
+            return await HttpClientUtility.PostAsJsonAsync<AnomalyLastDetectResult>(new Uri(endpoint + STREAMING_SERVICE_URL), defaultRequestHeaders, dataRequest);
         }
 
         public static async Task<AnomalyEntireDetectResult> GetBatchDetectionResult(AnomalyDetectionRequest dataRequest)
         {
-            return await HttpClientUtility.PostAsJsonAsync<AnomalyEntireDetectResult>(new Uri(endpoint+BATCH_SERVICE_URL), defaultRequestHeaders, dataRequest);
+            return await HttpClientUtility.PostAsJsonAsync<AnomalyEntireDetectResult>(new Uri(endpoint + BATCH_SERVICE_URL), defaultRequestHeaders, dataRequest);
         }
     }
 }
