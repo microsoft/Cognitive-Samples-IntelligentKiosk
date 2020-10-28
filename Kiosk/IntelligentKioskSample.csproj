@@ -101,9 +101,11 @@
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Assets\captionbot.png" />
     <Content Include="Assets\DemoGallery\Anomaly detector.jpg" />
     <Content Include="Assets\DemoGallery\Bing News Analytics.jpg" />
     <Content Include="Assets\DemoGallery\Bing Visual Search.jpg" />
+    <Content Include="Assets\DemoGallery\Caption Bot.jpg" />
     <Content Include="Assets\DemoGallery\Custom Vision Explorer.jpg" />
     <Content Include="Assets\DemoGallery\Face API Explorer.jpg" />
     <Content Include="Assets\DemoGallery\Forms Recognizer.jpg" />
@@ -289,6 +291,9 @@
     </Compile>
     <Compile Include="Views\BingVisualSearch.xaml.cs">
       <DependentUpon>BingVisualSearch.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CaptionKioskPage.xaml.cs">
+      <DependentUpon>CaptionKioskPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CustomVision\CustomObjectDetectionModel.cs" />
     <Compile Include="Views\CustomVision\CustomVisionDataLoader.cs" />
@@ -609,6 +614,10 @@
     <Page Include="Views\BingVisualSearch.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CaptionKioskPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CustomVision\CustomVisionExplorer.xaml">
       <Generator>MSBuild:Compile</Generator>
