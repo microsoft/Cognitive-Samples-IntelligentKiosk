@@ -74,7 +74,6 @@ namespace ServiceHelpers
             }
         }
 
-
         static AnomalyDetectorHelper()
         {
             InitializeService();
