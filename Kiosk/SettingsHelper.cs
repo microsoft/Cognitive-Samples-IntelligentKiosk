@@ -170,7 +170,6 @@ namespace IntelligentKioskSample
             {
                 this.CustomFaceApiEndpoint = value.ToString();
             }
-
         }
 
         private void LoadComputerVisionRoamingSettings()
