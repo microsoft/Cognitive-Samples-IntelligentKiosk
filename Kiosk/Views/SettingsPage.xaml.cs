@@ -38,6 +38,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Windows.ApplicationModel;
+using Windows.Devices.Enumeration;
 using Windows.Media.Capture;
 using Windows.Storage;
 using Windows.UI.Popups;
@@ -63,8 +64,10 @@ namespace IntelligentKioskSample.Views
             this.versionTextBlock.Text = string.Format("Version: {0}.{1}.{2}.{3}", Package.Current.Id.Version.Major, Package.Current.Id.Version.Minor, 
                 Package.Current.Id.Version.Build, Package.Current.Id.Version.Revision);
 
-            this.cameraSourceComboBox.ItemsSource = await Util.GetAvailableCameraNamesAsync();
+            this.cameraSourceComboBox.ItemsSource = await Util.GetAvailableDeviceNamesAsync(DeviceClass.VideoCapture);
+            this.microphoneSourceComboBox.ItemsSource = await Util.GetAvailableDeviceNamesAsync(DeviceClass.AudioCapture);
             this.cameraSourceComboBox.SelectedItem = SettingsHelper.Instance.CameraName;
+            this.microphoneSourceComboBox.SelectedItem = SettingsHelper.Instance.MicrophoneName;
             var cameraRotations = new[]
             {
                 Tuple.Create("None", VideoRotation.None),
@@ -97,6 +100,14 @@ namespace IntelligentKioskSample.Views
             if (this.cameraSourceComboBox.SelectedItem != null)
             {
                 SettingsHelper.Instance.CameraName = this.cameraSourceComboBox.SelectedItem.ToString();
+            }
+        }
+
+        private void OnMicrophoneSourceSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (this.microphoneSourceComboBox.SelectedItem != null)
+            {
+                SettingsHelper.Instance.MicrophoneName = this.microphoneSourceComboBox.SelectedItem.ToString();
             }
         }
 
@@ -146,6 +157,11 @@ namespace IntelligentKioskSample.Views
 
             await (!string.IsNullOrEmpty(SettingsHelper.Instance.AnomalyDetectorApiKey)
                 ? CallApiAndReportResult("Anomaly Detector API Test: ", async () => await CognitiveServiceApiKeyTester.TestAnomalyDetectorApiKeyAsync(SettingsHelper.Instance.AnomalyDetectorApiKey, SettingsHelper.Instance.AnomalyDetectorKeyEndpoint))
+                : Task.CompletedTask);
+
+            await (!string.IsNullOrEmpty(SettingsHelper.Instance.SpeechApiKey)
+                ? CallApiAndReportResult("Speech API Test: ", async () => await CognitiveServiceApiKeyTester.TestSpeechApiKeyAsync(
+                    SettingsHelper.Instance.SpeechApiKey, SettingsHelper.Instance.SpeechApiEndpoint))
                 : Task.CompletedTask);
 
             await (!string.IsNullOrEmpty(SettingsHelper.Instance.FormRecognizerApiKey)

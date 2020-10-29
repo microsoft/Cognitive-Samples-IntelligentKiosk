@@ -110,6 +110,9 @@
                         <!--camera rotation-->
                         <ComboBox x:Name="cameraRotationComboBox" Header="Camera rotation" DisplayMemberPath="Item1" Style="{StaticResource Settings.Input}" SelectionChanged="OnCameraRotationSelectionChanged"/>
 
+                        <!--microphone source-->
+                        <ComboBox x:Name="microphoneSourceComboBox" Header="Microphone source" Style="{StaticResource Settings.Input}" SelectionChanged="OnMicrophoneSourceSelectionChanged"/>
+
                         <!--starting page-->
                         <ComboBox Header="Starting page" ItemsSource="{Binding StartingPageNames}" SelectedItem="{Binding StartingPage, Mode=TwoWay}" Style="{StaticResource Settings.Input}">
                             <ComboBox.ItemTemplate>
@@ -204,6 +207,24 @@
                                  PlaceholderText="(e.g. https://virginia.api.cognitive.microsoft.us)" 
                                  Text="{Binding CustomFaceApiEndpoint, Mode=TwoWay}" />
                                 <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=faceApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!--speech-->
+                        <StackPanel Style="{StaticResource Settings.SubPanel}">
+                            <TextBlock Text="Speech" Style="{StaticResource Settings.SubTitle}"/>
+                            
+                            <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                                <PasswordBox Header="Speech API Key" Password="{Binding SpeechApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+                                <ComboBox Header="Location" x:Name="speechApiEndpointCombobox" ItemsSource="{Binding AvailableSpeechApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding BindingSpeechApiKeyEndpoint, Mode=TwoWay}"/>
+                            </StackPanel>
+
+                            <StackPanel Style="{StaticResource Settings.Panel.CustomEndPoint}" 
+                                    Visibility="{Binding ElementName=speechApiEndpointCombobox, Path=SelectedValue, Converter={StaticResource StringMatchToVisibilityConverter}, ConverterParameter={StaticResource CustomEndpointName}}">
+                                <TextBox Header="Custom endpoint" x:Name="speechApiEndpointTextBox" Style="{StaticResource Settings.Input}"
+                                     PlaceholderText="(e.g. wss://westus.stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1)" 
+                                     Text="{Binding CustomSpeechApiEndpoint, Mode=TwoWay}" />
+                                <Button Style="{StaticResource LocalHostSetupButtonStyle}" Visibility="{Binding ElementName=speechApiEndpointTextBox, Path=Text, Converter={StaticResource StringContainsToVisibilityConverter}, ConverterParameter={StaticResource LocalHost}}"/>
                             </StackPanel>
                         </StackPanel>
 
@@ -313,6 +334,7 @@
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingAutosuggest-v7" Content="Bing Autosuggest"/>
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation" Content="Translator Text"/>
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesAnomalyDetector" Content="Anomaly Detector"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices" Content="Speech"/>
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesFormRecognizer" Content="Form Recognizer"/>
 
                                             <TextBlock TextWrapping="WrapWholeWords" Foreground="OrangeRed" Margin="0,10,0,0" Text="Important: The free-tier (F0) keys provided by Azure won't support the load from the real-time demos in the kiosk. For the best experience upgrade to a paid key if using those demos."/>

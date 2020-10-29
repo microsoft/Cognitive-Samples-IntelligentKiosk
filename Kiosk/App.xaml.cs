@@ -184,6 +184,10 @@ namespace IntelligentKioskSample
                 ? CognitiveServiceApiKeyTester.TestAnomalyDetectorApiKeyAsync(SettingsHelper.Instance.AnomalyDetectorApiKey, SettingsHelper.Instance.AnomalyDetectorKeyEndpoint)
                 : Task.CompletedTask,
 
+                !string.IsNullOrEmpty(SettingsHelper.Instance.SpeechApiKey)
+                ? CognitiveServiceApiKeyTester.TestSpeechApiKeyAsync(SettingsHelper.Instance.SpeechApiKey, SettingsHelper.Instance.SpeechApiEndpoint)
+                : Task.CompletedTask,
+
                 !string.IsNullOrEmpty(SettingsHelper.Instance.FormRecognizerApiKey)
                 ? CognitiveServiceApiKeyTester.TestFormRecognizerApiKeyAsync(SettingsHelper.Instance.FormRecognizerApiKey, SettingsHelper.Instance.FormRecognizerApiKeyEndpoint)
                 : Task.CompletedTask,

@@ -1,0 +1,29 @@
+﻿<ContentDialog
+    x:Class="IntelligentKioskSample.Controls.DeviceAccessErrorDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    PrimaryButtonText="Open Settings"
+    SecondaryButtonText="Close"
+    DefaultButton="Primary"
+    PrimaryButtonClick="OpenSettings">
+    <ContentDialog.Title>
+        <TextBlock>
+            <Run Text="Intelligent Kiosk can't access the"/>
+            <Run Text="{x:Bind DeviceName}"/>
+        </TextBlock>
+    </ContentDialog.Title>
+    <Grid>
+        <TextBlock TextWrapping="WrapWholeWords">
+            <Run Text="To grant access to this device's"/>
+            <Run Text="{x:Bind DeviceName}"/><Run Text=", go to"/>
+            <Run Text="Windows Settings > Apps" FontWeight="Bold"/>
+            <Run Text="and turn on"/>
+            <Run Text="{x:Bind DeviceName}"/>
+            <Run Text="permissions for Intelligent Kiosk."/>
+        </TextBlock>
+    </Grid>
+</ContentDialog>
