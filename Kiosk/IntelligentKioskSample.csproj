@@ -345,6 +345,16 @@
     <Compile Include="Views\DemoLauncher\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DigitalAssetManagement\DigitalAssetManagementPage.xaml.cs">
+      <DependentUpon>DigitalAssetManagementPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DigitalAssetManagement\FilesViewModel.cs" />
+    <Compile Include="Views\DigitalAssetManagement\ImageInsightsViewModel.cs" />
+    <Compile Include="Views\DigitalAssetManagement\ImageInsights.cs" />
+    <Compile Include="Views\DigitalAssetManagement\ImageProcessor.cs" />
+    <Compile Include="Views\DigitalAssetManagement\StorageDialog.xaml.cs">
+      <DependentUpon>StorageDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\FaceApiExplorer\FaceApiExplorerPage.xaml.cs">
       <DependentUpon>FaceApiExplorerPage.xaml</DependentUpon>
     </Compile>
@@ -692,6 +702,14 @@
     <Page Include="Views\DemoLauncher\DemoLauncherPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DigitalAssetManagement\DigitalAssetManagementPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DigitalAssetManagement\StorageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\FaceApiExplorer\FaceApiExplorerPage.xaml">
       <SubType>Designer</SubType>

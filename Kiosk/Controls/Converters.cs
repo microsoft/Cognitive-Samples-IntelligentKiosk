@@ -370,4 +370,45 @@ namespace IntelligentKioskSample.Controls
             throw new NotImplementedException();
         }
     }
+
+    public class MathConverter : IValueConverter
+    {
+        public double Add { get; set; }
+        public double Multiply { get; set; }
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null)
+            {
+                var number = System.Convert.ToDouble(value);
+                return (number + Add) * Multiply;
+            }
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null)
+            {
+                var number = System.Convert.ToDouble(value);
+                return (number / Multiply) - Add;
+            }
+            return value;
+        }
+    }
+
+    public class BooleanToIntConverter : IValueConverter
+    {
+        public int IfTrue { get; set; } = 1;
+        public int IfFalse { get; set; } = 0;
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+
+            return (bool)value ? IfTrue : IfFalse;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return ((int)value) == IfTrue ? true : false;
+        }
+    }
 }
