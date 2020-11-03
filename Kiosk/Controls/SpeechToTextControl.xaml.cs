@@ -31,17 +31,15 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
+using Azure.AI.TextAnalytics;
 using ServiceHelpers;
 using System;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Media.SpeechRecognition;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
 namespace IntelligentKioskSample.Controls
 {
@@ -174,22 +172,24 @@ namespace IntelligentKioskSample.Controls
             {
                 this.speechRecognitionControlButton.Focus(FocusState.Programmatic);
                 await StartSpeechRecognition();
-            } catch (Exception ex)
+            }
+            catch (Exception ex) when ((uint)ex.HResult == HResultPrivacyStatementDeclined)
             {
-                if ((uint)ex.HResult == HResultPrivacyStatementDeclined)
-                {
-                    await Util.ConfirmActionAndExecute(
-                        "The Speech Privacy settings need to be enabled. Under 'Settings->Privacy->Speech, inking and typing', ensure you have viewed the privacy policy, and 'Get To Know You' is enabled. Want to open the settings now?",
-                        async () =>
-                        {
-                            // Open the privacy/speech, inking, and typing settings page.
-                            await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-speechtyping"));
-                        });
-                }
-                else
-                {
-                    await Util.GenericApiCallExceptionHandler(ex, "Error starting SpeechRecognizer.");
-                }
+                await Util.ConfirmActionAndExecute(
+                    "The Speech Privacy settings need to be enabled. Under 'Settings->Privacy->Speech', ensure you have enabled 'Online speech recognition'. Want to open the settings now?",
+                    async () =>
+                    {
+                        // Open the privacy/speech settings page.
+                        await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-speech"));
+                    });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                await new DeviceAccessErrorDialog() { DeviceName = "microphone" }.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                await Util.GenericApiCallExceptionHandler(ex, "Error starting SpeechRecognizer.");
             }
         }
 
@@ -220,6 +220,7 @@ namespace IntelligentKioskSample.Controls
 
             this.speechRecognitionTextBox.Text = "";
             this.speechRecognitionTextBox.PlaceholderText = "Listening...";
+
             this.dictatedTextBuilder.Clear();
             this.sentimentControl.Sentiment = 0.5;
 
@@ -274,9 +275,8 @@ namespace IntelligentKioskSample.Controls
             {
                 if (!string.IsNullOrEmpty(this.speechRecognitionTextBox.Text))
                 {
-                    SentimentResult textAnalysisResult = await TextAnalyticsHelper.GetSentimentAsync(new string[] { this.speechRecognitionTextBox.Text });
-                    double score = textAnalysisResult.Scores.ElementAt(0);
-                    this.sentimentControl.Sentiment = score;
+                    DocumentSentiment textAnalysisResult = await TextAnalyticsHelper.AnalyzeSentimentAsync(this.speechRecognitionTextBox.Text);
+                    this.sentimentControl.Sentiment = GetSentimentScore(textAnalysisResult);
                 }
                 else
                 {
@@ -288,6 +288,22 @@ namespace IntelligentKioskSample.Controls
             catch (Exception ex)
             {
                 await Util.GenericApiCallExceptionHandler(ex, "Error during Text Analytics call.");
+            }
+        }
+
+        private double GetSentimentScore(DocumentSentiment sentiment)
+        {
+            switch (sentiment.Sentiment)
+            {
+                case TextSentiment.Positive:
+                    return sentiment.ConfidenceScores.Positive;
+                case TextSentiment.Neutral:
+                    return sentiment.ConfidenceScores.Neutral;
+                case TextSentiment.Negative:
+                    return 1 - sentiment.ConfidenceScores.Negative;
+                case TextSentiment.Mixed:
+                default:
+                    return 0.5;
             }
         }
 

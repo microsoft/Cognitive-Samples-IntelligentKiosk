@@ -31,8 +31,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
-using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models;
+using Azure;
+using Azure.AI.TextAnalytics;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
@@ -40,7 +40,6 @@ using Microsoft.Rest;
 using Newtonsoft.Json.Linq;
 using ServiceHelpers;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -108,17 +107,10 @@ namespace IntelligentKioskSample
             }
             else
             {
-                TextAnalyticsClient client = new TextAnalyticsClient(new ApiKeyServiceClientCredentials(key))
-                {
-                    Endpoint = apiEndpoint
-                };
-
-                await client.SentimentBatchAsync(multiLanguageBatchInput:
-                        new MultiLanguageBatchInput(
-                            new List<MultiLanguageInput>()
-                            {
-                          new MultiLanguageInput("0", "I had the best day of my life.", "en"),
-                            }));
+                var credentials = new AzureKeyCredential(key);
+                var endpoint = new Uri(apiEndpoint);
+                TextAnalyticsClient client = new TextAnalyticsClient(endpoint, credentials);
+                await client.AnalyzeSentimentAsync("I had the best day of my life.");
             }
         }
 

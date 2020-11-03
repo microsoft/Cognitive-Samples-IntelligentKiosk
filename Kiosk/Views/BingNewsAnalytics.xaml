@@ -13,7 +13,7 @@
         <local:SentimentToColorConverter x:Key="sentimentToColorConverter"/>
         <local:WordCountToFontSizeConverter x:Key="wordCountToFontSizeConverter"/>
     </Page.Resources>
-    
+
     <Grid x:Name="MainGrid" Background="#FF292929"
             EntranceNavigationTransitionInfo.IsTargetElement="True">
 
@@ -25,14 +25,15 @@
             <RowDefinition Height="0.05*" />
         </Grid.RowDefinitions>
 
-        <Button HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6" Background="Transparent" Grid.RowSpan="2" >
-            <SymbolIcon Symbol="Setting"/>
-            <Button.Flyout>
-                <Flyout>
-                    <ToggleSwitch Height="80" Toggled="SortBySentimentToggleChanged" x:Name="sortBySentimentToggle" Header="Sort by Sentiment" IsOn="True" />
-                </Flyout>
-            </Button.Flyout>
-        </Button>
+        <CommandBar x:Name="commandBar" Grid.RowSpan="2" Style="{StaticResource PageTitleCommandBarStyle}">
+            <AppBarButton Icon="Setting" Label="Settings">
+                <AppBarButton.Flyout>
+                    <Flyout>
+                        <ToggleSwitch Height="80" Toggled="SortBySentimentToggleChanged" x:Name="sortBySentimentToggle" Header="Sort by Sentiment" IsOn="True" />
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+        </CommandBar>
 
         <Grid Margin="24,0,24,0" Grid.Row="1" MaxWidth="600" >
             <Grid.ColumnDefinitions>
@@ -58,10 +59,16 @@
             <ComboBox Grid.Column="3" x:Name="languageComboBox" VerticalAlignment="Bottom" Width="130" Margin="24,0,0,0" Header="Language:" SelectedIndex="0" SelectionChanged="LanguageSelectionChanged">
                 <ComboBox.Items>
                     <x:String>English</x:String>
-                    <x:String>Spanish</x:String>
                     <x:String>French</x:String>
-                    <x:String>Portuguese</x:String>
+                    <x:String>German</x:String>
+                    <x:String>Italian</x:String>
+                    <x:String>Chinese</x:String>
                     <x:String>Japanese</x:String>
+                    <x:String>Korean</x:String>
+                    <x:String>Norwegian</x:String>
+                    <x:String>Portuguese</x:String>
+                    <x:String>Spanish</x:String>
+                    <x:String>Turkish</x:String>
                 </ComboBox.Items>
             </ComboBox>
         </Grid>
@@ -99,7 +106,7 @@
                     </ListView>
                 </Grid>
             </Grid>
-                
+
             <GridView Margin="24,0,0,0" Grid.Column="1" ItemsSource="{Binding FilteredNewsResults, ElementName=page}" SelectionMode="None" IsItemClickEnabled="False"  >
                 <GridView.ItemTemplate>
                     <DataTemplate>
@@ -138,8 +145,4 @@
         </Grid>
 
     </Grid>
-
-
 </Page>
-
-    

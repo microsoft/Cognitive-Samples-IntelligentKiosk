@@ -107,6 +107,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AnomalyDetectorHelper.cs" />
+    <Compile Include="ApiKeyServiceClientCredentials.cs" />
     <Compile Include="BingSearchHelper.cs" />
     <Compile Include="CoreUtil.cs" />
     <Compile Include="ErrorTrackingHelper.cs" />
@@ -135,8 +136,8 @@
     <EmbeddedResource Include="Properties\ServiceHelpers.rd.xml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.CognitiveServices.Language.TextAnalytics">
-      <Version>4.0.0</Version>
+    <PackageReference Include="Azure.AI.TextAnalytics">
+      <Version>5.1.0-beta.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision">
       <Version>6.0.0</Version>

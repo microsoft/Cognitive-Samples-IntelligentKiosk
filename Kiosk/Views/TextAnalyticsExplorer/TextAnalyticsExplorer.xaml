@@ -1,0 +1,128 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.TextAnalyticsExplorer.TextAnalyticsExplorer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="mainPage"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ctl:ReverseVisibilityConverter x:Key="reverseVisibilityConverter" />
+        <ctl:CollectionCountToVisibilityConverter x:Key="collectionCountToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
+            <CommandBar.Content>
+                <TextBlock Text="Text Analytics Explorer" Style="{ThemeResource PageTitleTextBlockStyle}"/>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1" Margin="12,0" ColumnSpacing="24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Spacing="12">
+                <ComboBox x:Name="sampleTextComboBox" HorizontalAlignment="Right" Width="200" PlaceholderText="Choose a sample text" 
+                          ItemsSource="{Binding SampleTextList}" DisplayMemberPath="Name" SelectionChanged="OnSampleTextComboBoxSelectionChanged" />
+
+                <Grid>
+                    <TextBox x:Name="inputText" PlaceholderText="Enter text here" AcceptsReturn="True" MaxLength="5000" TextWrapping="Wrap" FontSize="18"
+                             Padding="10" Height="350" SelectionChanged="OnInputTextSelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="10">
+                        <TextBlock x:Name="inputTextLength" Text="0" Foreground="Gray"/>
+                        <TextBlock Text=" / 5000" Foreground="Gray"/>
+                    </StackPanel>
+                </Grid>
+                <Button Content="Analyze" Click="OnAnalyzeButtonClicked" Width="120" HorizontalAlignment="Right"/>
+            </StackPanel>
+
+            <Grid Grid.Column="1">
+                <Pivot Margin="-12,-12,-12,0">
+                    <PivotItem>
+                        <PivotItem.Header>
+                            <TextBlock Text="Analyzed text" FontSize="18"/>
+                        </PivotItem.Header>
+                        <ScrollViewer Margin="0,12,0,0" HorizontalScrollMode="Disabled">
+                            <Grid Margin="0,0,18,0">
+                                <Grid.Resources>
+                                    <Style x:Key="Header" TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="12" />
+                                        <Setter Property="Padding" Value="0,24,0,0" />
+                                    </Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="FontSize" Value="15" />
+                                    </Style>
+                                </Grid.Resources>
+
+                                <StackPanel Spacing="10">
+                                    <TextBlock Text="Detected Language" Style="{StaticResource Header}"/>
+                                    <TextBlock x:Name="detectedLangTextBlock"/>
+
+                                    <TextBlock Text="Key Phrases" Style="{StaticResource Header}"/>
+                                    <TextBlock x:Name="detectedKeyPhrasesTextBlock" TextWrapping="WrapWholeWords"/>
+
+                                    <TextBlock Text="Sentiment" Style="{StaticResource Header}"/>
+                                    <Grid>
+                                        <TextBlock x:Name="sentimentTextBlock" Visibility="{Binding ElementName=sentimentChart, Path=Visibility, Converter={StaticResource reverseVisibilityConverter}}"/>
+                                        <ctl:HorizontalStackedBarChartControl x:Name="sentimentChart" />
+                                    </Grid>
+
+                                    <Grid Visibility="{Binding OpinionMiningCollection.Count, Converter={StaticResource collectionCountToVisibilityConverter}}">
+                                        <controls:DataGrid x:Name="dataGrid" IsReadOnly="True" ColumnWidth="*" ItemsSource="{Binding OpinionMiningCollection}"/>
+                                    </Grid>
+
+                                    <TextBlock Text="Named Entities" Style="{StaticResource Header}"/>
+                                    <GridView x:Name="namesEntitiesGridView" IsItemClickEnabled="False" SelectionMode="None" Padding="0">
+                                        <GridView.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Width="265" Spacing="5">
+                                                    <TextBlock TextWrapping="NoWrap" Text="{Binding Text}" VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding Category}" VerticalAlignment="Center" Opacity=".5" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GridView.ItemTemplate>
+                                    </GridView>
+
+                                    <TextBlock Text="Linked Entities" Style="{StaticResource Header}"/>
+                                    <GridView x:Name="linkedEntitiesGridView" IsItemClickEnabled="False" SelectionMode="None" Padding="0">
+                                        <GridView.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" Width="265" Spacing="5">
+                                                    <HyperlinkButton Content="{Binding Name}" NavigateUri="{Binding Url}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </GridView.ItemTemplate>
+                                    </GridView>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </PivotItem>
+                    <PivotItem>
+                        <PivotItem.Header>
+                            <TextBlock Text="Json" FontSize="18"/>
+                        </PivotItem.Header>
+                        <Border Margin="0,12,0,0" BorderThickness="2,2,2,2" BorderBrush="Gray" Background="Black" Padding="10,0,10,10">
+                            <ScrollViewer>
+                                <TextBlock x:Name="jsonResultTextBlock" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                            </ScrollViewer>
+                        </Border>
+                    </PivotItem>
+                </Pivot>
+            </Grid>
+
+            <ProgressRing Grid.Column="1" x:Name="progressControl" Width="100" Height="100" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+
+    </Grid>
+</Page>
