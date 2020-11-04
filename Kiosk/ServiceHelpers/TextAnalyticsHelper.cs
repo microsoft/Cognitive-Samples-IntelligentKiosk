@@ -31,20 +31,26 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using Microsoft.Azure.CognitiveServices.Language.TextAnalytics;
-using Microsoft.Azure.CognitiveServices.Language.TextAnalytics.Models;
-using Microsoft.Rest;
+using Azure;
+using Azure.AI.TextAnalytics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServiceHelpers
 {
     public static class TextAnalyticsHelper
     {
+        // NOTE 10/19/2020: Text Analytics API v3 is not available in the following regions: China North 2, China East.
+        // https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/migration-guide?tabs=sentiment-analysis
+        public static readonly string[] NotAvailableAzureRegions = new string[] { "chinanorth2", "chinaeast" };
+
+        // Note: Data limits
+        // See details: https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/concepts/data-limits?tabs=version-3#data-limits
+        public const int MaxRequestsPerSecond = 100; // for S0 / F0 tier
+        public const int MaximumLengthOfTextDocument = 5120; // 5,120 characters as measured by StringInfo.LengthInTextElements
+        public const int MaxDocumentsPerRequestForSentimentAnalysis = 10;   // Max Documents Per Request for Sentiment Analysis feature
+        public const int MaxDocumentsPerRequestForKeyPhraseExtraction = 10; // Max Documents Per Request for Key Phrase Extraction feature
+
         private static TextAnalyticsClient client { get; set; }
 
         static TextAnalyticsHelper()
@@ -86,86 +92,46 @@ namespace ServiceHelpers
 
         private static void InitializeTextAnalyticsService()
         {
-            bool hasEndpoint = !string.IsNullOrEmpty(ApiEndpoint) ? Uri.IsWellFormedUriString(ApiEndpoint, UriKind.Absolute) : false;
-            client = !hasEndpoint
-                ? new TextAnalyticsClient(new ApiKeyServiceClientCredentials(ApiKey))
-                : new TextAnalyticsClient(new ApiKeyServiceClientCredentials(ApiKey))
-                {
-                    Endpoint = ApiEndpoint
-                };
+            var credentials = !string.IsNullOrEmpty(ApiKey) ? new AzureKeyCredential(ApiKey) : null;
+            var endpoint = !string.IsNullOrEmpty(ApiEndpoint) && Uri.IsWellFormedUriString(ApiEndpoint, UriKind.Absolute) ? new Uri(ApiEndpoint) : null;
+            client = credentials != null && endpoint != null ? new TextAnalyticsClient(endpoint, credentials) : null;
         }
 
-        public static async Task<SentimentResult> GetSentimentAsync(string[] input, string language = "en")
+        public static async Task<DocumentSentiment> AnalyzeSentimentAsync(string input, string language = "en", AdditionalSentimentAnalyses sentimentAnalyses = AdditionalSentimentAnalyses.None)
         {
-            if (input == null)
-            {
-                throw new ArgumentNullException("input");
-            }
-
-            if (!input.Any())
-            {
-                throw new ArgumentException("Input array is empty.");
-            }
-
-            var inputList = new List<MultiLanguageInput>();
-            for (int i = 0; i < input.Length; i++)
-            {
-                inputList.Add(new MultiLanguageInput(i.ToString(), input[i], language));
-            }
-
-            SentimentBatchResult result = await client.SentimentBatchAsync(multiLanguageBatchInput: new MultiLanguageBatchInput(inputList));
-            IEnumerable<double> scores = result.Documents.OrderBy(x => x.Id).Select(x => x.Score.GetValueOrDefault());
-            return new SentimentResult { Scores = scores };
+            var options = new AnalyzeSentimentOptions() { AdditionalSentimentAnalyses = sentimentAnalyses };
+            return await client.AnalyzeSentimentAsync(input, language, options);
         }
 
-        public static async Task<KeyPhrasesResult> GetKeyPhrasesAsync(string[] input, string language = "en")
+        public static async Task<AnalyzeSentimentResultCollection> AnalyzeSentimentAsync(string[] input, string language = "en", AdditionalSentimentAnalyses sentimentAnalyses = AdditionalSentimentAnalyses.None)
         {
-            if (input == null)
-            {
-                throw new ArgumentNullException("input");
-            }
-
-            if (!input.Any())
-            {
-                throw new ArgumentException("Input array is empty.");
-            }
-
-            var inputList = new List<MultiLanguageInput>();
-            for (int i = 0; i < input.Length; i++)
-            {
-                inputList.Add(new MultiLanguageInput(i.ToString(), input[i], language));
-            }
-
-            KeyPhraseBatchResult result = await client.KeyPhrasesBatchAsync(multiLanguageBatchInput: new MultiLanguageBatchInput(inputList));
-            IEnumerable<IList<string>> keyPhrases = result.Documents.OrderBy(x => x.Id).Select(x => x.KeyPhrases);
-            return new KeyPhrasesResult() { KeyPhrases = keyPhrases };
+            var options = new AnalyzeSentimentOptions() { AdditionalSentimentAnalyses = sentimentAnalyses };
+            return await client.AnalyzeSentimentBatchAsync(input, language, options);
         }
-    }
 
-    class ApiKeyServiceClientCredentials : ServiceClientCredentials
-    {
-        private readonly string key;
-        public ApiKeyServiceClientCredentials(string key)
+        public static async Task<DetectedLanguage> DetectLanguageAsync(string input)
         {
-            this.key = key;
+            return await client.DetectLanguageAsync(input);
         }
 
-        public override Task ProcessHttpRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        public static async Task<CategorizedEntityCollection> RecognizeEntitiesAsync(string input)
         {
-            request.Headers.Add("Ocp-Apim-Subscription-Key", key);
-            return base.ProcessHttpRequestAsync(request, cancellationToken);
+            return await client.RecognizeEntitiesAsync(input);
         }
-    }
 
-    /// Class to hold result of Sentiment call
-    /// </summary>
-    public class SentimentResult
-    {
-        public IEnumerable<double> Scores { get; set; }
-    }
+        public static async Task<LinkedEntityCollection> RecognizeLinkedEntitiesAsync(string input)
+        {
+            return await client.RecognizeLinkedEntitiesAsync(input);
+        }
 
-    public class KeyPhrasesResult
-    {
-        public IEnumerable<IEnumerable<string>> KeyPhrases { get; set; }
+        public static async Task<KeyPhraseCollection> ExtractKeyPhrasesAsync(string input, string language = "en")
+        {
+            return await client.ExtractKeyPhrasesAsync(input, language);
+        }
+
+        public static async Task<ExtractKeyPhrasesResultCollection> ExtractKeyPhrasesAsync(string[] input, string language = "en")
+        {
+            return await client.ExtractKeyPhrasesBatchAsync(input, language);
+        }
     }
 }

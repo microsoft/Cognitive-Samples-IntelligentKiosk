@@ -1,0 +1,38 @@
+﻿[
+  {
+    "Name": "Contoso sample",
+    "Text": "We went to Contoso Steakhouse located at midtown NYC last week for a dinner party, and we adore the spot! They provide marvelous food and they have a great menu. The chief cook happens to be the owner (I think his name is John Doe) and he is super nice, coming out of the kitchen and greeted us all. We enjoyed very much dining in the place! The Sirloin steak I ordered was tender and juicy, and the place was impeccably clean. You can even pre-order from their online menu at www.contososteakhouse.com, call 312-555-0176 or send email to order@contososteakhouse.com! The only complaint I have is the food didn't come fast enough. Overall I highly recommend it!"
+  },
+  {
+    "Name": "Microsoft sample",
+    "Text": "Microsoft was founded by Bill Gates and Paul Allen on April 4, 1975, to develop and sell BASIC interpreters for the Altair 8800. During his career at Microsoft, Gates held the positions of chairman, chief executive officer, president and chief software architect, while also being the largest individual shareholder until May 2014."
+  },
+  {
+    "Name": "English sample",
+    "Text": "This document is in English."
+  },
+  {
+    "Name": "Spanish sample",
+    "Text": "Este documento no está en inglés."
+  },
+  {
+    "Name": "French sample",
+    "Text": "Ce document n’est pas en anglais."
+  },
+  {
+    "Name": "Chinese sample",
+    "Text": "本文件为中文"
+  },
+  {
+    "Name": "Positive sentiment sample",
+    "Text": "We love this trail and make the trip every year. The views are breathtaking and well worth the hike!"
+  },
+  {
+    "Name": "Negative sentiment sample",
+    "Text": "Poorly marked trails! I thought we were goners. Worst hike ever."
+  },
+  {
+    "Name": "Mixed sentiment sample",
+    "Text": "It was foggy so we missed the spectacular views, but the trail was ok. Worth checking out if you are in the area."
+  }
+]
