@@ -352,6 +352,16 @@
     <Compile Include="Views\DemoLauncher\DemoLauncherPage.xaml.cs">
       <DependentUpon>DemoLauncherPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DigitalAssetManagement\DigitalAssetManagementPage.xaml.cs">
+      <DependentUpon>DigitalAssetManagementPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DigitalAssetManagement\FilesViewModel.cs" />
+    <Compile Include="Views\DigitalAssetManagement\ImageInsightsViewModel.cs" />
+    <Compile Include="Views\DigitalAssetManagement\ImageInsights.cs" />
+    <Compile Include="Views\DigitalAssetManagement\ImageProcessor.cs" />
+    <Compile Include="Views\DigitalAssetManagement\StorageDialog.xaml.cs">
+      <DependentUpon>StorageDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\FaceApiExplorer\FaceApiExplorerPage.xaml.cs">
       <DependentUpon>FaceApiExplorerPage.xaml</DependentUpon>
     </Compile>
@@ -383,15 +393,6 @@
     <Compile Include="Views\HowOldKioskPage.xaml.cs">
       <DependentUpon>HowOldKioskPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ImageCollectionInsights\EmotionFilterViewModel.cs" />
-    <Compile Include="Views\ImageCollectionInsights\FaceFilterViewModel.cs" />
-    <Compile Include="Views\ImageCollectionInsights\FaceInsights.cs" />
-    <Compile Include="Views\ImageCollectionInsights\ImageCollectionInsights.xaml.cs" />
-    <Compile Include="Views\ImageCollectionInsights\ImageInsights.cs" />
-    <Compile Include="Views\ImageCollectionInsights\ImageInsightsViewModel.cs" />
-    <Compile Include="Views\ImageCollectionInsights\ImageProcessor.cs" />
-    <Compile Include="Views\ImageCollectionInsights\TagFilterViewModel.cs" />
-    <Compile Include="Views\ImageCollectionInsights\VisionInsights.cs" />
     <Compile Include="Views\FormRecognizer\InitialView.xaml.cs">
       <DependentUpon>InitialView.xaml</DependentUpon>
     </Compile>
@@ -708,6 +709,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\DigitalAssetManagement\DigitalAssetManagementPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DigitalAssetManagement\StorageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\FaceApiExplorer\FaceApiExplorerPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -747,10 +756,6 @@
     <Page Include="Views\HowOldKioskPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ImageCollectionInsights\ImageCollectionInsights.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\FormRecognizer\InitialView.xaml">
       <SubType>Designer</SubType>

@@ -33,6 +33,7 @@
 
 using ServiceHelpers;
 using System;
+using System.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
@@ -254,7 +255,25 @@ namespace IntelligentKioskSample.Controls
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return System.Convert.ToInt32(value) > 0 ? Visibility.Visible : Visibility.Collapsed;
+            //get min value
+            int.TryParse(parameter != null ? (string)parameter : string.Empty, out int minValue);
+
+            //get count
+            var count = 0;
+            if (value is int)
+            {
+                count = (int)value;
+            }
+            else
+            {
+                var collection = value as ICollection;
+                if (collection != null)
+                {
+                    count = collection.Count;
+                }
+            }
+
+            return count > minValue ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -267,7 +286,25 @@ namespace IntelligentKioskSample.Controls
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return System.Convert.ToInt32(value) > 0 ? Visibility.Collapsed : Visibility.Visible;
+            //get min value
+            int.TryParse(parameter != null ? (string)parameter : string.Empty, out int minValue);
+
+            //get count
+            var count = 0;
+            if (value is int)
+            {
+                count = (int)value;
+            }
+            else
+            {
+                var collection = value as ICollection;
+                if (collection != null)
+                {
+                    count = collection.Count;
+                }
+            }
+
+            return count > minValue ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
@@ -368,6 +405,47 @@ namespace IntelligentKioskSample.Controls
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class MathConverter : IValueConverter
+    {
+        public double Add { get; set; }
+        public double Multiply { get; set; }
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null)
+            {
+                var number = System.Convert.ToDouble(value);
+                return (number + Add) * Multiply;
+            }
+            return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null)
+            {
+                var number = System.Convert.ToDouble(value);
+                return (number / Multiply) - Add;
+            }
+            return value;
+        }
+    }
+
+    public class BooleanToIntConverter : IValueConverter
+    {
+        public int IfTrue { get; set; } = 1;
+        public int IfFalse { get; set; } = 0;
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+
+            return (bool)value ? IfTrue : IfFalse;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return ((int)value) == IfTrue ? true : false;
         }
     }
 }

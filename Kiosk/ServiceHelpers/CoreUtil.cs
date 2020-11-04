@@ -91,5 +91,17 @@ namespace ServiceHelpers
         {
             return new Rect(rect.X, rect.Y, rect.W, rect.H);
         }
+
+        public static Rect Inflate(this Rect rect, double inflatePercentage)
+        {
+            var width = rect.Width * inflatePercentage;
+            var height = rect.Height * inflatePercentage;
+            return new Rect(rect.X - ((width - rect.Width) / 2), rect.Y - ((height - rect.Height) / 2), width, height);
+        }
+
+        public static Rect Scale(this Rect rect, double scale)
+        {
+            return new Rect(rect.X * scale, rect.Y * scale, rect.Width * scale, rect.Height * scale);
+        }
     }
 }

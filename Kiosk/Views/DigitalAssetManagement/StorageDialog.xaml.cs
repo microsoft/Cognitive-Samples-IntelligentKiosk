@@ -31,31 +31,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using System.ComponentModel;
+using Windows.UI.Xaml.Controls;
 
-namespace IntelligentKioskSample.Views.ImageCollectionInsights
+namespace IntelligentKioskSample.Views.DigitalAssetManagement
 {
-    public class TagFilterViewModel : INotifyPropertyChanged
+    public sealed partial class StorageDialog : ContentDialog
     {
-        public bool IsChecked { get; set; }
-        public string Tag { get; set; }
+        public string SasUri { get; set; }
 
-        private int count;
-        public int Count
+        public StorageDialog()
         {
-            get { return this.count; }
-            set
-            {
-                this.count = value;
-                this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Count"));
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public TagFilterViewModel(string tag)
-        {
-            this.Tag = tag;
+            this.InitializeComponent();
         }
     }
 }
