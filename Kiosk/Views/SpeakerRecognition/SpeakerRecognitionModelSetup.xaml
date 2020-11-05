@@ -1,0 +1,148 @@
+﻿<UserControl
+    x:Class="IntelligentKioskSample.Views.SpeakerRecognition.SpeakerRecognitionModelSetup"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400"
+    x:Name="userControl">
+
+    <UserControl.Resources>
+        <ctl:StringMatchToBooleanConverter x:Key="stringMatchToBooleanConverter" />
+        <ctl:StringMatchToVisibilityConverter x:Key="stringMatchToVisibilityConverter" />
+        <ctl:ReverseCollectionCountToVisibilityConverter x:Key="reverseCollectionCountToVisibilityConverter"/>
+
+        <Style x:Key="ListViewItemContainerStyle" TargetType="ListViewItem">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="6,0"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Popup x:Name="newModelForm" Opened="OnPopUpOpened" Closed="OnPopUpClosed">
+        <Grid Background="#44ffffff" x:Name="hostGrid" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border Background="{StaticResource ApplicationPageBackgroundThemeBrush}" BorderThickness="1" BorderBrush="#aaffffff" Width="400" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid>
+                    <AppBarButton Icon="Cancel" Click="OnCloseModelFormButtonClicked" HorizontalAlignment="Right" VerticalAlignment="Top" Width="40" Height="40" />
+                    <Grid Margin="24" RowSpacing="12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Enroll a new voice" Style="{StaticResource TitleTextBlockStyle}" />
+
+                        <!--Overview state-->
+                        <StackPanel Grid.Row="1" Spacing="12" Visibility="{Binding ModelSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='NotStarted'}">
+                            <TextBox x:Name="modelNameTextBox" TextChanged="OnTextBoxTextChanged" Header="Name your voice" PlaceholderText="Voice name"/>
+
+                            <StackPanel>
+                                <RadioButton GroupName="SpeakerRecognitionSource" Content="From file" Tag="FromFile" Checked="OnSourceTypeRadioButtonChecked" IsChecked="True"/>
+                                <RadioButton GroupName="SpeakerRecognitionSource" Content="From microphone" Tag="FromMicrophone" Checked="OnSourceTypeRadioButtonChecked" />
+                            </StackPanel>
+
+                            <Grid RowSpacing="12" Visibility="{Binding SourceType, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='FromFile'}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <StackPanel Spacing="6">
+                                    <TextBlock Text="Add audio file" />
+                                    <Button Content="Browse" Click="OnBrowseFilesButtonClicked" />
+                                </StackPanel>
+
+                                <ListView Grid.Row="1" AllowDrop="True" SelectionMode="Extended" Height="200" Background="#191919" ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
+                                          DragOver="FileListView_OnDragOver" Drop="FileListView_OnDrop" ItemsSource="{Binding LocalFileCollection}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                                <Button Grid.Column="1" Background="Transparent" HorizontalAlignment="Right" Click="OnDeleteFileButtonClicked">
+                                                    <SymbolIcon Symbol="Delete"/>
+                                                </Button>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+
+                                <Border Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    Visibility="{Binding LocalFileCollection.Count, Converter={StaticResource reverseCollectionCountToVisibilityConverter}}">
+                                    <TextBlock TextWrapping="Wrap" Opacity="0.6">
+                                        <Run Text="Add files using" />
+                                        <Run FontWeight="SemiBold" Text="Browse &#10;" />
+                                        <Run Text="or drag and drop here" />
+                                    </TextBlock>
+                                </Border>
+                            </Grid>
+
+                            <Grid Height="270" Background="#191919" Visibility="{Binding SourceType, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='FromMicrophone'}">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xF12E;" Margin="0,0,6,0" FontSize="48"/>
+                                    <TextBlock Text="Click 'Enroll voice' and start speaking.&#x0a;We will let you know when we have sampled enough audio." TextWrapping="Wrap" TextAlignment="Center" Opacity="0.6"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <!--Processing-->
+                        <StackPanel Grid.Row="1" Spacing="12" Visibility="{Binding ModelSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Running'}">
+                            <TextBlock Text="Please wait while your voice is enrolled" TextWrapping="Wrap"/>
+
+                            <StackPanel>
+                                <TextBlock Text="Voice name"/>
+                                <TextBlock Text="{Binding ElementName=modelNameTextBox, Path=Text}" FontWeight="Bold"/>
+                            </StackPanel>
+
+                            <ScrollViewer Height="300" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Visible">
+                                <Grid Background="#191919">
+                                    <ProgressRing x:Name="progressControl" Width="70" Height="70" Foreground="#0078D7" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                  IsActive="{Binding ModelSetupState, Converter={StaticResource stringMatchToBooleanConverter}, ConverterParameter='Running'}"/>
+                                    <TextBlock x:Name="processTextBlock" Foreground="White" HorizontalAlignment="Center" FontSize="12" TextWrapping="WrapWholeWords"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </StackPanel>
+
+                        <!--Process completed-->
+                        <StackPanel Grid.Row="1" Spacing="12" Visibility="{Binding ModelSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Completed'}">
+                            <TextBlock Text="Your voice was enrolled successfully" TextWrapping="Wrap"/>
+
+                            <StackPanel>
+                                <TextBlock Text="Voice name"/>
+                                <TextBlock Text="{Binding ElementName=modelNameTextBox, Path=Text}" FontWeight="Bold"/>
+                            </StackPanel>
+
+                            <Grid Height="300" Background="#191919">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12" Visibility="{Binding ModelSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Completed'}">
+                                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE930;" Margin="0,0,6,0" FontSize="48"/>
+                                    <TextBlock Text="Your voice was enrolled successfully" TextWrapping="Wrap" TextAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+
+                        <Grid Grid.Row="2" Margin="0,12,0,0" HorizontalAlignment="Stretch" ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" x:Name="createModelButton" Content="Enroll voice" IsEnabled="False" HorizontalAlignment="Stretch" Click="OnCreateModelButtonClicked" 
+                                    Visibility="{Binding ModelSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='NotStarted'}"/>
+
+                            <Button Grid.Column="0" Content="Try again" HorizontalAlignment="Stretch" Click="OnTryAgainButtonClicked" 
+                                    Visibility="{Binding ModelSetupState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Error'}"/>
+
+                            <Button Grid.Column="1" Content="Close" Click="OnCloseModelFormButtonClicked" HorizontalAlignment="Stretch" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+
+            </Border>
+        </Grid>
+    </Popup>
+</UserControl>

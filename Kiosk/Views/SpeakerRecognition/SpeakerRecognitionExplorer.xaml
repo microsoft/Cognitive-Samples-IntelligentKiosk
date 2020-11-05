@@ -1,0 +1,171 @@
+﻿<Page
+    x:Class="IntelligentKioskSample.Views.SpeakerRecognition.SpeakerRecognitionExplorer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IntelligentKioskSample.Views.SpeakerRecognition"
+    xmlns:ctl="using:IntelligentKioskSample.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    x:Name="mainPage">
+
+    <Page.Resources>
+        <ctl:StringFormatConverter StringFormat=" {0} enrolled voices" x:Key="enrolledVoices" />
+        <ctl:BooleanToVisibilityConverter x:Key="bolleanToVisibilityConverter"/>
+        <ctl:ReverseBooleanToVisibilityConverter x:Key="reverseBooleanToVisibilityConverter"/>
+
+        <ctl:StringMatchToBooleanConverter x:Key="stringMatchToBooleanConverter" />
+        <ctl:ReverseStringMatchToBooleanConverter x:Key="reverseStringMatchToBooleanConverter" />
+        <ctl:StringMatchToVisibilityConverter x:Key="stringMatchToVisibilityConverter" />
+        <ctl:ReverseStringMatchToVisibilityConverter x:Key="reverseStringMatchToVisibilityConverter"/>
+        <ctl:CollectionCountToVisibilityConverter x:Key="collectionCountToVisibilityConverter"/>
+        <ctl:ReverseCollectionCountToVisibilityConverter x:Key="reverseCollectionCountToVisibilityConverter"/>
+
+        <Style x:Key="ListViewStyle" TargetType="ListView">
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FlyoutPresenterStyle" TargetType="FlyoutPresenter">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <CommandBar x:Name="commandBar" Style="{StaticResource PageTitleCommandBarStyle}">
+            <AppBarButton Icon="Switch" Label="Switch input mode" Click="OnSwitchInputModeButtonClicked" IsEnabled="{Binding ProcessState, Converter={StaticResource reverseStringMatchToBooleanConverter}, ConverterParameter='Processing'}"/>
+            <AppBarButton Label="{Binding Models.Count, Converter={StaticResource enrolledVoices}}" IsEnabled="{Binding ProcessState, Converter={StaticResource reverseStringMatchToBooleanConverter}, ConverterParameter='Processing'}">
+                <AppBarButton.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEFA9;"/>
+                </AppBarButton.Icon>
+                <AppBarButton.Flyout>
+                    <Flyout x:Name="modelsFlyout" Placement="Top" FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}">
+                        <Grid>
+                            <ListView HorizontalAlignment="Stretch" SelectionMode="None" Style="{StaticResource ListViewStyle}" ItemsSource="{Binding Models}"
+                                      IsEnabled="{Binding ProcessState, Converter={StaticResource reverseStringMatchToBooleanConverter}, ConverterParameter='Processing'}"
+                                      Visibility="{Binding Models.Count, Converter={StaticResource collectionCountToVisibilityConverter}}">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="local:SpeakerRecognitionViewModel">
+                                        <Grid Height="36" ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" Style="{ThemeResource BodyTextBlockStyle}" />
+                                                <TextBlock Foreground="LightGray" Style="{ThemeResource BodyTextBlockStyle}" FontStyle="Italic" Text="(pre-built model)" Visibility="{Binding IsPrebuiltModel, Converter={StaticResource bolleanToVisibilityConverter}}" Margin="4,0,0,0" />
+                                            </StackPanel>
+                                            <Button Grid.Column="1" Background="Transparent" Click="OnModelDeleteButtonClick" Visibility="{Binding IsPrebuiltModel, Converter={StaticResource reverseBooleanToVisibilityConverter}}">
+                                                <SymbolIcon Symbol="Delete" />
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+
+                            <TextBlock Margin="12" Style="{StaticResource BodyTextBlockStyle}" Visibility="{Binding Models.Count, Converter={StaticResource reverseCollectionCountToVisibilityConverter}}">
+                                <Run Text="You have no enrolled voices."/>
+                                <LineBreak/>
+                                <Run Text="Please create one"/>
+                                <Hyperlink Click="OnCreateNewModelClick">
+                                    <Run Text="here."/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </Grid>
+                    </Flyout>
+                </AppBarButton.Flyout>
+            </AppBarButton>
+            <AppBarButton Icon="AddFriend" Label="Enroll a new voice" Click="OnCreateNewModelClick" IsEnabled="{Binding ProcessState, Converter={StaticResource reverseStringMatchToBooleanConverter}, ConverterParameter='Processing'}"/>
+            <CommandBar.Content>
+                <TextBlock Text="Speaker Recognition Explorer" Style="{ThemeResource PageTitleTextBlockStyle}"/>
+            </CommandBar.Content>
+        </CommandBar>
+
+        <Grid Grid.Row="1" Padding="50,0">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding ProcessState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Overview'}">
+                <TextBlock TextAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}" Visibility="{Binding SourceType, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='FromMicrophone'}"
+                           Text="Click on the microphone button and start speaking.&#x0a;We will try to match the input with one of the enrolled voices." />
+
+                <TextBlock TextAlignment="Center" Style="{StaticResource HeaderTextBlockStyle}" Visibility="{Binding SourceType, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='FromFile'}"
+                           Text="Click on the file picker button and provide an audio sample.&#x0a;We will try to match the input with one of the enrolled voices." />
+            </StackPanel>
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12" Visibility="{Binding ProcessState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Processing'}">
+                <TextBlock TextAlignment="Center" Text="Processing..." Style="{StaticResource SubheaderTextBlockStyle}" Opacity="0.6"/>
+                <ProgressRing Width="75" Height="75" Foreground="White" Opacity="0.6" IsActive="{Binding ProcessState, Converter={StaticResource stringMatchToBooleanConverter}, ConverterParameter='Processing'}"/>
+            </StackPanel>
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12" Visibility="{Binding ProcessState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Error'}">
+                <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE783;" FontSize="36" Foreground="White"/>
+                <TextBlock TextAlignment="Center" Text="Something went wrong" Style="{StaticResource SubheaderTextBlockStyle}" Opacity="0.6"/>
+                <Button HorizontalAlignment="Stretch" Content="Try again" Click="OnTryAgainButtonClicked" />
+            </StackPanel>
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12" Visibility="{Binding ProcessState, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='Completed'}">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE783;" FontSize="36" Foreground="White" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="detectedVoice" Style="{StaticResource SubheaderTextBlockStyle}" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="detectedVoiceProbability" Style="{StaticResource SubheaderTextBlockStyle}" Opacity="0.6" VerticalAlignment="Center"/>
+                </StackPanel>
+                <Button HorizontalAlignment="Stretch" Content="Try again" Click="OnTryAgainButtonClicked" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2" Height="130" Background="#0B0B0B">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.1*"/>
+                <RowDefinition />
+                <RowDefinition Height="0.1*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="1" Grid.Row="1" VerticalAlignment="Center">
+                <Button x:Name="startDetectionButton" HorizontalAlignment="Center" Background="#767676" Width="70" Height="70" CornerRadius="35" Padding="0"
+                        Click="StartRecognitionButtonClicked"
+                        Visibility="{Binding SourceType, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='FromMicrophone'}"
+                        IsEnabled="{Binding ProcessState, Converter={StaticResource reverseStringMatchToBooleanConverter}, ConverterParameter='Processing'}">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE720;" Foreground="White"/>
+                </Button>
+
+                <DropDownButton HorizontalAlignment="Center" Background="#767676" Width="70" Height="70" CornerRadius="35" Padding="6" Click="OnFilesSamplesDropDownButtonClicked"
+                                Visibility="{Binding SourceType, Converter={StaticResource stringMatchToVisibilityConverter}, ConverterParameter='FromFile'}"
+                                IsEnabled="{Binding ProcessState, Converter={StaticResource reverseStringMatchToBooleanConverter}, ConverterParameter='Processing'}">
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" Foreground="White"/>
+                    <FlyoutBase.AttachedFlyout>
+                        <Flyout x:Name="fileSamplesFlyout" Placement="Top" FlyoutPresenterStyle="{StaticResource FlyoutPresenterStyle}">
+                            <StackPanel>
+                                <Button ToolTipService.ToolTip="Only (.wav) audio files" Background="Transparent" Click="OnUploadAudioFileClick" HorizontalAlignment="Stretch">
+                                    <StackPanel Orientation="Horizontal" Padding="10,5" HorizontalAlignment="Stretch">
+                                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED41;"/>
+                                        <TextBlock Text="From file" Margin="6,0,0,0"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Flyout>
+                    </FlyoutBase.AttachedFlyout>
+                </DropDownButton>
+            </Grid>
+        </Grid>
+
+        <MediaPlayerElement x:Name="mediaPlayerElement" Visibility="Collapsed" AutoPlay="False"/>
+
+        <local:SpeakerRecognitionModelSetup Grid.RowSpan="3" x:Name="speakerRecognitionModelSetupControl" ModelCreated="OnNewModelCreated" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+    </Grid>
+</Page>
