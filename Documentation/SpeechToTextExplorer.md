@@ -8,7 +8,7 @@ Speech to Text Explorer uses Speech to Text API from Azure Speech Services to co
 
 To translate your speech in real time, go to Translation and choose a target language. Use the microphone to start transcribing live audio, or go to Sample and choose a pre-recorded audio sample to capture from.
 
-![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/SpeachToTextWithTranslationExplorer.png "Speech translation")
+![alt text](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/Documentation/SpeachToTextWithTranslationExplorer.jpg "Speech translation")
 
 # Key Source Code
 
