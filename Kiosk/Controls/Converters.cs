@@ -173,6 +173,24 @@ namespace IntelligentKioskSample.Controls
         }
     }
 
+    public class ReverseStringMatchToBooleanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value != null && parameter != null && string.Equals(value.ToString(), (string)parameter, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            return value;
+        }
+    }
+
     public class StringContainsToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language)

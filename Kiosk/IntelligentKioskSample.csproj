@@ -133,6 +133,7 @@
     <Content Include="Assets\DemoGallery\Realtime Image Classification Demo.jpg" />
     <Content Include="Assets\DemoGallery\Realtime Object Detection.jpg" />
     <Content Include="Assets\DemoGallery\Realtime Video Insights.jpg" />
+    <Content Include="Assets\DemoGallery\Speaker Recognition Explorer.jpg" />
     <Content Include="Assets\DemoGallery\Speech to Text Explorer.jpg" />
     <Content Include="Assets\DemoGallery\Text Analytics Explorer.jpeg" />
     <Content Include="Assets\DemoGallery\Translation Demo.jpg" />
@@ -432,6 +433,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\ImageSearchUserControl.xaml.cs">
       <DependentUpon>ImageSearchUserControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SpeakerRecognition\SpeakerRecognitionDataLoader.cs" />
+    <Compile Include="Views\SpeakerRecognition\SpeakerRecognitionExplorer.xaml.cs">
+      <DependentUpon>SpeakerRecognitionExplorer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SpeakerRecognition\SpeakerRecognitionModelSetup.xaml.cs">
+      <DependentUpon>SpeakerRecognitionModelSetup.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SpeechToText\InitialView.xaml.cs">
       <DependentUpon>InitialView.xaml</DependentUpon>
@@ -802,6 +810,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ImageSearchUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SpeakerRecognition\SpeakerRecognitionExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SpeakerRecognition\SpeakerRecognitionModelSetup.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
