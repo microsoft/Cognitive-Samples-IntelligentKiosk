@@ -139,7 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Azure.AI.TextAnalytics">
-      <Version>5.1.0-beta.2</Version>
+      <Version>5.1.0-beta.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.ComputerVision">
       <Version>6.0.0</Version>

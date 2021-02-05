@@ -82,16 +82,7 @@ namespace IntelligentKioskSample.Views
             }
             else
             {
-                bool isNotAvailableRegion = TextAnalyticsHelper.NotAvailableAzureRegions.Any(r => SettingsHelper.Instance.TextAnalyticsApiKeyEndpoint.Contains(r, StringComparison.OrdinalIgnoreCase));
-                if (isNotAvailableRegion)
-                {
-                    this.page.IsEnabled = false;
-                    await new MessageDialog("Text Analytics API v3 is not available in the following regions: China North 2, China East. Please change your Text Analytics key and region in the Settings page to a supported region.", "API key not supported").ShowAsync();
-                }
-                else
-                {
-                    this.page.IsEnabled = true;
-                }
+                this.page.IsEnabled = true;
             }
 
             base.OnNavigatedTo(e);
