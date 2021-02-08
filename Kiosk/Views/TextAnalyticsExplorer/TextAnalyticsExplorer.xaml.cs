@@ -131,14 +131,14 @@ namespace IntelligentKioskSample.Views.TextAnalyticsExplorer
                 string languageCode = TextAnalyticsHelper.GetLanguageCode(detectedLanguage);
 
                 // check supported languages
-                bool isOpnionMiningSupported = TextAnalyticsHelper.OpinionMiningSupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
+                bool isOpinionMiningSupported = TextAnalyticsHelper.OpinionMiningSupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
                 bool isSentimentSupported = TextAnalyticsHelper.SentimentAnalysisSupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
                 bool isKeyPhraseSupported = TextAnalyticsHelper.KeyPhraseExtractionSupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
                 bool isNamedEntitySupported = TextAnalyticsHelper.NamedEntitySupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
                 bool isEntityLinkingSupported = TextAnalyticsHelper.EntityLinkingSupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
 
                 // sentiment analysis, key phrase extraction, named entity recognition and entity linking
-                Task<DocumentSentiment> documentSentimentTask = isSentimentSupported ? TextAnalyticsHelper.AnalyzeSentimentAsync(input, languageCode, isOpnionMiningSupported) : Task.FromResult<DocumentSentiment>(null);
+                Task<DocumentSentiment> documentSentimentTask = isSentimentSupported ? TextAnalyticsHelper.AnalyzeSentimentAsync(input, languageCode, isOpinionMiningSupported) : Task.FromResult<DocumentSentiment>(null);
                 Task<KeyPhraseCollection> detectedKeyPhrasesTask = isKeyPhraseSupported ? TextAnalyticsHelper.ExtractKeyPhrasesAsync(input, languageCode) : Task.FromResult<KeyPhraseCollection>(null);
                 Task<CategorizedEntityCollection> namedEntitiesResponseTask = isNamedEntitySupported ? TextAnalyticsHelper.RecognizeEntitiesAsync(input, languageCode) : Task.FromResult<CategorizedEntityCollection>(null);
                 Task<LinkedEntityCollection> linkedEntitiesResponseTask = isEntityLinkingSupported ? TextAnalyticsHelper.RecognizeLinkedEntitiesAsync(input, languageCode) : Task.FromResult<LinkedEntityCollection>(null);
