@@ -13,11 +13,15 @@
   },
   {
     "Name": "Spanish sample",
-    "Text": "Este documento no está en inglés."
+    "Text": "Tu servicio es malo."
   },
   {
     "Name": "French sample",
-    "Text": "Ce document n’est pas en anglais."
+    "Text": "Votre service est bon."
+  },
+  {
+    "Name": "Hindi sample",
+    "Text": "आपकी सेवा खराब है।"
   },
   {
     "Name": "Chinese sample",
