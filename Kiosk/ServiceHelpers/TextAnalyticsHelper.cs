@@ -34,15 +34,27 @@
 using Azure;
 using Azure.AI.TextAnalytics;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace ServiceHelpers
 {
     public static class TextAnalyticsHelper
     {
-        // NOTE 10/19/2020: Text Analytics API v3 is not available in the following regions: China North 2, China East.
-        // https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/migration-guide?tabs=sentiment-analysis
-        public static readonly string[] NotAvailableAzureRegions = new string[] { "chinanorth2", "chinaeast" };
+        // NOTE 12/17/2020: Text Analytics API v3 language support
+        // See details: https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/language-support
+        public static readonly string DefaultLanguageCode = "en";
+        public static readonly string[] SentimentAnalysisSupportedLanguages = { "zh", "zh-hans", "zh-hant", "en", "fr", "de", "hi", "it", "ja", "ko", "no", "pt", "pt-BR", "pt-PT", "es", "tr" };
+        public static readonly string[] OpinionMiningSupportedLanguages = { "en" };
+        public static readonly string[] KeyPhraseExtractionSupportedLanguages = { "da", "nl", "en", "fi", "fr", "de", "it", "ja", "ko", "no", "nb", "pl", "pt", "pt-BR", "pt-PT", "ru", "es", "sv" };
+        public static readonly string[] NamedEntitySupportedLanguages = { "ar", "zh", "zh-hans", "zh-hant", "cs", "da", "nl", "en", "fi", "fr", "de", "he", "hu", "it", "ja", "ko", "no", "nb", "pl", "pt", "pt-BR", "pt-PT", "ru", "es", "sv", "tr" };
+        public static readonly string[] EntityLinkingSupportedLanguages = { "en", "es" };
+        public static readonly Uri LanguageSupportUri = new Uri("https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/language-support");
+        public static readonly Dictionary<string, string> LanguageCodeMap = new Dictionary<string, string>()
+        {
+            { "zh_chs", "zh-hans" },
+            { "zh_cht", "zh-hant" }
+        };
 
         // Note: Data limits
         // See details: https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/concepts/data-limits?tabs=version-3#data-limits
@@ -97,41 +109,51 @@ namespace ServiceHelpers
             client = credentials != null && endpoint != null ? new TextAnalyticsClient(endpoint, credentials) : null;
         }
 
-        public static async Task<DocumentSentiment> AnalyzeSentimentAsync(string input, string language = "en", AdditionalSentimentAnalyses sentimentAnalyses = AdditionalSentimentAnalyses.None)
-        {
-            var options = new AnalyzeSentimentOptions() { AdditionalSentimentAnalyses = sentimentAnalyses };
-            return await client.AnalyzeSentimentAsync(input, language, options);
-        }
-
-        public static async Task<AnalyzeSentimentResultCollection> AnalyzeSentimentAsync(string[] input, string language = "en", AdditionalSentimentAnalyses sentimentAnalyses = AdditionalSentimentAnalyses.None)
-        {
-            var options = new AnalyzeSentimentOptions() { AdditionalSentimentAnalyses = sentimentAnalyses };
-            return await client.AnalyzeSentimentBatchAsync(input, language, options);
-        }
-
         public static async Task<DetectedLanguage> DetectLanguageAsync(string input)
         {
             return await client.DetectLanguageAsync(input);
         }
 
-        public static async Task<CategorizedEntityCollection> RecognizeEntitiesAsync(string input)
+        public static async Task<DocumentSentiment> AnalyzeSentimentAsync(string input, string language = null, bool includeOpinionMining = false)
         {
-            return await client.RecognizeEntitiesAsync(input);
+            var options = new AnalyzeSentimentOptions() { IncludeOpinionMining = includeOpinionMining };
+            return await client.AnalyzeSentimentAsync(input, language, options);
         }
 
-        public static async Task<LinkedEntityCollection> RecognizeLinkedEntitiesAsync(string input)
+        public static async Task<AnalyzeSentimentResultCollection> AnalyzeSentimentAsync(string[] input, string language = null, bool includeOpinionMining = false)
         {
-            return await client.RecognizeLinkedEntitiesAsync(input);
+            var options = new AnalyzeSentimentOptions() { IncludeOpinionMining = includeOpinionMining };
+            return await client.AnalyzeSentimentBatchAsync(input, language, options);
         }
 
-        public static async Task<KeyPhraseCollection> ExtractKeyPhrasesAsync(string input, string language = "en")
+        public static async Task<KeyPhraseCollection> ExtractKeyPhrasesAsync(string input, string language = null)
         {
             return await client.ExtractKeyPhrasesAsync(input, language);
         }
 
-        public static async Task<ExtractKeyPhrasesResultCollection> ExtractKeyPhrasesAsync(string[] input, string language = "en")
+        public static async Task<ExtractKeyPhrasesResultCollection> ExtractKeyPhrasesAsync(string[] input, string language = null)
         {
             return await client.ExtractKeyPhrasesBatchAsync(input, language);
+        }
+
+        public static async Task<CategorizedEntityCollection> RecognizeEntitiesAsync(string input, string language = null)
+        {
+            return await client.RecognizeEntitiesAsync(input, language);
+        }
+
+        public static async Task<LinkedEntityCollection> RecognizeLinkedEntitiesAsync(string input, string language = null)
+        {
+            return await client.RecognizeLinkedEntitiesAsync(input, language);
+        }
+
+        public static string GetLanguageCode(DetectedLanguage detectedLanguage)
+        {
+            if (LanguageCodeMap.ContainsKey(detectedLanguage.Iso6391Name))
+            {
+                return LanguageCodeMap[detectedLanguage.Iso6391Name];
+            }
+
+            return !string.IsNullOrEmpty(detectedLanguage.Iso6391Name) ? detectedLanguage.Iso6391Name : DefaultLanguageCode;
         }
     }
 }

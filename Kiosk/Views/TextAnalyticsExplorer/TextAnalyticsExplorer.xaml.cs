@@ -56,12 +56,17 @@ namespace IntelligentKioskSample.Views.TextAnalyticsExplorer
         ExperienceType = ExperienceType.Guided | ExperienceType.Business,
         TechnologiesUsed = TechnologyType.TextAnalytics,
         TechnologyArea = TechnologyAreaType.Language,
-        DateAdded = "2020/09/17")]
+        DateAdded = "2020/09/17",
+        DateUpdated = "2021/02/04",
+        UpdatedDescription = "Now supporting more languages")]
     public sealed partial class TextAnalyticsExplorer : Page
     {
         private static readonly Color PositiveColor = Color.FromArgb(255, 137, 196, 2); // #89c402
         private static readonly Color NeutralColor = Color.FromArgb(255, 0, 120, 212);  // #0078d4
         private static readonly Color NegativeColor = Color.FromArgb(255, 165, 20, 25); // #a51419
+
+        private const string NotFound = "Not found";
+        private const string LanguageNotSupported = "Not supported in this language";
 
         public ObservableCollection<MinedOpinion> OpinionMiningCollection { get; set; } = new ObservableCollection<MinedOpinion>();
         public ObservableCollection<SampleText> SampleTextList { get; set; } = new ObservableCollection<SampleText>();
@@ -81,21 +86,12 @@ namespace IntelligentKioskSample.Views.TextAnalyticsExplorer
             }
             else
             {
-                bool isNotAvailableRegion = TextAnalyticsHelper.NotAvailableAzureRegions.Any(r => SettingsHelper.Instance.TextAnalyticsApiKeyEndpoint.Contains(r, StringComparison.OrdinalIgnoreCase));
-                if (isNotAvailableRegion)
+                this.mainPage.IsEnabled = true;
+                SampleTextList.AddRange(TextAnalyticsDataLoader.GetTextSamples());
+                if (SampleTextList.Any())
                 {
-                    this.mainPage.IsEnabled = false;
-                    await new MessageDialog("Text Analytics API v3 is not available in the following regions: China North 2, China East. Please change your Text Analytics key and region in the Settings page to a supported region.", "API key not supported").ShowAsync();
-                }
-                else
-                {
-                    this.mainPage.IsEnabled = true;
-                    SampleTextList.AddRange(TextAnalyticsDataLoader.GetTextSamples());
-                    if (SampleTextList.Any())
-                    {
-                        this.sampleTextComboBox.SelectedIndex = 0;
-                        await AnalyzeTextAsync();
-                    }
+                    this.sampleTextComboBox.SelectedIndex = 0;
+                    await AnalyzeTextAsync();
                 }
             }
 
@@ -129,58 +125,71 @@ namespace IntelligentKioskSample.Views.TextAnalyticsExplorer
                 this.progressControl.IsActive = true;
                 DisplayProcessingUI();
 
+                // detect language
                 string input = this.inputText.Text;
-                var detectedLanguageTask = TextAnalyticsHelper.DetectLanguageAsync(input);
-                var detectedKeyPhrasesTask = TextAnalyticsHelper.ExtractKeyPhrasesAsync(input);
-                var documentSentimentTask = TextAnalyticsHelper.AnalyzeSentimentAsync(input, sentimentAnalyses: AdditionalSentimentAnalyses.OpinionMining);
-                var namedEntitiesResponseTask = TextAnalyticsHelper.RecognizeEntitiesAsync(input);
-                var linkedEntitiesResponseTask = TextAnalyticsHelper.RecognizeLinkedEntitiesAsync(input);
+                DetectedLanguage detectedLanguage = await TextAnalyticsHelper.DetectLanguageAsync(input);
+                string languageCode = TextAnalyticsHelper.GetLanguageCode(detectedLanguage);
 
-                await Task.WhenAll(detectedLanguageTask, detectedKeyPhrasesTask, documentSentimentTask, namedEntitiesResponseTask, linkedEntitiesResponseTask);
-                var detectedLanguage = detectedLanguageTask.Result;
-                var detectedKeyPhrases = detectedKeyPhrasesTask.Result;
-                var documentSentiment = documentSentimentTask.Result;
-                var namedEntitiesResponse = namedEntitiesResponseTask.Result;
-                var linkedEntitiesResponse = linkedEntitiesResponseTask.Result;
+                // check supported languages
+                bool isOpinionMiningSupported = TextAnalyticsHelper.OpinionMiningSupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
+                bool isSentimentSupported = TextAnalyticsHelper.SentimentAnalysisSupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
+                bool isKeyPhraseSupported = TextAnalyticsHelper.KeyPhraseExtractionSupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
+                bool isNamedEntitySupported = TextAnalyticsHelper.NamedEntitySupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
+                bool isEntityLinkingSupported = TextAnalyticsHelper.EntityLinkingSupportedLanguages.Any(l => string.Equals(l, languageCode, StringComparison.OrdinalIgnoreCase));
 
-                // detected language and key phrases
-                this.detectedLangTextBlock.Text = !string.IsNullOrEmpty(detectedLanguage.Name) ? $"{detectedLanguage.Name} (confidence: {(int)(detectedLanguage.ConfidenceScore * 100)}%)" : "Not found";
-                this.detectedKeyPhrasesTextBlock.Text = detectedKeyPhrases.Any() ? string.Join(", ", detectedKeyPhrases) : "Not found";
+                // sentiment analysis, key phrase extraction, named entity recognition and entity linking
+                Task<DocumentSentiment> documentSentimentTask = isSentimentSupported ? TextAnalyticsHelper.AnalyzeSentimentAsync(input, languageCode, isOpinionMiningSupported) : Task.FromResult<DocumentSentiment>(null);
+                Task<KeyPhraseCollection> detectedKeyPhrasesTask = isKeyPhraseSupported ? TextAnalyticsHelper.ExtractKeyPhrasesAsync(input, languageCode) : Task.FromResult<KeyPhraseCollection>(null);
+                Task<CategorizedEntityCollection> namedEntitiesResponseTask = isNamedEntitySupported ? TextAnalyticsHelper.RecognizeEntitiesAsync(input, languageCode) : Task.FromResult<CategorizedEntityCollection>(null);
+                Task<LinkedEntityCollection> linkedEntitiesResponseTask = isEntityLinkingSupported ? TextAnalyticsHelper.RecognizeLinkedEntitiesAsync(input, languageCode) : Task.FromResult<LinkedEntityCollection>(null);
 
-                // document sentiment
-                CreateSentimentChart(documentSentiment);
+                await Task.WhenAll(documentSentimentTask, detectedKeyPhrasesTask, namedEntitiesResponseTask, linkedEntitiesResponseTask);
 
-                // mined opinions
-                OpinionMiningCollection.Clear();
-                var minedOpinions = documentSentiment?.Sentences.SelectMany(s => s.MinedOpinions);
-                if (minedOpinions != null && minedOpinions.Any())
+                DocumentSentiment documentSentiment = documentSentimentTask.Result;
+                KeyPhraseCollection detectedKeyPhrases = detectedKeyPhrasesTask.Result;
+                CategorizedEntityCollection namedEntitiesResponse = namedEntitiesResponseTask.Result;
+                LinkedEntityCollection linkedEntitiesResponse = linkedEntitiesResponseTask.Result;
+
+                // display results
+                this.detectedLangTextBlock.Text = !string.IsNullOrEmpty(detectedLanguage.Name) ? $"{detectedLanguage.Name} (confidence: {(int)(detectedLanguage.ConfidenceScore * 100)}%)" : NotFound;
+
+                this.detectedKeyPhrasesTextBlock.Text = detectedKeyPhrases != null && detectedKeyPhrases.Any()
+                    ? string.Join(", ", detectedKeyPhrases)
+                    : isKeyPhraseSupported ? NotFound : LanguageNotSupported;
+
+                this.namesEntitiesGridView.ItemsSource = namedEntitiesResponse != null && namedEntitiesResponse.Any()
+                    ? namedEntitiesResponse.Select(x => new { x.Text, Category = $"[{x.Category}]" })
+                    : new[] { new { Text = isNamedEntitySupported ? "No entities" : LanguageNotSupported, Category = "" } };
+
+                this.linkedEntitiesGridView.ItemsSource = linkedEntitiesResponse != null && linkedEntitiesResponse.Any()
+                    ? linkedEntitiesResponse.Select(x => new { Name = $"{x.Name} ({x.DataSource})", x.Url })
+                    : new[] {
+                        isEntityLinkingSupported
+                        ? new { Name = "No linked entities", Url = new Uri("about:blank") }
+                        : new { Name = LanguageNotSupported, Url = TextAnalyticsHelper.LanguageSupportUri }
+                    };
+
+                if (isSentimentSupported)
                 {
-                    var minedOpinionList = minedOpinions.Select(om => new MinedOpinion()
+                    CreateSentimentChart(documentSentiment);
+
+                    // mined opinions
+                    OpinionMiningCollection.Clear();
+                    var minedOpinions = documentSentiment?.Sentences.SelectMany(s => s.MinedOpinions);
+                    if (minedOpinions != null && minedOpinions.Any())
                     {
-                        Aspect = om.Aspect.Text,
-                        Opinions = string.Join(", ", om.Opinions.Select(o => $"{o.Text} ({o.Sentiment.ToString("G")})"))
-                    });
-                    OpinionMiningCollection.AddRange(minedOpinionList);
-                }
-
-                // entities
-                if (namedEntitiesResponse.Any())
-                {
-                    this.namesEntitiesGridView.ItemsSource = namedEntitiesResponse.Select(x => new { x.Text, Category = $"[{x.Category}]" });
+                        var minedOpinionList = minedOpinions.Select(om => new MinedOpinion()
+                        {
+                            Aspect = om.Aspect.Text,
+                            Opinions = string.Join(", ", om.Opinions.Select(o => $"{o.Text} ({o.Sentiment.ToString("G")})"))
+                        });
+                        OpinionMiningCollection.AddRange(minedOpinionList);
+                    }
                 }
                 else
                 {
-                    this.namesEntitiesGridView.ItemsSource = new[] { new { Text = "No entities" } };
-                }
-
-                // linked entities
-                if (linkedEntitiesResponse.Any())
-                {
-                    this.linkedEntitiesGridView.ItemsSource = linkedEntitiesResponse.Select(x => new { Name = $"{x.Name} ({x.DataSource})", x.Url });
-                }
-                else
-                {
-                    this.linkedEntitiesGridView.ItemsSource = new[] { new { Name = "No linked entities" } };
+                    this.sentimentTextBlock.Text = LanguageNotSupported;
+                    this.sentimentChart.Visibility = Visibility.Collapsed;
                 }
 
                 // prepare json result
@@ -239,6 +248,7 @@ namespace IntelligentKioskSample.Views.TextAnalyticsExplorer
             this.detectedKeyPhrasesTextBlock.Text = label;
             this.sentimentChart.Visibility = Visibility.Collapsed;
             this.sentimentTextBlock.Text = label;
+            this.OpinionMiningCollection.Clear();
             this.namesEntitiesGridView.ItemsSource = new[] { new { Text = label } };
             this.linkedEntitiesGridView.ItemsSource = new[] { new { Name = label } };
         }
