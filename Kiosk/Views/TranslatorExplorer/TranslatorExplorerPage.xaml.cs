@@ -165,7 +165,7 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
             }
             else
             {
-                this.translatorTextService = new TranslatorTextService(SettingsHelper.Instance.TranslatorTextApiKey);
+                this.translatorTextService = new TranslatorTextService(SettingsHelper.Instance.TranslatorTextApiKey, SettingsHelper.Instance.TranslatorTextApiRegion);
                 await LoadSupportedLanguagesAsync();
                 LoadSamplePhrases();
                 timer.Start();

@@ -84,10 +84,10 @@ namespace IntelligentKioskSample
                 errorDetails = faceApiException.Message;
             }
 
-            var visionException = ex as Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ComputerVisionErrorException;
-            if (visionException?.Body?.Message != null)
+            var visionException = ex as Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models.ComputerVisionErrorResponseException;
+            if (visionException?.Body?.Error?.Message != null)
             {
-                errorDetails = visionException.Body.Message;
+                errorDetails = visionException.Body.Error.Message;
             }
 
             HttpOperationException httpException = ex as HttpOperationException;

@@ -177,7 +177,7 @@ namespace IntelligentKioskSample
                 : Task.CompletedTask,
 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.TranslatorTextApiKey)
-                ? CognitiveServiceApiKeyTester.TestTranslatorTextApiKeyAsync(SettingsHelper.Instance.TranslatorTextApiKey)
+                ? CognitiveServiceApiKeyTester.TestTranslatorTextApiKeyAsync(SettingsHelper.Instance.TranslatorTextApiKey, SettingsHelper.Instance.TranslatorTextApiRegion)
                 : Task.CompletedTask,
 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.AnomalyDetectorApiKey)

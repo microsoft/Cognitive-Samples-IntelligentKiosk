@@ -117,7 +117,7 @@ namespace ServiceHelpers
                     response = await action();
                     break;
                 }
-                catch (ComputerVisionErrorException exception) when (exception.Response?.StatusCode == (System.Net.HttpStatusCode)429 && retriesLeft > 0)
+                catch (ComputerVisionErrorResponseException exception) when (exception.Response?.StatusCode == (System.Net.HttpStatusCode)429 && retriesLeft > 0)
                 {
                     ErrorTrackingHelper.TrackException(exception, "Vision API throttling error");
                     if (retriesLeft == 1 && Throttled != null)

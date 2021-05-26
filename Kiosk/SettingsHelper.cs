@@ -44,6 +44,8 @@ namespace IntelligentKioskSample
     internal class SettingsHelper : INotifyPropertyChanged
     {
         public static readonly string CustomEndpointName = "Custom";
+        public static readonly string GlobalRegionName = "Global";
+        public static readonly string DefaultTranslatorTextApiRegion = "westus2";
         public static readonly string DefaultApiEndpoint = "https://westus.api.cognitive.microsoft.com";
         public static readonly string DefaultCustomVisionApiEndpoint = "https://southcentralus.api.cognitive.microsoft.com";
         public static readonly string DefaultFormRecognizerApiEndpoint = "https://westus2.api.cognitive.microsoft.com";
@@ -376,6 +378,12 @@ namespace IntelligentKioskSample
             if (value != null)
             {
                 this.TranslatorTextApiKey = value.ToString();
+            }
+
+            value = ApplicationData.Current.RoamingSettings.Values["TranslatorTextApiRegion"];
+            if (value != null)
+            {
+                this.TranslatorTextApiRegion = value.ToString();
             }
         }
 
@@ -852,6 +860,32 @@ namespace IntelligentKioskSample
             }
         }
 
+        private string translatorTextApiRegion = DefaultTranslatorTextApiRegion;
+        public string TranslatorTextApiRegion
+        {
+            get 
+            {
+                return string.Equals(this.translatorTextApiRegion, SettingsHelper.GlobalRegionName, StringComparison.OrdinalIgnoreCase)
+                        ? string.Empty
+                        : this.translatorTextApiRegion;
+            }
+            set
+            {
+                this.translatorTextApiRegion = value;
+                this.OnSettingChanged("TranslatorTextApiRegion", value);
+            }
+        }
+
+        public string BindingTranslatorTextApiRegion
+        {
+            get { return this.translatorTextApiRegion; }
+            set
+            {
+                this.translatorTextApiRegion = value;
+                this.OnSettingChanged("TranslatorTextApiRegion", value);
+            }
+        }
+
         private string anomalyDetectorApiKey = string.Empty;
         public string AnomalyDetectorApiKey
         {
@@ -863,7 +897,7 @@ namespace IntelligentKioskSample
             }
         }
 
-        private string anomalyDetectorKeyEndpoint = string.Empty;
+        private string anomalyDetectorKeyEndpoint = DefaultApiEndpoint;
         public string AnomalyDetectorKeyEndpoint
         {
             get 
@@ -1071,6 +1105,40 @@ namespace IntelligentKioskSample
 
                     new KeyValuePair<string,string>("UAE North",        "https://uaenorth.api.cognitive.microsoft.com"),
                     new KeyValuePair<string,string>("Brazil South",     "https://brazilsouth.api.cognitive.microsoft.com")
+                };
+            }
+        }
+
+        public KeyValuePair<string, string>[] AvailableTranslatorTextApiRegions
+        {
+            get
+            {
+                return new KeyValuePair<string, string>[]
+                {
+                    new KeyValuePair<string, string>("Global", GlobalRegionName),
+                    new KeyValuePair<string, string>("Central US", "centralus"),
+                    new KeyValuePair<string, string>("Central US EUAP", "centraluseuap"),
+                    new KeyValuePair<string, string>("East US", "eastus"),
+                    new KeyValuePair<string, string>("East US 2", "eastus2"),
+                    new KeyValuePair<string, string>("North Central US", "northcentralus"),
+                    new KeyValuePair<string, string>("South Central US", "southcentralus"),
+                    new KeyValuePair<string, string>("West Central US", "westcentralus"),
+                    new KeyValuePair<string, string>("West US", "westus"),
+                    new KeyValuePair<string, string>("West US 2", "westus2"),
+                    new KeyValuePair<string, string>("Australia East", "australiaeast"),
+                    new KeyValuePair<string, string>("Brazil South", "brazilsouth"),
+                    new KeyValuePair<string, string>("Canada Central", "canadacentral"),
+                    new KeyValuePair<string, string>("Central India", "centralindia"),
+                    new KeyValuePair<string, string>("East Asia", "eastasia"),
+                    new KeyValuePair<string, string>("France Central", "francecentral"),
+                    new KeyValuePair<string, string>("Japan East", "japaneast"),
+                    new KeyValuePair<string, string>("Japan West", "japanwest"),
+                    new KeyValuePair<string, string>("Korea Central", "koreacentral"),
+                    new KeyValuePair<string, string>("North Europe", "northeurope"),
+                    new KeyValuePair<string, string>("Southeast Asia", "southeastasia"),
+                    new KeyValuePair<string, string>("UK South", "uksouth"),
+                    new KeyValuePair<string, string>("West Europe", "westeurope"),
+                    new KeyValuePair<string, string>("South Africa North", "southafricanorth")
                 };
             }
         }

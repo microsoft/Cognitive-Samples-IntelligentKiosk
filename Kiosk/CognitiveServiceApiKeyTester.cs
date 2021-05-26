@@ -158,7 +158,7 @@ namespace IntelligentKioskSample
             }
         }
 
-        public static async Task TestTranslatorTextApiKeyAsync(string key)
+        public static async Task TestTranslatorTextApiKeyAsync(string key, string region)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -166,8 +166,8 @@ namespace IntelligentKioskSample
             }
 
             string testQuery = "Hello world";
-            var service = new TranslatorTextService(key);
-            var result = await service.DetectLanguageAsync(testQuery);
+            var service = new TranslatorTextService(key, region);
+            await service.DetectLanguageAsync(testQuery);
         }
 
         public static async Task TestAnomalyDetectorApiKeyAsync(string key, string apiEndpoint)
