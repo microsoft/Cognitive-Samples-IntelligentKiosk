@@ -4,12 +4,12 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
 # Requirements
 1. Windows 10 version 1809 or later (the sample is a UWP application). For a Windows 10 IoT deployment, see details later in this page. 
 2. A webcam, ideally top-mounted so you have a similar experience as looking at a mirror when interacting with the demos 
-3. [Visual Studio 2017](https://www.visualstudio.com) with the Universal Windows Platform workload enabled
+3. [Visual Studio 2019](https://www.visualstudio.com) with the Universal Windows Platform workload enabled
 4. API Keys
   * Between the various demos, you might need API keys for Face, Computer Vision, Custom Vision, Text Analytics, Bing Search and Bing AutoSuggestion. Visit  [Microsoft.com/cognitive](https://www.microsoft.com/cognitive-services) if you need keys. Please notice that some of the demos perform tasks in realtime, so if you are going to use some of those demos you will need to upgrade to a paid key so it has enough throughput and won't be throttled. 
 
 # Running the sample
-1. Open the solution in Visual Studio 2017
+1. Open the solution in Visual Studio 2019
 2. Right click on the IntelligentKioskSample project and set it as the StartUp Project 
 3. Run the solution (F5)
 4. Enter your API Keys in the Settings page (they will be saved in the user profile). See [Settings](Documentation/AppSettings.md) for  more details on the available settings.
