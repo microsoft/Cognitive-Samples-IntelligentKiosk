@@ -47,16 +47,22 @@ namespace ServiceHelpers
     public class TranslatorTextService : ServiceBase
     {
         private readonly string HEADER_SUB_KEY = "Ocp-Apim-Subscription-Key";
+        private readonly string HEADER_REGION = "Ocp-Apim-Subscription-Region";
         private readonly string SERVICE_URL_FORMAT = "https://api.cognitive.microsofttranslator.com";
         private readonly string API_VERSION = "api-version=3.0";
 
-        public TranslatorTextService(string subscriptionKey)
+        public TranslatorTextService(string subscriptionKey, string region = null)
         {
             this.BaseServiceUrl = SERVICE_URL_FORMAT;
             this.RequestHeaders = new Dictionary<string, string>()
             {
                 {  this.HEADER_SUB_KEY, subscriptionKey }
             };
+
+            if (!string.IsNullOrEmpty(region))
+            {
+                this.RequestHeaders.Add(this.HEADER_REGION, region);
+            }
         }
 
         /// <summary>

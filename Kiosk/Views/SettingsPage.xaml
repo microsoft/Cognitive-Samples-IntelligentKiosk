@@ -300,7 +300,11 @@
                         <!--translator text api-->
                         <StackPanel Style="{StaticResource Settings.SubPanel}" >
                             <TextBlock Text="Translator Text" Style="{StaticResource Settings.SubTitle}"/>
-                            <PasswordBox Header="Translator Text API Key" Password="{Binding TranslatorTextApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+
+                            <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
+                                <PasswordBox Header="Translator Text API Key" Password="{Binding TranslatorTextApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}"/>
+                                <ComboBox Header="Location" ItemsSource="{Binding AvailableTranslatorTextApiRegions}" SelectedValuePath="Value" DisplayMemberPath="Key" SelectedValue="{Binding BindingTranslatorTextApiRegion, Mode=TwoWay}"/>
+                            </StackPanel>
                         </StackPanel>
 
                         <!--anomaly detector api-->
