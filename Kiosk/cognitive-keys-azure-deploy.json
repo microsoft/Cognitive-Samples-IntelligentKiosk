@@ -64,13 +64,9 @@
       "metadata": {
         "description": "SKU for Computer Vision API"
       },
-      "defaultValue": "S0",
+      "defaultValue": "S",
       "allowedValues": [
-        "S0",
-        "S1",
-        "S2",
-        "S3",
-        "S4"
+        "S"
       ]
     },
     "bingSearchSKU": {
