@@ -112,10 +112,17 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
         {
             //setup custom vision clients
             if (!string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) &&
-                !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey))
+                !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey) &&
+                !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionResourceId))
             {
-                _customVisionTraining = new CustomVisionTrainingClient { Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
-                _customVisionPrediction = new CustomVisionPredictionClient { Endpoint = SettingsHelper.Instance.CustomVisionPredictionApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionPredictionApiKey };
+                _customVisionTraining = new CustomVisionTrainingClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.ApiKeyServiceClientCredentials(SettingsHelper.Instance.CustomVisionTrainingApiKey))
+                {
+                    Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint
+                };
+                _customVisionPrediction = new CustomVisionPredictionClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.ApiKeyServiceClientCredentials(SettingsHelper.Instance.CustomVisionPredictionApiKey))
+                {
+                    Endpoint = SettingsHelper.Instance.CustomVisionPredictionApiKeyEndpoint
+                };
             }
 
             //get custom vision projects
@@ -369,7 +376,7 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
             }
             if (serviceTypes.HasFlag(ImageProcessorServiceType.CustomVision))
             {
-                result.Add(new CustomVisionProcessorService(_customVisionPrediction, await CustomVisionProcessorService.GetProjectIterations(_customVisionTraining, customVisionProjects)));
+                result.Add(new CustomVisionProcessorService(_customVisionPrediction, await CustomVisionProcessorService.GetProjectIterations(_customVisionTraining, SettingsHelper.Instance.CustomVisionPredictionResourceId, customVisionProjects)));
             }
             return result.ToArray();
         }

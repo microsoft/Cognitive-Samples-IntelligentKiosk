@@ -93,7 +93,10 @@ namespace IntelligentKioskSample
             }
             else
             {
-                CustomVisionTrainingClient client = new CustomVisionTrainingClient { Endpoint = apiEndpoint, ApiKey = key };
+                CustomVisionTrainingClient client = new CustomVisionTrainingClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.ApiKeyServiceClientCredentials(key))
+                {
+                    Endpoint = apiEndpoint
+                };
                 await client.GetDomainsAsync();
             }
         }

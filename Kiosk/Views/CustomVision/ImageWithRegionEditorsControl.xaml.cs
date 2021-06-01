@@ -192,14 +192,14 @@ namespace IntelligentKioskSample.Views.CustomVision
             double normalizedHeight = 50 / imageRegionsCanvas.ActualHeight;
 
             ImageRegion newRegion = new ImageRegion(
-                default(Guid),
-                this.imageViewModel.TagHintForNewRegions.Name,
-                default(DateTime),
-                this.imageViewModel.TagHintForNewRegions.Id,
-                normalizedPosX,
-                normalizedPosY,
-                normalizedWidth + normalizedPosX > 1 ? 1 - normalizedPosX : normalizedWidth,
-                normalizedHeight + normalizedPosY > 1 ? 1 - normalizedPosY : normalizedHeight);
+                tagId: default(Guid),
+                left: normalizedPosX,
+                top: normalizedPosY,
+                width: normalizedWidth + normalizedPosX > 1 ? 1 - normalizedPosX : normalizedWidth,
+                height: normalizedHeight + normalizedPosY > 1 ? 1 - normalizedPosY : normalizedHeight,
+                tagName: this.imageViewModel.TagHintForNewRegions.Name,
+                created: default(DateTime),
+                regionId: this.imageViewModel.TagHintForNewRegions.Id);
 
             ImageViewModel imageViewModel = (ImageViewModel)this.DataContext;
             imageViewModel.AddedImageRegions.Add(newRegion);

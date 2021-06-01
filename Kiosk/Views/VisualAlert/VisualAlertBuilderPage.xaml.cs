@@ -123,7 +123,9 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) || string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey))
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) ||
+                string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey) ||
+                string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionResourceId))
             {
                 this.mainPage.IsEnabled = false;
                 await new MessageDialog("Please enter Custom Vision API Keys in the Settings Page.", "Missing API Keys").ShowAsync();
@@ -132,7 +134,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             {
                 this.mainPage.IsEnabled = true;
 
-                customVisionServiceWrapper = new CustomVisionServiceWrapper(SettingsHelper.Instance.CustomVisionTrainingApiKey, SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint);
+                customVisionServiceWrapper = new CustomVisionServiceWrapper(SettingsHelper.Instance.CustomVisionTrainingApiKey, SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint, SettingsHelper.Instance.CustomVisionPredictionResourceId);
 
                 await LoadScenariosAsync();
             }
@@ -230,7 +232,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
         private void UpdateCameraHostSize()
         {
-            double aspectRatio = (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
+            double aspectRatio = this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777;
 
             double desiredHeight = this.webCamHostGridParent.ActualWidth / aspectRatio;
 
@@ -338,7 +340,10 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
                 // train project
                 UpdateProcessingStatus(data.Name, AlertCreateProcessingStatus.Training);
-                await customVisionServiceWrapper.TrainProjectAsync(project.Id);
+                Iteration iteration = await customVisionServiceWrapper.TrainProjectAsync(project.Id);
+
+                // publish iteration
+                // await customVisionServiceWrapper.PublishIteration(project.Id, iteration);
 
                 // export project
                 UpdateProcessingStatus(data.Name, AlertCreateProcessingStatus.Exporting);

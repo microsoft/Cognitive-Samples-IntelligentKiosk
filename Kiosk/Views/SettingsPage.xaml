@@ -230,7 +230,10 @@
 
                         <!--custom vision-->
                         <StackPanel Style="{StaticResource Settings.SubPanel}">
-                            <TextBlock Text="Custom Vision" Style="{StaticResource Settings.SubTitle}"/>
+                            <StackPanel>
+                                <TextBlock Text="Custom Vision" Style="{StaticResource Settings.SubTitle}"/>
+                                <TextBlock Style="{StaticResource Settings.Comment}" Text="The 3.0 APIs do not use the default iteration feature. Now you need the prediction resource ID. You can obtain this value from the Properties page for your Custom Vision Prediction resource in the Azure Portal. See the 'Resource ID' field."/>
+                            </StackPanel>
 
                             <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
                                 <PasswordBox Header="Custom Vision Training Key" Password="{Binding CustomVisionTrainingApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}"  />
@@ -243,6 +246,8 @@
                                 <ComboBox Header="Location" ItemsSource="{Binding AvailableCustomVisionApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" 
                                           SelectedValue="{Binding CustomVisionPredictionApiKeyEndpoint, Mode=TwoWay}"/>
                             </StackPanel>
+                            
+                            <TextBox Header="Custom Vision Prediction Resource Id" Text="{Binding CustomVisionPredictionResourceId, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
                         </StackPanel>
 
                         <!--computer vision-->

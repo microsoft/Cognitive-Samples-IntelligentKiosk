@@ -47,6 +47,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
     {
         public const string NegativeTag = "Negative";
 
+        private readonly string predictionResourceId;
         private readonly CustomVisionTrainingClient trainingApi;
         private readonly ProjectDomainViewModel projectDomain = new ProjectDomainViewModel
         {
@@ -54,11 +55,11 @@ namespace IntelligentKioskSample.Views.VisualAlert
             DisplayName = "Image Classification, General (exportable)"
         };
 
-        public CustomVisionServiceWrapper(string apiKey, string endpoint)
+        public CustomVisionServiceWrapper(string apiKey, string endpoint, string resourceId)
         {
-            trainingApi = new CustomVisionTrainingClient
+            predictionResourceId = resourceId;
+            trainingApi = new CustomVisionTrainingClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.ApiKeyServiceClientCredentials(apiKey))
             {
-                ApiKey = apiKey,
                 Endpoint = endpoint
             };
         }
@@ -101,7 +102,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 {
                     addResult = await trainingApi.CreateImagesFromDataAsync(
                         projectId,
-                        await item.GetImageStreamCallback(), tag != null ? new string[] { tag.Id.ToString() } : null);
+                        await item.GetImageStreamCallback(), tag != null ? new List<Guid> { tag.Id } : null);
                 }
                 else
                 {
@@ -112,12 +113,12 @@ namespace IntelligentKioskSample.Views.VisualAlert
             }
         }
 
-        public async Task<bool> TrainProjectAsync(Guid projectId)
+        public async Task<Iteration> TrainProjectAsync(Guid projectId)
         {
-            bool trainingSucceeded = true;
+            Iteration iteration = null;
             try
             {
-                Iteration iteration = await trainingApi.TrainProjectAsync(projectId);
+                iteration = await trainingApi.TrainProjectAsync(projectId);
 
                 while (true)
                 {
@@ -125,10 +126,6 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
                     if (iteration.Status != "Training")
                     {
-                        if (iteration.Status == "Failed")
-                        {
-                            trainingSucceeded = false;
-                        }
                         break;
                     }
                     await Task.Delay(500);
@@ -142,7 +139,12 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 }
             }
 
-            return trainingSucceeded;
+            return iteration;
+        }
+
+        public async Task<bool?> PublishIteration(Guid projectId, Iteration iteration)
+        {
+            return await trainingApi.PublishIterationAsync(projectId, iteration.Id, iteration.Id.ToString(), predictionResourceId);
         }
 
         public async Task<VisualAlertScenarioData> ExportOnnxProject(Project project)
@@ -167,7 +169,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
             // download onnx model
             Guid newModelId = Guid.NewGuid();
             StorageFolder onnxProjectDataFolder = await VisualAlertDataLoader.GetOnnxModelStorageFolderAsync();
-            StorageFile file = await onnxProjectDataFolder.CreateFileAsync($"{newModelId.ToString()}.onnx", CreationCollisionOption.ReplaceExisting);
+            StorageFile file = await onnxProjectDataFolder.CreateFileAsync($"{newModelId}.onnx", CreationCollisionOption.ReplaceExisting);
             await Util.DownloadFileASync(exportProject.DownloadUri, file, null);
 
             return new VisualAlertScenarioData

@@ -88,27 +88,32 @@ namespace IntelligentKioskSample.Views
             var currentProjectViewModel = (ProjectViewModel)this.projectsComboBox.SelectedValue;
             var currentProject = ((ProjectViewModel)this.projectsComboBox.SelectedValue).Model;
 
-            var trainingApi = this.userProvidedTrainingApi;
-            var predictionApi = this.userProvidedPredictionApi;
+            CustomVisionTrainingClient trainingApi = this.userProvidedTrainingApi;
+            CustomVisionPredictionClient predictionApi = this.userProvidedPredictionApi;
 
             try
             {
-                var iteractions = await trainingApi.GetIterationsAsync(currentProject.Id);
+                IList<Iteration> iteractions = await trainingApi.GetIterationsAsync(currentProject.Id);
 
-                var latestTrainedIteraction = iteractions.Where(i => i.Status == "Completed").OrderByDescending(i => i.TrainedAt.Value).FirstOrDefault();
+                Iteration latestTrainedIteraction = iteractions.Where(i => i.Status == "Completed").OrderByDescending(i => i.TrainedAt.Value).FirstOrDefault();
 
                 if (latestTrainedIteraction == null)
                 {
                     throw new Exception("This project doesn't have any trained models yet. Please train it, or wait until training completes if one is in progress.");
                 }
+                
+                if (string.IsNullOrEmpty(latestTrainedIteraction.PublishName))
+                {
+                    await trainingApi.PublishIterationAsync(currentProject.Id, latestTrainedIteraction.Id, latestTrainedIteraction.Id.ToString(), SettingsHelper.Instance.CustomVisionPredictionResourceId);
+                }
 
                 if (img.ImageUrl != null)
                 {
-                    result = await CustomVisionServiceHelper.PredictImageUrlWithRetryAsync(predictionApi, currentProject.Id, new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models.ImageUrl(img.ImageUrl), latestTrainedIteraction.Id);
+                    result = await CustomVisionServiceHelper.ClassifyImageUrlWithRetryAsync(predictionApi, currentProject.Id, new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models.ImageUrl(img.ImageUrl), latestTrainedIteraction.PublishName);
                 }
                 else
                 {
-                    result = await CustomVisionServiceHelper.PredictImageWithRetryAsync(predictionApi, currentProject.Id, img.GetImageStreamCallback, latestTrainedIteraction.Id);
+                    result = await CustomVisionServiceHelper.ClassifyImageWithRetryAsync(predictionApi, currentProject.Id, img.GetImageStreamCallback, latestTrainedIteraction.PublishName);
                 }
             }
             catch (Exception ex)
@@ -162,10 +167,17 @@ namespace IntelligentKioskSample.Views
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             if (!string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) &&
-                !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey))
+                !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey) &&
+                !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionResourceId))
             {
-                userProvidedTrainingApi = new CustomVisionTrainingClient { Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
-                userProvidedPredictionApi = new CustomVisionPredictionClient { Endpoint = SettingsHelper.Instance.CustomVisionPredictionApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionPredictionApiKey };
+                userProvidedTrainingApi = new CustomVisionTrainingClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.ApiKeyServiceClientCredentials(SettingsHelper.Instance.CustomVisionTrainingApiKey))
+                {
+                    Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint
+                };
+                userProvidedPredictionApi = new CustomVisionPredictionClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.ApiKeyServiceClientCredentials(SettingsHelper.Instance.CustomVisionPredictionApiKey))
+                {
+                    Endpoint = SettingsHelper.Instance.CustomVisionPredictionApiKeyEndpoint
+                };
             }
 
             this.DataContext = this;
@@ -231,7 +243,7 @@ namespace IntelligentKioskSample.Views
             {
                 maxSamples = (int)Math.Ceiling(tags.Length / 4d) * 4;
             }
-            var sampleTasks = tags.Select(i => trainingEndPoint.GetTaggedImagesAsync(projectId, null, new string[] { i.Id.ToString() }, null, maxSamples)).ToArray(); //request sample images for each tag
+            var sampleTasks = tags.Select(i => trainingEndPoint.GetTaggedImagesAsync(projectId, null, new List<Guid>() { i.Id }, null, maxSamples)).ToArray(); //request sample images for each tag
             await Task.WhenAll(sampleTasks); //wait for request to finish
             //round-robin out sample images
             var roundRobin = new RoundRobinIterator<Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image>(sampleTasks.Select(i => i.Result));

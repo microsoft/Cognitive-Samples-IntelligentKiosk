@@ -82,14 +82,14 @@ namespace ServiceHelpers
             return response;
         }
 
-        public static async Task<ImagePrediction> PredictImageUrlWithRetryAsync(this ICustomVisionPredictionClient predictionApi, Guid projectId, ImageUrl imageUrl, Guid iterationId)
+        public static async Task<ImagePrediction> ClassifyImageUrlWithRetryAsync(this ICustomVisionPredictionClient predictionApi, Guid projectId, ImageUrl imageUrl, string publishedName)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<ImagePrediction>(async () => await predictionApi.PredictImageUrlAsync(projectId, imageUrl, iterationId));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await predictionApi.ClassifyImageUrlAsync(projectId, publishedName, imageUrl));
         }
 
-        public static async Task<ImagePrediction> PredictImageWithRetryAsync(this ICustomVisionPredictionClient predictionApi, Guid projectId, Func<Task<Stream>> imageStreamCallback, Guid iterationId)
+        public static async Task<ImagePrediction> ClassifyImageWithRetryAsync(this ICustomVisionPredictionClient predictionApi, Guid projectId, Func<Task<Stream>> imageStreamCallback, string publishedName)
         {
-            return await RunTaskWithAutoRetryOnQuotaLimitExceededError<ImagePrediction>(async () => await predictionApi.PredictImageAsync(projectId, await imageStreamCallback(), iterationId));
+            return await RunTaskWithAutoRetryOnQuotaLimitExceededError(async () => await predictionApi.ClassifyImageAsync(projectId, publishedName, await imageStreamCallback()));
         }
 
         public static async Task<TrainingModels::Export> ExportIteration(this ICustomVisionTrainingClient trainingApi, Guid projectId, Guid iterationId, int timeoutInSecond = 30)
