@@ -105,6 +105,7 @@ namespace IntelligentKioskSample.Views
                 if (string.IsNullOrEmpty(latestTrainedIteraction.PublishName))
                 {
                     await trainingApi.PublishIterationAsync(currentProject.Id, latestTrainedIteraction.Id, latestTrainedIteraction.Id.ToString(), SettingsHelper.Instance.CustomVisionPredictionResourceId);
+                    latestTrainedIteraction = await trainingApi.GetIterationAsync(currentProject.Id, latestTrainedIteraction.Id);
                 }
 
                 if (img.ImageUrl != null)
@@ -377,9 +378,9 @@ namespace IntelligentKioskSample.Views
             {
                 foreach (var enumerator in enumerators)
                 {
-                    if (enumerator.MoveNext())
+                    hasResult = enumerator.MoveNext();
+                    if (hasResult)
                     {
-                        hasResult = true;
                         yield return enumerator.Current;
                     }
                 }

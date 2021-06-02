@@ -101,10 +101,9 @@ namespace ServiceHelpers
             {
                 exportIteration = await trainingApi.ExportIterationAsync(projectId, iterationId, platform);
             }
-            catch (HttpOperationException ex)
+            catch (TrainingModels::CustomVisionErrorException ex)
             {
-                string exceptionContent = ex?.Response?.Content ?? string.Empty;
-                if (!exceptionContent.Contains("BadRequestExportAlreadyInProgress"))
+                if (ex.Body.Code != TrainingModels::CustomVisionErrorCodes.BadRequestExportAlreadyInProgress)
                 {
                     throw ex;
                 }

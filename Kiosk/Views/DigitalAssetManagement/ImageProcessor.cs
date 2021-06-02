@@ -266,6 +266,7 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
                     if (string.IsNullOrEmpty(iteration.PublishName))
                     {
                         await trainingClient.PublishIterationAsync(project, iteration.Id, publishName: iteration.Id.ToString(), predictionId: predictionResourceId);
+                        iteration = await trainingClient.GetIterationAsync(project, iteration.Id);
                     }
 
                     result.Add(new ProjectIteration() { Project = project, Iteration = iteration.Id, ProjectName = projectEntity.Name, PublishedName = iteration.PublishName, IsObjectDetection = domain.Type == "ObjectDetection" });

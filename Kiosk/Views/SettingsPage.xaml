@@ -232,7 +232,7 @@
                         <StackPanel Style="{StaticResource Settings.SubPanel}">
                             <StackPanel>
                                 <TextBlock Text="Custom Vision" Style="{StaticResource Settings.SubTitle}"/>
-                                <TextBlock Style="{StaticResource Settings.Comment}" Text="The 3.0 APIs do not use the default iteration feature. Now you need the prediction resource ID. You can obtain this value from the Properties page for your Custom Vision Prediction resource in the Azure Portal. See the 'Resource ID' field."/>
+                                <TextBlock Style="{StaticResource Settings.Comment}" Text="The Custom Vision 3.0 APIs requires a prediction resource Id. You can obtain this value from the Properties page for your Custom Vision Prediction resource in the Azure Portal. See the 'Resource ID' field."/>
                             </StackPanel>
 
                             <StackPanel Style="{StaticResource Settings.Panel.Horizontal}">
@@ -246,8 +246,8 @@
                                 <ComboBox Header="Location" ItemsSource="{Binding AvailableCustomVisionApiEndpoints}" SelectedValuePath="Value" DisplayMemberPath="Key" 
                                           SelectedValue="{Binding CustomVisionPredictionApiKeyEndpoint, Mode=TwoWay}"/>
                             </StackPanel>
-                            
-                            <TextBox Header="Custom Vision Prediction Resource Id" Text="{Binding CustomVisionPredictionResourceId, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
+
+                            <PasswordBox Header="Custom Vision Prediction Resource Id" Password="{Binding CustomVisionPredictionResourceId, Mode=TwoWay}" Style="{StaticResource Settings.Input}" ToolTipService.ToolTip="This typically has a value such as: '/subscriptions/your subscription ID/resourceGroups/your resource group/providers/Microsoft.CognitiveServices/accounts/your Custom Vision prediction resource name'" />
                         </StackPanel>
 
                         <!--computer vision-->

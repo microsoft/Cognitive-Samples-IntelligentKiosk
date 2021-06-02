@@ -230,7 +230,27 @@ namespace IntelligentKioskSample.Views
 
         private async void OnDeleteProjectClicked(object sender, RoutedEventArgs e)
         {
-            await Util.ConfirmActionAndExecute("Delete project?", async () => { await DeleteProjectAsync(); });
+            await Util.ConfirmActionAndExecute("Delete project?", async () => 
+            {
+                await UnpublishIterations();
+                await DeleteProjectAsync();
+            });
+        }
+
+        private async Task UnpublishIterations()
+        {
+            try
+            {
+                IList<Iteration> publishedIterations = (await trainingApi.GetIterationsAsync(this.CurrentProject.Id)).Where(i => !string.IsNullOrEmpty(i.PublishName)).ToList();
+                foreach (Iteration iteration in publishedIterations)
+                {
+                    await trainingApi.UnpublishIterationAsync(this.CurrentProject.Id, iteration.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Util.GenericApiCallExceptionHandler(ex, "Failure unpublish iterations");
+            }
         }
 
         private async Task DeleteProjectAsync()

@@ -518,6 +518,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                 if (string.IsNullOrEmpty(latestTrainedIteraction.PublishName))
                 {
                     await trainingApi.PublishIterationAsync(modelId, latestTrainedIteraction.Id, publishName: latestTrainedIteraction.Id.ToString(), predictionId: SettingsHelper.Instance.CustomVisionPredictionResourceId);
+                    latestTrainedIteraction = await trainingApi.GetIterationAsync(modelId, latestTrainedIteraction.Id);
                 }
 
                 if (CurrentInputProductImage?.ImageUrl != null)
