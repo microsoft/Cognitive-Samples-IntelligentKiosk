@@ -37,7 +37,6 @@ using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -170,7 +169,13 @@ namespace IntelligentKioskSample.Views.VisualAlert
             Guid newModelId = Guid.NewGuid();
             StorageFolder onnxProjectDataFolder = await VisualAlertDataLoader.GetOnnxModelStorageFolderAsync();
             StorageFile file = await onnxProjectDataFolder.CreateFileAsync($"{newModelId}.onnx", CreationCollisionOption.ReplaceExisting);
-            await Util.DownloadFileASync(exportProject.DownloadUri, file, null);
+            bool success = await Util.UnzipModelFileAsync(exportProject.DownloadUri, file);
+
+            if (!success)
+            {
+                await file.DeleteAsync();
+                return null;
+            }
 
             return new VisualAlertScenarioData
             {

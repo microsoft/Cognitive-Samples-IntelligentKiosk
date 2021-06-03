@@ -693,19 +693,13 @@ namespace IntelligentKioskSample.Views
                 throw new ArgumentNullException("Download Uri");
             }
 
-            bool success = false;
-            Guid newModelId = Guid.NewGuid();
+            var newModelId = Guid.NewGuid();
+            this.downloadCancellationTokenSource = new CancellationTokenSource();
+
             StorageFolder onnxProjectDataFolder = await CustomVisionDataLoader.GetOnnxModelStorageFolderAsync(customVisionProjectType);
-            StorageFile file = await onnxProjectDataFolder.CreateFileAsync($"{newModelId.ToString()}.onnx", CreationCollisionOption.ReplaceExisting);
-            switch (customVisionProjectType)
-            {
-                case CustomVisionProjectType.Classification:
-                    success = await DownloadFileAsync(exportProject.DownloadUri, file);
-                    break;
-                case CustomVisionProjectType.ObjectDetection:
-                    success = await UnzipModelFileAsync(exportProject.DownloadUri, file);
-                    break;
-            }
+            StorageFile file = await onnxProjectDataFolder.CreateFileAsync($"{newModelId}.onnx", CreationCollisionOption.ReplaceExisting);
+            bool success = await Util.UnzipModelFileAsync(exportProject.DownloadUri, file, this.downloadCancellationTokenSource.Token);
+            
             if (!success)
             {
                 await file.DeleteAsync();
@@ -793,41 +787,6 @@ namespace IntelligentKioskSample.Views
                 }
                 await CustomVisionDataLoader.SaveCustomVisionModelDataAsync(customVisionModelList, customVisionProjectType);
             }
-        }
-
-        private async Task<bool> DownloadFileAsync(string downloadUrl, StorageFile file)
-        {
-            try
-            {
-                this.downloadCancellationTokenSource = new CancellationTokenSource();
-                await Util.DownloadFileASync(downloadUrl, file, null, this.downloadCancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private async Task<bool> UnzipModelFileAsync(string downloadUrl, StorageFile modelFile)
-        {
-            bool success = false;
-            Guid zipFileName = Guid.NewGuid();
-            StorageFile zipFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{zipFileName.ToString()}.zip", CreationCollisionOption.ReplaceExisting);
-            try
-            {
-                bool downloadCompleted = await DownloadFileAsync(downloadUrl, zipFile);
-                if (downloadCompleted)
-                {
-                    success = Util.ExtractFileFromZipArchive(zipFile, "model.onnx", modelFile);
-                }
-            }
-            catch (Exception) { }
-            finally
-            {
-                await zipFile.DeleteAsync();
-            }
-            return success;
         }
 
         private void OnNavigateToRealtimeScoringPageButtonClicked(object sender, RoutedEventArgs e)
