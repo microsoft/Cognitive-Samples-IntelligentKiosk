@@ -37,7 +37,6 @@ using ServiceHelpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 
@@ -56,9 +55,8 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
         public CustomVisionServiceWrapper(string apiKey, string endpoint)
         {
-            trainingApi = new CustomVisionTrainingClient
+            trainingApi = new CustomVisionTrainingClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.ApiKeyServiceClientCredentials(apiKey))
             {
-                ApiKey = apiKey,
                 Endpoint = endpoint
             };
         }
@@ -101,7 +99,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 {
                     addResult = await trainingApi.CreateImagesFromDataAsync(
                         projectId,
-                        await item.GetImageStreamCallback(), tag != null ? new string[] { tag.Id.ToString() } : null);
+                        await item.GetImageStreamCallback(), tag != null ? new List<Guid> { tag.Id } : null);
                 }
                 else
                 {
@@ -112,12 +110,12 @@ namespace IntelligentKioskSample.Views.VisualAlert
             }
         }
 
-        public async Task<bool> TrainProjectAsync(Guid projectId)
+        public async Task<Iteration> TrainProjectAsync(Guid projectId)
         {
-            bool trainingSucceeded = true;
+            Iteration iteration = null;
             try
             {
-                Iteration iteration = await trainingApi.TrainProjectAsync(projectId);
+                iteration = await trainingApi.TrainProjectAsync(projectId);
 
                 while (true)
                 {
@@ -125,10 +123,6 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
                     if (iteration.Status != "Training")
                     {
-                        if (iteration.Status == "Failed")
-                        {
-                            trainingSucceeded = false;
-                        }
                         break;
                     }
                     await Task.Delay(500);
@@ -142,7 +136,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
                 }
             }
 
-            return trainingSucceeded;
+            return iteration;
         }
 
         public async Task<VisualAlertScenarioData> ExportOnnxProject(Project project)
@@ -167,8 +161,14 @@ namespace IntelligentKioskSample.Views.VisualAlert
             // download onnx model
             Guid newModelId = Guid.NewGuid();
             StorageFolder onnxProjectDataFolder = await VisualAlertDataLoader.GetOnnxModelStorageFolderAsync();
-            StorageFile file = await onnxProjectDataFolder.CreateFileAsync($"{newModelId.ToString()}.onnx", CreationCollisionOption.ReplaceExisting);
-            await Util.DownloadFileASync(exportProject.DownloadUri, file, null);
+            StorageFile file = await onnxProjectDataFolder.CreateFileAsync($"{newModelId}.onnx", CreationCollisionOption.ReplaceExisting);
+            bool success = await Util.UnzipModelFileAsync(exportProject.DownloadUri, file);
+
+            if (!success)
+            {
+                await file.DeleteAsync();
+                return null;
+            }
 
             return new VisualAlertScenarioData
             {

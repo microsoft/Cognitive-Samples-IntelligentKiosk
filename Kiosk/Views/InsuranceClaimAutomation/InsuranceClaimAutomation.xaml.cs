@@ -162,7 +162,7 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             bool enableFormRecognizerKeys = !string.IsNullOrEmpty(SettingsHelper.Instance.FormRecognizerApiKey) && !string.IsNullOrEmpty(SettingsHelper.Instance.FormRecognizerApiKeyEndpoint);
-            bool enableCustomVisionKeys = !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) && !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey);
+            bool enableCustomVisionKeys = !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) && !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey) && !string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionResourceId);
             bool enableModelIds = FormRecognizerModelId != Guid.Empty && ObjectDetectionModelId != Guid.Empty && ObjectClassificationModelId != Guid.Empty;
 
             if (enableFormRecognizerKeys)
@@ -173,8 +173,14 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
             if (enableCustomVisionKeys)
             {
-                trainingApi = new CustomVisionTrainingClient { Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
-                predictionApi = new CustomVisionPredictionClient { Endpoint = SettingsHelper.Instance.CustomVisionPredictionApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionPredictionApiKey };
+                trainingApi = new CustomVisionTrainingClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.ApiKeyServiceClientCredentials(SettingsHelper.Instance.CustomVisionTrainingApiKey))
+                {
+                    Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint
+                };
+                predictionApi = new CustomVisionPredictionClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.ApiKeyServiceClientCredentials(SettingsHelper.Instance.CustomVisionPredictionApiKey))
+                {
+                    Endpoint = SettingsHelper.Instance.CustomVisionPredictionApiKeyEndpoint
+                };
             }
 
             if (!enableFormRecognizerKeys || !enableCustomVisionKeys || !enableModelIds)
@@ -509,13 +515,19 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
                     throw new Exception("This project doesn't have any trained models yet.");
                 }
 
+                if (string.IsNullOrEmpty(latestTrainedIteraction.PublishName))
+                {
+                    await trainingApi.PublishIterationAsync(modelId, latestTrainedIteraction.Id, publishName: latestTrainedIteraction.Id.ToString(), predictionId: SettingsHelper.Instance.CustomVisionPredictionResourceId);
+                    latestTrainedIteraction = await trainingApi.GetIterationAsync(modelId, latestTrainedIteraction.Id);
+                }
+
                 if (CurrentInputProductImage?.ImageUrl != null)
                 {
-                    result = await CustomVisionServiceHelper.PredictImageUrlWithRetryAsync(predictionApi, modelId, new ImageUrl(CurrentInputProductImage.ImageUrl), latestTrainedIteraction.Id);
+                    result = await CustomVisionServiceHelper.ClassifyImageUrlWithRetryAsync(predictionApi, modelId, new ImageUrl(CurrentInputProductImage.ImageUrl), latestTrainedIteraction.PublishName);
                 }
                 else if (CurrentInputProductImage?.GetImageStreamCallback != null)
                 {
-                    result = await CustomVisionServiceHelper.PredictImageWithRetryAsync(predictionApi, modelId, CurrentInputProductImage.GetImageStreamCallback, latestTrainedIteraction.Id);
+                    result = await CustomVisionServiceHelper.ClassifyImageWithRetryAsync(predictionApi, modelId, CurrentInputProductImage.GetImageStreamCallback, latestTrainedIteraction.PublishName);
                 }
             }
             catch (Exception ex)

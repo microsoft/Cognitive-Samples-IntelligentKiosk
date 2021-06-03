@@ -135,7 +135,9 @@ namespace IntelligentKioskSample.Views
         {
             this.DataContext = this;
 
-            if (string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) || string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey))
+            if (string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionTrainingApiKey) ||
+                string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionApiKey) ||
+                string.IsNullOrEmpty(SettingsHelper.Instance.CustomVisionPredictionResourceId))
             {
                 await new MessageDialog("Please enter Custom Vision API Keys in the Settings Page.", "Missing API Keys").ShowAsync();
                 this.addProjectButton.IsEnabled = false;
@@ -152,7 +154,10 @@ namespace IntelligentKioskSample.Views
 
         private async Task InitializeTrainingApi()
         {
-            trainingApi = new CustomVisionTrainingClient { Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint, ApiKey = SettingsHelper.Instance.CustomVisionTrainingApiKey };
+            trainingApi = new CustomVisionTrainingClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.ApiKeyServiceClientCredentials(SettingsHelper.Instance.CustomVisionTrainingApiKey))
+            {
+                Endpoint = SettingsHelper.Instance.CustomVisionTrainingApiKeyEndpoint
+            };
             this.addProjectButton.IsEnabled = true;
             this.trainButton.IsEnabled = true;
             this.exportButton.IsEnabled = true;
@@ -225,7 +230,27 @@ namespace IntelligentKioskSample.Views
 
         private async void OnDeleteProjectClicked(object sender, RoutedEventArgs e)
         {
-            await Util.ConfirmActionAndExecute("Delete project?", async () => { await DeleteProjectAsync(); });
+            await Util.ConfirmActionAndExecute("Delete project?", async () => 
+            {
+                await UnpublishIterations();
+                await DeleteProjectAsync();
+            });
+        }
+
+        private async Task UnpublishIterations()
+        {
+            try
+            {
+                IList<Iteration> publishedIterations = (await trainingApi.GetIterationsAsync(this.CurrentProject.Id)).Where(i => !string.IsNullOrEmpty(i.PublishName)).ToList();
+                foreach (Iteration iteration in publishedIterations)
+                {
+                    await trainingApi.UnpublishIterationAsync(this.CurrentProject.Id, iteration.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Util.GenericApiCallExceptionHandler(ex, "Failure unpublish iterations");
+            }
         }
 
         private async Task DeleteProjectAsync()
@@ -418,7 +443,7 @@ namespace IntelligentKioskSample.Views
 
             try
             {
-                IEnumerable<Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image> images = await trainingApi.GetTaggedImagesAsync(this.CurrentProject.Id, null, new string[] { this.SelectedTag.Id.ToString() }, null, 200);
+                IEnumerable<Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.Models.Image> images = await trainingApi.GetTaggedImagesAsync(this.CurrentProject.Id, null, new List<Guid>() { this.SelectedTag.Id }, null, 200);
                 this.SelectedTagImages.AddRange(images.Select(img =>
                     new ImageViewModel
                     {
@@ -471,7 +496,7 @@ namespace IntelligentKioskSample.Views
                     {
                         addResult = await trainingApi.CreateImagesFromDataAsync(
                             this.CurrentProject.Id,
-                            await item.GetImageStreamCallback(), new string[] { this.SelectedTag.Id.ToString() });
+                            await item.GetImageStreamCallback(), new List<Guid> { this.SelectedTag.Id });
                     }
                     else
                     {
@@ -521,7 +546,7 @@ namespace IntelligentKioskSample.Views
                 foreach (var item in this.selectedTagImagesGridView.SelectedItems.ToArray())
                 {
                     ImageViewModel tagImage = (ImageViewModel)item;
-                    await trainingApi.DeleteImagesAsync(this.CurrentProject.Id, new string[] { tagImage.Image.Id.ToString() });
+                    await trainingApi.DeleteImagesAsync(this.CurrentProject.Id, new List<Guid>() { tagImage.Image.Id });
                     this.SelectedTagImages.Remove(tagImage);
 
                     this.needsTraining = true;
@@ -589,7 +614,7 @@ namespace IntelligentKioskSample.Views
             if (imageViewModel.Image.Regions != null && imageViewModel.Image.Regions.Any())
             {
                 // remove the current regions from the image
-                await this.trainingApi.DeleteImageRegionsAsync(this.CurrentProject.Id, imageViewModel.Image.Regions.Select(r => r.RegionId.ToString()).ToArray());
+                await this.trainingApi.DeleteImageRegionsAsync(this.CurrentProject.Id, imageViewModel.Image.Regions.Select(r => r.RegionId).ToList());
 
                 // re-add the regions to the image based on the possibly new locations, taking into account the ones that might haven been deleted in the UI
                 var regionsToReAdd = imageViewModel.Image.Regions.Where(r => !imageViewModel.DeletedImageRegions.Contains(r));
@@ -612,7 +637,7 @@ namespace IntelligentKioskSample.Views
             }
 
             // update the regions that are shown in the thumbnail UI
-            var newImages = await this.trainingApi.GetImagesByIdsAsync(this.CurrentProject.Id, new string[] { imageViewModel.Image.Id.ToString() });
+            var newImages = await this.trainingApi.GetImagesByIdsAsync(this.CurrentProject.Id, new List<Guid>() { imageViewModel.Image.Id });
             imageViewModel.UpdateImageData(newImages.First());
         }
 
@@ -668,19 +693,13 @@ namespace IntelligentKioskSample.Views
                 throw new ArgumentNullException("Download Uri");
             }
 
-            bool success = false;
-            Guid newModelId = Guid.NewGuid();
+            var newModelId = Guid.NewGuid();
+            this.downloadCancellationTokenSource = new CancellationTokenSource();
+
             StorageFolder onnxProjectDataFolder = await CustomVisionDataLoader.GetOnnxModelStorageFolderAsync(customVisionProjectType);
-            StorageFile file = await onnxProjectDataFolder.CreateFileAsync($"{newModelId.ToString()}.onnx", CreationCollisionOption.ReplaceExisting);
-            switch (customVisionProjectType)
-            {
-                case CustomVisionProjectType.Classification:
-                    success = await DownloadFileAsync(exportProject.DownloadUri, file);
-                    break;
-                case CustomVisionProjectType.ObjectDetection:
-                    success = await UnzipModelFileAsync(exportProject.DownloadUri, file);
-                    break;
-            }
+            StorageFile file = await onnxProjectDataFolder.CreateFileAsync($"{newModelId}.onnx", CreationCollisionOption.ReplaceExisting);
+            bool success = await Util.UnzipModelFileAsync(exportProject.DownloadUri, file, this.downloadCancellationTokenSource.Token);
+            
             if (!success)
             {
                 await file.DeleteAsync();
@@ -768,41 +787,6 @@ namespace IntelligentKioskSample.Views
                 }
                 await CustomVisionDataLoader.SaveCustomVisionModelDataAsync(customVisionModelList, customVisionProjectType);
             }
-        }
-
-        private async Task<bool> DownloadFileAsync(string downloadUrl, StorageFile file)
-        {
-            try
-            {
-                this.downloadCancellationTokenSource = new CancellationTokenSource();
-                await Util.DownloadFileASync(downloadUrl, file, null, this.downloadCancellationTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private async Task<bool> UnzipModelFileAsync(string downloadUrl, StorageFile modelFile)
-        {
-            bool success = false;
-            Guid zipFileName = Guid.NewGuid();
-            StorageFile zipFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{zipFileName.ToString()}.zip", CreationCollisionOption.ReplaceExisting);
-            try
-            {
-                bool downloadCompleted = await DownloadFileAsync(downloadUrl, zipFile);
-                if (downloadCompleted)
-                {
-                    success = Util.ExtractFileFromZipArchive(zipFile, "model.onnx", modelFile);
-                }
-            }
-            catch (Exception) { }
-            finally
-            {
-                await zipFile.DeleteAsync();
-            }
-            return success;
         }
 
         private void OnNavigateToRealtimeScoringPageButtonClicked(object sender, RoutedEventArgs e)

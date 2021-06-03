@@ -168,6 +168,27 @@ namespace IntelligentKioskSample
             }
         }
 
+        public static async Task<bool> UnzipModelFileAsync(string downloadUrl, StorageFile modelFile, CancellationToken cancellationToken = default)
+        {
+            bool success = false;
+            Guid zipFileName = Guid.NewGuid();
+            StorageFile zipFile = await ApplicationData.Current.TemporaryFolder.CreateFileAsync($"{zipFileName}.zip", CreationCollisionOption.ReplaceExisting);
+            try
+            {
+                bool downloadCompleted = await DownloadFileASync(downloadUrl, zipFile, null, cancellationToken);
+                if (downloadCompleted)
+                {
+                    success = ExtractFileFromZipArchive(zipFile, "model.onnx", modelFile);
+                }
+            }
+            catch (Exception) { }
+            finally
+            {
+                await zipFile.DeleteAsync();
+            }
+            return success;
+        }
+
         public static bool ExtractFileFromZipArchive(StorageFile zipFile, string extractedFileName, StorageFile newFile)
         {
             try
@@ -344,11 +365,19 @@ namespace IntelligentKioskSample
             return new Tuple<byte[], BitmapBounds>(pix.DetachPixelData(), transform.Bounds);
         }
 
-        internal static async Task DownloadFileASync(string link, StorageFile destination, IProgress<DownloadOperation> progress, CancellationToken cancellationToken = default)
+        internal static async Task<bool> DownloadFileASync(string link, StorageFile destination, IProgress<DownloadOperation> progress, CancellationToken cancellationToken = default)
         {
-            BackgroundDownloader downloader = new BackgroundDownloader();
-            DownloadOperation download = downloader.CreateDownload(new Uri(link), destination);
-            await download.StartAsync().AsTask(cancellationToken, progress);
+            try
+            {
+                BackgroundDownloader downloader = new BackgroundDownloader();
+                DownloadOperation download = downloader.CreateDownload(new Uri(link), destination);
+                await download.StartAsync().AsTask(cancellationToken, progress);
+            }
+            catch (OperationCanceledException)
+            {
+                return false;
+            }
+            return true;
         }
 
         internal static async Task<byte[]> GetPixelBytesFromSoftwareBitmapAsync(SoftwareBitmap softwareBitmap)

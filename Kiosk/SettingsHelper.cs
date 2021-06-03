@@ -353,6 +353,12 @@ namespace IntelligentKioskSample
                 this.CustomVisionPredictionApiKeyEndpoint = value.ToString();
             }
 
+            value = ApplicationData.Current.RoamingSettings.Values["CustomVisionPredictionResourceId"];
+            if (value != null)
+            {
+                this.CustomVisionPredictionResourceId = value.ToString();
+            }
+
             value = ApplicationData.Current.RoamingSettings.Values["CustomVisionTrainingApiKey"];
             if (value != null)
             {
@@ -780,6 +786,17 @@ namespace IntelligentKioskSample
             {
                 this.customVisionPredictionApiKey = value;
                 this.OnSettingChanged("CustomVisionPredictionApiKey", value);
+            }
+        }
+
+        private string customVisionPredictionResourceId = string.Empty;
+        public string CustomVisionPredictionResourceId
+        {
+            get { return this.customVisionPredictionResourceId; }
+            set
+            {
+                this.customVisionPredictionResourceId = value;
+                this.OnSettingChanged("CustomVisionPredictionResourceId", value);
             }
         }
 

@@ -230,7 +230,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
         private void UpdateCameraHostSize()
         {
-            double aspectRatio = (this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777);
+            double aspectRatio = this.cameraControl.CameraAspectRatio != 0 ? this.cameraControl.CameraAspectRatio : 1.777777777777;
 
             double desiredHeight = this.webCamHostGridParent.ActualWidth / aspectRatio;
 
@@ -338,7 +338,7 @@ namespace IntelligentKioskSample.Views.VisualAlert
 
                 // train project
                 UpdateProcessingStatus(data.Name, AlertCreateProcessingStatus.Training);
-                await customVisionServiceWrapper.TrainProjectAsync(project.Id);
+                Iteration iteration = await customVisionServiceWrapper.TrainProjectAsync(project.Id);
 
                 // export project
                 UpdateProcessingStatus(data.Name, AlertCreateProcessingStatus.Exporting);

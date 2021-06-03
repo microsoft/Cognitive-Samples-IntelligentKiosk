@@ -251,7 +251,7 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
             ProjectIterations = projectIterations;
         }
 
-        public static async Task<ProjectIteration[]> GetProjectIterations(ICustomVisionTrainingClient trainingClient, Guid[] projects)
+        public static async Task<ProjectIteration[]> GetProjectIterations(ICustomVisionTrainingClient trainingClient, string predictionResourceId, Guid[] projects)
         {
             var result = new List<ProjectIteration>();
             foreach (var project in projects)
@@ -260,9 +260,16 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
                 var projectEntity = await trainingClient.GetProjectAsync(project);
                 var domain = await trainingClient.GetDomainAsync(projectEntity.Settings.DomainId);
                 var iteration = iterations.Where(i => i.Status == "Completed").OrderByDescending(i => i.TrainedAt.Value).FirstOrDefault();
+                
                 if (iteration != null)
                 {
-                    result.Add(new ProjectIteration() { Project = project, Iteration = iteration.Id, ProjectName = projectEntity.Name, IsObjectDetection = domain.Type == "ObjectDetection" });
+                    if (string.IsNullOrEmpty(iteration.PublishName))
+                    {
+                        await trainingClient.PublishIterationAsync(project, iteration.Id, publishName: iteration.Id.ToString(), predictionId: predictionResourceId);
+                        iteration = await trainingClient.GetIterationAsync(project, iteration.Id);
+                    }
+
+                    result.Add(new ProjectIteration() { Project = project, Iteration = iteration.Id, ProjectName = projectEntity.Name, PublishedName = iteration.PublishName, IsObjectDetection = domain.Type == "ObjectDetection" });
                 }
             }
             return result.ToArray();
@@ -281,7 +288,7 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
         {
             if (analyzer.ImageUrl != null)
             {
-                return (await AutoRetry(async () => await _predictionClient.PredictImageUrlAsync(projectIteration.Project, new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models.ImageUrl(analyzer.ImageUrl), projectIteration.Iteration)), projectIteration);
+                return (await AutoRetry(async () => await _predictionClient.ClassifyImageUrlAsync(projectIteration.Project, projectIteration.PublishedName, new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models.ImageUrl(analyzer.ImageUrl))), projectIteration);
             }
             else
             {
@@ -289,7 +296,7 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
                 //(for some reason when the CustomVision client creates multiple requests using the same file stream it locks up creating the request - a better fix would be good as this one degrades speed)
                 var allowAsync = projectCount == 1;
 
-                return (await RunSequentially(async () => await AutoRetry(async () => await _predictionClient.PredictImageAsync(projectIteration.Project, await analyzer.GetImageStreamCallback(), projectIteration.Iteration)), allowAsync), projectIteration);
+                return (await RunSequentially(async () => await AutoRetry(async () => await _predictionClient.ClassifyImageAsync(projectIteration.Project, projectIteration.PublishedName, await analyzer.GetImageStreamCallback())), allowAsync), projectIteration);
             }
         }
 
@@ -364,6 +371,7 @@ namespace IntelligentKioskSample.Views.DigitalAssetManagement
             public Guid Project { get; set; }
             public Guid Iteration { get; set; }
             public string ProjectName { get; set; }
+            public string PublishedName { get; set; }
             public bool IsObjectDetection { get; set; }
         }
     }
