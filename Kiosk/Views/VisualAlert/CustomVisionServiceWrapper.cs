@@ -46,7 +46,6 @@ namespace IntelligentKioskSample.Views.VisualAlert
     {
         public const string NegativeTag = "Negative";
 
-        private readonly string predictionResourceId;
         private readonly CustomVisionTrainingClient trainingApi;
         private readonly ProjectDomainViewModel projectDomain = new ProjectDomainViewModel
         {
@@ -54,9 +53,8 @@ namespace IntelligentKioskSample.Views.VisualAlert
             DisplayName = "Image Classification, General (exportable)"
         };
 
-        public CustomVisionServiceWrapper(string apiKey, string endpoint, string resourceId)
+        public CustomVisionServiceWrapper(string apiKey, string endpoint)
         {
-            predictionResourceId = resourceId;
             trainingApi = new CustomVisionTrainingClient(new Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training.ApiKeyServiceClientCredentials(apiKey))
             {
                 Endpoint = endpoint
@@ -139,11 +137,6 @@ namespace IntelligentKioskSample.Views.VisualAlert
             }
 
             return iteration;
-        }
-
-        public async Task<bool?> PublishIteration(Guid projectId, Iteration iteration)
-        {
-            return await trainingApi.PublishIterationAsync(projectId, iteration.Id, iteration.Id.ToString(), predictionResourceId);
         }
 
         public async Task<VisualAlertScenarioData> ExportOnnxProject(Project project)
