@@ -13,10 +13,10 @@ Please note! **[jq](https://stedolan.github.io/jq/)** needs to be installed to e
 ### To get the keys with the default parameters execute the following commands
   ```sh
   # The command below creates the cognitive service keys required by the KIOSK app, and then prints the keys
-  echo $(az group deployment create -n cog-keys-deploy -g kiosk-cog-service-keys --template-uri https://raw.githubusercontent.com/Microsoft/Cognitive-Samples-IntelligentKiosk/master/Kiosk/cognitive-keys-azure-deploy.json) | jq '.properties.outputs'
+  echo $(az deployment group create -n cog-keys-deploy -g kiosk-cog-service-keys --template-uri https://raw.githubusercontent.com/Microsoft/Cognitive-Samples-IntelligentKiosk/master/Kiosk/cognitive-keys-azure-deploy.json) | jq '.properties.outputs'
 
   # If you dont have jq installed you can execute the command, and manually search for the outputs section
-  # az group deployment create -n cog-keys-deploy -g kiosk-cog-service-keys --template-uri https://raw.githubusercontent.com/Microsoft/Cognitive-Samples-IntelligentKiosk/master/Kiosk/cognitive-keys-azure-deploy.json
+  # az deployment group create -n cog-keys-deploy -g kiosk-cog-service-keys --template-uri https://raw.githubusercontent.com/Microsoft/Cognitive-Samples-IntelligentKiosk/master/Kiosk/cognitive-keys-azure-deploy.json
 
   ```
 
@@ -26,10 +26,10 @@ Please note! **[jq](https://stedolan.github.io/jq/)** needs to be installed to e
  cd Kiosk
    
  # The command below creates the cognitive service keys required by the KIOSK app, and then prints the keys. You can modifiy the tiers associated with the generated keys by modifying the parameter values
- echo $(az group deployment create -n cog-keys-deploy -g kiosk-cog-service-keys --template-file cognitive-keys-azure-deploy.json --parameters @cognitive-keys-azure-deploy.parameters.json) | jq '.properties.outputs'
+ echo $(az deployment group create -n cog-keys-deploy -g kiosk-cog-service-keys --template-file cognitive-keys-azure-deploy.json --parameters @cognitive-keys-azure-deploy.parameters.json) | jq '.properties.outputs'
 
  # If you dont have jq installed you can execute the command, and manually search for the outputs section
- # az group deployment create -n cog-keys-deploy -g kiosk-cog-service-keys --template-file cognitive-keys-azure-deploy.json --parameters @cognitive-keys-azure-deploy.parameters.json
+ # az deployment group create -n cog-keys-deploy -g kiosk-cog-service-keys --template-file cognitive-keys-azure-deploy.json --parameters @cognitive-keys-azure-deploy.parameters.json
      
  ```
 
