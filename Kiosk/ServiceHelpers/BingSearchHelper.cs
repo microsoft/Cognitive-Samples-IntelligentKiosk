@@ -81,7 +81,7 @@ namespace ServiceHelpers
         {
             var urls = new List<string>();
             string content = string.IsNullOrEmpty(imageContent) ? "" : "&imageContent=" + imageContent;
-            string requestUri = $"{ImageSearchEndPoint}?q={WebUtility.UrlEncode(query)}{SAFE_SEARCH}&mkt={market}&imageType=Photo&color=ColorOnly&count={count}$offset={offset}{content}";
+            string requestUri = $"{ImageSearchEndPoint}?q={WebUtility.UrlEncode(query)}{SAFE_SEARCH}&mkt={market}&imageType=Photo&color=ColorOnly&count={count}&offset={offset}{content}";
 
             HttpResponseMessage result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(requestUri));
             result.EnsureSuccessStatusCode();
