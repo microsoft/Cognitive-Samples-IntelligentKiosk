@@ -124,7 +124,7 @@ namespace IntelligentKioskSample
                 throw new ArgumentException("Invalid API Key");
             }
 
-            string endpoint = "https://api.cognitive.microsoft.com/bing/v7.0/news/search";
+            string endpoint = "https://api.bing.microsoft.com/v7.0/news/search";
             string testQuery = "Seattle news";
             var client = new HttpClient();
             client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", key);
@@ -134,28 +134,6 @@ namespace IntelligentKioskSample
             string json = await result.Content.ReadAsStringAsync();
             dynamic data = JObject.Parse(json);
             if (data.value == null || data.value.Count == 0)
-            {
-                throw new Exception("Response data is missing");
-            }
-        }
-
-        public static async Task TestBingAutosuggestApiKeyAsync(string key)
-        {
-            if (string.IsNullOrEmpty(key))
-            {
-                throw new ArgumentException("Invalid API Key");
-            }
-
-            string endpoint = "https://api.cognitive.microsoft.com/bing/v7.0/suggestions";
-            string testQuery = "Seattle";
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", key);
-            var result = await RequestAndAutoRetryWhenThrottled(() =>
-                               client.GetAsync(string.Format("{0}/?q={1}&mkt={2}", endpoint, WebUtility.UrlEncode(testQuery), "en-US")));
-            result.EnsureSuccessStatusCode();
-            string json = await result.Content.ReadAsStringAsync();
-            dynamic data = JObject.Parse(json);
-            if (data.suggestionGroups == null || data.suggestionGroups.Count == 0)
             {
                 throw new Exception("Response data is missing");
             }

@@ -142,10 +142,6 @@ namespace IntelligentKioskSample.Views
                 ? CallApiAndReportResult("Bing Search API Test: ", async () => await CognitiveServiceApiKeyTester.TestBingSearchApiKeyAsync(SettingsHelper.Instance.BingSearchApiKey))
                 : Task.CompletedTask);
 
-            await (!string.IsNullOrEmpty(SettingsHelper.Instance.BingAutoSuggestionApiKey)
-                ? CallApiAndReportResult("Bing Auto Suggestion API Test: ", async () => await CognitiveServiceApiKeyTester.TestBingAutosuggestApiKeyAsync(SettingsHelper.Instance.BingAutoSuggestionApiKey))
-                : Task.CompletedTask);
-
             await (!string.IsNullOrEmpty(SettingsHelper.Instance.TextAnalyticsKey)
                 ? CallApiAndReportResult("Text Analytics API Test: ", async () => await CognitiveServiceApiKeyTester.TestTextAnalyticsApiKeyAsync(
                     SettingsHelper.Instance.TextAnalyticsKey, SettingsHelper.Instance.TextAnalyticsApiKeyEndpoint))

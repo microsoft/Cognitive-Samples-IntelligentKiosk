@@ -44,31 +44,17 @@ namespace ServiceHelpers
 {
     public class BingSearchHelper
     {
-        private static string ImageSearchEndPoint = "https://api.cognitive.microsoft.com/bing/v7.0/images/search";
-        private static string ImageInsightsEndPoint = "https://api.cognitive.microsoft.com/bing/v7.0/images/details";
-        private static string AutoSuggestionEndPoint = "https://api.cognitive.microsoft.com/bing/v7.0/suggestions";
-        private static string NewsSearchEndPoint = "https://api.cognitive.microsoft.com/bing/v7.0/news/search";
+        private const string ImageSearchEndPoint = "https://api.bing.microsoft.com/v7.0/images/search";
+        private const string ImageInsightsEndPoint = "https://api.bing.microsoft.com/v7.0/images/details";
+        private const string AutoSuggestionEndPoint = "https://api.bing.microsoft.com/v7.0/suggestions";
+        private const string NewsSearchEndPoint = "https://api.bing.microsoft.com/v7.0/news/search";
+
+        private const string SAFE_SEARCH = "&safeSearch=Strict";
 
         private static int RetryCountOnQuotaLimitError = 6;
         private static int RetryDelayOnQuotaLimitError = 500;
 
-        private static HttpClient autoSuggestionClient { get; set; }
         private static HttpClient searchClient { get; set; }
-
-        private static string autoSuggestionApiKey;
-        public static string AutoSuggestionApiKey
-        {
-            get { return autoSuggestionApiKey; }
-            set
-            {
-                var changed = autoSuggestionApiKey != value;
-                autoSuggestionApiKey = value;
-                if (changed)
-                {
-                    InitializeBingClients();
-                }
-            }
-        }
 
         private static string searchApiKey;
         public static string SearchApiKey
@@ -87,48 +73,22 @@ namespace ServiceHelpers
 
         private static void InitializeBingClients()
         {
-            autoSuggestionClient = new HttpClient();
-            autoSuggestionClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", AutoSuggestionApiKey);
-
             searchClient = new HttpClient();
             searchClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", SearchApiKey);
         }
 
-        private static async Task<HttpResponseMessage> RequestAndAutoRetryWhenThrottled(Func<Task<HttpResponseMessage>> action)
+        public static async Task<IEnumerable<string>> GetImageSearchResults(string query, string imageContent = "Face", int count = 20, int offset = 0, string market = "en-US")
         {
-            int retriesLeft = BingSearchHelper.RetryCountOnQuotaLimitError;
-            int delay = BingSearchHelper.RetryDelayOnQuotaLimitError;
+            var urls = new List<string>();
+            string content = string.IsNullOrEmpty(imageContent) ? "" : "&imageContent=" + imageContent;
+            string requestUri = $"{ImageSearchEndPoint}?q={WebUtility.UrlEncode(query)}{SAFE_SEARCH}&mkt={market}&imageType=Photo&color=ColorOnly&count={count}$offset={offset}{content}";
 
-            HttpResponseMessage response = null;
-
-            while (true)
-            {
-                response = await action();
-
-                if ((int)response.StatusCode == 429 && retriesLeft > 0)
-                {
-                    await Task.Delay(delay);
-                    retriesLeft--;
-                    delay *= 2;
-                    continue;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return response;
-        }
-
-        public static async Task<IEnumerable<string>> GetImageSearchResults(string query, string imageContent = "Face", int count = 20, int offset = 0)
-        {
-            List<string> urls = new List<string>();
-
-            var result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(string.Format("{0}?q={1}&safeSearch=Strict&imageType=Photo&color=ColorOnly&count={2}&offset={3}{4}", ImageSearchEndPoint, WebUtility.UrlEncode(query), count, offset, string.IsNullOrEmpty(imageContent) ? "" : "&imageContent=" + imageContent)));
+            HttpResponseMessage result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(requestUri));
             result.EnsureSuccessStatusCode();
-            var json = await result.Content.ReadAsStringAsync();
+
+            string json = await result.Content.ReadAsStringAsync();
             dynamic data = JObject.Parse(json);
+
             if (data.value != null && data.value.Count > 0)
             {
                 for (int i = 0; i < data.value.Count; i++)
@@ -142,14 +102,16 @@ namespace ServiceHelpers
 
         public static async Task<IEnumerable<string>> GetAutoSuggestResults(string query, string market = "en-US")
         {
-            List<string> suggestions = new List<string>();
+            var suggestions = new List<string>();
+            string requestUri = $"{AutoSuggestionEndPoint}?q={WebUtility.UrlEncode(query)}&mkt={market}";
 
-            var result = await RequestAndAutoRetryWhenThrottled(() => autoSuggestionClient.GetAsync(string.Format("{0}/?q={1}&mkt={2}", AutoSuggestionEndPoint, WebUtility.UrlEncode(query), market)));
+            HttpResponseMessage result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(requestUri));
             result.EnsureSuccessStatusCode();
-            var json = await result.Content.ReadAsStringAsync();
+
+            string json = await result.Content.ReadAsStringAsync();
             dynamic data = JObject.Parse(json);
-            if (data.suggestionGroups != null && data.suggestionGroups.Count > 0 &&
-                data.suggestionGroups[0].searchSuggestions != null)
+
+            if (data.suggestionGroups != null && data.suggestionGroups.Count > 0 && data.suggestionGroups[0].searchSuggestions != null)
             {
                 for (int i = 0; i < data.suggestionGroups[0].searchSuggestions.Count; i++)
                 {
@@ -160,14 +122,15 @@ namespace ServiceHelpers
             return suggestions;
         }
 
-
         public static async Task<IEnumerable<NewsArticle>> GetNewsSearchResults(string query, int count = 20, int offset = 0, string market = "en-US")
         {
-            List<NewsArticle> articles = new List<NewsArticle>();
+            var articles = new List<NewsArticle>();
+            string requestUri = $"{NewsSearchEndPoint}?q={WebUtility.UrlEncode(query)}&count={count}&offset={offset}&mkt={market}";
 
-            var result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(string.Format("{0}/?q={1}&count={2}&offset={3}&mkt={4}", NewsSearchEndPoint, WebUtility.UrlEncode(query), count, offset, market)));
+            HttpResponseMessage result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(requestUri));
             result.EnsureSuccessStatusCode();
-            var json = await result.Content.ReadAsStringAsync();
+
+            string json = await result.Content.ReadAsStringAsync();
             dynamic data = JObject.Parse(json);
 
             if (data.value != null && data.value.Count > 0)
@@ -187,10 +150,23 @@ namespace ServiceHelpers
             return articles;
         }
 
+        public static async Task<IEnumerable<VisualSearchCelebrityResult>> GetVisuallySimilarCelebrities(string imgUrl)
+        {
+            HttpResponseMessage result = await CallBingImageInsightsAsync(imgUrl, "RecognizedEntities");
+            return ParseCelebrityResults(await result.Content.ReadAsStringAsync());
+        }
+        public static async Task<IEnumerable<VisualSearchCelebrityResult>> GetVisuallySimilarCelebrities(Stream stream)
+        {
+            HttpResponseMessage result = await CallBingImageInsightsAsync(stream, "RecognizedEntities");
+            return ParseCelebrityResults(await result.Content.ReadAsStringAsync());
+        }
+
         private static async Task<HttpResponseMessage> CallBingImageInsightsAsync(string imgUrl, string module)
         {
-            var result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(string.Format("{0}?imgUrl={1}&modules={2}", ImageInsightsEndPoint, WebUtility.UrlEncode(imgUrl), module)));
+            string requestUri = $"{ImageInsightsEndPoint}?imgUrl={WebUtility.UrlEncode(imgUrl)}&modules={module}";
+            HttpResponseMessage result = await RequestAndAutoRetryWhenThrottled(() => searchClient.GetAsync(requestUri));
             result.EnsureSuccessStatusCode();
+
             return result;
         }
 
@@ -202,21 +178,11 @@ namespace ServiceHelpers
             var content = new MultipartFormDataContent();
             content.Add(strContent);
 
-            var result = await RequestAndAutoRetryWhenThrottled(() => searchClient.PostAsync(string.Format("{0}?modules={1}", ImageInsightsEndPoint, module), content));
+            string requestUri = $"{ImageInsightsEndPoint}?modules={module}";
+            HttpResponseMessage result = await RequestAndAutoRetryWhenThrottled(() => searchClient.PostAsync(requestUri, content));
             result.EnsureSuccessStatusCode();
+
             return result;
-        }
-
-        public static async Task<IEnumerable<VisualSearchCelebrityResult>> GetVisuallySimilarCelebrities(string imgUrl)
-        {
-            var result = await CallBingImageInsightsAsync(imgUrl, "RecognizedEntities");
-            return ParseCelebrityResults(await result.Content.ReadAsStringAsync());
-        }
-
-        public static async Task<IEnumerable<VisualSearchCelebrityResult>> GetVisuallySimilarCelebrities(Stream stream)
-        {
-            var result = await CallBingImageInsightsAsync(stream, "RecognizedEntities");
-            return ParseCelebrityResults(await result.Content.ReadAsStringAsync());
         }
 
         private static List<VisualSearchCelebrityResult> ParseCelebrityResults(string json)
@@ -315,6 +281,32 @@ namespace ServiceHelpers
             }
 
             return products;
+        }
+
+        private static async Task<HttpResponseMessage> RequestAndAutoRetryWhenThrottled(Func<Task<HttpResponseMessage>> action)
+        {
+            int retriesLeft = RetryCountOnQuotaLimitError;
+            int delay = RetryDelayOnQuotaLimitError;
+
+            HttpResponseMessage response;
+            while (true)
+            {
+                response = await action();
+
+                if ((int)response.StatusCode == 429 && retriesLeft > 0)
+                {
+                    await Task.Delay(delay);
+                    retriesLeft--;
+                    delay *= 2;
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return response;
         }
     }
 
