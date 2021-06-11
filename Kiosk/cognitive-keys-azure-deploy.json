@@ -30,13 +30,6 @@
       },
       "type": "string"
     },
-    "BingAugosuggestAccountName": {
-      "defaultValue": "kiosk-bing-autosuggest",
-      "metadata": {
-        "description": "Display name of Bing Autosuggest account"
-      },
-      "type": "string"
-    },
     "compVisionSKU": {
       "type": "string",
       "metadata": {
@@ -79,26 +72,13 @@
         "S1",
         "S2"
       ]
-    },
-    "bingAutosuggestSKU": {
-      "type": "string",
-      "metadata": {
-        "description": "SKU for Computer Vision API"
-      },
-      "defaultValue": "S1",
-      "allowedValues": [
-        "S1",
-        "S2"
-      ]
     }
   },
   "variables": {
     "cogServCompVisionId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]",
     "cogServFaceId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('FaceAccountName'))]",
-    "cogServTextAnalyticsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('TextAnalyticsAccountName'))]"
-    ,
-    "cogServBingSearchId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('BingSearchAccountName'))]",
-    "cogServBingAutosuggestId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('BingAugosuggestAccountName'))]"
+    "cogServTextAnalyticsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('TextAnalyticsAccountName'))]",
+    "cogServBingSearchId": "[concat(resourceGroup().id,'/providers/','Microsoft.Bing/accounts/', parameters('BingSearchAccountName'))]"
   },
   "resources": [
     {
@@ -126,28 +106,14 @@
       "dependsOn": []
     },
     {
-      "type": "Microsoft.CognitiveServices/accounts",
+      "type": "Microsoft.Bing/accounts",
       "sku": {
         "name": "[parameters('bingSearchSKU')]"
       },
       "kind": "Bing.Search.v7",
       "name": "[parameters('BingSearchAccountName')]",
-      "apiVersion": "2016-02-01-preview",
+      "apiVersion": "2020-06-10",
       "location": "global",
-      "scale": null,
-      "properties": {},
-      "dependsOn": []
-    },
-    {
-      "type": "Microsoft.CognitiveServices/accounts",
-      "sku": {
-        "name": "[parameters('bingAutosuggestSKU')]"
-      },
-      "kind": "Bing.Autosuggest.v7",
-      "name": "[parameters('BingAugosuggestAccountName')]",
-      "apiVersion": "2016-02-01-preview",
-      "location": "global",
-      "scale": null,
       "properties": {},
       "dependsOn": []
     },
@@ -188,15 +154,10 @@
     "textAnalyticsEndpoint": {
       "type": "string",
       "value": "[reference(variables('cogServTextAnalyticsId'),'2017-04-18').endpoint]"
-    }
-    ,
+    },
     "bingSearchKey1": {
       "type": "string",
-      "value": "[listKeys(variables('cogServBingSearchId'),'2016-02-01-preview').key1]"
-    },
-    "bingAugosuggestKey1": {
-      "type": "string",
-      "value": "[listKeys(variables('cogServBingAutosuggestId'),'2016-02-01-preview').key1]"
+      "value": "[listKeys(variables('cogServBingSearchId'),'2020-06-10').key1]"
     }
   }
 }

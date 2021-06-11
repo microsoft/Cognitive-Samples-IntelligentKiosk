@@ -101,7 +101,6 @@ namespace IntelligentKioskSample
                     VisionServiceHelper.ApiKey = SettingsHelper.Instance.VisionApiKey;
                     VisionServiceHelper.ApiEndpoint = SettingsHelper.Instance.VisionApiKeyEndpoint;
                     BingSearchHelper.SearchApiKey = SettingsHelper.Instance.BingSearchApiKey;
-                    BingSearchHelper.AutoSuggestionApiKey = SettingsHelper.Instance.BingAutoSuggestionApiKey;
                     TextAnalyticsHelper.ApiKey = SettingsHelper.Instance.TextAnalyticsKey;
                     TextAnalyticsHelper.ApiEndpoint = SettingsHelper.Instance.TextAnalyticsApiKeyEndpoint;
                     TextAnalyticsHelper.ApiKey = SettingsHelper.Instance.TextAnalyticsKey;
@@ -166,10 +165,6 @@ namespace IntelligentKioskSample
 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.BingSearchApiKey)
                 ? CognitiveServiceApiKeyTester.TestBingSearchApiKeyAsync(SettingsHelper.Instance.BingSearchApiKey)
-                : Task.CompletedTask,
-
-                !string.IsNullOrEmpty(SettingsHelper.Instance.BingAutoSuggestionApiKey)
-                ? CognitiveServiceApiKeyTester.TestBingAutosuggestApiKeyAsync(SettingsHelper.Instance.BingAutoSuggestionApiKey)
                 : Task.CompletedTask,
 
                 !string.IsNullOrEmpty(SettingsHelper.Instance.TextAnalyticsKey)

@@ -202,12 +202,6 @@ namespace IntelligentKioskSample
             {
                 this.BingSearchApiKey = value.ToString();
             }
-
-            value = ApplicationData.Current.RoamingSettings.Values["BingAutoSuggestionApiKey"];
-            if (value != null)
-            {
-                this.BingAutoSuggestionApiKey = value.ToString();
-            }
         }
 
         private void LoadSpeechRoamingSettings()
@@ -595,17 +589,6 @@ namespace IntelligentKioskSample
             {
                 this.bingSearchApiKey = value;
                 this.OnSettingChanged("BingSearchApiKey", value);
-            }
-        }
-
-        private string bingAutoSuggestionSearchApiKey = string.Empty;
-        public string BingAutoSuggestionApiKey
-        {
-            get { return this.bingAutoSuggestionSearchApiKey; }
-            set
-            {
-                this.bingAutoSuggestionSearchApiKey = value;
-                this.OnSettingChanged("BingAutoSuggestionApiKey", value);
             }
         }
 

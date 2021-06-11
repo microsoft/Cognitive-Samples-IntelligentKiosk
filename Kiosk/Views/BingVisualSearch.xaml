@@ -99,7 +99,6 @@
             <StackPanel Orientation="Horizontal" Margin="6" HorizontalAlignment="Right" Grid.Column="2" VerticalAlignment="Top">
                 <TextBlock Text="Search type:" VerticalAlignment="Center" Margin="0,0,6,0" />
                 <ComboBox SelectionChanged="OnResultTypeSelectionChanged" x:Name="resultTypeComboBox">
-                    <ComboBoxItem Content="Similar celebrities" x:Name="celebrityResultType" />
                     <ComboBoxItem Content="Similar images" IsSelected="True" x:Name="similarImagesResultType"/>
                     <ComboBoxItem Content="Similar products" x:Name="similarProductsResultType"/>
                 </ComboBox>

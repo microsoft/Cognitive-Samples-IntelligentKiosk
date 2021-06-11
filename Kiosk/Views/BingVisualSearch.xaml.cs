@@ -92,17 +92,6 @@ namespace IntelligentKioskSample.Views
                         result = await BingSearchHelper.GetVisuallySimilarImages(await Util.ResizePhoto(await img.GetImageStreamCallback(), 360));
                     }
                 }
-                else if (this.celebrityResultType.IsSelected)
-                {
-                    if (img.ImageUrl != null)
-                    {
-                        result = (await BingSearchHelper.GetVisuallySimilarCelebrities(img.ImageUrl)).OrderByDescending(r => r.SimilarityScore);
-                    }
-                    else
-                    {
-                        result = (await BingSearchHelper.GetVisuallySimilarCelebrities(await Util.ResizePhoto(await img.GetImageStreamCallback(), 360))).OrderByDescending(r => r.SimilarityScore);
-                    }
-                }
                 else if (this.similarProductsResultType.IsSelected)
                 {
                     if (img.ImageUrl != null)
@@ -173,10 +162,6 @@ namespace IntelligentKioskSample.Views
             if (this.similarImagesResultType.IsSelected)
             {
                 message = "No similar images found.\r\nPlease try another image.";
-            }
-            else if (this.celebrityResultType.IsSelected)
-            {
-                message = "No similar celebrities found.\r\nPlease try an image with some faces in it.";
             }
             else if (this.similarProductsResultType.IsSelected)
             {

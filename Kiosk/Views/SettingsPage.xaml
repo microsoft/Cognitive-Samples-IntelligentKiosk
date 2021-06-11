@@ -299,7 +299,6 @@
                         <StackPanel Style="{StaticResource Settings.SubPanel}" >
                             <TextBlock Text="Bing Search" Style="{StaticResource Settings.SubTitle}"/>
                             <PasswordBox Header="Bing Search API Key" Password="{Binding BingSearchApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
-                            <PasswordBox Header="Bing Auto Suggestion API Key" Password="{Binding BingAutoSuggestionApiKey, Mode=TwoWay}" Style="{StaticResource Settings.Input}" />
                         </StackPanel>
 
                         <!--translator text api-->
@@ -339,8 +338,7 @@
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesComputerVision" Content="Computer Vision"/>
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextAnalytics" Content="Text Analytics"/>
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesCustomVision" Content="Custom Vision"/>
-                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingSearch-v7" Content="Bing Search"/>
-                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesBingAutosuggest-v7" Content="Bing Autosuggest"/>
+                                            <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.BingSearch" Content="Bing Search"/>
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesTextTranslation" Content="Translator Text"/>
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesAnomalyDetector" Content="Anomaly Detector"/>
                                             <HyperlinkButton NavigateUri="https://ms.portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices" Content="Speech"/>

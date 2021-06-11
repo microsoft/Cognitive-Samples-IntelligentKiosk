@@ -13,9 +13,6 @@
       },
       "BingSearchAccountName": {
         "value": "kiosk-bing-search"
-      },
-      "BingAugosuggestAccountName": {
-        "value": "kiosk-bing-autosuggest"
       }
   }
 }
