@@ -1,0 +1,218 @@
+[
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Guy (English, US)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)",
+    "Locale": "en-US"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Aria (English, US)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-US, AriaNeural)",
+    "Locale": "en-US"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Natasha (English, Australia)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-AU, NatashaNeural)",
+    "Locale": "en-AU"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Clara (English, Canada)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-CA, ClaraNeural)",
+    "Locale": "en-CA"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Libby (English, UK)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-GB, LibbyNeural)",
+    "Locale": "en-GB"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Mia (English, UK)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-GB, MiaNeural)",
+    "Locale": "en-GB"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Neerja (English, India)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-IN, NeerjaNeural)",
+    "Locale": "en-IN"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Salma (Arabic, Egypt)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ar-EG, SalmaNeural)",
+    "Locale": "ar-EG"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Zariyah (Arabic, Saudi Arabia)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ar-SA, ZariyahNeural)",
+    "Locale": "ar-SA"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Alba (Catalan, Spain)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ca-ES, AlbaNeural)",
+    "Locale": "ca-ES"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Christel (Danish, Denmark)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (da-DK, ChristelNeural)",
+    "Locale": "da-DK"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Katja (German, Germany)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (de-DE, KatjaNeural)",
+    "Locale": "de-DE"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Elvira (Spanish, Spain)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (es-ES, ElviraNeural)",
+    "Locale": "es-ES"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Dalia (Spanish, Mexico)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (es-MX, DaliaNeural)",
+    "Locale": "es-MX"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Noora (Finnish, Finland)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (fi-FI, NooraNeural)",
+    "Locale": "fi-FI"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Sylvie (French, Canada)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (fr-CA, SylvieNeural)",
+    "Locale": "fr-CA"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Denise (French, France)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (fr-FR, DeniseNeural)",
+    "Locale": "fr-FR"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Swara (Hindi, India)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (hi-IN, SwaraNeural)",
+    "Locale": "hi-IN"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Elsa (Italian, Italy)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (it-IT, ElsaNeural)",
+    "Locale": "it-IT"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Nanami (Japanese)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ja-JP, NanamiNeural)",
+    "Locale": "ja-JP"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "SunHi (Korean)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ko-KR, SunHiNeural)",
+    "Locale": "ko-KR"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Iselin (Norwegian)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (nb-NO, IselinNeural)",
+    "Locale": "nb-NO"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Colette (Dutch, Netherland)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (nl-NL, ColetteNeural)",
+    "Locale": "nl-NL"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Zofia (Polish, Poland)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (pl-PL, ZofiaNeural)",
+    "Locale": "pl-PL"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Francisca (Portuguese, Brazil)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (pt-BR, FranciscaNeural)",
+    "Locale": "pt-BR"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Fernanda (Portuguese, Portugal)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (pt-PT, FernandaNeural)",
+    "Locale": "pt-PT"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Emel (Turkish)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (tr-TR, EmelNeural)",
+    "Locale": "tr-TR"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Dariya (Russian, Russia)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ru-RU, DariyaNeural)",
+    "Locale": "ru-RU"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Hillevi (Swedish, Sweden)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (sv-SE, HilleviNeural)",
+    "Locale": "sv-SE"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Achara (Thai, Thailand)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (th-TH, AcharaNeural)",
+    "Locale": "th-TH"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Xiaoxiao (Chinese, Mandarin, simplified)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)",
+    "Locale": "zh-CN"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Xiaoyou (Chinese, Mandarin, simplified)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoyouNeural)",
+    "Locale": "zh-CN"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Yunyang (Chinese, Mandarin, simplified)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-CN, YunyangNeural)",
+    "Locale": "zh-CN"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "Yunye (Chinese, Mandarin, simplified)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-CN, YunyeNeural)",
+    "Locale": "zh-CN"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "HiuGaai (Chinese, Cantonese, traditional)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-HK, HiuGaaiNeural)",
+    "Locale": "zh-HK"
+  },
+  {
+    "Url": "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1",
+    "Id": "HsiaoYu (Chinese, Taiwanese Mandarin)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-TW, HsiaoYuNeural)",
+    "Locale": "zh-TW"
+  }
+]

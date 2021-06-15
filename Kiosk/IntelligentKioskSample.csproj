@@ -128,6 +128,7 @@
     <Content Include="Assets\DemoGallery\Image Collection Insights.jpg" />
     <Content Include="Assets\DemoGallery\InsuranceClaimAutomation.jpg" />
     <Content Include="Assets\DemoGallery\Mall Kiosk.jpg" />
+    <Content Include="Assets\DemoGallery\Neural Text To Speech.jpg" />
     <Content Include="Assets\DemoGallery\Realtime Crowd Insights.jpg" />
     <Content Include="Assets\DemoGallery\Realtime Driver Monitoring.jpg" />
     <Content Include="Assets\DemoGallery\Realtime Image Classification Demo.jpg" />
@@ -163,6 +164,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\TextAnalyticsExplorer\TextSamples.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\NeuralTTS\NeuralVoices.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -412,6 +416,11 @@
       <DependentUpon>MallKioskPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MallKioskDemoConfig\MallKioskDemoSettings.cs" />
+    <Compile Include="Views\NeuralTTS\Authentication.cs" />
+    <Compile Include="Views\NeuralTTS\NeuralTTS.xaml.cs">
+      <DependentUpon>NeuralTTS.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NeuralTTS\NeuralTTSDataLoader.cs" />
     <Compile Include="Views\RealTimeDemo.xaml.cs">
       <DependentUpon>RealTimeDemo.xaml</DependentUpon>
     </Compile>
@@ -782,6 +791,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MallKioskPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\NeuralTTS\NeuralTTS.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
