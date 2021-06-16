@@ -65,6 +65,7 @@ namespace IntelligentKioskSample.Views.NeuralTTS
         private const string SSMLContentType = "application/ssml+xml";
         private const string AudioOutputFormatName = "X-MICROSOFT-OutputFormat";
         private const string AudioOutputFormatValue = "riff-16khz-16bit-mono-pcm";
+        private const string EndpointTemplate = "https://{0}.tts.speech.microsoft.com/cognitiveservices/v1";
         private const string EndpointPattern = "wss://(.*).stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1";
         private const string SSMLTemplate = "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{0}'><voice name='{1}'>{2}</voice></speak>";
 
@@ -145,7 +146,7 @@ namespace IntelligentKioskSample.Views.NeuralTTS
         {
             Authentication authentication = new Authentication(SettingsHelper.Instance.SpeechApiKey, this.apiRegion);
             string tokenString = await authentication.RetrieveNewTokenAsync();
-            string voiceUrl = string.Format(voice.Url, this.apiRegion);
+            string voiceUrl = string.Format(EndpointTemplate, this.apiRegion);
 
             WebRequest webRequest = WebRequest.Create(voiceUrl);
             webRequest.ContentType = SSMLContentType;

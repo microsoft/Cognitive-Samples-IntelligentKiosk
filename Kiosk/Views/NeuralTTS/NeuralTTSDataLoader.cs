@@ -86,7 +86,6 @@ namespace IntelligentKioskSample.Views.NeuralTTS
 
     public class VoiceInfo
     {
-        public string Url { get; set; }
         public string Name { get; set; }
         public string Id { get; set; }
         public string Locale { get; set; }
