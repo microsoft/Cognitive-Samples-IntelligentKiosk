@@ -39,6 +39,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.Media.Core;
 using Windows.Storage;
@@ -64,8 +65,10 @@ namespace IntelligentKioskSample.Views.NeuralTTS
         private const string SSMLContentType = "application/ssml+xml";
         private const string AudioOutputFormatName = "X-MICROSOFT-OutputFormat";
         private const string AudioOutputFormatValue = "riff-16khz-16bit-mono-pcm";
+        private const string EndpointPattern = "wss://(.*).stt.speech.microsoft.com/speech/recognition/conversation/cognitiveservices/v1";
         private const string SSMLTemplate = "<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='{0}'><voice name='{1}'>{2}</voice></speak>";
 
+        private string apiRegion = string.Empty;
         private StorageFolder cacheDataFolder;
 
         /// <summary>
@@ -87,6 +90,7 @@ namespace IntelligentKioskSample.Views.NeuralTTS
             if (!string.IsNullOrEmpty(SettingsHelper.Instance.SpeechApiKey) && !string.IsNullOrEmpty(SettingsHelper.Instance.SpeechApiEndpoint))
             {
                 this.speakButton.IsEnabled = true;
+                this.apiRegion = Regex.Replace(SettingsHelper.Instance.SpeechApiEndpoint, EndpointPattern, "$1");
                 this.cacheDataFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync("NeuralTTSDemo\\Cache", CreationCollisionOption.OpenIfExists);
 
                 AvailableVoices.AddRange(NeuralTTSDataLoader.GetNeuralVoices());
@@ -139,10 +143,9 @@ namespace IntelligentKioskSample.Views.NeuralTTS
 
         private async Task Speak(string text, VoiceInfo voice)
         {
-            string region = SettingsHelper.Instance.SpeechApiEndpoint;
-            Authentication authentication = new Authentication(SettingsHelper.Instance.SpeechApiKey, region);
+            Authentication authentication = new Authentication(SettingsHelper.Instance.SpeechApiKey, this.apiRegion);
             string tokenString = await authentication.RetrieveNewTokenAsync();
-            string voiceUrl = string.Format(voice.Url, region);
+            string voiceUrl = string.Format(voice.Url, this.apiRegion);
 
             WebRequest webRequest = WebRequest.Create(voiceUrl);
             webRequest.ContentType = SSMLContentType;
