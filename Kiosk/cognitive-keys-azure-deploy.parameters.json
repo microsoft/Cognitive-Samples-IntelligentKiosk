@@ -1,30 +1,33 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-      "ComputerVisionAccountName": {
-        "value": "kiosk-cog-serv-comp-vision"
-      },
-      "FaceAccountName": {
-        "value": "kiosk-face"
-      },
-      "TextAnalyticsAccountName": {
-        "value": "kiosk-text-analytics"
-      },
-      "BingSearchAccountName": {
-        "value": "kiosk-bing-search"
-      },
-      "TextTranslatorAccountName": {
-        "value": "kiosk-translator"
-      },
-      "AnomalyDetectorAccountName": {
-        "value": "kiosk-anomaly-detector"
-      },
-      "CustomVisionTrainingAccountName": {
-        "value": "kiosk-custom-vision-training"
-      },
-      "CustomVisionPredictionAccountName": {
-        "value": "kiosk-custom-vision-prediction"
-      }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ComputerVisionAccountName": {
+      "value": "kiosk-cog-serv-comp-vision"
+    },
+    "FaceAccountName": {
+      "value": "kiosk-face"
+    },
+    "TextAnalyticsAccountName": {
+      "value": "kiosk-text-analytics"
+    },
+    "BingSearchAccountName": {
+      "value": "kiosk-bing-search"
+    },
+    "TextTranslatorAccountName": {
+      "value": "kiosk-translator"
+    },
+    "AnomalyDetectorAccountName": {
+      "value": "kiosk-anomaly-detector"
+    },
+    "CustomVisionTrainingAccountName": {
+      "value": "kiosk-custom-vision-training"
+    },
+    "CustomVisionPredictionAccountName": {
+      "value": "kiosk-custom-vision-prediction"
+    },
+    "FormRecognizerAccountName": {
+      "value": "kiosk-form-recognizer"
     }
+  }
 }
