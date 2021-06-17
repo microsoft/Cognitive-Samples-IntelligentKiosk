@@ -30,6 +30,34 @@
       },
       "type": "string"
     },
+    "TextTranslatorAccountName": {
+      "defaultValue": "kiosk-translator",
+      "metadata": {
+        "description": "Display name of Text Translator account"
+      },
+      "type": "string"
+    },
+    "AnomalyDetectorAccountName": {
+      "defaultValue": "kiosk-anomaly-detector",
+      "metadata": {
+        "description": "Display name of Anomaly Detector account"
+      },
+      "type": "string"
+    },
+    "CustomVisionTrainingAccountName": {
+      "defaultValue": "kiosk-custom-vision-training",
+      "metadata": {
+        "description": "Display name of Custom Vision Training account"
+      },
+      "type": "string"
+    },
+    "CustomVisionPredictionAccountName": {
+      "defaultValue": "kiosk-custom-vision-prediction",
+      "metadata": {
+        "description": "Display name of Custom Vision Prediction account"
+      },
+      "type": "string"
+    },
     "compVisionSKU": {
       "type": "string",
       "metadata": {
@@ -72,13 +100,57 @@
         "S1",
         "S2"
       ]
+    },
+    "textTranslatorSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Text Translator API"
+      },
+      "defaultValue": "S1",
+      "allowedValues": [
+        "S1"
+      ]
+    },
+    "anomalyDetectorSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Anomaly Detector API"
+      },
+      "defaultValue": "S0",
+      "allowedValues": [
+        "S0"
+      ]
+    },
+    "customVisionTrainingSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Custom Vision Traning API"
+      },
+      "defaultValue": "S0",
+      "allowedValues": [
+        "S0"
+      ]
+    },
+    "customVisionPredictionSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Custom Vision Prediction API"
+      },
+      "defaultValue": "S0",
+      "allowedValues": [
+        "S0"
+      ]
     }
   },
   "variables": {
     "cogServCompVisionId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('ComputerVisionAccountName'))]",
     "cogServFaceId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('FaceAccountName'))]",
     "cogServTextAnalyticsId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('TextAnalyticsAccountName'))]",
-    "cogServBingSearchId": "[concat(resourceGroup().id,'/providers/','Microsoft.Bing/accounts/', parameters('BingSearchAccountName'))]"
+    "cogServBingSearchId": "[concat(resourceGroup().id,'/providers/','Microsoft.Bing/accounts/', parameters('BingSearchAccountName'))]",
+    "cogServTranslatorId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('TextTranslatorAccountName'))]",
+    "cogServAnomalyDetectorId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('AnomalyDetectorAccountName'))]",
+    "cogServCustomVisionTrainingId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('CustomVisionTrainingAccountName'))]",
+    "cogServCustomVisionPredictionId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('CustomVisionPredictionAccountName'))]"
   },
   "resources": [
     {
@@ -128,6 +200,54 @@
       "location": "[resourceGroup().location]",
       "properties": {},
       "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('textTranslatorSKU')]"
+      },
+      "kind": "TextTranslation",
+      "name": "[parameters('TextTranslatorAccountName')]",
+      "apiVersion": "2021-04-30",
+      "location": "[resourceGroup().location]",
+      "properties": {},
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('anomalyDetectorSKU')]"
+      },
+      "kind": "AnomalyDetector",
+      "name": "[parameters('AnomalyDetectorAccountName')]",
+      "apiVersion": "2021-04-30",
+      "location": "[resourceGroup().location]",
+      "properties": {},
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('customVisionTrainingSKU')]"
+      },
+      "kind": "CustomVision.Training",
+      "name": "[parameters('CustomVisionTrainingAccountName')]",
+      "apiVersion": "2021-04-30",
+      "location": "[resourceGroup().location]",
+      "properties": {},
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('customVisionPredictionSKU')]"
+      },
+      "kind": "CustomVision.Prediction",
+      "name": "[parameters('CustomVisionPredictionAccountName')]",
+      "apiVersion": "2021-04-30",
+      "location": "[resourceGroup().location]",
+      "properties": {},
+      "dependsOn": []
     }
   ],
   "outputs": {
@@ -158,6 +278,42 @@
     "bingSearchKey1": {
       "type": "string",
       "value": "[listKeys(variables('cogServBingSearchId'),'2020-06-10').key1]"
-    }
+    },
+    "textTranslatorKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServTranslatorId'),'2021-04-30').key1]"
+    },
+    "textTranslatorLocation": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServTranslatorId'),'2021-04-30').location]"
+    },
+    "anomalyDetectorKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServAnomalyDetectorId'),'2021-04-30').key1]"
+    },
+    "anomalyDetectorEndpoint": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServAnomalyDetectorId'),'2021-04-30').endpoint]"
+    },
+    "customVisionTrainingKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServCustomVisionTrainingId'),'2021-04-30').key1]"
+    },
+    "customVisionTrainingEndpoint": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServCustomVisionTrainingId'),'2021-04-30').endpoint]"
+    },
+    "customVisionTrainingResourceId": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServCustomVisionTrainingId'),'2021-04-30')]"
+    },
+    "customVisionPredictionKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServCustomVisionPredictionId'),'2021-04-30').key1]"
+    },
+    "customVisionPredictionEndpoint": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServCustomVisionPredictionId'),'2021-04-30').endpoint]"
+    },
   }
 }

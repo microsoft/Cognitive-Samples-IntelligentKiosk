@@ -13,6 +13,18 @@
       },
       "BingSearchAccountName": {
         "value": "kiosk-bing-search"
+      },
+      "TextTranslatorAccountName": {
+        "value": "kiosk-translator"
+      },
+      "AnomalyDetectorAccountName": {
+        "value": "kiosk-anomaly-detector"
+      },
+      "CustomVisionTrainingAccountName": {
+        "value": "kiosk-custom-vision-training"
+      },
+      "CustomVisionPredictionAccountName": {
+        "value": "kiosk-custom-vision-prediction"
       }
-  }
+    }
 }
