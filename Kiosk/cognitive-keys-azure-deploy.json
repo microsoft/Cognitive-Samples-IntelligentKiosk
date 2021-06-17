@@ -283,9 +283,9 @@
       "type": "string",
       "value": "[listKeys(variables('cogServTranslatorId'),'2021-04-30').key1]"
     },
-    "textTranslatorLocation": {
+    "textTranslatorEndpoint": {
       "type": "string",
-      "value": "[listKeys(variables('cogServTranslatorId'),'2021-04-30').location]"
+      "value": "[reference(variables('cogServTranslatorId'),'2021-04-30').endpoint]"
     },
     "anomalyDetectorKey1": {
       "type": "string",
@@ -293,7 +293,7 @@
     },
     "anomalyDetectorEndpoint": {
       "type": "string",
-      "value": "[listKeys(variables('cogServAnomalyDetectorId'),'2021-04-30').endpoint]"
+      "value": "[reference(variables('cogServAnomalyDetectorId'),'2021-04-30').endpoint]"
     },
     "customVisionTrainingKey1": {
       "type": "string",
@@ -301,11 +301,11 @@
     },
     "customVisionTrainingEndpoint": {
       "type": "string",
-      "value": "[listKeys(variables('cogServCustomVisionTrainingId'),'2021-04-30').endpoint]"
+      "value": "[reference(variables('cogServCustomVisionTrainingId'),'2021-04-30').endpoint]"
     },
     "customVisionTrainingResourceId": {
       "type": "string",
-      "value": "[listKeys(variables('cogServCustomVisionTrainingId'),'2021-04-30')]"
+      "value": "[variables('cogServCustomVisionTrainingId')]"
     },
     "customVisionPredictionKey1": {
       "type": "string",
@@ -313,7 +313,7 @@
     },
     "customVisionPredictionEndpoint": {
       "type": "string",
-      "value": "[listKeys(variables('cogServCustomVisionPredictionId'),'2021-04-30').endpoint]"
-    },
+      "value": "[reference(variables('cogServCustomVisionPredictionId'),'2021-04-30').endpoint]"
+    }
   }
 }
