@@ -32,8 +32,8 @@
 // 
 
 using IntelligentKioskSample.Controls;
+using IntelligentKioskSample.Controls.Animation;
 using IntelligentKioskSample.Views.VideoInsights;
-using KioskRuntimeComponent;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;

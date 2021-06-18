@@ -31,7 +31,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // 
 
-using KioskRuntimeComponent;
+using IntelligentKioskSample.Controls.Animation;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 using ServiceHelpers;
 using System;
