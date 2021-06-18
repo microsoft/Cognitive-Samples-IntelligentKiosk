@@ -53,7 +53,7 @@ Please note! **[jq](https://stedolan.github.io/jq/)** needs to be installed to e
     },
     "compVisionEndpoint": {
         "type": "String",
-        "value": "https://westus2.api.cognitive.microsoft.com/vision/v1.0"
+        "value": "https://westus2.api.cognitive.microsoft.com/"
     },
     "compVisionKey1": {
         "type": "String",
@@ -81,7 +81,7 @@ Please note! **[jq](https://stedolan.github.io/jq/)** needs to be installed to e
     },
     "faceEndpoint": {
         "type": "String",
-        "value": "https://westus2.api.cognitive.microsoft.com/face/v1.0"
+        "value": "https://westus2.api.cognitive.microsoft.com/"
     },
     "faceKey1": {
         "type": "String",
@@ -105,7 +105,7 @@ Please note! **[jq](https://stedolan.github.io/jq/)** needs to be installed to e
     },
     "textAnalyticsEndpoint": {
         "type": "String",
-        "value": "https://westus2.api.cognitive.microsoft.com/text/analytics/v2.0"
+        "value": "https://westus2.api.cognitive.microsoft.com/"
     },
     "textAnalyticsKey1": {
         "type": "String",
