@@ -3,7 +3,7 @@
 ## Create resource group
  ```sh
  # Create resource group, replace resouce group name and location of resource group as required
- az group create -n kiosk-cog-service-keys -l westus
+ az group create -n kiosk-cog-service-keys -l westus2
 
  ```
 
@@ -39,9 +39,13 @@ Please note! **[jq](https://stedolan.github.io/jq/)** needs to be installed to e
 
 # Sample output of above command
 {
-    "bingAugosuggestKey1": {
+    "anomalyDetectorEndpoint": {
         "type": "String",
-        "value": "cb4******************************"
+        "value": "https://westus2.api.cognitive.microsoft.com/"
+    },
+    "anomalyDetectorKey1": {
+        "type": "String",
+        "value": "5c9**************************************"
     },
     "bingSearchKey1": {
         "type": "String",
@@ -49,27 +53,71 @@ Please note! **[jq](https://stedolan.github.io/jq/)** needs to be installed to e
     },
     "compVisionEndpoint": {
         "type": "String",
-        "value": "https://westus.api.cognitive.microsoft.com/vision/v1.0"
+        "value": "https://westus2.api.cognitive.microsoft.com/vision/v1.0"
     },
     "compVisionKey1": {
         "type": "String",
         "value": "fa5**************************************"
     },
+    "customVisionPredictionEndpoint": {
+        "type": "String",
+        "value": "https://westus2.api.cognitive.microsoft.com/"
+    },
+    "customVisionPredictionKey1": {
+        "type": "String",
+        "value": "fbd**************************************"
+    },
+    "customVisionTrainingEndpoint": {
+        "type": "String",
+        "value": "https://westus2.api.cognitive.microsoft.com/"
+    },
+    "customVisionTrainingKey1": {
+        "type": "String",
+        "value": "b36**************************************"
+    },
+    "customVisionTrainingResourceId": {
+        "type": "String",
+        "value": "/subscriptions/420**********/resourceGroups/ki********/providers/Microsoft.CognitiveServices/accounts/*******"
+    },
     "faceEndpoint": {
         "type": "String",
-        "value": "https://westus.api.cognitive.microsoft.com/face/v1.0"
+        "value": "https://westus2.api.cognitive.microsoft.com/face/v1.0"
     },
     "faceKey1": {
         "type": "String",
         "value": "87f7****************************************"
     },
+    "formRecognizerEndpoint": {
+        "type": "String",
+        "value": "https://westus2.api.cognitive.microsoft.com/"
+    },
+    "formRecognizerKey1": {
+        "type": "String",
+        "value": "2d3**************************************"
+    },
+    "speechEndpoint": {
+        "type": "String",
+        "value": "https://westus2.api.cognitive.microsoft.com/sts/v1.0/issuetoken"
+    },
+    "speechKey1": {
+        "type": "String",
+        "value": "e1c**************************************"
+    },
     "textAnalyticsEndpoint": {
         "type": "String",
-        "value": "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0"
+        "value": "https://westus2.api.cognitive.microsoft.com/text/analytics/v2.0"
     },
     "textAnalyticsKey1": {
         "type": "String",
         "value": "ba3*************************************"
+    },
+    "textTranslatorEndpoint": {
+        "type": "String",
+        "value": "https://api.cognitive.microsofttranslator.com/"
+    },
+    "textTranslatorKey1": {
+        "type": "String",
+        "value": "551*************************************"
     }
 }
 
