@@ -65,6 +65,13 @@
       },
       "type": "string"
     },
+    "SpeechAccountName": {
+      "defaultValue": "kiosk-speech",
+      "metadata": {
+        "description": "Display name of Speech account"
+      },
+      "type": "string"
+    },
     "compVisionSKU": {
       "type": "string",
       "metadata": {
@@ -157,6 +164,16 @@
       "allowedValues": [
         "S0"
       ]
+    },
+    "speechSKU": {
+      "type": "string",
+      "metadata": {
+        "description": "SKU for Speech API"
+      },
+      "defaultValue": "S0",
+      "allowedValues": [
+        "S0"
+      ]
     }
   },
   "variables": {
@@ -168,7 +185,8 @@
     "cogServAnomalyDetectorId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('AnomalyDetectorAccountName'))]",
     "cogServCustomVisionTrainingId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('CustomVisionTrainingAccountName'))]",
     "cogServCustomVisionPredictionId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('CustomVisionPredictionAccountName'))]",
-    "cogServFormRecognizerId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('FormRecognizerAccountName'))]"
+    "cogServFormRecognizerId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('FormRecognizerAccountName'))]",
+    "cogServSpeechId": "[concat(resourceGroup().id,'/providers/','Microsoft.CognitiveServices/accounts/', parameters('SpeechAccountName'))]"
   },
   "resources": [
     {
@@ -278,6 +296,18 @@
       "location": "[resourceGroup().location]",
       "properties": {},
       "dependsOn": []
+    },
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('speechSKU')]"
+      },
+      "kind": "SpeechServices",
+      "name": "[parameters('SpeechAccountName')]",
+      "apiVersion": "2021-04-30",
+      "location": "[resourceGroup().location]",
+      "properties": {},
+      "dependsOn": []
     }
   ],
   "outputs": {
@@ -352,6 +382,14 @@
     "formRecognizerEndpoint": {
       "type": "string",
       "value": "[reference(variables('cogServFormRecognizerId'),'2021-04-30').endpoint]"
+    },
+    "speechKey1": {
+      "type": "string",
+      "value": "[listKeys(variables('cogServSpeechId'),'2021-04-30').key1]"
+    },
+    "speechEndpoint": {
+      "type": "string",
+      "value": "[reference(variables('cogServSpeechId'),'2021-04-30').endpoint]"
     }
   }
 }

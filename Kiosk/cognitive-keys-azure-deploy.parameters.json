@@ -28,6 +28,9 @@
     },
     "FormRecognizerAccountName": {
       "value": "kiosk-form-recognizer"
+    },
+    "SpeechAccountName": {
+      "value": "kiosk-speech"
     }
   }
 }
