@@ -1,0 +1,182 @@
+[
+  {
+    "Id": "Guy (English, US)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-US, GuyNeural)",
+    "Locale": "en-US"
+  },
+  { 
+    "Id": "Aria (English, US)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-US, AriaNeural)",
+    "Locale": "en-US"
+  },
+  { 
+    "Id": "Natasha (English, Australia)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-AU, NatashaNeural)",
+    "Locale": "en-AU"
+  },
+  { 
+    "Id": "Clara (English, Canada)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-CA, ClaraNeural)",
+    "Locale": "en-CA"
+  },
+  { 
+    "Id": "Libby (English, UK)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-GB, LibbyNeural)",
+    "Locale": "en-GB"
+  },
+  { 
+    "Id": "Mia (English, UK)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-GB, MiaNeural)",
+    "Locale": "en-GB"
+  },
+  { 
+    "Id": "Neerja (English, India)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (en-IN, NeerjaNeural)",
+    "Locale": "en-IN"
+  },
+  { 
+    "Id": "Salma (Arabic, Egypt)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ar-EG, SalmaNeural)",
+    "Locale": "ar-EG"
+  },
+  { 
+    "Id": "Zariyah (Arabic, Saudi Arabia)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ar-SA, ZariyahNeural)",
+    "Locale": "ar-SA"
+  },
+  {
+    "Id": "Alba (Catalan, Spain)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ca-ES, AlbaNeural)",
+    "Locale": "ca-ES"
+  },
+  { 
+    "Id": "Christel (Danish, Denmark)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (da-DK, ChristelNeural)",
+    "Locale": "da-DK"
+  },
+  { 
+    "Id": "Katja (German, Germany)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (de-DE, KatjaNeural)",
+    "Locale": "de-DE"
+  },
+  { 
+    "Id": "Elvira (Spanish, Spain)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (es-ES, ElviraNeural)",
+    "Locale": "es-ES"
+  },
+  { 
+    "Id": "Dalia (Spanish, Mexico)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (es-MX, DaliaNeural)",
+    "Locale": "es-MX"
+  },
+  {
+    "Id": "Noora (Finnish, Finland)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (fi-FI, NooraNeural)",
+    "Locale": "fi-FI"
+  },
+  { 
+    "Id": "Sylvie (French, Canada)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (fr-CA, SylvieNeural)",
+    "Locale": "fr-CA"
+  },
+  { 
+    "Id": "Denise (French, France)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (fr-FR, DeniseNeural)",
+    "Locale": "fr-FR"
+  },
+  { 
+    "Id": "Swara (Hindi, India)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (hi-IN, SwaraNeural)",
+    "Locale": "hi-IN"
+  },
+  { 
+    "Id": "Elsa (Italian, Italy)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (it-IT, ElsaNeural)",
+    "Locale": "it-IT"
+  },
+  {
+    "Id": "Nanami (Japanese)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ja-JP, NanamiNeural)",
+    "Locale": "ja-JP"
+  },
+  { 
+    "Id": "SunHi (Korean)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ko-KR, SunHiNeural)",
+    "Locale": "ko-KR"
+  },
+  { 
+    "Id": "Iselin (Norwegian)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (nb-NO, IselinNeural)",
+    "Locale": "nb-NO"
+  },
+  { 
+    "Id": "Colette (Dutch, Netherland)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (nl-NL, ColetteNeural)",
+    "Locale": "nl-NL"
+  },
+  { 
+    "Id": "Zofia (Polish, Poland)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (pl-PL, ZofiaNeural)",
+    "Locale": "pl-PL"
+  },
+  { 
+    "Id": "Francisca (Portuguese, Brazil)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (pt-BR, FranciscaNeural)",
+    "Locale": "pt-BR"
+  },
+  { 
+    "Id": "Fernanda (Portuguese, Portugal)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (pt-PT, FernandaNeural)",
+    "Locale": "pt-PT"
+  },
+  {
+    "Id": "Emel (Turkish)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (tr-TR, EmelNeural)",
+    "Locale": "tr-TR"
+  },
+  { 
+    "Id": "Dariya (Russian, Russia)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (ru-RU, DariyaNeural)",
+    "Locale": "ru-RU"
+  },
+  { 
+    "Id": "Hillevi (Swedish, Sweden)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (sv-SE, HilleviNeural)",
+    "Locale": "sv-SE"
+  },
+  { 
+    "Id": "Achara (Thai, Thailand)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (th-TH, AcharaNeural)",
+    "Locale": "th-TH"
+  },
+  { 
+    "Id": "Xiaoxiao (Chinese, Mandarin, simplified)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)",
+    "Locale": "zh-CN"
+  },
+  { 
+    "Id": "Xiaoyou (Chinese, Mandarin, simplified)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoyouNeural)",
+    "Locale": "zh-CN"
+  },
+  {
+    "Id": "Yunyang (Chinese, Mandarin, simplified)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-CN, YunyangNeural)",
+    "Locale": "zh-CN"
+  },
+  { 
+    "Id": "Yunye (Chinese, Mandarin, simplified)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-CN, YunyeNeural)",
+    "Locale": "zh-CN"
+  },
+  { 
+    "Id": "HiuGaai (Chinese, Cantonese, traditional)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-HK, HiuGaaiNeural)",
+    "Locale": "zh-HK"
+  },
+  { 
+    "Id": "HsiaoYu (Chinese, Taiwanese Mandarin)",
+    "Name": "Microsoft Server Speech Text to Speech Voice (zh-TW, HsiaoYuNeural)",
+    "Locale": "zh-TW"
+  }
+]
