@@ -38,7 +38,7 @@ using Windows.Graphics.Imaging;
 using Windows.Media.Effects;
 using Windows.Media.MediaProperties;
 
-namespace KioskRuntimeComponent
+namespace IntelligentKioskSample.Controls.Animation
 {
     public sealed class FrameRelayVideoEffect : IBasicVideoEffect
     {
