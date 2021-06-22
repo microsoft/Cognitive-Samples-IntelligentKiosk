@@ -49,26 +49,6 @@ If you have build issues on first launch, try to reload your project. Also make 
 | [Vision API Explorer](Documentation/VisionAPIExplorer.md)          | A playground for some of the offerings in the Computer Vision APIs. It shows how to extract tags, faces, description of the photo, celebrities, OCR results and color analysis. | Windows 10 Face Tracking; Computer Vision API; Bing Image Search API; Bing AutoSuggestion API |
 | [Visual Alert Builder](Documentation/VisualAlertBuilder.md)          | Shows how to use Custom Vision Service to quickly create an image classifier to detect visual states, and how to process frames from a web camera to alert when those states are detected. | Custom Vision API; Windows Machine Learning |
 
-# Raspberry Pi + Sense HAT Kiosk
-A trimmed down version of the kiosk is also available in the RaspberryPiKiosk folder. This version is similar to the main version and references the same ServicesHelper library. It has less demos and does a couple of tweaks to improve performance (it disables the Windows based face tracking code and makes the camera preview size very small). 
-
-This version also has a nice integration with the Sense HAT add-on for the Pi, making use of it to display output and switch between demos through the built-in joystick. The Sense HAT integration uses the great library and sample code provided by [Mattias Larsson](https://www.hackster.io/laserbrain/windows-iot-sense-hat-10cac2).
-
-Navigating the kiosk via the Sense HAT joystick (assuming the joystick is on the lower/left corner as you look at the LEDs):
-
-* Left: Go to the demo launcher (the screen will keep scrolling the word "Launcher" while in the Launcher screen)
-* Up/Down while in the Launcher screen: Move different demos into focus (the name of the current demo in focus will keep scrolling)
-* Enter while the Launcher is scrolling the name of any particular demo: Launches that demo
-
-Demos in the Pi version:
-
-| Scenario                     | Overview |
-| ---------------------------- | -------- |
-| Greetings Kiosk          | Samples the camera at 1fps and uses the Sense HAT to scroll the name and age of the main face in front of the camera (or gender and age if the person is not recognized). |
-| Realtime Crowd Insights | Similar to the same demo in the main Kiosk, except that it also uses the Sense HAT to communicate the number of man and women (each unique face is a mapped to a LED, with the color indicating the gender). |
-| Realtime Driver Monitoring | Similar to the same demo in the main Kiosk, except that it also uses the Sense HAT to indicate the detection of any of the dangerous situations by turning all the LEDs red. |
-| Emotion Meter  | A simple emotion meter, with each column of the Sense HAT 8x8 LED matrix indicating the level of each of the 8 emotions in the primary face in front of the camera. |
-
 # Source Code Structure
 
 1 Kiosk/ServiceHelpers: A portable library that serves as a wrapper around the several services. 
@@ -79,8 +59,6 @@ Demos in the Pi version:
 2 Kiosk: The main version of the kiosk
   * Kiosk/Views: The root pages that represent the various views in the kiosk.
   * Kiosk/Controls: The controls used by the various pages in the kiosk.
-
-3 RaspberryPiKiosk: The trimmed down version fo the main kiosk
 
 # Contributing
 We welcome contributions. Feel free to file issues & pull requests on the repo and we'll address them as we can.
