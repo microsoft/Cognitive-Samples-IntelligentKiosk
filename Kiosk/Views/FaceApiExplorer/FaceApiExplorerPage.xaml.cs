@@ -45,6 +45,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace IntelligentKioskSample.Views.FaceApiExplorer
 {
@@ -104,13 +105,16 @@ namespace IntelligentKioskSample.Views.FaceApiExplorer
         {
             this.InitializeComponent();
             this.DataContext = this;
+        }
 
-            this.imagePicker.SetSuggestedImageList(
-                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/1.jpg",
-                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/2.jpg",
-                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/3.jpg",
-                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/4.jpg",
-                "https://intelligentkioskstore.blob.core.windows.net/faceapi-explorer/5.jpg");
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            await this.imagePicker.SetSuggestedImageList(
+                new Uri("ms-appx:///Assets/DemoSamples/FaceApiExplorer/1.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/FaceApiExplorer/2.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/FaceApiExplorer/3.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/FaceApiExplorer/4.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/FaceApiExplorer/5.jpg"));
         }
 
         private async void OnImageSearchCompleted(object sender, IEnumerable<ImageAnalyzer> args)

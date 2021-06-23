@@ -43,6 +43,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace IntelligentKioskSample.Controls
 {
@@ -134,7 +135,7 @@ namespace IntelligentKioskSample.Controls
             //validate
             imageUrls = imageUrls ?? new string[] { };
 
-            suggestedImagesGrid.ItemsSource = imageUrls.Select(url => new ImageAnalyzer(url));
+            suggestedImagesGrid.ItemsSource = imageUrls.Select(url => new Tuple<ImageSource, ImageAnalyzer>(new BitmapImage(new Uri(url)), new ImageAnalyzer(url)));
 
             //reset scrolling
             suggestedImagesScroll.ResetScroll();
@@ -145,7 +146,25 @@ namespace IntelligentKioskSample.Controls
             //validate
             images = images ?? new ImageSource[] { };
 
-            suggestedImagesGrid.ItemsSource = images.Select(i => new ImageAnalyzer((i as Windows.UI.Xaml.Media.Imaging.BitmapImage).UriSource.AbsoluteUri));
+            suggestedImagesGrid.ItemsSource = images.Select(i => new Tuple<ImageSource, ImageAnalyzer>(i, new ImageAnalyzer((i as BitmapImage).UriSource.AbsoluteUri)));
+
+            //reset scrolling
+            suggestedImagesScroll.ResetScroll();
+        }
+
+        public async Task SetSuggestedImageList(params Uri[] imageLocalUris)
+        {
+            //validate
+            imageLocalUris = imageLocalUris ?? new Uri[] { };
+
+            var imageList = new List<Tuple<ImageSource, ImageAnalyzer>>();
+            foreach (Uri uri in imageLocalUris)
+            {
+                StorageFile localImageFile = await StorageFile.GetFileFromApplicationUriAsync(uri);
+                imageList.Add(new Tuple<ImageSource, ImageAnalyzer>(new BitmapImage(uri), new ImageAnalyzer(localImageFile.OpenStreamForReadAsync)));
+            }
+
+            suggestedImagesGrid.ItemsSource = imageList;
 
             //reset scrolling
             suggestedImagesScroll.ResetScroll();
@@ -326,8 +345,13 @@ namespace IntelligentKioskSample.Controls
         {
             ProcessImageSelection(new ImageAnalyzer[] { e.ClickedItem as ImageAnalyzer });
         }
-    }
 
+        private void OnSuggestedImageItemClicked(object sender, ItemClickEventArgs e)
+        {
+            var imgAnalyzer = e.ClickedItem as Tuple<ImageSource, ImageAnalyzer>;
+            ProcessImageSelection(new ImageAnalyzer[] { imgAnalyzer.Item2 });
+        }
+    }
 
     public class WideStyleSelector : StyleSelector
     {

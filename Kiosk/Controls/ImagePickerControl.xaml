@@ -83,7 +83,7 @@
 
                     <!--Suggested images-->
                     <controls:LeftRightScrollViewer x:Name="suggestedImagesScroll" Grid.Column="1" Grid.Row="1" Height="200" >
-                        <GridView x:Name="suggestedImagesGrid" Height="200" SelectionMode="None" IsMultiSelectCheckBoxEnabled="False" IsItemClickEnabled="True" ItemClick="OnImageItemClicked" ItemContainerStyle="{StaticResource DefaultStyle}">
+                        <GridView x:Name="suggestedImagesGrid" Height="200" SelectionMode="None" IsMultiSelectCheckBoxEnabled="False" IsItemClickEnabled="True" ItemClick="OnSuggestedImageItemClicked" ItemContainerStyle="{StaticResource DefaultStyle}">
                             <GridView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <VariableSizedWrapGrid ItemHeight="200" ItemWidth="200" Orientation="Horizontal"/>
@@ -93,7 +93,7 @@
                                 <DataTemplate>
                                     <Border Margin="6">
                                         <Border.Background>
-                                            <ImageBrush ImageSource="{Binding ImageUrl}"  Stretch="UniformToFill" />
+                                            <ImageBrush ImageSource="{Binding Item1}" Stretch="UniformToFill" />
                                         </Border.Background>
                                     </Border>
                                 </DataTemplate>
