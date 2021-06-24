@@ -178,11 +178,12 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
             await this.cameraControl.StopStreamAsync();
         }
 
-        private void OnSampleItemClicked(object sender, ItemClickEventArgs e)
+        private async void OnSampleItemClicked(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is InputSampleViewModel sampleImage)
             {
-                this.OnItemSearchCompleted?.Invoke(this, new ImageAnalyzer(sampleImage.InputUrl));
+                StorageFile localImageFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(sampleImage.InputUrl));
+                this.OnItemSearchCompleted?.Invoke(this, new ImageAnalyzer(localImageFile.OpenStreamForReadAsync));
             }
         }
 
