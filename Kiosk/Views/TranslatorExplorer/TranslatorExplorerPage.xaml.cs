@@ -39,8 +39,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -151,8 +153,8 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
             {
                 this.favoritePhotosGridView.ItemsSource = new string[]
                 {
-                    "https://intelligentkioskstore.blob.core.windows.net/translator-explorer/suggestedphotos/1.png",
-                    "https://intelligentkioskstore.blob.core.windows.net/translator-explorer/suggestedphotos/2.png",
+                    "ms-appx:///Assets/DemoSamples/TranslatorExplorer/1.png",
+                    "ms-appx:///Assets/DemoSamples/TranslatorExplorer/2.png"
                 };
             }
         }
@@ -350,7 +352,10 @@ namespace IntelligentKioskSample.Views.TranslatorExplorer
             if (!string.IsNullOrEmpty((string)this.favoritePhotosGridView.SelectedValue))
             {
                 this.landingMessage.Visibility = Visibility.Collapsed;
-                ImageAnalyzer image = new ImageAnalyzer((string)this.favoritePhotosGridView.SelectedValue);
+
+                string photoUrl = this.favoritePhotosGridView.SelectedValue as string;
+                StorageFile localImageFile = await StorageFile.GetFileFromApplicationUriAsync(new Uri(photoUrl));
+                ImageAnalyzer image = new ImageAnalyzer(localImageFile.OpenStreamForReadAsync);
 
                 this.imageHostGrid.Visibility = Visibility.Visible;
                 this.webCamHostGrid.Visibility = Visibility.Collapsed;
