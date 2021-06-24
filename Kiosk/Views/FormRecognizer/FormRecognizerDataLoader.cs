@@ -94,7 +94,7 @@ namespace IntelligentKioskSample.Views.FormRecognizer
 
         public static async Task DeleteModelStorageFolderAsync(Guid modelId)
         {
-            StorageFolder storageFolder = await ApplicationData.Current.LocalFolder.GetFolderAsync($"FormRecognizer\\{modelId.ToString()}");
+            StorageFolder storageFolder = await ApplicationData.Current.LocalFolder.GetFolderAsync($"FormRecognizer\\{modelId}");
             if (storageFolder != null)
             {
                 await storageFolder.DeleteAsync();
@@ -103,7 +103,7 @@ namespace IntelligentKioskSample.Views.FormRecognizer
 
         public static async Task<StorageFile> CopyFileToLocalModelFolderAsync(StorageFile file, Guid modelId)
         {
-            StorageFolder storageFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync($"FormRecognizer\\{modelId.ToString()}", CreationCollisionOption.OpenIfExists);
+            StorageFolder storageFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync($"FormRecognizer\\{modelId}", CreationCollisionOption.OpenIfExists);
             return await file?.CopyAsync(storageFolder, file.Name, NameCollisionOption.GenerateUniqueName);
         }
     }

@@ -145,6 +145,13 @@
     <Content Include="Assets\DemoSamples\FaceApiExplorer\3.jpg" />
     <Content Include="Assets\DemoSamples\FaceApiExplorer\4.jpg" />
     <Content Include="Assets\DemoSamples\FaceApiExplorer\5.jpg" />
+    <Content Include="Assets\DemoSamples\FormRecognizer\1.jpg" />
+    <Content Include="Assets\DemoSamples\FormRecognizer\1_1.jpg" />
+    <Content Include="Assets\DemoSamples\FormRecognizer\2.jpg" />
+    <Content Include="Assets\DemoSamples\FormRecognizer\3.jpg" />
+    <Content Include="Assets\DemoSamples\FormRecognizer\3_1.jpg" />
+    <Content Include="Assets\DemoSamples\FormRecognizer\4.jpg" />
+    <Content Include="Assets\DemoSamples\FormRecognizer\contoso-allinone.jpg" />
     <Content Include="Assets\favorites_empty.png" />
     <Content Include="Assets\AnomalyDetector\BikeSharing.png" />
     <Content Include="Assets\AnomalyDetector\LiveSound.png" />
