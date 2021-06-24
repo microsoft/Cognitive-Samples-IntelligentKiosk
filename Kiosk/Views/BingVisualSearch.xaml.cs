@@ -57,14 +57,6 @@ namespace IntelligentKioskSample.Views
         public BingVisualSearch()
         {
             this.InitializeComponent();
-
-            this.imagePicker.SetSuggestedImageList(
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/1.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/3.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/4.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/11.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/12.jpg",
-                    "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/13.jpg");
         }
 
         private void DisplayProcessingUI()
@@ -130,6 +122,14 @@ namespace IntelligentKioskSample.Views
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            await this.imagePicker.SetSuggestedImageList(
+                new Uri("ms-appx:///Assets/DemoSamples/BingVisualSearch/1.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/BingVisualSearch/3.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/BingVisualSearch/4.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/BingVisualSearch/11.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/BingVisualSearch/12.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/BingVisualSearch/13.jpg"));
+
             if (string.IsNullOrEmpty(SettingsHelper.Instance.BingSearchApiKey))
             {
                 await new MessageDialog("Missing Bing Search API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();

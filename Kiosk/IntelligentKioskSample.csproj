@@ -140,6 +140,12 @@
     <Content Include="Assets\DemoGallery\Translation Demo.jpg" />
     <Content Include="Assets\DemoGallery\Vision API Explorer.jpg" />
     <Content Include="Assets\DemoGallery\VisualAlertBuilder.jpg" />
+    <Content Include="Assets\DemoSamples\BingVisualSearch\1.jpg" />
+    <Content Include="Assets\DemoSamples\BingVisualSearch\11.jpg" />
+    <Content Include="Assets\DemoSamples\BingVisualSearch\12.jpg" />
+    <Content Include="Assets\DemoSamples\BingVisualSearch\13.jpg" />
+    <Content Include="Assets\DemoSamples\BingVisualSearch\3.jpg" />
+    <Content Include="Assets\DemoSamples\BingVisualSearch\4.jpg" />
     <Content Include="Assets\DemoSamples\FaceApiExplorer\1.jpg" />
     <Content Include="Assets\DemoSamples\FaceApiExplorer\2.jpg" />
     <Content Include="Assets\DemoSamples\FaceApiExplorer\3.jpg" />
