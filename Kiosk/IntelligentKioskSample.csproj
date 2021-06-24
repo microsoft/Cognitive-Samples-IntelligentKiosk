@@ -169,6 +169,14 @@
     <Content Include="Assets\DemoSamples\InsuranceClaimAutomation\Form5.jpg" />
     <Content Include="Assets\DemoSamples\TranslatorExplorer\1.png" />
     <Content Include="Assets\DemoSamples\TranslatorExplorer\2.png" />
+    <Content Include="Assets\DemoSamples\VisionApiExplorer\1.jpg" />
+    <Content Include="Assets\DemoSamples\VisionApiExplorer\2.jpg" />
+    <Content Include="Assets\DemoSamples\VisionApiExplorer\3.jpg" />
+    <Content Include="Assets\DemoSamples\VisionApiExplorer\4.jpg" />
+    <Content Include="Assets\DemoSamples\VisionApiExplorer\5.jpg" />
+    <Content Include="Assets\DemoSamples\VisionApiExplorer\6.png" />
+    <Content Include="Assets\DemoSamples\VisionApiExplorer\7.png" />
+    <Content Include="Assets\DemoSamples\VisionApiExplorer\8.png" />
     <Content Include="Assets\favorites_empty.png" />
     <Content Include="Assets\AnomalyDetector\BikeSharing.png" />
     <Content Include="Assets\AnomalyDetector\LiveSound.png" />
