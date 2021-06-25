@@ -134,19 +134,19 @@ namespace IntelligentKioskSample.Views.InsuranceClaimAutomation
 
         public ObservableCollection<InputSampleViewModel> ImageSampleCollection { get; set; } = new ObservableCollection<InputSampleViewModel>()
         {
-            new InputSampleViewModel("https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedphotos/1.jpg"),
-            new InputSampleViewModel("https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedphotos/2.jpg"),
-            new InputSampleViewModel("https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedphotos/3.jpg"),
-            new InputSampleViewModel("https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedphotos/4.jpg")
+            new InputSampleViewModel("ms-appx:///Assets/DemoSamples/InsuranceClaimAutomation/1.jpg"),
+            new InputSampleViewModel("ms-appx:///Assets/DemoSamples/InsuranceClaimAutomation/2.jpg"),
+            new InputSampleViewModel("ms-appx:///Assets/DemoSamples/InsuranceClaimAutomation/3.jpg"),
+            new InputSampleViewModel("ms-appx:///Assets/DemoSamples/InsuranceClaimAutomation/4.jpg")
         };
 
         public ObservableCollection<InputSampleViewModel> FormSampleCollection { get; set; } = new ObservableCollection<InputSampleViewModel>()
         {
-            new InputSampleViewModel("Form1.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form1.jpg"),
-            new InputSampleViewModel("Form2.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form2.jpg"),
-            new InputSampleViewModel("Form3.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form3.jpg"),
-            new InputSampleViewModel("Form4.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form4.jpg"),
-            new InputSampleViewModel("Form5.jpg", "https://intelligentkioskstore.blob.core.windows.net/process-automation/suggestedforms/Form5.jpg")
+            new InputSampleViewModel("Form1.jpg", "ms-appx:///Assets/DemoSamples/InsuranceClaimAutomation/Form1.jpg"),
+            new InputSampleViewModel("Form2.jpg", "ms-appx:///Assets/DemoSamples/InsuranceClaimAutomation/Form2.jpg"),
+            new InputSampleViewModel("Form3.jpg", "ms-appx:///Assets/DemoSamples/InsuranceClaimAutomation/Form3.jpg"),
+            new InputSampleViewModel("Form4.jpg", "ms-appx:///Assets/DemoSamples/InsuranceClaimAutomation/Form4.jpg"),
+            new InputSampleViewModel("Form5.jpg", "ms-appx:///Assets/DemoSamples/InsuranceClaimAutomation/Form5.jpg")
         };
 
         public ObservableCollection<DataGridViewModel> DataGridCollection { get; set; } = new ObservableCollection<DataGridViewModel>();

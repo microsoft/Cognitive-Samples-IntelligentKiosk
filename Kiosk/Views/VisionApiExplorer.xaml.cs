@@ -46,7 +46,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage.Streams;
 using Windows.UI;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -108,18 +107,6 @@ namespace IntelligentKioskSample.Views
         public VisionApiExplorer()
         {
             this.InitializeComponent();
-
-            this.imagePicker.SetSuggestedImageList(
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/1.jpg",
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/2.jpg",
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/3.jpg",
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/4.jpg",
-                "https://howoldkiosk.blob.core.windows.net/kiosksuggestedphotos/5.jpg",
-
-                "https://intelligentkioskstore.blob.core.windows.net/visionapi/suggestedphotos/3.png",
-                "https://intelligentkioskstore.blob.core.windows.net/visionapi/suggestedphotos/1.png",
-                "https://intelligentkioskstore.blob.core.windows.net/visionapi/suggestedphotos/2.png"
-            );
         }
 
         private void DisplayProcessingUI(bool reanalyze = true)
@@ -349,6 +336,17 @@ namespace IntelligentKioskSample.Views
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            await this.imagePicker.SetSuggestedImageList(
+                new Uri("ms-appx:///Assets/DemoSamples/VisionApiExplorer/1.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/VisionApiExplorer/2.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/VisionApiExplorer/3.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/VisionApiExplorer/4.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/VisionApiExplorer/5.jpg"),
+                new Uri("ms-appx:///Assets/DemoSamples/VisionApiExplorer/8.png"),
+                new Uri("ms-appx:///Assets/DemoSamples/VisionApiExplorer/6.png"),
+                new Uri("ms-appx:///Assets/DemoSamples/VisionApiExplorer/7.png")
+            );
+
             if (string.IsNullOrEmpty(SettingsHelper.Instance.VisionApiKey))
             {
                 await new MessageDialog("Missing Computer Vision API Key. Please enter a key in the Settings page.", "Missing API Key").ShowAsync();

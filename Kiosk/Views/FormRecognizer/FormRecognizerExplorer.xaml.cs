@@ -370,15 +370,24 @@ namespace IntelligentKioskSample.Views.FormRecognizer
             if (this.suggestionSamplesListView.SelectedValue is Tuple<string, Uri> selectedSuggestionSample)
             {
                 Uri fileUri = selectedSuggestionSample.Item2;
+                bool isAppFile = fileUri.Scheme?.Equals("ms-appx", StringComparison.OrdinalIgnoreCase) ?? false;
+
                 if (CurrentFormModel.IsReceiptModel)
                 {
                     //analyze recipt
-                    await AnalyzeReceiptAsync(fileUri);
+                    if (isAppFile)
+                    {
+                        StorageFile localFile = await StorageFile.GetFileFromApplicationUriAsync(fileUri);
+                        await AnalyzeReceiptAsync(new Uri(localFile.Path), localFile);
+                    }
+                    else
+                    {
+                        await AnalyzeReceiptAsync(fileUri);
+                    }
                 }
                 else
                 {
                     //analyze form
-                    var isAppFile = fileUri.Scheme?.Equals("ms-appx", StringComparison.OrdinalIgnoreCase) ?? false;
                     await AnalyzeFormFromFileAsync(isAppFile ? await StorageFile.GetFileFromApplicationUriAsync(fileUri) : await StorageFile.GetFileFromPathAsync(fileUri.LocalPath));
                 }
             }
