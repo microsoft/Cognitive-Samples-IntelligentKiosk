@@ -43,6 +43,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using VideoRuntimeComponent;
 using Windows.Media.Editing;
 using Windows.Media.Effects;
 using Windows.Storage;

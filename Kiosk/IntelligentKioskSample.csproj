@@ -216,7 +216,6 @@
     <Compile Include="CognitiveServiceApiKeyTester.cs" />
     <Compile Include="Controls\Animation\AnimationHelper.cs" />
     <Compile Include="Controls\Animation\BaseAnimation.cs" />
-    <Compile Include="Controls\Animation\FrameRelayVideoEffect.cs" />
     <Compile Include="Controls\Animation\OpacityAnimation.cs" />
     <Compile Include="Controls\Animation\ScaleTransformAnimation.cs" />
     <Compile Include="Controls\Animation\TranslateTransformAnimation.cs" />
@@ -922,6 +921,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\VideoRuntimeComponent\VideoRuntimeComponent.csproj">
+      <Project>{1CEFE3F3-9963-4840-BD4C-802759A7C520}</Project>
+      <Name>VideoRuntimeComponent</Name>
+    </ProjectReference>
     <ProjectReference Include="ServiceHelpers\ServiceHelpers.csproj">
       <Project>{568b29f2-d125-4bc4-b07e-f7b385dbb6d9}</Project>
       <Name>ServiceHelpers</Name>
