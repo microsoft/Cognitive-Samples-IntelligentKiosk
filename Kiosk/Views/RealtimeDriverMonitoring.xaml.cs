@@ -320,7 +320,7 @@ namespace IntelligentKioskSample.Views
 
             double deviationRatio = f.FaceAttributes.HeadPose.Yaw / 35;
 
-            this.headPoseChart.DrawDataPoint(deviationRatio >= 0 ? Math.Max(0.05, deviationRatio) : Math.Min(-0.02, deviationRatio),
+            this.headPoseChart.DrawDataPoint(deviationRatio >= 0 ? Math.Min(Math.Max(0.05, deviationRatio), 1) : Math.Max(Math.Min(-0.05, deviationRatio), -1),
                                              headPoseDeviation <= LookingAwayAngleThreshold ? BarChartColor : BarChartAlertColor,
                                              img,
                                              this.isInputSourceFromVideo ? Controls.WrapBehavior.Slide : Controls.WrapBehavior.Clear);
