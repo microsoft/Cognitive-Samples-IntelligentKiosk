@@ -16,6 +16,8 @@ The Intelligent Kiosk Sample is a collection of demos showcasing workflows and e
   * If you prefer using command line to obtain the keys, you can follow the steps in the in the [Key Acquisition Steps](https://github.com/Microsoft/Cognitive-Samples-IntelligentKiosk/blob/master/KeyAcquisitionScript.md) file on how to do that through azure cli commands from bash / git bash 
 5. Explore one of the scenarios
 
+If you have build issues on first launch, try to reload your project. Also make sure all NuGet packages are installed correctly.
+
 # Scenarios
 
 | Scenario                     | Overview | Features Covered  |
